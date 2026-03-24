@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light dark;
+
+  /* Primaris */
+  --primary-main: #1A1A1A;
+  --primary-hover: #B2B2B2;
+  --primary-surface: #EFEBE7;
+  
+  /* Text */
+  --text-main: #262522;
+  --text-secondary: #4D5153;
+  --text-main-inverse: #F2F2F2;
+  --text-secondary-inverse: #999999;
+  
+  /* Surface */
+  --surface-base: #F2F2F2;
+  --surface-card: #FFFFFF;
+  --surface-border: #E5E7EB;
+  --surface-base-inverse: #262522;
+  --surface-card-inverse: #0A0A0A;
+  --surface-border-inverse: #8A8A8A;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  /* Text Dark */
+  --text-main: #F2F2F2;
+  --text-secondary: #999999;
+  --text-main-inverse: #262522;
+  --text-secondary-inverse: #4D5153;
+  
+  /* Surface Dark */
+  --surface-base: #262522;
+  --surface-card: #0A0A0A;
+  --surface-border: #8A8A8A;
+  --surface-base-inverse: #F2F2F2;
+  --surface-card-inverse: #FFFFFF;
+  --surface-border-inverse: #E5E7EB;
+  /* Els colors 'Primaris' es mantenen iguals */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --font-sans: "PP Neue Montreal", sans-serif;
+  --font-heading: "Non Natural Grotesk", sans-serif;
+
+  --color-primary-main: var(--primary-main);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-surface: var(--primary-surface);
+  
+  --color-text-main: var(--text-main);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-main-inverse: var(--text-main-inverse);
+  --color-text-secondary-inverse: var(--text-secondary-inverse);
+  
+  --color-surface-base: var(--surface-base);
+  --color-surface-card: var(--surface-card);
+  --color-surface-border: var(--surface-border);
+  --color-surface-base-inverse: var(--surface-base-inverse);
+  --color-surface-card-inverse: var(--surface-card-inverse);
+  --color-surface-border-inverse: var(--surface-border-inverse);
+}
+
+@layer base {
+  body {
+    background-color: var(--surface-base);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, border-color 0.5s ease-in-out;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
