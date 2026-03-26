@@ -7,13 +7,13 @@
   --primary-main: #1A1A1A;
   --primary-hover: #B2B2B2;
   --primary-surface: #EFEBE7;
-  
+
   /* Text */
   --text-main: #262522;
   --text-secondary: #4D5153;
   --text-main-inverse: #F2F2F2;
   --text-secondary-inverse: #999999;
-  
+
   /* Surface */
   --surface-base: #F2F2F2;
   --surface-card: #FFFFFF;
@@ -29,7 +29,7 @@
   --text-secondary: #999999;
   --text-main-inverse: #262522;
   --text-secondary-inverse: #4D5153;
-  
+
   /* Surface Dark */
   --surface-base: #262522;
   --surface-card: #0A0A0A;
@@ -41,24 +41,38 @@
 }
 
 @theme {
-  --font-sans: "PP Neue Montreal", sans-serif;
-  --font-heading: "Non Natural Grotesk", sans-serif;
+  --font-sans: var(--font-sans), sans-serif;
+  --font-heading: var(--font-heading), sans-serif;
+  --font-mono: var(--font-mono), monospace;
 
   --color-primary-main: var(--primary-main);
   --color-primary-hover: var(--primary-hover);
   --color-primary-surface: var(--primary-surface);
-  
+
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
   --color-text-main-inverse: var(--text-main-inverse);
   --color-text-secondary-inverse: var(--text-secondary-inverse);
-  
+
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
   --color-surface-base-inverse: var(--surface-base-inverse);
   --color-surface-card-inverse: var(--surface-card-inverse);
   --color-surface-border-inverse: var(--surface-border-inverse);
+
+  /* Animació de Rotació Contínua (Marquee) */
+  @keyframes spin-linear {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  --animate-spin-linear: spin-linear 4s linear infinite;
 }
 
 @layer base {
@@ -67,5 +81,75 @@
     color: var(--text-main);
     font-family: var(--font-sans);
     transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, border-color 0.5s ease-in-out;
+  }
+
+  /* --- DISPLAY (Grtsk Giga) - Per Marquees i Heros massius --- */
+  .text-display-h1 {
+    @apply font-heading font-semibold uppercase tracking-tighter leading-[0.85];
+    /* Mòbil: 80px -> Desktop: 200px */
+    font-size: clamp(4rem, 12vw, 12.5rem);
+  }
+
+  .text-display-h2 {
+    @apply font-heading font-semibold uppercase tracking-tight leading-[0.9];
+    font-size: clamp(3.5rem, 10vw, 8rem);
+  }
+
+  /* --- HEADING (Grtsk Regular/Light) - El que estàs fent servir a l'About --- */
+  .text-heading-h1 {
+    @apply font-sans font-normal font-medium tracking-tight leading-[1.1];
+    /* Mòbil: 32px (2rem) -> Desktop: 56px (3.5rem) */
+    font-size: clamp(2rem, 3.5vw, 5rem);
+    font-family: var(--font-body);
+  }
+
+  .text-heading-h2 {
+    @apply font-sans font-normal font-medium leading-[1.2];
+    /* Mòbil: 24px (1.5rem) -> Desktop: 40px (2.5rem) */
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .text-heading-h3 {
+    @apply font-sans font-normal font-medium leading-[1.2];
+    /* Mòbil: 24px (1.5rem) -> Desktop: 40px (2rem) */
+    font-size: 1rem;
+  }
+
+  /* --- BODY (XL, LG, MD) --- */
+  .text-body-xl {
+    @apply font-sans font-normal leading-relaxed;
+    /* Mòbil: 20px (1.25rem) -> Desktop: 24px (1.5rem) */
+    font-size: clamp(1.25rem, 2vw, 5rem);
+  }
+
+  .text-body-lg {
+    @apply font-sans font-normal leading-relaxed;
+    font-size: clamp(1.125rem, 1.5vw, 1.8rem);
+    /* Text destacat */
+  }
+
+  .text-body-md {
+    @apply font-sans font-normal leading-normal;
+    /* Mòbil: 16px (1rem) -> Desktop: 18px (1.125rem) */
+    font-size: clamp(1rem, 1.25vw, 1.5rem);
+  }
+
+  .text-body-sm {
+    @apply font-sans font-normal leading-normal;
+    /* Mòbil: 16px (1rem) -> Desktop: 18px (1.125rem) */
+    font-size: clamp(0.8rem, 1.1vw, 1.125rem);
+  }
+
+
+}
+
+@layer utilities {
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }

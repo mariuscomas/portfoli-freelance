@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDownIcon, DribbbleLogoIcon, LinkedinLogoIcon, BehanceLogoIcon } from "@phosphor-icons/react";
+import ThemeToggle from "@/components/common/ThemeToggle";
 
 const container = {
   hidden: { opacity: 1 },
@@ -59,7 +60,7 @@ export default function Hero() {
           <div className="overflow-visible pt-[0.2em] -mt-[0.2em] [clip-path:inset(-10px_0_0_0)]">
             <motion.h1
               variants={slideUp}
-              className="font-heading text-[15vw] leading-[0.8] tracking-tighter text-text-main m-0 p-0 uppercase"
+              className="font-heading font-semibold text-[clamp(3rem,14vw,8rem)] leading-[0.8] tracking-tighter text-text-main m-0 p-0 uppercase"
             >
               ESTRATÈGIA<span className="text-text-main">.</span>
             </motion.h1>
@@ -68,7 +69,7 @@ export default function Hero() {
           <div className="overflow-visible pt-[0.2em] -mt-[0.2em] [clip-path:inset(-10px_0_0_0)]">
             <motion.h1
               variants={slideUp}
-              className="font-heading text-[15vw] leading-[0.8] tracking-tighter text-text-main m-0 p-0 uppercase"
+              className="font-heading font-semibold text-[clamp(3rem,14vw,8rem)] leading-[0.8] tracking-tighter text-text-main m-0 p-0 uppercase"
             >
               PRODUCTE
             </motion.h1>
@@ -77,7 +78,7 @@ export default function Hero() {
           <div className="overflow-visible pt-[0.2em] -mt-[0.2em] [clip-path:inset(-10px_0_0_0)]">
             <motion.h1
               variants={slideUp}
-              className="font-heading text-[15vw] leading-[0.8] tracking-tighter text-text-main m-0 p-0 uppercase"
+              className="font-heading font-semibold text-[clamp(3rem,14vw,8rem)] leading-[0.8] tracking-tighter text-text-main m-0 p-0 uppercase"
             >
               IMPACTE
             </motion.h1>
@@ -92,6 +93,7 @@ export default function Hero() {
         </div>
 
         <div className="flex flex-col items-start gap-8 mt-auto pt-8">
+
           <motion.a
             href="#"
             style={{ y: footerY }}
@@ -100,6 +102,7 @@ export default function Hero() {
           >
             Descobreix com et puc ajudar
           </motion.a>
+
 
           <motion.div variants={fadeUp} style={{ y: footerY }} className="flex gap-6 items-center">
             <a href="#" className="text-text-main hover:text-text-secondary transition-all" aria-label="Dribbble">
@@ -134,7 +137,7 @@ export default function Hero() {
               <div className="w-[70px] lg:w-[130px] shrink-0" /> {/* Spacer matched to Arrow */}
               <motion.h1
                 variants={slideUp}
-                className="font-heading text-[min(12vw,18vh)] xl:text-[min(10vw,20vh)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
+                className="font-heading font-semibold text-[clamp(4rem,10.5vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
               >
                 ESTRATÈGIA
               </motion.h1>
@@ -154,7 +157,7 @@ export default function Hero() {
               <div className="flex-1 flex overflow-visible pt-[0.2em] -mt-[0.2em] lg:pb-1 [clip-path:inset(-20px_0_0_0)]">
                 <motion.h1
                   variants={slideUp}
-                  className="font-heading text-[min(12vw,18vh)] xl:text-[min(10vw,20vh)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
+                  className="font-heading font-semibold text-[clamp(4rem,10.5vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
                 >
                   PRODUCTE
                 </motion.h1>
@@ -171,7 +174,7 @@ export default function Hero() {
               </div>
               <motion.h1
                 variants={slideUp}
-                className="font-heading text-[min(12vw,18vh)] xl:text-[min(10vw,20vh)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
+                className="font-heading font-semibold text-[clamp(4rem,10.5vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
               >
                 IMPACTE
               </motion.h1>
@@ -188,8 +191,11 @@ export default function Hero() {
             variants={fadeUp}
             className="font-sans text-base text-text-secondary font-medium pb-[2px] border-b border-text-secondary/30 hover:text-text-main hover:border-text-main transition-colors"
           >
+            <ThemeToggle />
             Descobreix com et puc ajudar?
           </motion.a>
+
+
 
           <motion.div
             variants={fadeUp}
