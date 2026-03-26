@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function AboutIntro() {
   return (
@@ -30,22 +31,22 @@ export default function AboutIntro() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full md:w-5/12 lg:w-6/12 group cursor-none-on-hover" // Preparat per si després vols fer un custom cursor
+          className="w-full md:w-5/12 lg:w-6/12 group cursor-none-on-hover"
         >
           <div className="relative overflow-hidden bg-surface-border">
-            <motion.picture
+            <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="block"
+              className="relative aspect-square md:aspect-[4/5] overflow-hidden"
             >
-              <source media="(min-width: 1024px)" srcSet="/images/mariuscomas_01.png" />
-              <source media="(min-width: 768px)" srcSet="/images/mariuscomas_01.png" />
-              <img
+              <Image
                 src="/images/mariuscomas_01.png"
                 alt="Màrius Comas"
-                className="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                fill
+                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                priority
               />
-            </motion.picture>
+            </motion.div>
           </div>
         </motion.div>
 

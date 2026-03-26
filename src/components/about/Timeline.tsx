@@ -36,7 +36,7 @@ export default function Timeline() {
   };
 
   // --- LÒGICA D'ARROSSEGAMENT (MOU MARCA -> SCROLL DE TARGETES) ---
-  const handleThumbMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleThumbMouseDown = (_e: React.MouseEvent | React.TouchEvent) => {
     isDraggingThumb.current = true;
     document.body.style.userSelect = 'none'; // Evita que es seleccioni text mentre arrossegues
   };

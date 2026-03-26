@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   color-scheme: light dark;
 
@@ -93,6 +97,11 @@
   .text-display-h2 {
     @apply font-heading font-semibold uppercase tracking-tight leading-[0.9];
     font-size: clamp(3.5rem, 10vw, 8rem);
+  }
+
+  .text-display-h5 {
+    @apply font-heading font-semibold uppercase tracking-tight leading-[0.9];
+    font-size: clamp(1rem, 5vw, 2rem);
   }
 
   /* --- HEADING (Grtsk Regular/Light) - El que estàs fent servir a l'About --- */

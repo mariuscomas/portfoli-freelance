@@ -137,19 +137,19 @@ export default function Hero() {
               <div className="w-[70px] lg:w-[130px] shrink-0" /> {/* Spacer matched to Arrow */}
               <motion.h1
                 variants={slideUp}
-                className="font-heading font-semibold text-[clamp(4rem,10.5vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
+                className="font-heading font-semibold text-[clamp(4rem,7vw,14rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
               >
                 ESTRATÈGIA
               </motion.h1>
             </div>
 
             {/* Row 2: Paragraph + PRODUCTE */}
-            <div className="w-full flex flex-col lg:flex-row lg:items-center">
+            <div className="w-full flex flex-col lg:flex-row lg:items-center mt-8">
               <motion.div
                 variants={fadeUp}
                 className="w-full lg:w-[35%] max-w-[400px] mb-2 lg:mb-0 text-left pr-4"
               >
-                <p className="font-sans text-sm lg:text-[min(1.2vw,16px)] xl:text-[min(1.1vw,18px)] text-text-secondary leading-relaxed lg:mt-2">
+                <p className="font-sans text-[clamp(1rem,1vw,14px)] text-text-secondary leading-relaxed lg:mt-2">
                   Ajudo empreses tecnològiques a transformar<br /> idees complexes en productes digitals<br /> escalables i centrats en l'usuari.
                 </p>
               </motion.div>
@@ -157,7 +157,7 @@ export default function Hero() {
               <div className="flex-1 flex overflow-visible pt-[0.2em] -mt-[0.2em] lg:pb-1 [clip-path:inset(-20px_0_0_0)]">
                 <motion.h1
                   variants={slideUp}
-                  className="font-heading font-semibold text-[clamp(4rem,10.5vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
+                  className="font-heading font-semibold text-[clamp(4rem,7vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
                 >
                   PRODUCTE
                 </motion.h1>
@@ -165,7 +165,7 @@ export default function Hero() {
             </div>
 
             {/* Row 3: IMPACTE with Arrow */}
-            <div className="w-full flex items-center overflow-visible pt-[0.2em] -mt-[0.2em] [clip-path:inset(-20px_0_0_0)]">
+            <div className="w-full flex items-center overflow-visible pt-[0.2em] -mt-[0.2em] [clip-path:inset(-20px_0_0_0)] mt-8">
               <div className="w-[70px] lg:w-[130px] shrink-0 flex items-center justify-start">
                 <ArrowDownIcon
                   weight="regular"
@@ -174,7 +174,7 @@ export default function Hero() {
               </div>
               <motion.h1
                 variants={slideUp}
-                className="font-heading font-semibold text-[clamp(4rem,10.5vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
+                className="font-heading font-semibold text-[clamp(4rem,7vw,18rem)] leading-[0.85] tracking-tighter text-text-main m-0 p-0 uppercase"
               >
                 IMPACTE
               </motion.h1>

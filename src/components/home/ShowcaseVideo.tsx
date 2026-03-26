@@ -17,7 +17,7 @@ export default function ShowcaseVideo() {
   return (
     <section
       ref={containerRef}
-      className="w-full relative pt-0 pb-16 md:pb-32 flex flex-col justify-center items-center bg-surface-base overflow-hidden -mt-[100px] md:-mt-[120px] z-10"
+      className="w-full relative pt-0 pb-16 md:pb-32 flex flex-col justify-center items-center bg-surface-base overflow-hidden -mt-[100px] md:-mt-[80px] z-10"
     >
       {/* Video Container sliding upwards into Hero's unused 10dvh peek zone */}
       <motion.div
