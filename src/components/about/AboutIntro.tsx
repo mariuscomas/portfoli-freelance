@@ -31,7 +31,7 @@ export default function AboutIntro() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full md:w-5/12 lg:w-6/12 group cursor-none-on-hover"
+          className="w-full md:w-5/12 lg:w-6/12 group cursor-none-on-hover md:sticky md:top-32 h-fit"
         >
           <div className="relative overflow-hidden bg-surface-border">
             <motion.div
@@ -51,23 +51,41 @@ export default function AboutIntro() {
         </motion.div>
 
         {/* Columna Text: 7 columnes de 12 */}
-        <div className="w-full md:w-8/12 lg:w-6/12 flex flex-col gap-8 md:gap-10 lg:gap-16 xl:gap-24">
+        <div className="w-full md:w-8/12 lg:w-6/12 flex flex-col gap-8 md:gap-10 lg:gap-12 xl:gap-16 md:sticky md:top-32 h-fit">
           <h2 className="text-heading-h1">Digital Product Designer especialitzat en UI/UX Design</h2>
-          <div className="text-body-lg leading-relaxed space-y-6 max-w-[95%]">
-            <p>El meu avantatge competitiu neix de la combinació entre una base tècnica en programació i l&apos;especialització en Arquitectura de la Informació i UI/UX. Això em permet connectar estratègicament els objectius de negoci amb les necessitats de l&apos;usuari, eliminant la complexitat visual per dissenyar sistemes que generen resultats tangibles.</p>
+          <div className="text-body-lg font-light text-text-secondary leading-relaxed space-y-6 max-w-[95%]">
+            <p>La meva base en programació i especialització en UI/UX em permeten simplificar la complexitat i dissenyar sistemes estratègics que uneixen els objectius de negoci amb les necessitats de l'usuari, generant resultats tangibles.</p>
             <p>Aquest enfocament es tradueix en:</p>
             <ul className="space-y-4">
               {[
-                "Disseny pensat per al desenvolupament: interfícies viables que garanteixen un lliurament (handoff) sense friccions i redueixen els costos tècnics.",
-                "Execució àgil i precisa: Treballo amb dinamisme en entorns d&apos;esprints, creant des de guies d&apos;estil robustes fins a prototips d&apos;alta precisió.",
-                "Impacte multisectorial: Experiència contrastada aportant valor a diferents indústries, des de la conceptualització d&apos;interfícies de vehicles (HMI) per a Cupra, fins al llançament de MVPs per al sector insurtech i públic."
-              ].map((item, index) => (
-                <li key={index} className="relative pl-6 text-text-secondary">
-                  {/* El bullet personalitzat */}
-                  <span className="absolute left-0 top-[0.6em] w-1.5 h-1.5 rounded-full bg-text-main opacity-80" />
-                  {item}
-                </li>
-              ))}
+                "Disseny viable: Handoffs sense friccions i reducció directa de costos tècnics.",
+                "Execució àgil: Prototipat ràpid i de precisió en dinàmiques d'esprint.",
+                "Impacte multisectorial: Solucions provades en sectors com l'automoció, l'insurtech i el sector públic."
+              ].map((item, index) => {
+                // Busquem la posició dels dos punts
+                const colonIndex = item.indexOf(':');
+
+                // Separem el text si trobem els dos punts
+                const boldPart = colonIndex !== -1 ? item.substring(0, colonIndex) : item;
+                const restPart = colonIndex !== -1 ? item.substring(colonIndex + 1) : '';
+
+                return (
+                  <li key={index} className="relative pl-6 text-text-secondary">
+                    {/* El bullet personalitzat */}
+                    <span className="absolute left-0 top-[0.6em] w-1.5 h-1.5 rounded-full bg-text-main opacity-80" />
+
+                    {/* Renderitzem amb el span si hi ha ":", o el text normal si no n'hi ha */}
+                    {colonIndex !== -1 ? (
+                      <>
+                        <span className="font-medium text-text-main">{boldPart}</span>
+                        :{restPart}
+                      </>
+                    ) : (
+                      item
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

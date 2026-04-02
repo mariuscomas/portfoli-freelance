@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-}
 
 :root {
   color-scheme: light dark;
@@ -80,18 +77,27 @@ html {
 }
 
 @layer base {
+
+  html,
+  body,
+  section,
+  header,
+  nav,
+  footer {
+    transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, border-color 0.8s ease-in-out;
+  }
+
   body {
     background-color: var(--surface-base);
     color: var(--text-main);
     font-family: var(--font-sans);
-    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, border-color 0.5s ease-in-out;
   }
 
   /* --- DISPLAY (Grtsk Giga) - Per Marquees i Heros massius --- */
   .text-display-h1 {
     @apply font-heading font-semibold uppercase tracking-tighter leading-[0.85];
     /* Mòbil: 80px -> Desktop: 200px */
-    font-size: clamp(4rem, 12vw, 12.5rem);
+    font-size: clamp(4rem, 10vw, 10rem);
   }
 
   .text-display-h2 {
@@ -128,7 +134,7 @@ html {
   .text-body-xl {
     @apply font-sans font-normal leading-relaxed;
     /* Mòbil: 20px (1.25rem) -> Desktop: 24px (1.5rem) */
-    font-size: clamp(1.25rem, 2vw, 5rem);
+    font-size: clamp(1.25rem, 3vw, 5rem);
   }
 
   .text-body-lg {

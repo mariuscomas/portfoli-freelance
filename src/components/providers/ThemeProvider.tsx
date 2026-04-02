@@ -29,6 +29,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Llegeix del local storage l'estat inicial
     try {
       const stored = localStorage.getItem("theme") as Theme;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (stored) setThemeState(stored);
     } catch {}
 

@@ -37,28 +37,28 @@ export default function Clients() {
   return (
     <section className="w-full py-24 md:py-40 bg-surface-base">
       <div className="flex flex-col gap-16 md:gap-32 w-full relative">
-        
+
         {/* Header Content */}
         <div className="px-4 md:px-[3vw] lg:px-[4vw] w-full flex justify-between items-end">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-heading text-6xl md:text-8xl lg:text-[140px] text-text-main uppercase leading-none m-0"
+            className="font-heading text-heading-h1 uppercase text-text-main leading-none m-0"
           >
             Clients
           </motion.h2>
 
           {/* Navigation Arrows */}
           <div className="flex gap-4 md:gap-6 pb-2 md:pb-6">
-            <button 
+            <button
               onClick={scrollLeft}
               className="text-text-main hover:text-text-secondary transition-colors"
               aria-label="Anterior client"
             >
               <ArrowLeft size={32} weight="light" className="md:w-10 md:h-10 lg:w-12 lg:h-12" />
             </button>
-            <button 
+            <button
               onClick={scrollRight}
               className="text-text-main hover:text-text-secondary transition-colors"
               aria-label="Següent client"
@@ -67,15 +67,15 @@ export default function Clients() {
             </button>
           </div>
         </div>
-        
+
         {/* Horizontal Slider Area */}
-        <div 
+        <div
           ref={scrollRef}
           className="w-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pl-4 md:pl-[3vw] lg:pl-[4vw] pr-4 md:pr-[20vw] gap-8 md:gap-16 pb-8"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {clients.map((client, index) => (
-            <motion.div 
+            <motion.div
               key={`${client.name}-${index}`}
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -94,8 +94,9 @@ export default function Clients() {
           ))}
         </div>
       </div>
-{/* Internal inline style per amagar la scrollbar a webkit */}
-<style dangerouslySetInnerHTML={{__html: `
+      {/* Internal inline style per amagar la scrollbar a webkit */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }

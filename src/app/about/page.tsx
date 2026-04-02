@@ -29,7 +29,7 @@ export default function SobreMiPage() {
   const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
 
   return (
-    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-hidden bg-surface-base">
+    <main className="flex min-h-[100dvh] flex-col w-full bg-surface-base">
       <SharedPageHero
         title="Sobre Mi"
         description="Senior Product Designer amb més de 10 anys d'experiència construint solucions digitals per a corporacions i startups. Combino la precisió d'un programador amb la visió estratègica del disseny per crear productes que no només destaquen visualment, sinó que funcionen, escalen i converteixen."

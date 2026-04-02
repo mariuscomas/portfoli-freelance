@@ -1,23 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import SharedPageHero from "@/components/common/SharedPageHero";
+import WorksGrid from "./WorksGrid";
+import Link from "next/link";
 
-const projects = [
-  { id: 1, title: "PADLL", category: "Mobile App Design", slug: "padll", image: "/images/image_treballs_prova.png" },
-  { id: 2, title: "Cupra", category: "Physical button interface", slug: "cupra", image: "/images/image_treballs_prova.png" },
-  { id: 3, title: "Fintech Dashboard", category: "UX/UI & Product Design", slug: "fintech-dashboard", image: "/images/image_treballs_prova.png" },
-  { id: 4, title: "Ecommerce Platform", category: "Web App & Design System", slug: "ecommerce-platform", image: "/images/image_treballs_prova.png" },
-  { id: 5, title: "AI Assistant Interface", category: "Interaction Design", slug: "ai-assistant", image: "/images/image_treballs_prova.png" },
-  { id: 6, title: "Health Tracker", category: "UX Research & App", slug: "health-tracker", image: "/images/image_treballs_prova.png" },
-];
+import { Project } from "@/types";
 
-export default function WorksGallery() {
+interface Props {
+  projects: Project[];
+}
+
+export default function WorksGallery({ projects }: Props) {
   const [view, setView] = useState<"grid" | "list">("grid");
-  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
+  const [hoveredProject, setHoveredProject] = useState<string | number | null>(null);
 
   // Custom Cursor tracking logic
   const mouseX = useMotionValue(-100);
@@ -29,7 +26,6 @@ export default function WorksGallery() {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Offset cursor by half its size (e.g., 60px for a 120px var-circle)
       mouseX.set(e.clientX - 60);
       mouseY.set(e.clientY - 60);
     };
@@ -86,36 +82,9 @@ export default function WorksGallery() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-y-16 gap-x-4 lg:gap-x-8 w-full px-4 md:px-6 lg:px-8"
+            className="w-full"
           >
-            {projects.map((project, index) => (
-              <Link
-                href={`/works/${project.slug}`}
-                key={project.id}
-                onMouseEnter={() => setHoveredProject(project.id)}
-                onMouseLeave={() => setHoveredProject(null)}
-                className="group flex flex-col gap-6 w-full cursor-pointer md:cursor-none"
-              >
-                <div className="w-full aspect-square bg-text-main/5 relative overflow-hidden flex items-center justify-center rounded-sm">
-                  <div className="absolute inset-0 bg-text-main/[0.03] group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none" />
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transform scale-100 group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-3xl lg:text-4xl font-medium tracking-tight text-text-main">
-                    {project.title}
-                  </h3>
-                  <p className="text-lg text-text-muted">
-                    {project.category}
-                  </p>
-                </div>
-              </Link>
-            ))}
+            <WorksGrid projects={projects} onProjectHover={setHoveredProject} />
           </motion.div>
         ) : (
           <motion.div
@@ -169,7 +138,7 @@ export default function WorksGallery() {
           opacity: hoveredProject !== null && view === "grid" ? 1 : 0,
         }}
         transition={{ type: "tween", ease: "circOut", duration: 0.2 }}
-        className="fixed top-0 left-0 w-[120px] h-[120px] bg-white text-black rounded-full pointer-events-none z-[100] shadow-[0px_4px_30px_rgba(0,0,0,0.1)] hidden md:flex items-center justify-center transform-gpu"
+        className="fixed top-0 left-0 w-[120px] h-[120px] bg-white text-black rounded-full pointer-events-none z-[100] shadow-[0px_4px_30px_rgba(0,0,0,0.1)] hidden md:flex items-center justify-center transform-gpu will-change-transform"
       >
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />

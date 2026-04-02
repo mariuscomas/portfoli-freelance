@@ -2,13 +2,21 @@
 
 import { motion } from "framer-motion";
 import { ArrowUp, ArrowRight, LinkedinLogo, BehanceLogo, Globe } from "@phosphor-icons/react";
-import Link from "next/link";
+import TransitionLink from "@/components/common/TransitionLink";
 import LogoSmall from "@/components/common/LogoSmall";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Pelem el footer de projectes ja que porten el seu propi component al final
+  if (pathname.startsWith("/works/") && pathname !== "/works") {
+    return null;
+  }
 
   return (
     <footer className="w-full flex flex-col mt-20 md:mt-32">
@@ -19,20 +27,24 @@ export default function Footer() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-sans font-light text-5xl md:text-7xl lg:text-[90px] xl:text-[48px] text-text-main leading-[1.05] tracking-tight max-w-[1200px]"
+          className="font-sans font-light text-body-xl text-text-main leading-[1.05] tracking-tight max-w-[1200px]"
         >
           Estas preparat per donar<br className="hidden md:block" /> vida a les teves ideas?
         </motion.h2>
 
-        <motion.a
-          href="/contacte"
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="font-sans font-medium text-lg md:text-xl text-text-main border-b border-text-main pb-1 hover:text-text-secondary hover:border-text-secondary transition-colors mt-2 md:mt-6"
+          className="mt-2 md:mt-6"
         >
-          Reserva una trucada
-        </motion.a>
+          <TransitionLink
+            href="/contacte"
+            className="font-sans font-medium text-lg md:text-xl text-text-main border-b border-text-main pb-1 hover:text-text-secondary hover:border-text-secondary transition-colors"
+          >
+            Reserva una trucada
+          </TransitionLink>
+        </motion.div>
       </div>
 
       {/* BLOC 2: MAIN FOOTER (Fosc Inferior) */}
@@ -61,13 +73,13 @@ export default function Footer() {
                 else if (item === "Sobre Mi") href = "/about";
 
                 return (
-                  <Link
+                  <TransitionLink
                     href={href}
                     key={item}
                     className="font-sans font-medium text-text-main-inverse hover:text-text-secondary-inverse transition-colors"
                   >
                     {item}
-                  </Link>
+                  </TransitionLink>
                 );
               })}
             </nav>
@@ -76,7 +88,7 @@ export default function Footer() {
           {/* Col 2: Newsletter */}
           <div className="flex flex-col justify-end gap-10 md:max-w-xl lg:max-w-md lg:ml-auto w-full">
             <p className="font-sans text-text-main-inverse text-lg md:text-[22px] font-medium leading-snug tracking-tight">
-              Rep informació valuosa sobre disseny, experiencies i estrategia directament a la teva safata d'entrada.
+              Vols elevar el teu producte digital? Parlem-ne! Estic a un clic d&apos;ajudar-te a transformar la teva visió en realitat.
             </p>
 
             <form className="relative flex items-center w-full group mt-2" onSubmit={(e) => e.preventDefault()}>

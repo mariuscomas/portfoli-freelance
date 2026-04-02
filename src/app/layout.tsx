@@ -1,8 +1,10 @@
 import localFont from "next/font/local";
 import type { Metadata } from "next";
-import Header from "@/components/layout/Header";
+import NavigationWrapper from "@/components/layout/NavigationWrapper";
 import Footer from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { TransitionProvider } from "@/context/TransitionContext";
+import PageTransition from "@/components/common/PageTransition";
 import "./globals.css";
 
 const grtsk = localFont({
@@ -62,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ca" className={`${grtsk.variable} ${grtskHeading.variable} ${fkMono.variable} h-[100dvh] antialiased scroll-smooth`} suppressHydrationWarning>
+    <html lang="ca" className={`${grtsk.variable} ${grtskHeading.variable} ${fkMono.variable} h-[100dvh] antialiased`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -72,9 +74,13 @@ export default function RootLayout({
       </head>
       <body className="font-sans min-h-full flex flex-col bg-surface-base text-text-main">
         <ThemeProvider>
-          <Header />
-          {children}
-          <Footer />
+          <TransitionProvider>
+            <PageTransition />
+            <NavigationWrapper>
+              {children}
+            </NavigationWrapper>
+            <Footer />
+          </TransitionProvider>
         </ThemeProvider>
       </body>
     </html>

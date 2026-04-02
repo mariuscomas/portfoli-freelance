@@ -1,16 +1,23 @@
-"use client";
-
 import React from "react";
 import SharedPageHero from "@/components/common/SharedPageHero";
 import PageNavPill from "@/components/common/PageNavPill";
 import ServicesList from "@/components/services/ServicesList";
+import { createClient } from "@/utils/supabase/server";
 
 const navItems = [
   { label: "Productes", href: "#productes" },
   { label: "Col·laboració", href: "#colaboracio" },
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const supabase = await createClient();
+
+  const { data: services } = await supabase
+    .from("services")
+    .select("*")
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
   return (
     <main className="flex min-h-[100dvh] flex-col w-full overflow-x-hidden bg-surface-base">
       <SharedPageHero
@@ -19,7 +26,7 @@ export default function ServicesPage() {
         bottomContent={<PageNavPill items={navItems} />}
       />
       
-      <ServicesList />
+      <ServicesList services={services || []} />
     </main>
   );
 }
