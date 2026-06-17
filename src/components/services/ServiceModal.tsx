@@ -1,10 +1,59 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Box, Smartphone, Globe, Target, LayoutTemplate, Sparkles, LucideIcon } from "lucide-react";
+import {
+  X,
+  Cube,
+  DeviceMobile,
+  Globe,
+  Target,
+  Browsers,
+  Sparkle,
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
 import Image from "next/image";
+import TransitionLink from "@/components/common/TransitionLink";
 import { Service } from "@/types";
+import { t } from "@/lib/i18n";
+
+/**
+ * <ServiceModal />
+ *
+ * Aplica el disseny del Figma "Serveis Detail - Macbook Pro 16'" (frame 10727:5692).
+ *
+ * Estructura:
+ *  ┌────────────────────────────────────────────────────────┐
+ *  │  DISSENY WEB                                       (×) │   ← Header (display-h5)
+ *  │                                                        │
+ *  │  ┌──────────────────┐   ┌────────────────────────────┐ │
+ *  │  │                  │   │  Desde 2.500€              │ │
+ *  │  │     IMATGE       │   │  6.500€                    │ │
+ *  │  │     (5/4 ratio)  │   │  This service contains...  │ │
+ *  │  │                  │   │  ┌──────────────────────┐  │ │
+ *  │  └──────────────────┘   │  │ 1 Kickoff   500€      │  │ │
+ *  │                         │  │ 2 Final     500€      │  │ │
+ *  │  About this Service     │  └──────────────────────┘  │ │
+ *  │  Lorem ipsum…           │  Concepts and revision:…  │ │
+ *  │                         │  Project Duration:…       │ │
+ *  │  Our Step-by-Step Plan  │  ┌──────────────────────┐  │ │
+ *  │  …                      │  │     Contactar         │  │ │
+ *  │                         │  └──────────────────────┘  │ │
+ *  │                         └────────────────────────────┘ │
+ *  └────────────────────────────────────────────────────────┘
+ *
+ *  - Modal és el card sencer (bg-surface-card, rounded-card).
+ *  - Columna dreta és un panel propi (bg-surface-base, rounded-card)
+ *    amb el milestones-card blanc encastat a dins (bg-surface-card +
+ *    border surface-border).
+ *  - Tipografies: Display H5 al títol, Heading H4 als sub-títols,
+ *    Heading H1 al preu gran, Body MD/LG a la resta — tot via tokens
+ *    `text-*` definits a globals.css (sync amb variables Figma).
+ *  - El conjunt fa scroll dins el card (overflow-y-auto). La columna
+ *    dreta no es sticky perquè trencaria amb continguts llargs;
+ *    l'usuari fa scroll fins al CTA quan toca.
+ */
 
 interface ServiceModalProps {
   isOpen: boolean;
@@ -12,30 +61,28 @@ interface ServiceModalProps {
   service: Service | null;
 }
 
-const getIcon = (iconName: string): LucideIcon => {
-  const icons: Record<string, LucideIcon> = {
-    Box,
-    Smartphone,
-    Globe,
-    Target,
-    LayoutTemplate,
-    Sparkles,
-  };
-  return icons[iconName] || Sparkles;
+/* Mapping flexible: noms vells (Lucide) i nous (Phosphor) → mateix component. */
+const ICON_MAP: Record<string, PhosphorIcon> = {
+  Cube,
+  DeviceMobile,
+  Globe,
+  Target,
+  Browsers,
+  Sparkle,
+  Box: Cube,
+  Smartphone: DeviceMobile,
+  LayoutTemplate: Browsers,
+  Sparkles: Sparkle,
 };
 
-const getTranslation = (field: any, locale = 'ca') => {
-  if (typeof field === 'object' && field !== null) {
-    return (field as any)[locale] || (field as any).ca || "";
-  }
-  return field || "";
-};
+function getIcon(iconName: string): PhosphorIcon {
+  return ICON_MAP[iconName] || Sparkle;
+}
 
 export default function ServiceModal({ isOpen, onClose, service }: ServiceModalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -47,19 +94,47 @@ export default function ServiceModal({ isOpen, onClose, service }: ServiceModalP
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isOpen, onClose]);
+
   if (!service || !mounted) return null;
 
   const Icon = getIcon(service.icon_name);
-  const title = getTranslation(service.title);
-  const content_about = getTranslation(service.content_about);
-  const content_steps = getTranslation(service.content_steps);
-  const content_deliverables = getTranslation(service.content_deliverables);
-  const content_why_us = getTranslation(service.content_why_us);
-  const revisions = getTranslation(service.revisions);
-  const duration = getTranslation(service.duration);
-  const price = service.price_starts_at ? `${service.price_starts_at.toLocaleString('de-DE')}€` : "Consultar";
+  const title = t(service.title);
+  const slug = t(service.slug);
+  const contentAbout = t(service.content_about);
+  const contentSteps = t(service.content_steps);
+  const contentDeliverables = t(service.content_deliverables);
+  const contentWhyUs = t(service.content_why_us);
+  const revisions = t(service.revisions);
+  const duration = t(service.duration);
 
-  return (
+  // Pricing — la BD només té price_starts_at, així que el preu principal
+  // del Figma ("6.500€") és aquest valor i el "Desde X€" més petit és una
+  // fracció (40%). El milestone amount és la meitat (kickoff + final).
+  const fullPrice = service.price_starts_at
+    ? `${service.price_starts_at.toLocaleString("de-DE")}€`
+    : "Consultar";
+  const halfPrice = service.price_starts_at
+    ? `${Math.round(service.price_starts_at / 2).toLocaleString("de-DE")}€`
+    : null;
+  const lowPrice = service.price_starts_at
+    ? `${Math.round(service.price_starts_at * 0.4).toLocaleString("de-DE")}€`
+    : null;
+
+  const contactHref = slug ? `/contacte?service=${encodeURIComponent(slug)}` : "/contacte";
+
+  /*
+    Portal a document.body — crítica perquè el modal es comporti com un
+    modal real i no s'atrapi dins de parents amb transform/filter/etc.
+  */
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -67,164 +142,225 @@ export default function ServiceModal({ isOpen, onClose, service }: ServiceModalP
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex sm:items-center justify-center sm:p-4 md:p-8"
+          className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-start md:items-center justify-center p-4 md:p-10 lg:p-16 xl:p-24"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="service-modal-title"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            exit={{ opacity: 0, scale: 0.96, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-surface-card sm:rounded-[16px] w-full max-w-[1500px] h-[100vh] sm:max-h-[90vh] py-24 overflow-y-auto flex flex-col justify-start relative sm:hide-scrollbar shadow-2xl"
+            className="bg-surface-card rounded-card w-full max-w-[1280px] max-h-[88vh] md:max-h-[85vh] overflow-y-auto hide-scrollbar shadow-2xl relative"
           >
-            {/* Main Content Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 px-8 sm:px-12 pb-12">
+            <div className="flex flex-col gap-10 md:gap-12 p-6 md:p-12">
 
-              {/* Left Column: Content */}
-              <div className="lg:col-span-6 xl:col-span-6">
+              {/* === HEADER: títol uppercase + close === */}
+              <header className="flex items-start justify-between gap-6">
+                <h3
+                  id="service-modal-title"
+                  className="text-display-h5 text-text-main"
+                >
+                  {title}
+                </h3>
+                <button
+                  onClick={onClose}
+                  className="shrink-0 -m-2 p-2 text-text-main hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full"
+                  aria-label="Tancar"
+                >
+                  <X size={24} weight="regular" />
+                </button>
+              </header>
 
-                {/* Header */}
-                <div className="flex items-center h-10">
-                  <h3 className="text-display-h5 uppercase tracking-widest leading-none whitespace-nowrap">{title}</h3>
-                </div>
+              {/* === GRID: 2 columnes 50/50 a partir de md (apilat a mobile) ===
+                  Fem servir CSS Grid en lloc de flex-row perquè és més robust:
+                  les columnes no es "trenquen" per culpa de width:100% / contingut
+                  que sobrepassa el flex-basis. items-start manté alineació superior. */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-start">
 
-                {/* Hero Image */}
-                <div className="rounded-xl overflow-hidden aspect-[16/9] md:aspect-[4/3] w-full mt-8 mb-12 bg-surface-base relative">
-                  {service.image_url && (
-                    <Image
-                      src={service.image_url}
-                      alt={typeof title === 'string' ? title : "Service image"}
-                      fill
-                      className="object-cover grayscale opacity-80"
-                      priority
-                    />
-                  )}
-                  <div className="absolute inset-0 flex items-center justify-center text-text-muted opacity-10 pointer-events-none">
-                    {React.createElement(Icon, { size: 120 })}
+                {/* ============================================
+                    Columna ESQUERRA — imatge + articles
+                    min-w-0 permet que la imatge respecti l'amplada de la cel·la
+                   ============================================ */}
+                <div className="min-w-0 flex flex-col gap-10 md:gap-16">
+
+                  {/* Imatge protagonista (ratio ~5/4 com a Figma) */}
+                  <div
+                    className="rounded-card overflow-hidden w-full bg-surface-base relative"
+                    style={{ aspectRatio: "5 / 4" }}
+                  >
+                    {service.image_url ? (
+                      <Image
+                        src={service.image_url}
+                        alt={typeof title === "string" ? title : "Service image"}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover"
+                        priority
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-text-secondary/30">
+                        <Icon size={180} weight="thin" />
+                      </div>
+                    )}
                   </div>
-                </div>
 
-                {/* Text Sections */}
-                <div className="flex flex-col gap-12">
-                  {content_about && (
-                    <div className="flex flex-col">
-                      <h4 className="text-body-sm font-semibold uppercase tracking-wider text-text-main mb-4">
-                        Sobre aquest servei
-                      </h4>
-                      <p className="text-body-md text-text-secondary leading-relaxed">
-                        {content_about}
-                      </p>
-                    </div>
+                  {/* Articles — un per cada bloc de contingut omplert.
+                      Tots comparteixen estil (text-heading-h4 + text-body-lg). */}
+                  {contentAbout && (
+                    <Article title="About this Service">{contentAbout}</Article>
                   )}
-
-                  {content_steps && (
-                    <div className="flex flex-col">
-                      <h4 className="text-body-sm font-semibold uppercase tracking-wider text-text-main mb-4">
-                        El nostre pla, pas a pas
-                      </h4>
-                      <p className="text-body-md text-text-secondary leading-relaxed">
-                        {content_steps}
-                      </p>
-                    </div>
+                  {contentSteps && (
+                    <Article title="Our Step-by-Step Plan:">{contentSteps}</Article>
                   )}
-
-                  {content_deliverables && (
-                    <div className="flex flex-col">
-                      <h4 className="text-body-sm font-semibold uppercase tracking-wider text-text-main mb-4">
-                        Principals lliuraments
-                      </h4>
-                      <p className="text-body-md text-text-secondary leading-relaxed">
-                        {content_deliverables}
-                      </p>
-                    </div>
+                  {contentDeliverables && (
+                    <Article title="Main Deliverables:">{contentDeliverables}</Article>
                   )}
-
-                  {content_why_us && (
-                    <div className="flex flex-col">
-                      <h4 className="text-body-sm font-semibold uppercase tracking-wider text-text-main mb-4">
-                        Per què triar aquesta oferta?
-                      </h4>
-                      <p className="text-body-md text-text-secondary leading-relaxed">
-                        {content_why_us}
-                      </p>
-                    </div>
+                  {contentWhyUs && (
+                    <Article title="Why Choose This Offer?">{contentWhyUs}</Article>
                   )}
                 </div>
 
+                {/* ============================================
+                    Columna DRETA — pricing panel
+                   ============================================ */}
+                <aside className="min-w-0 bg-surface-base rounded-card p-6 md:p-10 flex flex-col gap-10 md:gap-16">
+
+                  {/* Contingut superior (header preu + milestones + meta) */}
+                  <div className="flex flex-col gap-8 md:gap-12">
+
+                    {/* Header preu: "Desde X€" (heading-h4) + preu gran (heading-h1) + subtítol */}
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col text-text-main">
+                        {lowPrice && service.price_starts_at && (
+                          <span className="text-heading-h4">
+                            Desde {lowPrice}
+                          </span>
+                        )}
+                        <span className="text-heading-h1">
+                          {fullPrice}
+                        </span>
+                      </div>
+                      {halfPrice && (
+                        <p className="text-body-md text-text-secondary">
+                          This service contains 2 payment milestones
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Card blanc interior amb milestones */}
+                    {halfPrice && (
+                      <div className="bg-surface-card border border-surface-border rounded-card p-6 flex flex-col gap-3">
+                        <MilestoneRow
+                          index={1}
+                          title="Kickoff Payment"
+                          meta="Due at checkout"
+                          amount={halfPrice}
+                        />
+                        <MilestoneRow
+                          index={2}
+                          title="Final Delivery"
+                          meta=""
+                          amount={halfPrice}
+                        />
+                      </div>
+                    )}
+
+                    {/* Meta extra inline (Concepts + Project Duration) */}
+                    {(revisions || duration) && (
+                      <div className="flex flex-col gap-3">
+                        {revisions && (
+                          <MetaRow label="Concepts and revision:" value={revisions} />
+                        )}
+                        {duration && (
+                          <MetaRow label="Project Duration:" value={duration} />
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CTA — botó solid amb radius 16px (no pill) */}
+                  <TransitionLink
+                    href={contactHref}
+                    className="w-full h-16 bg-primary-main text-text-main-inverse rounded-base text-button-lg flex items-center justify-center hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:ring-offset-surface-base"
+                  >
+                    Contactar
+                  </TransitionLink>
+                </aside>
               </div>
-
-              {/* Right Column: Pricing Card */}
-              <div className="lg:col-span-6 xl:col-span-6 relative">
-                <div className="lg:sticky lg:top-0 flex flex-col">
-                  {/* Close Button Row - Aligned with the Title */}
-                  <div className="flex items-center justify-end h-10">
-                    <button
-                      onClick={onClose}
-                      className="p-2 hover:bg-surface-base rounded-full transition-colors"
-                      aria-label="Close modal"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-                  <div className="bg-surface-base rounded-[24px] mt-8 p-12 py-16 flex flex-col gap-8 border border-surface-border/50">
-
-                    <div className="flex flex-col gap-4">
-                      <div>
-                        <span className="text-body-sm text-text-secondary font-medium block mb-1">Des de</span>
-                        <h2 className="text-heading-h1 leading-none">{price}</h2>
-                      </div>
-
-                      <p className="text-body-sm text-text-secondary">
-                        Aquest servei conté 2 fites de pagament per garantir la seguretat i satisfacció del projecte.
-                      </p>
-
-                    </div>
-
-                    {/* Milestones Block */}
-                    <div className="bg-white rounded-[16px] p-5 py-8 shadow-sm space-y-4">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                          <div className="w-5 h-5 rounded-full bg-text-main flex items-center justify-center">
-                            <Check size={12} className="text-white" />
-                          </div>
-                          <span className="text-body-sm font-medium">Pagament Inicial</span>
-                        </div>
-                        <span className="text-body-sm font-semibold">50%</span>
-                      </div>
-                      <div className="h-[1px] bg-surface-border w-full" />
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                          <div className="w-5 h-5 rounded-full border-2 border-surface-border" />
-                          <span className="text-body-sm font-medium">Lliurament Final</span>
-                        </div>
-                        <span className="text-body-sm font-semibold">50%</span>
-                      </div>
-                    </div>
-
-                    {/* Additional Details List */}
-                    <ul className="space-y-3 mt-2">
-                      <li className="flex items-start gap-3 text-body-xs md:text-body-sm text-text-secondary">
-                        <span className="font-semibold">Concepts and revision:</span>
-                        {revisions}
-                      </li>
-                      <li className="flex items-start gap-3 text-body-xs md:text-body-sm text-text-secondary">
-                        <span className="font-semibold">Project Duration:</span>
-                        {duration}
-                      </li>
-                    </ul>
-
-                    <button className="w-full bg-text-main text-surface-base py-4 rounded-xl font-medium hover:opacity-90 transition-opacity mt-2">
-                      Contactar amb nosaltres
-                    </button>
-                  </div>
-                </div>
-              </div>
-
             </div>
-
           </motion.div>
         </motion.div>
-      )
-      }
-    </AnimatePresence >
+      )}
+    </AnimatePresence>
+  );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modalContent, document.body);
+}
+
+/* ============================================================
+   Subcomponents
+   ============================================================ */
+
+/**
+ * Article — bloc de text amb títol (Heading H4, regular, 16px) sobre
+ * cos (Body LG ≈ Body/MD - Light al Figma: 24px, light, line-height 32).
+ *
+ * Gap heading↔body 24px segons Figma (gap-6).
+ */
+function Article({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <h4 className="text-heading-h4 text-text-main">{title}</h4>
+      <p className="text-body-lg text-text-secondary whitespace-pre-wrap">
+        {children}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * MilestoneRow — fila dins el card blanc de pagaments.
+ * Estructura: [index] [title] [meta] ............ [amount]
+ * Tipografia Body MD (20px), text-main negre.
+ */
+function MilestoneRow({
+  index,
+  title,
+  meta,
+  amount,
+}: {
+  index: number;
+  title: string;
+  meta: string;
+  amount: string;
+}) {
+  return (
+    <div className="flex items-baseline gap-3 text-body-md text-text-main">
+      <span className="shrink-0 w-3 tabular-nums">{index}</span>
+      <span className="font-normal">{title}</span>
+      {meta && (
+        <span className="hidden sm:inline flex-1 text-text-secondary font-light">
+          {meta}
+        </span>
+      )}
+      {!meta && <span className="flex-1" aria-hidden="true" />}
+      <span className="shrink-0 tabular-nums">{amount}</span>
+    </div>
+  );
+}
+
+/**
+ * MetaRow — fila inline de meta info al panel de pricing.
+ * Format: "Label: value" amb label regular i value light, tot Body MD.
+ */
+function MetaRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-body-md text-text-main">
+      <span className="font-normal">{label}</span>
+      <span className="font-light">{value}</span>
+    </div>
   );
 }

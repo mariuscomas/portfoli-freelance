@@ -94,13 +94,7 @@ export default function Clients() {
           ))}
         </div>
       </div>
-      {/* Internal inline style per amagar la scrollbar a webkit */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-`}} />
+      {/* La classe .hide-scrollbar viu a globals.css (utility layer) */}
     </section>
   );
 }

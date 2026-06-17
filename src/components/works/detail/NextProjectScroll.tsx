@@ -1,14 +1,34 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { WorkNextProject } from "@/types/works";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Props {
   nextProject: WorkNextProject;
 }
+
+// Temps que l'usuari ha de mantenir-se al final abans de redirigir al següent projecte.
+// Inspirat en wearemotto.com: després d'arribar al fons cal un petit "dwell" perquè la
+// transició no sembli un salt automàtic.
+const DWELL_DURATION_MS = 2200;
+
+// Llindar de scrollYProgress a partir del qual comença a comptar el temps d'espera.
+// 0.995 vol dir "pràcticament al final" (deixem un petit marge per evitar falsos positius
+// en navegadors amb scroll inercial).
+const DWELL_TRIGGER = 0.995;
+
+// El scroll omple la barra fins a aquest %; la resta es completa durant el dwell.
+const SCROLL_FILL_RATIO = 0.7;
 
 export default function NextProjectScroll({ nextProject }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,18 +39,91 @@ export default function NextProjectScroll({ nextProject }: Props) {
   // Quan el final del component toqui el final de la pantalla (és a dir, s'ha vist tot), valdrà 1.
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end end"]
+    offset: ["start end", "end end"],
   });
 
-  const progressBarWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  
+  // Suavitzem el progrés de scroll perquè la barra no faci salts amb la inèrcia del trackpad.
+  const smoothScroll = useSpring(scrollYProgress, {
+    stiffness: 140,
+    damping: 28,
+    mass: 0.2,
+  });
+
+  // Progrés del temporitzador d'espera (0 -> 1) que s'activa quan ja som al fons.
+  const dwellProgress = useMotionValue(0);
+  const dwellStartRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const navTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Composició final de la barra: el scroll omple el primer tram, el dwell completa la resta.
+  const scrollPortion = useTransform(smoothScroll, (v) =>
+    Math.min(SCROLL_FILL_RATIO, Math.max(0, v) * SCROLL_FILL_RATIO)
+  );
+  const dwellPortion = useTransform(dwellProgress, (v) => v * (1 - SCROLL_FILL_RATIO));
+  const progressBarWidth = useTransform(
+    [scrollPortion, dwellPortion],
+    ([a, b]: number[]) => `${(a + b) * 100}%`
+  );
+
+  const cancelDwell = () => {
+    dwellStartRef.current = null;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (navTimerRef.current) clearTimeout(navTimerRef.current);
+    rafRef.current = null;
+    navTimerRef.current = null;
+    dwellProgress.set(0);
+  };
+
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // Quan estem pràcticament abaix de tot i veient el footer complet
-    if (latest >= 0.98 && !navigating) {
-      setNavigating(true);
-      router.push(`/works/${nextProject.slug}`);
+    if (navigating) return;
+
+    if (latest >= DWELL_TRIGGER) {
+      // Si ja estem comptant, no reiniciem.
+      if (dwellStartRef.current !== null) return;
+
+      dwellStartRef.current = performance.now();
+
+      const tick = (now: number) => {
+        if (dwellStartRef.current === null) return;
+        const elapsed = now - dwellStartRef.current;
+        const t = Math.min(1, elapsed / DWELL_DURATION_MS);
+        dwellProgress.set(t);
+        if (t < 1) {
+          rafRef.current = requestAnimationFrame(tick);
+        }
+      };
+      rafRef.current = requestAnimationFrame(tick);
+
+      navTimerRef.current = setTimeout(() => {
+        setNavigating(true);
+        router.push(`/works/${nextProject.slug}`);
+      }, DWELL_DURATION_MS);
+    } else {
+      // L'usuari ha tornat enrere: cancel·lem el countdown i resetem el dwell.
+      if (dwellStartRef.current !== null) cancelDwell();
     }
   });
+
+  useEffect(() => {
+    return () => cancelDwell();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Mata el "rubber-band" (rebot) del navegador mentre estem en aquesta vista.
+  // Així, en arribar al final amb inèrcia del trackpad, la pàgina no fa el botet típic
+  // que feia que la barra de progrés tremolés i semblés que tot saltava.
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overscrollBehaviorY;
+    const prevBody = body.style.overscrollBehaviorY;
+    html.style.overscrollBehaviorY = "none";
+    body.style.overscrollBehaviorY = "none";
+    return () => {
+      html.style.overscrollBehaviorY = prevHtml;
+      body.style.overscrollBehaviorY = prevBody;
+    };
+  }, []);
 
   return (
     <section 

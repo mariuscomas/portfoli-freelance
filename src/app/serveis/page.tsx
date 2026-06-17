@@ -3,6 +3,14 @@ import SharedPageHero from "@/components/common/SharedPageHero";
 import PageNavPill from "@/components/common/PageNavPill";
 import ServicesList from "@/components/services/ServicesList";
 import { createClient } from "@/utils/supabase/server";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Serveis",
+  description:
+    "Disseny de producte, UI/UX, mobile app, design system i landing pages. Serveis pensats per a fundadors i equips que volen escalar la seva visió.",
+  path: "/serveis",
+});
 
 const navItems = [
   { label: "Productes", href: "#productes" },

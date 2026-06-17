@@ -1,60 +1,330 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+/* ============================================================
+   FONTS — Source of truth: Figma
+   ============================================================ */
+:root {
+  --font-family-heading: var(--font-heading), sans-serif;
+  --font-family-body: var(--font-sans), sans-serif;
+  --font-family-mono: var(--font-mono), monospace;
+}
 
+/* ============================================================
+   TOKENS — Sincronitzats amb Figma (Design System 10574:3520)
+   Source of truth: variables Figma "MariusFreelance"
+   ============================================================ */
 :root {
   color-scheme: light dark;
 
-  /* Primaris */
-  --primary-main: #1A1A1A;
-  --primary-hover: #B2B2B2;
-  --primary-surface: #EFEBE7;
-
-  /* Text */
-  --text-main: #262522;
-  --text-secondary: #4D5153;
-  --text-main-inverse: #F2F2F2;
+  /* --- COLOR / Text --- */
+  --text-main: #0b0b0b;
+  /* Figma: text/main */
+  --text-secondary: #444749;
+  /* Figma: text/secondary */
+  --text-main-inverse: #f2f2f2;
   --text-secondary-inverse: #999999;
 
-  /* Surface */
-  --surface-base: #F2F2F2;
-  --surface-card: #FFFFFF;
-  --surface-border: #E5E7EB;
+  /* --- COLOR / Text (fixed) ---
+     Colors de text que NO s'inverteixen amb el tema del visitant.
+     Pensats per heros de case-study on el fons és definit per l'admin
+     (color/imatge fix) — el contrast ha de mantenir-se estable
+     independentment de si l'usuari està en light/dark mode. */
+  --text-fixed-light: #f2f2f2;
+  /* Sobre fons foscos / imatges */
+  --text-fixed-light-secondary: #b8b8b8;
+  /* Asteriscs/strokes sobre foscos */
+  --text-fixed-dark: #0b0b0b;
+  /* Sobre fons clars */
+  --text-fixed-dark-secondary: #444749;
+  /* Asteriscs/strokes sobre clars */
+
+  /* --- COLOR / Surface --- */
+  --surface-base: #f2f2f2;
+  /* Figma: surface/base */
+  --surface-card: #ffffff;
+  /* Figma: surface/card */
+  --surface-border: #e5e7eb;
+  /* Figma: surface/border */
   --surface-base-inverse: #262522;
-  --surface-card-inverse: #0A0A0A;
-  --surface-border-inverse: #8A8A8A;
+  --surface-card-inverse: #0a0a0a;
+  --surface-border-inverse: #8a8a8a;
+
+  /* --- COLOR / Primary (Brand) --- */
+  --primary-main: #1a1a1a;
+  --primary-hover: #737373;
+  /* Figma sync: AA pass per a text normal (ratio 4.54) */
+  --primary-surface: #efebe7;
+
+  /* --- COLOR / Accent (Brand · ús puntual) --- */
+  --accent-main: #13ec6d;
+  /* Figma: accent/main */
+  --accent-hover: #0fc55c;
+  /* Figma: accent/hover */
+  --accent-surface: #e7fcf0;
+  /* Figma: accent/surface — pastilles/badges */
+
+  /* --- COLOR / Semantic states --- */
+  --error-main: #dc2626;
+  /* Figma: error/main (corregit per AA) */
+  --error-surface: #fef2f2;
+  /* Figma: error/surface */
+  --warning-main: #f59e0b;
+  /* Figma: warning/main */
+  --warning-surface: #fffbeb;
+  /* Figma: warning/surface */
+
+  /* --- COLOR / Solid Button (Figma: Solid/* aliased) --- */
+  --solid-default-background: var(--primary-main);
+  --solid-default-font-color: var(--text-main-inverse);
+  --solid-hover-background: var(--primary-main);
+  --solid-hover-font-color: var(--text-main-inverse);
+  --solid-focus-outline: var(--primary-main);
+  /* NOU — Focus ring */
+  --solid-pressed-background: var(--text-main);
+  /* NOU */
+  --solid-pressed-font-color: var(--text-main-inverse);
+  /* NOU */
+  --solid-disabled-background: var(--surface-base);
+  --solid-disabled-font-color: var(--text-secondary-inverse);
+
+  /* --- COLOR / Outline Button (Figma: Outline/* aliased) --- */
+  --outline-default-border: var(--primary-main);
+  --outline-default-font-color: var(--primary-main);
+  --outline-hover-background: var(--surface-base);
+  --outline-hover-font-color: var(--primary-main);
+  --outline-focus-outline: var(--primary-main);
+  /* NOU */
+  --outline-pressed-background: var(--surface-border);
+  /* NOU */
+  --outline-pressed-border: var(--primary-main);
+  /* NOU */
+  --outline-pressed-font-color: var(--primary-main);
+  /* NOU */
+  --outline-disabled-border: var(--surface-border);
+  /* NOU — abans #b2b2b2 */
+  --outline-disabled-font-color: var(--text-secondary-inverse);
+
+  /* --- COLOR / Ghost Button --- */
+  --ghost-default-font-color: var(--text-main);
+  --ghost-hover-background: rgba(26, 26, 26, 0.06);
+  --ghost-hover-font-color: var(--text-main);
+  --ghost-focus-outline: var(--primary-main);
+  /* NOU */
+  --ghost-pressed-background: var(--surface-base);
+  /* NOU */
+  --ghost-pressed-font-color: var(--text-main);
+  /* NOU */
+  --ghost-disabled-background: var(--surface-base);
+  --ghost-disabled-font-color: var(--text-secondary-inverse);
+
+  /* --- TYPOGRAPHY / Display (Grtsk SemiBold Giga) ---
+     Tots els tokens display/* tenen mode responsiu al Figma (Desktop/Tablet/Mobile).
+     Aquí utilitzem clamp() per replicar el comportament en un sol token. */
+  --display-h1-font-size: clamp(2rem, 8vw, 7rem);
+  /* Figma: 32 Mobile / 64 Tablet / 112 Desktop */
+  --display-h1-line-height: 1;
+  /* Figma: 1:1 ratio (line-height === font-size) */
+  --display-h1-letter-spacing: -3px;
+  /* Figma: -1 Mobile / -3 Tablet+Desktop */
+
+  --display-h2-font-size: clamp(1.0625rem, 5vw, 4rem);
+  /* Figma: 17 Mobile / 32 Tablet / 64 Desktop */
+  --display-h2-line-height: clamp(1.5rem, 5vw, 4rem);
+  /* Figma: 24 / 32 / 64 */
+  --display-h2-letter-spacing: -1px;
+  /* Figma: -1 all modes */
+
+  --display-h3-font-size: clamp(1.5rem, 4vw, 3.5rem);
+  /* Figma: 24 / 32 / 56 */
+  --display-h3-line-height: 1;
+  --display-h3-letter-spacing: -1px;
+
+  --display-h4-font-size: clamp(1.25rem, 3.5vw, 3rem);
+  /* Figma: 20 / 24 / 48 */
+  --display-h4-line-height: 1;
+  --display-h4-letter-spacing: -1px;
+  --display-h4-paragraph-spacing: clamp(1.25rem, 3.5vw, 3rem);
+
+  --display-h5-font-size: clamp(1rem, 2.5vw, 2rem);
+  /* Figma: 16 / 20 / 32 */
+  --display-h5-line-height: 1;
+  --display-h5-letter-spacing: -1px;
+
+  /* --- TYPOGRAPHY / Heading (Grtsk Regular) --- */
+  --heading-h1-font-size: clamp(2.5rem, 5vw, 3.5rem);
+  /* Figma: 40 / 48 / 56 */
+  --heading-h1-line-height: clamp(2.5rem, 5vw, 4rem);
+  /* Figma: 40 / 48 / 64 */
+  --heading-h1-letter-spacing: -0.5px;
+  --heading-h1-paragraph-spacing: clamp(2rem, 4vw, 4rem);
+
+  --heading-h2-font-size: clamp(2rem, 4vw, 2.5rem);
+  /* Figma: 32 / 32 / 40 */
+  --heading-h2-line-height: clamp(2.5rem, 4vw, 3.5rem);
+  /* Figma: 40 / 40 / 56 */
+  --heading-h2-letter-spacing: -0.5px;
+  /* Figma sync: Tablet/Mobile -0.5, Desktop 0 → harmonitzem */
+
+  --heading-h3-font-size: 1.5rem;
+  /* Figma: 24 all modes */
+  --heading-h3-line-height: 2rem;
+  /* Figma: 32 all modes */
+  --heading-h3-letter-spacing: -0.3px;
+  /* Figma sync: estabilitzat (era -1 Desktop) */
+
+  --heading-h4-font-size: 1rem;
+  /* Figma: 16 all modes */
+  --heading-h4-line-height: clamp(1.75rem, 3vw, 2rem);
+  /* Figma: 28 Mobile / 32 Tablet+Desktop */
+  --heading-h4-letter-spacing: -0.3px;
+
+  /* --- TYPOGRAPHY / Body (Grtsk Light/Regular) ---
+     2xl té un floor més alt (24px) i un sostre més ambiciós (56px) perquè
+     funcioni com a "lead paragraph" presencial després dels Display H1.
+     Figma marca 20/32/48 com a referència mínima, pujem perquè respira millor. */
+  --body-2xl-font-size: clamp(1.5rem, 3.5vw, 3.5rem);
+  /* 24 / 40 / 56 */
+  --body-2xl-line-height: clamp(2rem, 3.95vw, 3.95rem);
+  /* 32 / 52 / 72 */
+  --body-2xl-letter-spacing: 0;
+  --body-2xl-paragraph-spacing: 1rem;
+
+  --body-xl-font-size: clamp(1rem, 2vw, 2rem);
+  /* Figma: 16 / 18 / 32 */
+  --body-xl-line-height: clamp(1.375rem, 2vw, 3rem);
+  /* Figma: 22 / 26 / 48 */
+  --body-xl-letter-spacing: 0;
+
+  --body-lg-font-size: clamp(0.875rem, 1.5vw, 1.5rem);
+  /* Figma: 14 / 18 / 24 */
+  --body-lg-line-height: clamp(1.25rem, 1.5vw, 2rem);
+  /* Figma: 20 / 26 / 32 */
+  --body-lg-letter-spacing: 0;
+
+  --body-md-font-size: clamp(0.875rem, 1.25vw, 1.25rem);
+  /* Figma: 14 / 14 / 20 */
+  --body-md-line-height: clamp(1.125rem, 1.5vw, 1.75rem);
+  /* Figma: 18 / 22 / 28 */
+  --body-md-letter-spacing: 0;
+
+  --body-sm-font-size: clamp(0.75rem, 1vw, 1rem);
+  /* Figma: 12 / 14 / 16 */
+  --body-sm-line-height: clamp(1.125rem, 1.5vw, 1.75rem);
+  /* Figma: 18 / 22 / 28 */
+  --body-sm-letter-spacing: 0;
+
+  /* --- TYPOGRAPHY / Caption + Buttons --- */
+  --caption-font-size: clamp(0.75rem, 1vw, 0.875rem);
+  /* Figma: 12 / 12 / 14 */
+  --caption-line-height: 1rem;
+  /* Figma: 16 all modes */
+  --caption-letter-spacing: 0.3px;
+  --caption-weight: 500;
+
+  --button-large-font-size: clamp(0.75rem, 1.5vw, 1.25rem);
+  /* Figma: 12-14 / 14-16 / 14-20 */
+  --button-large-line-height: clamp(1.3125rem, 1.5vw, 1.75rem);
+  --button-large-letter-spacing: 0.5px;
+  --button-large-weight: 600;
+
+  /* --- LAYOUT / Section padding (Figma: section/padding) --- */
+  --section-padding-x-xl: 96px;
+  /* Figma: section/padding/x-XL */
+  --section-padding-x-lg: 48px;
+  /* Figma: section/padding/x-LG */
+  --section-padding-y-xl: 284px;
+  /* Figma: section/padding/y-XL — Hero */
+  --section-padding-y-md: 96px;
+  /* Figma: section/padding/y-MD */
+  --section-padding-y-sm: 48px;
+  /* Figma: section/padding/y-SM */
+
+  /* --- LAYOUT / Section gap --- */
+  --section-gap-xl: 96px;
+  /* Figma: section/gap-XL */
+  --section-gap-lg: 64px;
+  /* Figma: section/gap-LG */
+  --section-gap-md: 48px;
+  /* Figma: section/gap-MD */
+
+  /* --- LAYOUT / Radii --- */
+  --card-radius: 16px;
+  /* Figma: card-radius */
+  --radius-base: 16px;
+  /* Figma: number (default radius) */
+
+  /* --- LAYOUT / Button properties --- */
+  --button-large-padding: 32px;
+  /* Figma: properties/large/padding */
+  --button-large-height: 64px;
+  /* Figma: properties/large/height */
+  --button-md-padding: 24px;
+  --button-md-height: 48px;
+  --button-sm-padding: 16px;
+  --button-sm-height: 40px;
 }
 
 .dark {
-  /* Text Dark */
-  --text-main: #F2F2F2;
+  /* --- COLOR / Text (dark) --- */
+  --text-main: #f2f2f2;
   --text-secondary: #999999;
   --text-main-inverse: #262522;
-  --text-secondary-inverse: #4D5153;
+  --text-secondary-inverse: #4d5153;
 
-  /* Surface Dark */
+  /* --- COLOR / Surface (dark) --- */
   --surface-base: #262522;
-  --surface-card: #0A0A0A;
-  --surface-border: #8A8A8A;
-  --surface-base-inverse: #F2F2F2;
-  --surface-card-inverse: #FFFFFF;
-  --surface-border-inverse: #E5E7EB;
-  /* Els colors 'Primaris' es mantenen iguals */
+  --surface-card: #0a0a0a;
+  --surface-border: #8a8a8a;
+  --surface-base-inverse: #f2f2f2;
+  --surface-card-inverse: #ffffff;
+  --surface-border-inverse: #e5e7eb;
+
+  /* --- COLOR / Primary (dark) — invertit perquè CTA destaqui sobre fons fosc --- */
+  --primary-main: #f2f2f2;
+  /* Figma sync: primary/main Dark */
+  --primary-hover: #7a7a7a;
+
+  /* --- COLOR / Semantic (dark) — error més clar per visibilitat sobre fons fosc --- */
+  --error-main: #f87171;
+  /* Figma: error/main Dark */
+  --accent-surface: #06301b;
+  /* Figma: accent/surface Dark */
 }
 
+/* ============================================================
+   TAILWIND v4 @theme — Mapeig de tokens a utility classes
+   ============================================================ */
 @theme {
+  /* Fonts */
   --font-sans: var(--font-sans), sans-serif;
   --font-heading: var(--font-heading), sans-serif;
   --font-mono: var(--font-mono), monospace;
 
+  /* Colors / Brand → bg-primary-main, text-primary-hover, etc. */
   --color-primary-main: var(--primary-main);
   --color-primary-hover: var(--primary-hover);
   --color-primary-surface: var(--primary-surface);
 
+  /* Colors / Accent → bg-accent, text-accent, etc. */
+  --color-accent: var(--accent-main);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-surface: var(--accent-surface);
+
+  /* Colors / Text → text-main, text-secondary, text-main-inverse, etc. */
   --color-text-main: var(--text-main);
   --color-text-secondary: var(--text-secondary);
   --color-text-main-inverse: var(--text-main-inverse);
   --color-text-secondary-inverse: var(--text-secondary-inverse);
 
+  /* Colors / Text fixed → text-text-fixed-light, text-text-fixed-dark, etc.
+     No s'inverteixen amb el tema; pensats per heros amb fons admin-controlat. */
+  --color-text-fixed-light: var(--text-fixed-light);
+  --color-text-fixed-light-secondary: var(--text-fixed-light-secondary);
+  --color-text-fixed-dark: var(--text-fixed-dark);
+  --color-text-fixed-dark-secondary: var(--text-fixed-dark-secondary);
+
+  /* Colors / Surface → bg-surface-base, bg-surface-card, border-surface-border, etc. */
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
@@ -62,7 +332,17 @@
   --color-surface-card-inverse: var(--surface-card-inverse);
   --color-surface-border-inverse: var(--surface-border-inverse);
 
-  /* Animació de Rotació Contínua (Marquee) */
+  /* Colors / Semantic states → bg-error, text-error, bg-warning, etc. */
+  --color-error: var(--error-main);
+  --color-error-surface: var(--error-surface);
+  --color-warning: var(--warning-main);
+  --color-warning-surface: var(--warning-surface);
+
+  /* Radii → rounded-card, rounded-base */
+  --radius-card: var(--card-radius);
+  --radius-base: var(--radius-base);
+
+  /* Animacions */
   @keyframes spin-linear {
     from {
       transform: rotate(0deg);
@@ -76,6 +356,32 @@
   --animate-spin-linear: spin-linear 4s linear infinite;
 }
 
+/* ============================================================
+   ADMIN · FLASH HIGHLIGHT al saltar a una secció via TOC
+   --------------------------------------------------------------
+   Quan l'usuari clica una entrada del TOC, el `:target` CSS
+   coincideix amb el `id` de la secció destinació. Animem un fons
+   subtil que va aparèixer i s'esvaeix en 1.2s — feedback visual
+   sense ser distret.
+   ============================================================ */
+@keyframes admin-section-flash {
+  0% {
+    background-color: rgba(19, 236, 109, 0.18);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+.admin-edit-wrapper section:target,
+.admin-edit-wrapper fieldset:target {
+  animation: admin-section-flash 1.2s ease-out;
+}
+
+/* ============================================================
+   BASE STYLES + UTILITY CLASSES TIPOGRÀFIQUES
+   ============================================================ */
 @layer base {
 
   html,
@@ -93,71 +399,137 @@
     font-family: var(--font-sans);
   }
 
-  /* --- DISPLAY (Grtsk Giga) - Per Marquees i Heros massius --- */
+  /* --- DISPLAY (Grtsk SemiBold Giga) — Heros, Marquees, peces estructurals ---
+       Tots els display/* consumeixen tokens responsius del Figma (clamp). */
   .text-display-h1 {
-    @apply font-heading font-semibold uppercase tracking-tighter leading-[0.85];
-    /* Mòbil: 80px -> Desktop: 200px */
-    font-size: clamp(4rem, 10vw, 10rem);
+    @apply font-heading font-semibold uppercase;
+    font-size: var(--display-h1-font-size);
+    line-height: var(--display-h1-line-height);
+    letter-spacing: var(--display-h1-letter-spacing);
   }
 
   .text-display-h2 {
-    @apply font-heading font-semibold uppercase tracking-tight leading-[0.9];
-    font-size: clamp(3.5rem, 10vw, 8rem);
+    @apply font-heading font-semibold uppercase;
+    font-size: var(--display-h2-font-size);
+    line-height: var(--display-h2-line-height);
+    letter-spacing: var(--display-h2-letter-spacing);
+  }
+
+  .text-display-h3 {
+    @apply font-heading font-semibold uppercase;
+    font-size: var(--display-h3-font-size);
+    line-height: var(--display-h3-line-height);
+    letter-spacing: var(--display-h3-letter-spacing);
+  }
+
+  .text-display-h4 {
+    @apply font-heading font-semibold uppercase;
+    font-size: var(--display-h4-font-size);
+    line-height: var(--display-h4-line-height);
+    letter-spacing: var(--display-h4-letter-spacing);
   }
 
   .text-display-h5 {
-    @apply font-heading font-semibold uppercase tracking-tight leading-[0.9];
-    font-size: clamp(1rem, 5vw, 2rem);
+    @apply font-heading font-semibold uppercase;
+    font-size: var(--display-h5-font-size);
+    line-height: var(--display-h5-line-height);
+    letter-spacing: var(--display-h5-letter-spacing);
   }
 
-  /* --- HEADING (Grtsk Regular/Light) - El que estàs fent servir a l'About --- */
+  /* --- HEADING (Grtsk Regular) --- */
+  /* Heading H1 - Figma exacte: 56px / 64px / -0.5px (preu del modal, títols principals) */
   .text-heading-h1 {
-    @apply font-sans font-normal font-medium tracking-tight leading-[1.1];
-    /* Mòbil: 32px (2rem) -> Desktop: 56px (3.5rem) */
+    @apply font-sans font-medium;
+    font-size: var(--heading-h1-font-size);
+    line-height: var(--heading-h1-line-height);
+    letter-spacing: var(--heading-h1-letter-spacing);
+  }
+
+  /* Versió responsive de heading-h1 (per a títols més fluids) */
+  .text-heading-h1-fluid {
+    @apply font-sans font-medium tracking-tight leading-[1.1];
     font-size: clamp(2rem, 3.5vw, 5rem);
-    font-family: var(--font-body);
   }
 
   .text-heading-h2 {
-    @apply font-sans font-normal font-medium leading-[1.2];
-    /* Mòbil: 24px (1.5rem) -> Desktop: 40px (2.5rem) */
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    @apply font-sans font-medium;
+    font-size: var(--heading-h2-font-size);
+    line-height: var(--heading-h2-line-height);
+    letter-spacing: var(--heading-h2-letter-spacing);
   }
 
   .text-heading-h3 {
-    @apply font-sans font-normal font-medium leading-[1.2];
-    /* Mòbil: 24px (1.5rem) -> Desktop: 40px (2rem) */
-    font-size: 1rem;
+    @apply font-sans font-medium;
+    font-size: var(--heading-h3-font-size);
+    line-height: var(--heading-h3-line-height);
+    letter-spacing: var(--heading-h3-letter-spacing);
   }
 
-  /* --- BODY (XL, LG, MD) --- */
+  .text-heading-h4 {
+    @apply font-sans font-normal;
+    font-size: var(--heading-h4-font-size);
+    line-height: var(--heading-h4-line-height);
+    letter-spacing: var(--heading-h4-letter-spacing);
+  }
+
+  /* --- BODY (Grtsk Regular / Light) — tots responsius via clamp() --- */
+  .text-body-2xl {
+    @apply font-sans font-light;
+    font-size: var(--body-2xl-font-size);
+    line-height: var(--body-2xl-line-height);
+    letter-spacing: var(--body-2xl-letter-spacing);
+  }
+
   .text-body-xl {
-    @apply font-sans font-normal leading-relaxed;
-    /* Mòbil: 20px (1.25rem) -> Desktop: 24px (1.5rem) */
-    font-size: clamp(1.25rem, 3vw, 5rem);
+    @apply font-sans font-light;
+    font-size: var(--body-xl-font-size);
+    line-height: var(--body-xl-line-height);
+    letter-spacing: var(--body-xl-letter-spacing);
   }
 
   .text-body-lg {
-    @apply font-sans font-normal leading-relaxed;
-    font-size: clamp(1.125rem, 1.5vw, 1.8rem);
-    /* Text destacat */
+    @apply font-sans font-normal;
+    font-size: var(--body-lg-font-size);
+    line-height: var(--body-lg-line-height);
+    letter-spacing: var(--body-lg-letter-spacing);
   }
 
   .text-body-md {
-    @apply font-sans font-normal leading-normal;
-    /* Mòbil: 16px (1rem) -> Desktop: 18px (1.125rem) */
-    font-size: clamp(1rem, 1.25vw, 1.5rem);
+    @apply font-sans font-normal;
+    font-size: var(--body-md-font-size);
+    line-height: var(--body-md-line-height);
+    letter-spacing: var(--body-md-letter-spacing);
   }
 
   .text-body-sm {
-    @apply font-sans font-normal leading-normal;
-    /* Mòbil: 16px (1rem) -> Desktop: 18px (1.125rem) */
-    font-size: clamp(0.8rem, 1.1vw, 1.125rem);
+    @apply font-sans font-light;
+    font-size: var(--body-sm-font-size);
+    line-height: var(--body-sm-line-height);
+    letter-spacing: var(--body-sm-letter-spacing);
   }
 
+  /* --- CAPTION (Grtsk Regular medium 500 + tracking obert) --- */
+  .text-caption {
+    @apply font-sans uppercase;
+    font-size: var(--caption-font-size);
+    line-height: var(--caption-line-height);
+    letter-spacing: var(--caption-letter-spacing);
+    font-weight: var(--caption-weight);
+  }
 
+  /* --- BUTTONS --- */
+  .text-button-lg {
+    @apply font-sans;
+    font-size: var(--button-large-font-size);
+    line-height: var(--button-large-line-height);
+    letter-spacing: var(--button-large-letter-spacing);
+    font-weight: var(--button-large-weight);
+  }
 }
 
+/* ============================================================
+   UTILITIES
+   ============================================================ */
 @layer utilities {
   .hide-scrollbar {
     -ms-overflow-style: none;

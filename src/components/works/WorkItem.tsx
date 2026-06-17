@@ -50,7 +50,7 @@ export default function WorkItem({ project, index, onMouseEnter, onMouseLeave }:
           <h3 className="text-3xl lg:text-4xl font-medium tracking-tight text-text-main group-hover:ml-2 transition-all duration-300">
             {project.title}
           </h3>
-          <p className="text-lg text-text-muted uppercase tracking-wider group-hover:ml-2 transition-all duration-300">
+          <p className="text-lg text-text-secondary uppercase tracking-wider group-hover:ml-2 transition-all duration-300">
             {project.category}
           </p>
         </div>

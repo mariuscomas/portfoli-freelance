@@ -65,7 +65,7 @@ export default function AboutTeaser() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-sans text-body-xl text-text-secondary leading-snug"
+            className="font-sans text-body-2xl text-text-secondary leading-snug"
           >
             Orgullós de col·laborar i poder ajudar a les empreses a aconseguir el seus objectius i millorar les experiències dels seus clients.
           </motion.p>

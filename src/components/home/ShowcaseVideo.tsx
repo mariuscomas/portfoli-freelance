@@ -7,7 +7,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 export default function ShowcaseVideo() {
   const containerRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
-  const { setTheme, theme } = useTheme();
+  const { resolvedTheme, setAmbientDark } = useTheme();
 
   // Scroll for the clipPath animation (start until center of the video)
   const { scrollYProgress } = useScroll({
@@ -21,18 +21,28 @@ export default function ShowcaseVideo() {
     offset: ["start end", "end start"],
   });
 
-  useMotionValueEvent(themeProgress, "change", (latest) => {
-    // Switch to dark when the video is approximately centering
-    // 0.45 is when the center of the video is approaching the center of viewport
-    // 0.85 is when the video is starting to leave the viewport upwards
-    const isInDarkZone = latest > 0.4 && latest < 0.85;
+  /*
+    Efecte "cinema / ambient":
+    Quan el vídeo està a la zona central del viewport (40-85% del progrés),
+    activem un mode dark temporal que tinta tota la web. Quan en surt, torna
+    al mode triat per l'usuari.
 
-    if (isInDarkZone && theme !== "dark") {
-      setTheme("dark");
-    } else if (!isInDarkZone && theme === "dark") {
-      setTheme("light");
-    }
+    Excepció: si l'usuari ja està en Dark, no fem res. No té sentit "enfosquir
+    el que ja és fosc" i sortir-ne podria semblar un parpalleig.
+
+    A diferència de l'antiga implementació amb setTheme(), aquesta NO toca
+    localStorage — la tria persistida de l'usuari es preserva sempre.
+  */
+  useMotionValueEvent(themeProgress, "change", (latest) => {
+    if (resolvedTheme === "dark") return; // l'usuari ja és Dark, no fem res
+    const isInDarkZone = latest > 0.4 && latest < 0.85;
+    setAmbientDark(isInDarkZone);
   });
+
+  // Si l'usuari canvia a Dark mentre el vídeo està actiu, deixar net l'ambient
+  useEffect(() => {
+    if (resolvedTheme === "dark") setAmbientDark(false);
+  }, [resolvedTheme, setAmbientDark]);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -57,11 +67,14 @@ export default function ShowcaseVideo() {
       ref={containerRef}
       className="w-full relative pt-0 pb-16 md:pb-32 flex flex-col justify-center items-center bg-surface-base overflow-visible z-20"
     >
-      {/* Video Container sliding upwards into Hero's unused 10dvh peek zone */}
+      {/* Video Container sliding upwards into Hero's unused 10dvh peek zone.
+          Fallback `bg-surface-card-inverse` (en lloc de `bg-black` cru) perquè
+          el "peek" del bloc abans de carregar el vídeo respecti tokens
+          del design system i no es vegi com un asset incomplet. */}
       <motion.div
         ref={videoRef}
         style={{ clipPath }}
-        className="w-full aspect-[21/9] md:aspect-[2.4/1] lg:aspect-[2.8/1] bg-black relative overflow-hidden -mt-[60px] z-30"
+        className="w-full aspect-[21/9] md:aspect-[2.4/1] lg:aspect-[2.8/1] bg-surface-card-inverse relative overflow-hidden -mt-[60px] z-30"
       >
         <video
           src="/videos/master-web.mp4"
@@ -69,6 +82,8 @@ export default function ShowcaseVideo() {
           muted
           loop
           playsInline
+          preload="auto"
+          aria-hidden="true"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>

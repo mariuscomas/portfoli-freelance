@@ -1,84 +1,76 @@
-"use client";
-import { useState, useEffect } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
 import TransitionLink from "../common/TransitionLink";
-import WorksGrid from "../works/WorksGrid";
+import WorksTeaserInteractive from "./WorksTeaserInteractive";
+import { createClient } from "@/utils/supabase/server";
+import { t } from "@/lib/i18n";
+import type { Project } from "@/types";
 
-const projects = [
-  { id: 1, title: "Fintech App", category: "UX/UI & Product Design", bgColor: "bg-surface-elevated", slug: "fintech-app", image: "/images/image_treballs_prova.png" },
-  { id: 2, title: "SaaS Dashboard", category: "Web App & Design System", bgColor: "bg-surface-elevated", slug: "saas-dashboard", image: "/images/image_treballs_prova.png" },
-  { id: 3, title: "E-commerce Platform", category: "UX Research & Mobile App", bgColor: "bg-surface-elevated", slug: "ecommerce-platform", image: "/images/image_treballs_prova.png" },
-  { id: 4, title: "AI Assistant Interface", category: "Interaction & Artificial Intelligence", bgColor: "bg-surface-elevated", slug: "ai-assistant", image: "/images/image_treballs_prova.png" }
-];
+/**
+ * <WorksTeaser />
+ *
+ * Secció del Home que mostra una selecció de projectes destacats.
+ * Fa fetch dels works publicats a Supabase (limit 4 per no saturar el
+ * scroll del home) i prioritza els `is_featured = true`.
+ *
+ * Server Component: la part interactiva (hover, custom cursor) viu
+ * a <WorksTeaserInteractive />.
+ */
+export default async function WorksTeaser() {
+  const supabase = await createClient();
 
-export default function WorksTeaser() {
-  const [hoveredProject, setHoveredProject] = useState<string | number | null>(null);
+  // JOIN amb work_roles via FK (àlies `role_ref` per no col·lidir amb la
+  // columna jsonb legacy `role`). Si el work no té FK encara, fem
+  // fallback al jsonb.
+  const { data: works } = await supabase
+    .from("works")
+    .select("id, title, role, role_id, slug, main_image_url, hero_color, content, is_featured, role_ref:work_roles(id, name)")
+    .eq("is_published", true)
+    .order("is_featured", { ascending: false }) // featured primer
+    .order("order_index", { ascending: true })
+    .limit(4);
 
-  // Custom Cursor tracking logic
-  const mouseX = useMotionValue(-100);
-  const mouseY = useMotionValue(-100);
+  const projects: Project[] = (works || []).map((work) => {
+    // Color de la card: prioritzem content.hero.backgroundColor (única
+    // font de veritat). Fallback a hero_color (legacy) per a works
+    // creats abans de la unificació i que encara no s'hagin reeditat.
+    const heroContent = (work.content as { hero?: { backgroundColor?: string } } | null)?.hero
+    const bgColor = heroContent?.backgroundColor || work.hero_color || undefined
+    const roleRef = (work as { role_ref?: { name?: unknown } | null }).role_ref
+    const roleName = roleRef?.name ? t(roleRef.name) : t(work.role)
+    return {
+      id: work.id,
+      title: t(work.title),
+      category: roleName || "Project",
+      slug: t(work.slug),
+      image: work.main_image_url || undefined,
+      bgColor,
+    }
+  });
 
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
-  const smoothX = useSpring(mouseX, springConfig);
-  const smoothY = useSpring(mouseY, springConfig);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX - 60);
-      mouseY.set(e.clientY - 60);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  // Si no hi ha projectes publicats, no muntem la secció. Així evitem
+  // un buit estrany al Home; quan publiquis works des del dashboard hi
+  // apareixerà automàticament.
+  if (projects.length === 0) return null;
 
   return (
     <section className="w-full py-16 md:py-32 bg-surface-base relative overflow-hidden">
       <div className="w-full">
-        {/* Header section with H2 */}
+        {/* Header amb títol + link "Veure tots els projectes" */}
         <div className="flex justify-between items-end mb-16 md:mb-24 px-4 md:px-[3vw] lg:px-[4vw]">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="font-heading text-heading-h1 uppercase text-text-main leading-none m-0"
-          >
+          <h2 className="font-heading text-heading-h1 uppercase text-text-main leading-none m-0">
             Treballs
-          </motion.h2>
+          </h2>
 
           <TransitionLink
             href="/works"
-            className="font-sans text-lg hidden md:block text-text-secondary hover:text-text-main transition-colors pb-4 border-b border-text-secondary/30 hover:border-text-main"
+            className="font-sans text-lg hidden md:block text-text-secondary hover:text-accent transition-colors duration-300 pb-4 border-b border-text-secondary/30 hover:border-accent"
           >
             Veure tots els projectes →
           </TransitionLink>
         </div>
 
-        {/* Works Grid */}
-        <div className="w-full">
-          <WorksGrid projects={projects} onProjectHover={setHoveredProject} />
-        </div>
+        {/* Grid interactiu + custom cursor */}
+        <WorksTeaserInteractive projects={projects} />
       </div>
-
-      {/* Custom Cursor Component mapped fixed to screen */}
-      <motion.div
-        style={{
-          x: smoothX,
-          y: smoothY,
-        }}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{
-          scale: hoveredProject !== null ? 1 : 0,
-          opacity: hoveredProject !== null ? 1 : 0,
-        }}
-        transition={{ type: "tween", ease: "circOut", duration: 0.2 }}
-        className="fixed top-0 left-0 w-[120px] h-[120px] bg-white text-black rounded-full pointer-events-none z-[100] shadow-[0px_4px_30px_rgba(0,0,0,0.1)] hidden md:flex items-center justify-center transform-gpu"
-      >
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
-      </motion.div>
     </section>
   );
 }

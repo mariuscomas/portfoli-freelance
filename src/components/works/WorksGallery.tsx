@@ -42,7 +42,7 @@ export default function WorksGallery({ projects }: Props) {
         bottomContent={
           <>
             {/* Scroll Indicator (Left) */}
-            <div className="flex items-center gap-3 text-text-muted">
+            <div className="flex items-center gap-3 text-text-secondary">
               <span className="text-[24px] font-medium tracking-wider hidden md:inline-block">(Scroll)</span>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 4L12 20M12 20L18 14M12 20L6 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -109,7 +109,7 @@ export default function WorksGallery({ projects }: Props) {
                 </h3>
 
                 <div className="flex items-center gap-12 overflow-hidden">
-                  <p className="hidden md:block text-lg lg:text-xl text-text-muted group-hover:text-text-main transition-colors duration-300">
+                  <p className="hidden md:block text-lg lg:text-xl text-text-secondary group-hover:text-text-main transition-colors duration-300">
                     {project.category}
                   </p>
 

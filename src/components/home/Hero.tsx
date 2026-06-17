@@ -10,8 +10,9 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.1,
+      // Stagger més ràpid perquè la frase es completi a ~0.9s (era ~1.75s)
+      staggerChildren: 0.08,
+      delayChildren: 0.05,
     },
   },
 };
@@ -22,7 +23,8 @@ const fadeUp = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 1.2,
+      // Reduïm duració per fer-ho més "punchy" sense perdre l'easing editorial
+      duration: 0.7,
       ease: [0.16, 1, 0.3, 1] as Transition["ease"],
     },
   },
@@ -90,12 +92,17 @@ export default function Hero() {
         }}
         className="absolute bottom-0 left-0 w-full h-[120px] flex justify-between items-center px-4 md:px-8 lg:px-24 z-0 pointer-events-none"
       >
+        {/*
+          Apareix per defecte ~1s després del muntatge (acompanya el final del títol).
+          Després, useIdle el desplega/oculta segons activitat de l'usuari.
+        */}
         <motion.div
+          initial={{ opacity: 0, y: 20 }}
           animate={{
-            opacity: isVisible ? 1 : 0,
-            y: isVisible ? 0 : 20
+            opacity: !hasInteracted ? 1 : (isVisible ? 1 : 0),
+            y: !hasInteracted ? 0 : (isVisible ? 0 : 20)
           }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: !hasInteracted ? 0.9 : 0 }}
           className="w-full flex justify-between items-center pointer-events-auto"
         >
           {/* Left: Language/Theme Toggle Area */}
@@ -108,7 +115,7 @@ export default function Hero() {
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-text-main/10 hover:border-text-main/30 transition-colors cursor-pointer group">
               <div className="w-2.5 h-2.5 bg-text-main rounded-[2px]" />
               <span className="font-sans text-[15px] font-medium text-text-main">CA</span>
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className="text-text-muted group-hover:text-text-main transition-colors">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className="text-text-secondary group-hover:text-text-main transition-colors">
                 <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>

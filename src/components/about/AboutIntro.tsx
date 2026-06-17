@@ -53,7 +53,7 @@ export default function AboutIntro() {
         {/* Columna Text: 7 columnes de 12 */}
         <div className="w-full md:w-8/12 lg:w-6/12 flex flex-col gap-8 md:gap-10 lg:gap-12 xl:gap-16 md:sticky md:top-32 h-fit">
           <h2 className="text-heading-h1">Digital Product Designer especialitzat en UI/UX Design</h2>
-          <div className="text-body-lg font-light text-text-secondary leading-relaxed space-y-6 max-w-[95%]">
+          <div className="text-body-xl font-light text-text-secondary leading-relaxed space-y-6 max-w-[95%]">
             <p>La meva base en programació i especialització en UI/UX em permeten simplificar la complexitat i dissenyar sistemes estratègics que uneixen els objectius de negoci amb les necessitats de l'usuari, generant resultats tangibles.</p>
             <p>Aquest enfocament es tradueix en:</p>
             <ul className="space-y-4">

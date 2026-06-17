@@ -33,7 +33,22 @@ export interface WorkDetailData {
   hero: {
     title: string;
     description: string;
+    /**
+     * Mode de fons del hero. Per defecte 'color' per retrocompatibilitat amb
+     * works existents que només tenien `backgroundColor`.
+     */
+    backgroundMode?: 'color' | 'image';
     backgroundColor: string; // e.g., "#5C7894"
+    /** URL de la imatge de fons quan backgroundMode === 'image'. */
+    backgroundImage?: string;
+    /** Overlay fosc sobre la imatge (0–80). Per defecte 0. */
+    overlayOpacity?: number;
+    /**
+     * Color del text del hero (títol + descripció + bottom content). Per
+     * defecte 'light' — perquè la majoria de works tenen fons foscos o
+     * imatges. Canvia a 'dark' si tries un color de fons clar.
+     */
+    textColor?: 'light' | 'dark';
   };
   blocks: WorkBlock[];
   conclusion?: string;

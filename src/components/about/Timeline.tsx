@@ -106,13 +106,13 @@ export default function Timeline() {
             transition={{ duration: 0.6, delay: index * 0.08 }}
             className="shrink-0 w-[85vw] md:w-[26rem] lg:w-[35rem] flex flex-col h-auto pr-12 md:pr-16"
           >
-            <p className="text-display-h2 md:text-display-2xl tracking-tighter text-text-main leading-none mb-10">{item.number}</p>
+            <p className="text-display-h2 md:text-display-h1 tracking-tighter text-text-main leading-none mb-10">{item.number}</p>
             <h3 className="text-heading-h3">{item.title}</h3>
-            <p className="text-body-md text-text-main font-medium leading-relaxed mt-4">{item.description}</p>
+            <p className="text-body-lg text-text-main font-medium leading-relaxed mt-4">{item.description}</p>
 
             {/* Ara l'any queda perfectament net a sota de cada targeta */}
             <div className="mt-auto pt-16">
-              <span className="text-body-md font-bold tracking-widest text-text-main block">
+              <span className="text-body-lg font-bold tracking-widest text-text-main block">
                 {item.year}
               </span>
             </div>
@@ -127,7 +127,7 @@ export default function Timeline() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="shrink-0 w-[50vw] md:w-[30vw] flex flex-col justify-center items-center"
         >
-          <span className="text-body-sm font-semibold uppercase tracking-widest text-text-muted">
+          <span className="text-body-md font-semibold uppercase tracking-widest text-text-secondary">
             COMING SOON
           </span>
         </motion.div>

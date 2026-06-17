@@ -27,7 +27,7 @@ export default function Footer() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-sans font-light text-body-xl text-text-main leading-[1.05] tracking-tight max-w-[1200px]"
+          className="font-sans font-light text-body-2xl text-text-main leading-[1.05] tracking-tight max-w-[1200px]"
         >
           Estas preparat per donar<br className="hidden md:block" /> vida a les teves ideas?
         </motion.h2>
@@ -40,7 +40,7 @@ export default function Footer() {
         >
           <TransitionLink
             href="/contacte"
-            className="font-sans font-medium text-lg md:text-xl text-text-main border-b border-text-main pb-1 hover:text-text-secondary hover:border-text-secondary transition-colors"
+            className="font-sans font-medium text-lg md:text-xl text-text-main border-b border-text-main pb-1 hover:text-accent hover:border-accent transition-colors duration-300"
           >
             Reserva una trucada
           </TransitionLink>

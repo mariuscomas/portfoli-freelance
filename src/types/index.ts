@@ -8,20 +8,28 @@ export interface Project {
   bgColor?: string;
 }
 
+/**
+ * Service — model "lleuger" usat als components públics.
+ * Manté camps com a string-or-translatable per ser tolerant amb dades
+ * antigues. Per al CRUD admin estricte, usar `Service` de @/types/database.
+ */
+type I18nField = string | { ca?: string; [key: string]: unknown } | null;
+
 export interface Service {
-  id: number;
-  title: string | { ca?: string;[key: string]: unknown };
-  short_description: string | { ca?: string;[key: string]: unknown };
-  long_description?: string | { ca?: string;[key: string]: unknown };
+  id: number | string;
+  title: I18nField;
+  slug: I18nField;
+  short_description: I18nField;
+  long_description?: I18nField;
   icon_name: string;
-  image_url?: string;
-  order_index: number;
-  is_published: boolean;
-  price_starts_at?: number;
-  content_about: string | { ca?: string;[key: string]: unknown };
-  content_steps: string | { ca?: string;[key: string]: unknown };
-  content_deliverables: string | { ca?: string;[key: string]: unknown };
-  content_why_us: string | { ca?: string;[key: string]: unknown };
-  revisions?: string | { ca?: string;[key: string]: unknown };
-  duration?: string | { ca?: string;[key: string]: unknown };
+  image_url?: string | null;
+  order_index?: number | null;
+  is_published?: boolean | null;
+  price_starts_at?: number | null;
+  content_about: I18nField;
+  content_steps: I18nField;
+  content_deliverables: I18nField;
+  content_why_us: I18nField;
+  revisions?: I18nField;
+  duration?: I18nField;
 }

@@ -1,10 +1,10 @@
 import localFont from "next/font/local";
-import type { Metadata } from "next";
-import NavigationWrapper from "@/components/layout/NavigationWrapper";
-import Footer from "@/components/layout/Footer";
+import { cookies } from "next/headers";
+import SiteShell from "@/components/layout/SiteShell";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { TransitionProvider } from "@/context/TransitionContext";
 import PageTransition from "@/components/common/PageTransition";
+import { buildMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const grtsk = localFont({
@@ -53,33 +53,50 @@ const fkMono = localFont({
   weight: "500",
 });
 
-export const metadata: Metadata = {
-  title: "Màrius - Portfoli Freelance",
-  description: "Portfoli professional de Product & UI/UX Design",
-};
+// Metadata per defecte. Cada pàgina pot sobreescriure-la amb el seu propi
+// `export const metadata = buildMetadata({...})`. El title aquí no apareix
+// mai sol — Next el combina amb el title de la pàgina actual.
+export const metadata = buildMetadata({
+  title: "Digital Product Designer",
+  description:
+    "Portfoli professional de Màrius Comas — Digital Product Designer especialitzat en UI/UX. Estratègia, producte i sistemes per a startups i corporacions.",
+  path: "/",
+});
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  /*
+    Lectura de la cookie `theme` al servidor — així podem aplicar la classe
+    `dark` o `light` a <html> ja al primer paint sense FOUC i SENSE cap
+    <script> inline que dispari el warning de Turbopack/Next 16.
+
+    Si la cookie no existeix encara (primera visita), defaultem a `light`.
+    L'usuari pot canviar-ho amb el ThemeToggle i la cookie es persisteix.
+  */
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("theme")?.value;
+  const initialTheme: "dark" | "light" =
+    themeCookie === "dark" || themeCookie === "system" ? "dark" : "light";
+  // Nota: per a "system" no podem saber al servidor la preferència del SO,
+  // així que assumim light com a default. El ThemeProvider corregirà al client
+  // si "system" hauria de ser dark; el flash possible només afecta usuaris
+  // amb tema "system" + SO en dark, i és quasi imperceptible.
+
   return (
-    <html lang="ca" className={`${grtsk.variable} ${grtskHeading.variable} ${fkMono.variable} h-[100dvh] antialiased`} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-             __html: `!function(){try{var d=document.documentElement,c=d.classList;c.remove('light','dark');var e=localStorage.getItem('theme');if('system'===e||(!e&&window.matchMedia('(prefers-color-scheme: dark)').matches)){c.add('dark')}else if(e){c.add(e)}}catch(e){}}()`
-          }}
-        />
-      </head>
+    <html
+      lang="ca"
+      className={`${grtsk.variable} ${grtskHeading.variable} ${fkMono.variable} ${initialTheme} h-[100dvh] antialiased`}
+      style={{ colorScheme: initialTheme }}
+      suppressHydrationWarning
+    >
       <body className="font-sans min-h-full flex flex-col bg-surface-base text-text-main">
         <ThemeProvider>
           <TransitionProvider>
             <PageTransition />
-            <NavigationWrapper>
-              {children}
-            </NavigationWrapper>
-            <Footer />
+            <SiteShell>{children}</SiteShell>
           </TransitionProvider>
         </ThemeProvider>
       </body>
