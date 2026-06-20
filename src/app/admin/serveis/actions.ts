@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAdmin } from '@/lib/supabase'
-import type { ServiceInsert, ServiceUpdate, Translatable } from '@/types/database'
+import type { Json, ServiceInsert, ServiceUpdate, Translatable } from '@/types/database'
 
 /**
  * Server Actions per CRUD de services.
@@ -18,6 +18,27 @@ function buildI18n(formData: FormData, key: string): Record<string, string> | nu
   if (en) obj.en = en
   if (es) obj.es = es
   return Object.keys(obj).length > 0 ? obj : null
+}
+
+/**
+ * Parseja les fites de pagament enviades pel sub-editor com a JSON string.
+ * Retorna null si no n'hi ha cap útil → el modal cau al 50/50 per defecte.
+ */
+function buildMilestones(formData: FormData): Json | null {
+  const raw = String(formData.get('payment_milestones') || '').trim()
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return null
+    const clean = parsed.filter((m) => {
+      if (!m || typeof m !== 'object') return false
+      const o = m as Record<string, unknown>
+      return o.percent != null || o.title != null || o.meta != null
+    })
+    return clean.length ? (clean as Json) : null
+  } catch {
+    return null
+  }
 }
 
 export async function createService(formData: FormData) {
@@ -82,8 +103,7 @@ export async function updateService(id: string, formData: FormData) {
     content_steps: buildI18n(formData, 'content_steps'),
     content_deliverables: buildI18n(formData, 'content_deliverables'),
     content_why_us: buildI18n(formData, 'content_why_us'),
-    // payment_milestones es manté hardcoded al ServiceModal (50/50) per ara.
-    // Si vols editar-lo, caldrà fer un sub-editor estructurat.
+    payment_milestones: buildMilestones(formData),
     is_published: formData.get('is_published') === 'on',
   }
 
@@ -167,6 +187,7 @@ export async function duplicateService(formData: FormData) {
     content_steps: source.content_steps as Translatable | null,
     content_deliverables: source.content_deliverables as Translatable | null,
     content_why_us: source.content_why_us as Translatable | null,
+    payment_milestones: source.payment_milestones,
     is_published: false,
   }
 

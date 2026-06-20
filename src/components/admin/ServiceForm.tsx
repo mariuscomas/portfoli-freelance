@@ -9,6 +9,7 @@ import {
   Warning,
   Translate,
   CircleNotch,
+  Plus,
 } from '@phosphor-icons/react'
 import ImageUploadField from './ImageUploadField'
 import { useConfirm } from './useConfirm'
@@ -168,6 +169,20 @@ export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props
         />
       </Card>
 
+      {/* Fites de pagament (sub-editor estructurat) */}
+      {isEdit && (
+        <Card
+          eyebrow="Preu · Fites de pagament"
+          title="Fites de pagament"
+          description="Defineix com es reparteix el pagament del servei. Si no n'hi ha cap, el modal mostra el 50/50 per defecte (Kickoff / Lliurament final). Els títols i notes segueixen l'idioma seleccionat a dalt."
+        >
+          <MilestonesEditor
+            defaultValue={service?.payment_milestones}
+            locale={activeLocale}
+          />
+        </Card>
+      )}
+
       {/* i18n cards */}
       {(isEdit ? (['ca', 'en', 'es'] as const) : (['ca'] as const)).map((locale) => (
         <Card
@@ -279,6 +294,193 @@ export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props
       {/* Modal de confirmació (delete service). */}
       {confirmDialog}
     </form>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Milestones sub-editor                                              */
+/* ------------------------------------------------------------------ */
+
+type I18nDraft = { ca: string; en: string; es: string }
+type MilestoneDraft = { percent: string; title: I18nDraft; meta: I18nDraft }
+
+const emptyI18n = (): I18nDraft => ({ ca: '', en: '', es: '' })
+
+function toI18nDraft(field: unknown): I18nDraft {
+  if (typeof field === 'string') return { ca: field, en: '', es: '' }
+  if (field && typeof field === 'object') {
+    const o = field as Record<string, unknown>
+    return {
+      ca: typeof o.ca === 'string' ? o.ca : '',
+      en: typeof o.en === 'string' ? o.en : '',
+      es: typeof o.es === 'string' ? o.es : '',
+    }
+  }
+  return emptyI18n()
+}
+
+function parseInitialMilestones(value: unknown): MilestoneDraft[] {
+  if (!Array.isArray(value)) return []
+  return value.map((m) => {
+    const obj = (m ?? {}) as Record<string, unknown>
+    return {
+      percent: typeof obj.percent === 'number' ? String(obj.percent) : '',
+      title: toI18nDraft(obj.title),
+      meta: toI18nDraft(obj.meta),
+    }
+  })
+}
+
+function pickI18n(v: I18nDraft): Record<string, string> | null {
+  const o: Record<string, string> = {}
+  if (v.ca.trim()) o.ca = v.ca.trim()
+  if (v.en.trim()) o.en = v.en.trim()
+  if (v.es.trim()) o.es = v.es.trim()
+  return Object.keys(o).length ? o : null
+}
+
+function hasAnyContent(m: MilestoneDraft): boolean {
+  return (
+    m.percent.trim() !== '' ||
+    Boolean(m.title.ca || m.title.en || m.title.es) ||
+    Boolean(m.meta.ca || m.meta.en || m.meta.es)
+  )
+}
+
+/**
+ * Editor estructurat de fites de pagament. Manté els 3 idiomes en estat i
+ * serialitza tot l'array a un únic <input hidden name="payment_milestones">
+ * en JSON, que el server action parseja. Els camps de text mostren l'idioma
+ * actiu (`locale`) però es desen tots tres.
+ */
+function MilestonesEditor({
+  defaultValue,
+  locale,
+}: {
+  defaultValue: unknown
+  locale: Locale
+}) {
+  const [items, setItems] = useState<MilestoneDraft[]>(() =>
+    parseInitialMilestones(defaultValue),
+  )
+
+  const setPercent = (i: number, val: string) =>
+    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, percent: val } : it)))
+  const setField = (i: number, field: 'title' | 'meta', val: string) =>
+    setItems((prev) =>
+      prev.map((it, idx) =>
+        idx === i ? { ...it, [field]: { ...it[field], [locale]: val } } : it,
+      ),
+    )
+  const add = () =>
+    setItems((prev) => [...prev, { percent: '', title: emptyI18n(), meta: emptyI18n() }])
+  const remove = (i: number) =>
+    setItems((prev) => prev.filter((_, idx) => idx !== i))
+
+  const serialized = JSON.stringify(
+    items.filter(hasAnyContent).map((m) => ({
+      percent: m.percent.trim() === '' ? null : Number(m.percent),
+      title: pickI18n(m.title),
+      meta: pickI18n(m.meta),
+    })),
+  )
+
+  const total = items.reduce(
+    (sum, m) => sum + (m.percent.trim() === '' ? 0 : Number(m.percent) || 0),
+    0,
+  )
+
+  return (
+    <div className="flex flex-col gap-4">
+      <input type="hidden" name="payment_milestones" value={serialized} />
+
+      {items.length === 0 && (
+        <p className="text-body-sm text-text-secondary leading-snug">
+          Sense fites personalitzades. El modal mostrarà el 50/50 per defecte
+          (Kickoff a la signatura · Lliurament final al handoff) mentre el servei
+          tingui preu.
+        </p>
+      )}
+
+      {items.map((m, i) => (
+        <div
+          key={i}
+          className="flex flex-col gap-4 rounded-md border border-surface-border p-4"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-body-sm font-medium text-text-secondary">
+              Fita {i + 1}
+            </span>
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary hover:text-error transition-colors"
+            >
+              <Trash size={14} weight="regular" />
+              Treure
+            </button>
+          </div>
+
+          <Row>
+            <Col span={3}>
+              <Field
+                label="% del total"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                placeholder="50"
+                value={m.percent}
+                onChange={(e) => setPercent(i, e.target.value)}
+              />
+            </Col>
+          </Row>
+
+          <Row>
+            <Col span={6}>
+              <Field
+                label={`Títol (${locale.toUpperCase()})`}
+                type="text"
+                placeholder="Kickoff"
+                value={m.title[locale]}
+                onChange={(e) => setField(i, 'title', e.target.value)}
+              />
+            </Col>
+            <Col span={6}>
+              <Field
+                label={`Nota (${locale.toUpperCase()})`}
+                hint="Text secundari, p. ex. 'A la signatura'."
+                type="text"
+                placeholder="A la signatura"
+                value={m.meta[locale]}
+                onChange={(e) => setField(i, 'meta', e.target.value)}
+              />
+            </Col>
+          </Row>
+        </div>
+      ))}
+
+      <div className="flex items-center justify-between gap-4">
+        <button
+          type="button"
+          onClick={add}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-surface-border rounded-full text-body-sm text-text-main hover:border-text-main transition-colors"
+        >
+          <Plus size={16} weight="regular" />
+          Afegir fita
+        </button>
+
+        {items.length > 0 && (
+          <span
+            className={`text-body-sm tabular-nums ${
+              total === 100 ? 'text-text-secondary' : 'text-error'
+            }`}
+          >
+            Total: {total}%{total !== 100 ? ' (hauria de sumar 100%)' : ''}
+          </span>
+        )}
+      </div>
+    </div>
   )
 }
 

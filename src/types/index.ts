@@ -15,6 +15,18 @@ export interface Project {
  */
 type I18nField = string | { ca?: string; [key: string]: unknown } | null;
 
+/**
+ * Fita de pagament d'un servei. `percent` és el % del total; `title` i `meta`
+ * són i18n (títol curt + nota tipus "A la signatura"). Es desa com a array
+ * a la columna jsonb `payment_milestones`. Si és null/buit, el modal usa el
+ * fallback 50/50 hardcoded.
+ */
+export interface PaymentMilestone {
+  percent?: number | null;
+  title?: I18nField;
+  meta?: I18nField;
+}
+
 export interface Service {
   id: number | string;
   title: I18nField;
@@ -32,4 +44,5 @@ export interface Service {
   content_why_us: I18nField;
   revisions?: I18nField;
   duration?: I18nField;
+  payment_milestones?: PaymentMilestone[] | null;
 }

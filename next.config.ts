@@ -36,6 +36,13 @@ const nextConfig: NextConfig = {
             },
           ]
         : []),
+      // Imatges legacy migrades des d'Adobe Portfolio (alguns works antics
+      // encara apunten a la seva CDN). Sense això, next/image les bloqueja i
+      // la pàgina de detall peta.
+      {
+        protocol: "https" as const,
+        hostname: "cdn.myportfolio.com",
+      },
       // Si en algun moment fas servir Unsplash, Cloudinary, etc., afegeix-los aquí.
     ],
   },

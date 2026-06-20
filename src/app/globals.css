@@ -46,21 +46,15 @@
   /* Figma: surface/card */
   --surface-border: #e5e7eb;
   /* Figma: surface/border */
-  --surface-base-inverse: #262522;
   --surface-card-inverse: #0a0a0a;
-  --surface-border-inverse: #8a8a8a;
+  /* Únic membre "inverse" amb ús real (chips/badges sobre fons fix) */
 
   /* --- COLOR / Primary (Brand) --- */
   --primary-main: #1a1a1a;
-  --primary-hover: #737373;
-  /* Figma sync: AA pass per a text normal (ratio 4.54) */
-  --primary-surface: #efebe7;
 
   /* --- COLOR / Accent (Brand · ús puntual) --- */
   --accent-main: #13ec6d;
   /* Figma: accent/main */
-  --accent-hover: #0fc55c;
-  /* Figma: accent/hover */
   --accent-surface: #e7fcf0;
   /* Figma: accent/surface — pastilles/badges */
 
@@ -77,8 +71,6 @@
   /* --- COLOR / Solid Button (Figma: Solid/* aliased) --- */
   --solid-default-background: var(--primary-main);
   --solid-default-font-color: var(--text-main-inverse);
-  --solid-hover-background: var(--primary-main);
-  --solid-hover-font-color: var(--text-main-inverse);
   --solid-focus-outline: var(--primary-main);
   /* NOU — Focus ring */
   --solid-pressed-background: var(--text-main);
@@ -134,11 +126,6 @@
   /* Figma: 24 / 32 / 64 */
   --display-h2-letter-spacing: -1px;
   /* Figma: -1 all modes */
-
-  --display-h3-font-size: clamp(1.5rem, 4vw, 3.5rem);
-  /* Figma: 24 / 32 / 56 */
-  --display-h3-line-height: 1;
-  --display-h3-letter-spacing: -1px;
 
   --display-h4-font-size: clamp(1.25rem, 3.5vw, 3rem);
   /* Figma: 20 / 24 / 48 */
@@ -214,55 +201,32 @@
   /* Figma: 18 / 22 / 28 */
   --body-sm-letter-spacing: 0;
 
-  /* --- TYPOGRAPHY / Caption + Buttons --- */
-  --caption-font-size: clamp(0.75rem, 1vw, 0.875rem);
-  /* Figma: 12 / 12 / 14 */
-  --caption-line-height: 1rem;
-  /* Figma: 16 all modes */
-  --caption-letter-spacing: 0.3px;
-  --caption-weight: 500;
-
+  /* --- TYPOGRAPHY / Buttons --- */
   --button-large-font-size: clamp(0.75rem, 1.5vw, 1.25rem);
   /* Figma: 12-14 / 14-16 / 14-20 */
   --button-large-line-height: clamp(1.3125rem, 1.5vw, 1.75rem);
   --button-large-letter-spacing: 0.5px;
   --button-large-weight: 600;
 
-  /* --- LAYOUT / Section padding (Figma: section/padding) --- */
-  --section-padding-x-xl: 96px;
-  /* Figma: section/padding/x-XL */
-  --section-padding-x-lg: 48px;
-  /* Figma: section/padding/x-LG */
-  --section-padding-y-xl: 284px;
-  /* Figma: section/padding/y-XL — Hero */
-  --section-padding-y-md: 96px;
-  /* Figma: section/padding/y-MD */
-  --section-padding-y-sm: 48px;
-  /* Figma: section/padding/y-SM */
-
-  /* --- LAYOUT / Section gap --- */
-  --section-gap-xl: 96px;
-  /* Figma: section/gap-XL */
-  --section-gap-lg: 64px;
-  /* Figma: section/gap-LG */
-  --section-gap-md: 48px;
-  /* Figma: section/gap-MD */
-
   /* --- LAYOUT / Radii --- */
-  --card-radius: 16px;
-  /* Figma: card-radius */
   --radius-base: 16px;
-  /* Figma: number (default radius) */
+  /* Figma: number (default radius). Tant rounded-base com rounded-card hi apunten. */
 
-  /* --- LAYOUT / Button properties --- */
-  --button-large-padding: 32px;
-  /* Figma: properties/large/padding */
-  --button-large-height: 64px;
-  /* Figma: properties/large/height */
+  /* --- LAYOUT / Button properties — noms alineats amb els modes Figma (MD/LG/XL) ---
+     El codi consumeix els 3 modes superiors de buttons-properties; el mode SM
+     (h32) de Figma no s'usa. Paddings alineats amb Figma. */
   --button-md-padding: 24px;
-  --button-md-height: 48px;
-  --button-sm-padding: 16px;
-  --button-sm-height: 40px;
+  /* Figma: properties MD/padding (abans sm: 16) */
+  --button-md-height: 40px;
+  /* Figma: MD/height */
+  --button-lg-padding: 28px;
+  /* Figma: LG/padding (abans md: 24) */
+  --button-lg-height: 48px;
+  /* Figma: LG/height */
+  --button-xl-padding: 32px;
+  /* Figma: XL/padding */
+  --button-xl-height: 64px;
+  /* Figma: XL/height */
 }
 
 .dark {
@@ -276,14 +240,11 @@
   --surface-base: #262522;
   --surface-card: #0a0a0a;
   --surface-border: #8a8a8a;
-  --surface-base-inverse: #f2f2f2;
   --surface-card-inverse: #ffffff;
-  --surface-border-inverse: #e5e7eb;
 
   /* --- COLOR / Primary (dark) — invertit perquè CTA destaqui sobre fons fosc --- */
   --primary-main: #f2f2f2;
   /* Figma sync: primary/main Dark */
-  --primary-hover: #7a7a7a;
 
   /* --- COLOR / Semantic (dark) — error més clar per visibilitat sobre fons fosc --- */
   --error-main: #f87171;
@@ -301,14 +262,11 @@
   --font-heading: var(--font-heading), sans-serif;
   --font-mono: var(--font-mono), monospace;
 
-  /* Colors / Brand → bg-primary-main, text-primary-hover, etc. */
+  /* Colors / Brand → bg-primary-main */
   --color-primary-main: var(--primary-main);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-surface: var(--primary-surface);
 
-  /* Colors / Accent → bg-accent, text-accent, etc. */
+  /* Colors / Accent → bg-accent, bg-accent-surface, etc. */
   --color-accent: var(--accent-main);
-  --color-accent-hover: var(--accent-hover);
   --color-accent-surface: var(--accent-surface);
 
   /* Colors / Text → text-main, text-secondary, text-main-inverse, etc. */
@@ -328,9 +286,7 @@
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
-  --color-surface-base-inverse: var(--surface-base-inverse);
   --color-surface-card-inverse: var(--surface-card-inverse);
-  --color-surface-border-inverse: var(--surface-border-inverse);
 
   /* Colors / Semantic states → bg-error, text-error, bg-warning, etc. */
   --color-error: var(--error-main);
@@ -338,8 +294,8 @@
   --color-warning: var(--warning-main);
   --color-warning-surface: var(--warning-surface);
 
-  /* Radii → rounded-card, rounded-base */
-  --radius-card: var(--card-radius);
+  /* Radii → rounded-card i rounded-base (mateix valor, 16px) */
+  --radius-card: var(--radius-base);
   --radius-base: var(--radius-base);
 
   /* Animacions */
@@ -415,13 +371,6 @@
     letter-spacing: var(--display-h2-letter-spacing);
   }
 
-  .text-display-h3 {
-    @apply font-heading font-semibold uppercase;
-    font-size: var(--display-h3-font-size);
-    line-height: var(--display-h3-line-height);
-    letter-spacing: var(--display-h3-letter-spacing);
-  }
-
   .text-display-h4 {
     @apply font-heading font-semibold uppercase;
     font-size: var(--display-h4-font-size);
@@ -443,12 +392,6 @@
     font-size: var(--heading-h1-font-size);
     line-height: var(--heading-h1-line-height);
     letter-spacing: var(--heading-h1-letter-spacing);
-  }
-
-  /* Versió responsive de heading-h1 (per a títols més fluids) */
-  .text-heading-h1-fluid {
-    @apply font-sans font-medium tracking-tight leading-[1.1];
-    font-size: clamp(2rem, 3.5vw, 5rem);
   }
 
   .text-heading-h2 {
@@ -506,15 +449,6 @@
     font-size: var(--body-sm-font-size);
     line-height: var(--body-sm-line-height);
     letter-spacing: var(--body-sm-letter-spacing);
-  }
-
-  /* --- CAPTION (Grtsk Regular medium 500 + tracking obert) --- */
-  .text-caption {
-    @apply font-sans uppercase;
-    font-size: var(--caption-font-size);
-    line-height: var(--caption-line-height);
-    letter-spacing: var(--caption-letter-spacing);
-    font-weight: var(--caption-weight);
   }
 
   /* --- BUTTONS --- */

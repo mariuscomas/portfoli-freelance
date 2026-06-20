@@ -1,4 +1,5 @@
 import localFont from "next/font/local";
+import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 import { cookies } from "next/headers";
 import SiteShell from "@/components/layout/SiteShell";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -7,41 +8,20 @@ import PageTransition from "@/components/common/PageTransition";
 import { buildMetadata } from "@/lib/seo";
 import "./globals.css";
 
-const grtsk = localFont({
-  src: [
-    {
-      path: "../../public/fonts/6849da698cb78e39e8121634_Grtsk-Light.ttf",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/6849da698cb78e39e8121633_Grtsk-Regular.ttf",
-      weight: "400",
-      style: "normal",
-    },
-  ],
+// Cos (body, headings, botons, caption) → Hanken Grotesk
+// Font del sistema sincronitzat amb Figma (variable font-family-body)
+const sans = Hanken_Grotesk({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const grtskHeading = localFont({
-  src: [
-    {
-      path: "../../public/fonts/6849da698cb78e39e8121635_Grtsk-LightGiga.ttf",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/6849da698cb78e39e8121638_Grtsk-Giga.ttf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/6849da698cb78e39e8121636_Grtsk-SemiBoldGiga.ttf",
-      weight: "600",
-      style: "normal",
-    },
-  ],
+// Display (heros, marquees, peces estructurals) → Bricolage Grotesque
+// Sincronitzat amb Figma (variable font-family-heading)
+const heading = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
 });
@@ -88,7 +68,7 @@ export default async function RootLayout({
   return (
     <html
       lang="ca"
-      className={`${grtsk.variable} ${grtskHeading.variable} ${fkMono.variable} ${initialTheme} h-[100dvh] antialiased`}
+      className={`${sans.variable} ${heading.variable} ${fkMono.variable} ${initialTheme} h-[100dvh] antialiased`}
       style={{ colorScheme: initialTheme }}
       suppressHydrationWarning
     >

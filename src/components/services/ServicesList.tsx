@@ -8,6 +8,10 @@ import {
   Globe,
   Target,
   Browsers,
+  Planet,
+  Detective,
+  RocketLaunch,
+  Microscope,
   Sparkle,
   ArrowUpRight,
   ArrowRight,
@@ -50,6 +54,10 @@ const ICON_MAP: Record<string, PhosphorIcon> = {
   Globe,
   Target,
   Browsers,
+  Planet,
+  Detective,
+  RocketLaunch,
+  Microscope,
   Sparkle,
   // Aliases per a noms vells de Lucide
   Box: Cube,
@@ -124,7 +132,7 @@ export default function ServicesList({ services }: ServicesListProps) {
                 role="button"
                 tabIndex={0}
                 aria-label={`Veure detalls del servei ${title}`}
-                className="group flex flex-col md:flex-row items-start md:items-stretch gap-12 lg:gap-24 justify-between py-12 border-t border-surface-border last:border-b cursor-pointer transition-all duration-500 hover:bg-surface-border/5 focus-visible:outline-none focus-visible:bg-surface-border/10 relative"
+                className="group flex flex-col md:flex-row items-start md:items-stretch gap-12 lg:gap-24 justify-between py-20 md:py-48 border-t border-surface-border last:border-b cursor-pointer transition-all duration-500 hover:bg-surface-border/5 focus-visible:outline-none focus-visible:bg-surface-border/10 relative"
                 data-slug={slug}
               >
                 {/* Columna Esquerra: Icona + Títol */}

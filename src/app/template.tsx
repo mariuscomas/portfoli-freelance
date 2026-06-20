@@ -4,16 +4,15 @@ import { useEffect, useState } from "react";
 import { useTransition } from "@/context/TransitionContext";
 
 export default function Template({ children }: { children: React.ReactNode }) {
-  const { isTransitioning, hasStartedTransition, finishTransition } = useTransition();
-  
+  const { isTransitioning, hasStartedTransition } = useTransition();
+
   // Si estem en transició i ja havíem començat (navegació), esperem que s'acabi
   // Si és el muntatge inicial (refresh), mostrem el contingut immediatament
   const [shouldRender, setShouldRender] = useState(!isTransitioning || !hasStartedTransition);
 
-  useEffect(() => {
-    // Aquesta funció es crida cada vegada que el template es munta (navegació)
-    finishTransition();
-  }, [finishTransition]);
+  // Nota: el tancament de la cortina (finishTransition) el gestiona ara el
+  // TransitionProvider observant el canvi de `pathname`, no aquest template.
+  // Així funciona també per a rutes filles, on el template arrel no es re-munta.
 
   useEffect(() => {
     // Quan la transició s'ha acabat (o si ja estava acabada), muntem el contingut

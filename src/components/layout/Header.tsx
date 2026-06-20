@@ -27,8 +27,7 @@ import { useHeaderContrast } from "@/context/HeaderContrastContext";
   - Mobile: sempre compacte (no hi caben links inline).
 
   Altres comportaments preservats:
-  - Amaga el header sobre el Hero del Home (0-400px) per a un aterratge net.
-  - Apareix al muntar la resta de pàgines (~1s després).
+  - Apareix al muntar qualsevol pàgina, inclosa la Home (~1s després).
   - Si l'usuari no fa res durant 5s, s'amaga; mou el ratolí → torna a aparèixer.
   - Contrast del Header (light/dark/auto) declarat per la pàgina via HeaderContrastContext.
 */
@@ -57,13 +56,11 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [hasMounted, setHasMounted] = useState(false);
-  const [isOnHomeHero, setIsOnHomeHero] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const { isIdle, hasInteracted } = useIdle(5000);
   const contrast = useHeaderContrast();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsOnHomeHero(pathname === "/" && latest < 400);
     setIsCompact((prev) => {
       // Histeresi — dos llindars diferents segons l'estat actual
       if (prev) return latest > COMPACT_EXIT;
@@ -73,13 +70,12 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
   // Inicialitzem abans del primer scroll event i marquem el muntatge
   useEffect(() => {
-    setIsOnHomeHero(pathname === "/" && window.scrollY < 400);
     setIsCompact(window.scrollY > COMPACT_ENTER);
     const t = setTimeout(() => setHasMounted(true), 1000);
     return () => clearTimeout(t);
   }, [pathname]);
 
-  const isVisible = !isOnHomeHero && hasMounted && (!hasInteracted || !isIdle);
+  const isVisible = hasMounted && (!hasInteracted || !isIdle);
 
   // Tokens condicionals segons el contrast declarat per la pàgina.
   //  - underline: color de la línia base (estat active).

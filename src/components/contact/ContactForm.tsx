@@ -1,9 +1,10 @@
 "use client"
 
-import { Suspense, useEffect, useState, useTransition } from "react"
+import { Suspense, useEffect, useId, useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, CheckCircle, Warning } from "@phosphor-icons/react"
+import TransitionLink from "@/components/common/TransitionLink"
 import { submitContact } from "@/app/contacte/actions"
 
 /**
@@ -20,6 +21,11 @@ import { submitContact } from "@/app/contacte/actions"
  *
  * Anti-spam: camp honeypot "website" amagat — els bots l'omplen,
  * els humans no. Si arriba ple, simulem èxit sense desar.
+ *
+ * A11y (WCAG 2.1 AA): anell de focus fosc coherent amb el DS (focus/ring →
+ * ring-primary-main), indicador d'obligatori accessible (sr-only), error
+ * amb role=alert associat al submit via aria-describedby, targets ≥44px i
+ * suport de prefers-reduced-motion.
  */
 
 type FormState =
@@ -42,6 +48,8 @@ function ContactFormInner() {
   const [isPending, startTransition] = useTransition()
   const serviceSlug = useServiceFromUrl()
   const [prefillMessage, setPrefillMessage] = useState("")
+  const reduce = useReducedMotion()
+  const errorId = useId()
 
   // Pre-omplim el missatge si venim d'un servei. Només una vegada.
   useEffect(() => {
@@ -81,27 +89,30 @@ function ContactFormInner() {
   if (state.kind === "sent") {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: reduce ? 0 : 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="flex flex-col gap-6 max-w-2xl"
         role="status"
         aria-live="polite"
       >
-        <CheckCircle size={48} weight="thin" className="text-accent" />
+        <CheckCircle size={48} weight="thin" className="text-accent" aria-hidden="true" />
         <h3 className="text-heading-h2 text-text-main">Missatge enviat.</h3>
         <p className="text-body-lg text-text-secondary leading-relaxed">
           T&apos;he rebut el missatge. Responc en menys de 24 hores feiners.
           Mentrestant pots fer una ullada als{" "}
-          <a href="/works" className="underline underline-offset-4 hover:text-accent transition-colors">
+          <TransitionLink
+            href="/works"
+            className="underline underline-offset-4 hover:text-accent transition-colors rounded-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+          >
             treballs recents
-          </a>
+          </TransitionLink>
           .
         </p>
         <button
           type="button"
           onClick={() => setState({ kind: "idle" })}
-          className="font-sans text-body-md text-text-secondary hover:text-accent transition-colors duration-300 underline underline-offset-4 w-fit"
+          className="inline-flex items-center min-h-11 font-sans text-body-md text-text-secondary hover:text-accent transition-colors duration-300 underline underline-offset-4 w-fit rounded-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
         >
           Enviar un altre missatge
         </button>
@@ -112,7 +123,7 @@ function ContactFormInner() {
   const isSubmitting = state.kind === "submitting" || isPending
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-2xl" noValidate>
       {/* Honeypot: visualment ocult i fora del tab order */}
       <label
         aria-hidden="true"
@@ -133,10 +144,10 @@ function ContactFormInner() {
       />
 
       <Field
-        label="Email *"
+        label="Email"
+        required
         name="email"
         type="email"
-        required
         autoComplete="email"
         inputMode="email"
         placeholder="tu@correu.com"
@@ -144,9 +155,9 @@ function ContactFormInner() {
       />
 
       <Textarea
-        label="Missatge *"
-        name="message"
+        label="Missatge"
         required
+        name="message"
         rows={prefillMessage ? 8 : 5}
         minLength={5}
         maxLength={5000}
@@ -157,8 +168,8 @@ function ContactFormInner() {
       />
 
       {state.kind === "error" && (
-        <p role="alert" className="flex items-start gap-3 text-body-md text-error">
-          <Warning size={20} weight="regular" className="shrink-0 mt-0.5" />
+        <p id={errorId} role="alert" className="flex items-start gap-3 text-body-md text-error">
+          <Warning size={20} weight="regular" className="shrink-0 mt-0.5" aria-hidden="true" />
           <span>{state.message}</span>
         </p>
       )}
@@ -166,15 +177,16 @@ function ContactFormInner() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="group inline-flex items-center gap-3 self-start px-6 py-3 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:ring-offset-surface-base"
+        aria-describedby={state.kind === "error" ? errorId : undefined}
+        className="group inline-flex items-center gap-3 self-start min-h-11 px-6 py-3 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-main focus-visible:ring-offset-surface-base"
       >
         {isSubmitting ? "Enviant..." : "Enviar missatge"}
         {!isSubmitting && (
-          <ArrowRight size={18} weight="regular" className="group-hover:translate-x-1 transition-transform" />
+          <ArrowRight size={18} weight="regular" className="group-hover:translate-x-1 transition-transform" aria-hidden="true" />
         )}
       </button>
 
-      <p className="text-body-xs text-text-secondary/70 leading-relaxed max-w-prose">
+      <p className="text-body-xs text-text-secondary leading-relaxed max-w-prose">
         En enviar acceptes que rebi i guardi el teu missatge per respondre&apos;t.
         No el comparteixo amb tercers.
       </p>
@@ -186,14 +198,26 @@ function ContactFormInner() {
 
 function Field({
   label,
+  required,
   ...props
 }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-body-sm text-text-secondary uppercase tracking-wider">{label}</span>
+      <span className="text-body-sm text-text-secondary uppercase tracking-wider">
+        {label}
+        {required && (
+          <>
+            {" "}
+            <span aria-hidden="true">*</span>
+            <span className="sr-only"> (obligatori)</span>
+          </>
+        )}
+      </span>
       <input
         {...props}
-        className="w-full bg-transparent border-b border-text-secondary/40 py-3 text-text-main font-sans text-body-lg focus:outline-none focus:border-text-main transition-colors placeholder:text-text-secondary/40 disabled:opacity-50"
+        required={required}
+        aria-required={required || undefined}
+        className="w-full bg-transparent border-b border-text-secondary/40 py-3 text-text-main font-sans text-body-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus:border-text-main transition-colors placeholder:text-text-secondary/40 disabled:opacity-50"
       />
     </label>
   )
@@ -201,14 +225,26 @@ function Field({
 
 function Textarea({
   label,
+  required,
   ...props
 }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-body-sm text-text-secondary uppercase tracking-wider">{label}</span>
+      <span className="text-body-sm text-text-secondary uppercase tracking-wider">
+        {label}
+        {required && (
+          <>
+            {" "}
+            <span aria-hidden="true">*</span>
+            <span className="sr-only"> (obligatori)</span>
+          </>
+        )}
+      </span>
       <textarea
         {...props}
-        className="w-full bg-transparent border border-surface-border rounded-md p-4 text-text-main font-sans text-body-md focus:outline-none focus:border-text-main transition-colors placeholder:text-text-secondary/40 resize-y disabled:opacity-50"
+        required={required}
+        aria-required={required || undefined}
+        className="w-full bg-transparent border border-surface-border rounded-md p-4 text-text-main font-sans text-body-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus:border-text-main transition-colors placeholder:text-text-secondary/40 resize-y disabled:opacity-50"
       />
     </label>
   )

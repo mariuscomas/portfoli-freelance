@@ -7,12 +7,12 @@ import { motion, type HTMLMotionProps } from "framer-motion";
    <Button /> — Sistema de botons sincronitzat amb Figma
    ------------------------------------------------------------
    Variants: solid | outline | ghost
-   Sizes:    sm    | md      | lg (default)
+   Sizes:    md    | lg      | xl (default)  — alineats amb modes Figma MD/LG/XL
    Shapes:   default (radius 16px) | pill | square
    ============================================================ */
 
 export type ButtonVariant = "solid" | "outline" | "ghost";
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonSize = "md" | "lg" | "xl";
 export type ButtonShape = "default" | "pill" | "square";
 
 type CommonButtonProps = {
@@ -51,8 +51,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-[var(--solid-default-background)] text-[var(--solid-default-font-color)]",
     "backdrop-blur-[2px]",
     "drop-shadow-[0px_4px_10px_rgba(0,0,0,0.08)]",
-    // Hover
-    "hover:bg-[var(--solid-hover-background)] hover:text-[var(--solid-hover-font-color)]",
+    // El hover del solid era idèntic al default (sense canvi visual): el
+    // feedback de hover el dona el "light effect" + whileTap. Sense classe redundant.
     // Active / Pressed (Figma: Solid/Pressed)
     "active:bg-[var(--solid-pressed-background)] active:text-[var(--solid-pressed-font-color)]",
     // Focus visible (Figma: Solid/Focus/outline) — WCAG 2.4.7
@@ -100,23 +100,25 @@ const variantClasses: Record<ButtonVariant, string> = {
    Classes per size — segueixen properties/{size}/{padding,height}
    ------------------------------------------------------------ */
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: [
-    "text-[14px] leading-[20px]",
-    "h-[var(--button-sm-height)]",
-    "px-[var(--button-sm-padding)]",
-    "gap-[6px]",
-  ].join(" "),
   md: [
-    "text-[16px] leading-[24px]",
+    // Figma MD: h40 / padding 24 / font 16 / line-height 25
+    "text-[16px] leading-[25px]",
     "h-[var(--button-md-height)]",
     "px-[var(--button-md-padding)]",
-    "gap-[8px]",
+    "gap-[6px]",
   ].join(" "),
   lg: [
-    // Figma exacte: 20px / 28px / 64px alçada / 32px padding
+    // Figma LG: h48 / padding 28 / font 18 / line-height 24
+    "text-[18px] leading-[24px]",
+    "h-[var(--button-lg-height)]",
+    "px-[var(--button-lg-padding)]",
+    "gap-[8px]",
+  ].join(" "),
+  xl: [
+    // Figma XL: h64 / padding 32 / font 20 (default)
     "text-[length:var(--button-large-font-size)] leading-[var(--button-large-line-height)]",
-    "h-[var(--button-large-height)]",
-    "px-[var(--button-large-padding)]",
+    "h-[var(--button-xl-height)]",
+    "px-[var(--button-xl-padding)]",
     "gap-[8px]",
   ].join(" "),
 };
@@ -125,7 +127,7 @@ const sizeClasses: Record<ButtonSize, string> = {
    Classes per shape
    ------------------------------------------------------------ */
 const shapeClasses: Record<ButtonShape, string> = {
-  default: "rounded-[var(--radius-base)]",   // 16px (Figma: card-radius / number)
+  default: "rounded-[var(--radius-base)]",   // 16px (Figma: radius / number)
   pill: "rounded-full",
   square: "rounded-none",
 };
@@ -136,7 +138,7 @@ const shapeClasses: Record<ButtonShape, string> = {
 const ButtonInner = forwardRef<HTMLElement, ButtonProps>(function ButtonInner(props, ref) {
   const {
     variant = "solid",
-    size = "lg",
+    size = "xl",
     shape = "default",
     iconLeft,
     iconRight,
