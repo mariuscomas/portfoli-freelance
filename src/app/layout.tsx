@@ -1,5 +1,5 @@
 import localFont from "next/font/local";
-import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import SiteShell from "@/components/layout/SiteShell";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -17,11 +17,12 @@ const sans = Hanken_Grotesk({
   display: "swap",
 });
 
-// Display (heros, marquees, peces estructurals) → Bricolage Grotesque
+// Display (heros, marquees) + Headings H1-H3 → Bricolage Grotesque
 // Sincronitzat amb Figma (variable font-family-heading)
+// 500 (Medium) és el weight dels Heading; 600 (SemiBold) el dels Display
 const heading = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
 });
@@ -31,6 +32,15 @@ const fkMono = localFont({
   variable: "--font-mono",
   display: "swap",
   weight: "500",
+});
+
+// Caption & labels (metadades) → Geist Mono
+// Família independent del body, sincronitzada amb Figma (variable font-family-caption)
+const caption = Geist_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-caption",
+  display: "swap",
 });
 
 // Metadata per defecte. Cada pàgina pot sobreescriure-la amb el seu propi
@@ -68,7 +78,7 @@ export default async function RootLayout({
   return (
     <html
       lang="ca"
-      className={`${sans.variable} ${heading.variable} ${fkMono.variable} ${initialTheme} h-[100dvh] antialiased`}
+      className={`${sans.variable} ${heading.variable} ${fkMono.variable} ${caption.variable} ${initialTheme} h-[100dvh] antialiased`}
       style={{ colorScheme: initialTheme }}
       suppressHydrationWarning
     >

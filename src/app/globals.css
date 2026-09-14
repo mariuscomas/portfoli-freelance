@@ -8,6 +8,7 @@
   --font-family-heading: var(--font-heading), sans-serif;
   --font-family-body: var(--font-sans), sans-serif;
   --font-family-mono: var(--font-mono), monospace;
+  --font-family-caption: var(--font-caption), monospace;
 }
 
 /* ============================================================
@@ -46,17 +47,39 @@
   /* Figma: surface/card */
   --surface-border: #e5e7eb;
   /* Figma: surface/border */
+  --surface-border-strong: #999999;
+  /* Figma: surface/border-strong — bordes (dashed) sobre surface/base on border no té prou contrast */
   --surface-card-inverse: #0a0a0a;
   /* Únic membre "inverse" amb ús real (chips/badges sobre fons fix) */
 
   /* --- COLOR / Primary (Brand) --- */
   --primary-main: #1a1a1a;
 
+  /* --- COLOR / Curtain (Brand · transicions) ---
+     Cortines de PageTransition i backdrop/cercle de l'IntroLoader.
+     Fixos: NO s'inverteixen amb el tema (com text-fixed-*).
+     Figma: curtain/a, curtain/b (col·lecció "colors", mateix valor Light/Dark) */
+  --curtain-a: #9b9484;
+  /* Beix caqui apagat — backdrop intro + cortina parell */
+  --curtain-b: #c8cfd1;
+  /* Gris blavós clar — cercle intro + cortina senar */
+
   /* --- COLOR / Accent (Brand · ús puntual) --- */
   --accent-main: #13ec6d;
   /* Figma: accent/main */
   --accent-surface: #e7fcf0;
   /* Figma: accent/surface — pastilles/badges */
+
+  /* --- COLOR / Discipline chips (Brand · categories del configurador) ---
+     Superfícies pastel que identifiquen cada disciplina al chip de "Tipus de
+     projecte". A Figma estaven com a hex crus (sense variable): tokenitzat aquí.
+     El text i el check del chip usen text/main. */
+  --discipline-ux-surface: #b6d7e0;
+  /* Blau clar — Disseny UX */
+  --discipline-ui-surface: #e0ddb6;
+  /* Caqui clar — Disseny UI */
+  --discipline-dev-surface: #b6e0be;
+  /* Verd clar — Desenvolupament */
 
   /* --- COLOR / Semantic states --- */
   --error-main: #dc2626;
@@ -113,18 +136,28 @@
   /* --- TYPOGRAPHY / Display (Grtsk SemiBold Giga) ---
      Tots els tokens display/* tenen mode responsiu al Figma (Desktop/Tablet/Mobile).
      Aquí utilitzem clamp() per replicar el comportament en un sol token. */
-  --display-h1-font-size: clamp(2rem, 8vw, 7rem);
-  /* Figma: 32 Mobile / 64 Tablet / 112 Desktop */
+  --display-h1-font-size: clamp(2.5rem, 8vw, 7rem);
+  /* Figma: 40 Mobile / 64 Tablet / 112 Desktop */
   --display-h1-line-height: 1;
   /* Figma: 1:1 ratio (line-height === font-size) */
-  --display-h1-letter-spacing: -3px;
-  /* Figma: -1 Mobile / -3 Tablet+Desktop */
+  --display-h1-letter-spacing: -1px;
+  /* Figma: -1 Mobile / -3 Tablet+Desktop — el salt es fa a la media query de
+     sota (§ TOKENS RESPONSIUS). Un clamp() no serveix: el tracking no escala
+     de forma contínua entre modes, i -3px sobre 40px tancava tant el lockup
+     del hero mòbil que les lletres es tocaven. */
 
-  --display-h2-font-size: clamp(1.0625rem, 5vw, 4rem);
+  --display-h2-font-size: clamp(1.875rem, 6.5vw, 5.25rem);
+  /* Figma: 30 Mobile / 48 Tablet / 84 Desktop */
+  --display-h2-line-height: 1;
+  /* Figma: 1:1 ratio (line-height === font-size) */
+  --display-h2-letter-spacing: -2px;
+  /* Figma: -1 Mobile / -2 Tablet+Desktop */
+
+  --display-h3-font-size: clamp(1.0625rem, 5vw, 4rem);
   /* Figma: 17 Mobile / 32 Tablet / 64 Desktop */
-  --display-h2-line-height: clamp(1.5rem, 5vw, 4rem);
+  --display-h3-line-height: clamp(1.5rem, 5vw, 4rem);
   /* Figma: 24 / 32 / 64 */
-  --display-h2-letter-spacing: -1px;
+  --display-h3-letter-spacing: -1px;
   /* Figma: -1 all modes */
 
   --display-h4-font-size: clamp(1.25rem, 3.5vw, 3rem);
@@ -179,8 +212,14 @@
 
   --body-xl-font-size: clamp(1rem, 2vw, 2rem);
   /* Figma: 16 / 18 / 32 */
-  --body-xl-line-height: clamp(1.375rem, 2vw, 3rem);
-  /* Figma: 22 / 26 / 48 */
+  --body-xl-line-height: clamp(1.375rem, 3vw, 3rem);
+  /* Figma: 22 / 26 / 48.
+     El terme preferent és 3vw i NO 2vw (el del font-size): compartint-lo,
+     entre ~1100 i 1600px el line-height valia exactament el mateix que el
+     font-size — interlineat 1.0 en un text de cos, que és per on van
+     aparèixer els `leading-relaxed`/`leading-snug` a mà en alguns usos. Amb
+     3vw la proporció es manté a 1.5 a tot el rang i el token toca els 48px
+     del Figma a la mateixa amplada on el font-size toca els 32 (1600px). */
   --body-xl-letter-spacing: 0;
 
   --body-lg-font-size: clamp(0.875rem, 1.5vw, 1.5rem);
@@ -201,12 +240,39 @@
   /* Figma: 18 / 22 / 28 */
   --body-sm-letter-spacing: 0;
 
+  /* --- TYPOGRAPHY / Caption & labels (Geist Mono) --- */
+  --caption-font-size: 0.875rem;
+  /* 14px — Figma: Others/Caption */
+  --caption-line-height: 1rem;
+  /* 16px */
+  --caption-letter-spacing: 0.02em;
+
+  /* Caption SM — variant 16px (Figma: Others/Caption - SM) per rètols de grup
+     i specs de preu dins el configurador */
+  --caption-sm-font-size: 1rem;
+  /* 16px */
+  --caption-sm-line-height: 1.125rem;
+  /* 18px */
+  --caption-sm-letter-spacing: 0;
+
   /* --- TYPOGRAPHY / Buttons --- */
   --button-large-font-size: clamp(0.75rem, 1.5vw, 1.25rem);
   /* Figma: 12-14 / 14-16 / 14-20 */
   --button-large-line-height: clamp(1.3125rem, 1.5vw, 1.75rem);
   --button-large-letter-spacing: 0.5px;
-  --button-large-weight: 600;
+  --button-large-weight: 400;
+  /* Figma sync: Buttons/Large és Hanken Regular (400) */
+
+  /* Buttons/Link — Figma: button/link (24/28, Hanken Regular, ls 0).
+     NO és responsiu al Figma: el mateix valor a Desktop, Tablet i Mobile. És
+     el text dels enllaços "nus" amb subratllat (hero "Veure treballs",
+     selector d'idioma de la barra), que abans anaven a pèl amb
+     text-[24px]/leading-[28px] repetits a cada lloc. */
+  --button-link-font-size: 1.5rem;
+  /* 24px */
+  --button-link-line-height: 1.75rem;
+  /* 28px */
+  --button-link-letter-spacing: 0;
 
   /* --- LAYOUT / Radii --- */
   --radius-base: 16px;
@@ -229,6 +295,20 @@
   /* Figma: XL/height */
 }
 
+/* ============================================================
+   TOKENS RESPONSIUS — modes del Figma que no es poden expressar amb clamp()
+   ------------------------------------------------------------
+   Els tokens display/* tenen mode Desktop/Tablet/Mobile al Figma. La mida es
+   resol amb clamp() (interpolació contínua), però el tracking fa un SALT
+   entre modes (-1 Mobile → -3 Tablet+Desktop) i necessita el breakpoint.
+   768px = `md` de Tailwind, el mateix llindar que fan servir els components.
+   ============================================================ */
+@media (min-width: 768px) {
+  :root {
+    --display-h1-letter-spacing: -3px;
+  }
+}
+
 .dark {
   /* --- COLOR / Text (dark) --- */
   --text-main: #f2f2f2;
@@ -240,6 +320,7 @@
   --surface-base: #262522;
   --surface-card: #0a0a0a;
   --surface-border: #8a8a8a;
+  --surface-border-strong: #999999;
   --surface-card-inverse: #ffffff;
 
   /* --- COLOR / Primary (dark) — invertit perquè CTA destaqui sobre fons fosc --- */
@@ -251,23 +332,67 @@
   /* Figma: error/main Dark */
   --accent-surface: #06301b;
   /* Figma: accent/surface Dark */
+
+  /* --- COLOR / Discipline chips (dark) — superfícies fosques tintades (provisional, revisar amb Figma Dark) --- */
+  --discipline-ux-surface: #2b3d45;
+  --discipline-ui-surface: #3d3a29;
+  --discipline-dev-surface: #2b402f;
+
+  /* --- Re-àlies dels tokens de @theme perquè `.dark` funcioni també NIAT ---
+     Tailwind v4 resol les variables de @theme a `:root`, i una custom property
+     hereta el valor JA SUBSTITUÏT: per això un `.dark` a mig document canviava
+     els tokens crus (--surface-base…) però `bg-surface-base` seguia servint el
+     valor clar. Aquí els tornem a lligar dins el mateix bloc, de manera que la
+     substitució es resolgui contra els tokens d'aquest element.
+     Ho necessita la banda invertida de /serveis ("Com treballem", que al Figma
+     fixa el mode Dark) i qualsevol secció futura que vulgui invertir-se sense
+     canviar el tema de tota la pàgina. A <html class="dark"> el resultat és
+     idèntic, així que no altera el tema global. */
+  --color-text-main: var(--text-main);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-main-inverse: var(--text-main-inverse);
+  --color-text-secondary-inverse: var(--text-secondary-inverse);
+  --color-surface-base: var(--surface-base);
+  --color-surface-card: var(--surface-card);
+  --color-surface-border: var(--surface-border);
+  --color-surface-border-strong: var(--surface-border-strong);
+  --color-surface-card-inverse: var(--surface-card-inverse);
+  --color-primary-main: var(--primary-main);
+  --color-error: var(--error-main);
+  --color-accent-surface: var(--accent-surface);
+  --color-discipline-ux: var(--discipline-ux-surface);
+  --color-discipline-ui: var(--discipline-ui-surface);
+  --color-discipline-dev: var(--discipline-dev-surface);
 }
 
 /* ============================================================
    TAILWIND v4 @theme — Mapeig de tokens a utility classes
    ============================================================ */
 @theme {
+  /* Breakpoints — 3xl per a monitors externs (els laptops, incloent-hi el MBP 16" a 1728px, queden per sota) */
+  --breakpoint-3xl: 120rem; /* 1920px */
+
   /* Fonts */
   --font-sans: var(--font-sans), sans-serif;
   --font-heading: var(--font-heading), sans-serif;
   --font-mono: var(--font-mono), monospace;
+  --font-caption: var(--font-caption), monospace;
 
   /* Colors / Brand → bg-primary-main */
   --color-primary-main: var(--primary-main);
 
+  /* Colors / Curtain → bg-curtain-a, bg-curtain-b (transicions, no s'inverteixen) */
+  --color-curtain-a: var(--curtain-a);
+  --color-curtain-b: var(--curtain-b);
+
   /* Colors / Accent → bg-accent, bg-accent-surface, etc. */
   --color-accent: var(--accent-main);
   --color-accent-surface: var(--accent-surface);
+
+  /* Colors / Discipline chips → bg-discipline-ux, bg-discipline-ui, bg-discipline-dev */
+  --color-discipline-ux: var(--discipline-ux-surface);
+  --color-discipline-ui: var(--discipline-ui-surface);
+  --color-discipline-dev: var(--discipline-dev-surface);
 
   /* Colors / Text → text-main, text-secondary, text-main-inverse, etc. */
   --color-text-main: var(--text-main);
@@ -286,6 +411,7 @@
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
+  --color-surface-border-strong: var(--surface-border-strong);
   --color-surface-card-inverse: var(--surface-card-inverse);
 
   /* Colors / Semantic states → bg-error, text-error, bg-warning, etc. */
@@ -358,17 +484,27 @@
   /* --- DISPLAY (Grtsk SemiBold Giga) — Heros, Marquees, peces estructurals ---
        Tots els display/* consumeixen tokens responsius del Figma (clamp). */
   .text-display-h1 {
-    @apply font-heading font-semibold uppercase;
+    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
+    @apply font-heading font-semibold;
     font-size: var(--display-h1-font-size);
     line-height: var(--display-h1-line-height);
     letter-spacing: var(--display-h1-letter-spacing);
   }
 
   .text-display-h2 {
-    @apply font-heading font-semibold uppercase;
+    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
+    @apply font-heading font-semibold;
     font-size: var(--display-h2-font-size);
     line-height: var(--display-h2-line-height);
     letter-spacing: var(--display-h2-letter-spacing);
+  }
+
+  .text-display-h3 {
+    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
+    @apply font-heading font-semibold;
+    font-size: var(--display-h3-font-size);
+    line-height: var(--display-h3-line-height);
+    letter-spacing: var(--display-h3-letter-spacing);
   }
 
   .text-display-h4 {
@@ -385,24 +521,25 @@
     letter-spacing: var(--display-h5-letter-spacing);
   }
 
-  /* --- HEADING (Grtsk Regular) --- */
+  /* --- HEADING (Bricolage Medium H1-H3, Hanken H4) --- */
   /* Heading H1 - Figma exacte: 56px / 64px / -0.5px (preu del modal, títols principals) */
   .text-heading-h1 {
-    @apply font-sans font-medium;
+    /* Figma sync 2026-07-10: Heading H1-H3 → Bricolage Medium (H4 es queda Hanken) */
+    @apply font-heading font-medium;
     font-size: var(--heading-h1-font-size);
     line-height: var(--heading-h1-line-height);
     letter-spacing: var(--heading-h1-letter-spacing);
   }
 
   .text-heading-h2 {
-    @apply font-sans font-medium;
+    @apply font-heading font-medium;
     font-size: var(--heading-h2-font-size);
     line-height: var(--heading-h2-line-height);
     letter-spacing: var(--heading-h2-letter-spacing);
   }
 
   .text-heading-h3 {
-    @apply font-sans font-medium;
+    @apply font-heading font-medium;
     font-size: var(--heading-h3-font-size);
     line-height: var(--heading-h3-line-height);
     letter-spacing: var(--heading-h3-letter-spacing);
@@ -459,6 +596,47 @@
     letter-spacing: var(--button-large-letter-spacing);
     font-weight: var(--button-large-weight);
   }
+
+  .text-button-link {
+    @apply font-sans font-normal;
+    font-size: var(--button-link-font-size);
+    line-height: var(--button-link-line-height);
+    letter-spacing: var(--button-link-letter-spacing);
+  }
+
+  /* --- CAPTION & LABELS (Geist Mono) — metadades, specs, etiquetes --- */
+  .text-caption {
+    @apply font-caption font-medium;
+    font-size: var(--caption-font-size);
+    line-height: var(--caption-line-height);
+    letter-spacing: var(--caption-letter-spacing);
+  }
+
+  /* Variant 16px — Figma: Others/Caption - SM */
+  .text-caption-sm {
+    @apply font-caption font-medium;
+    font-size: var(--caption-sm-font-size);
+    line-height: var(--caption-sm-line-height);
+    letter-spacing: var(--caption-sm-letter-spacing);
+  }
+
+  /* Variant per a etiquetes en majúscula (labels de camps, eyebrows) */
+  .text-label {
+    @apply font-caption font-medium uppercase;
+    font-size: var(--caption-font-size);
+    line-height: var(--caption-line-height);
+    letter-spacing: 0.08em;
+  }
+
+  /* Eyebrow de secció — Figma: Others/Eyebrow (Geist Mono Medium, 14, UPPER, ls 1px, lh 20).
+     Rètol + índex al capdamunt d'una secció (p. ex. "05 — Comencem"). Distint de
+     .text-label (labels de camp) pel line-height 20 i el tracking d'1px. */
+  .text-eyebrow {
+    @apply font-caption font-medium uppercase;
+    font-size: var(--caption-font-size);
+    line-height: 1.25rem;
+    letter-spacing: 1px;
+  }
 }
 
 /* ============================================================
@@ -472,5 +650,92 @@
 
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+}
+/* ============================================================
+   HERO — Lockup interactiu (efecte de cursor)
+   Veure: src/components/home/HeroTitle.tsx
+   Mode fosc: degradat de marca revelat a través de les lletres
+   (marcador del showreel; el vídeo real s'aplica amb màscara SVG).
+   ============================================================ */
+.hero-reveal {
+  background: linear-gradient(120deg, #d85a30, #ef9f27, #1d9e75, #2f6f9e);
+  background-size: 220% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: heroFlow 8s linear infinite;
+}
+
+@keyframes heroFlow {
+  to {
+    background-position: 220% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-reveal {
+    animation: none;
+  }
+}
+
+/* Entrada subtil del hero per CSS (segura: acaba sempre en opacity 1) */
+.hero-enter {
+  animation: heroEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter {
+    animation: none;
+  }
+
+  /* WCAG 2.2.2 — les utilitats d'animació de Tailwind (animate-bounce a la
+     fletxa del hero, animate-pulse, animate-spin) no respecten la preferència
+     per elles mateixes: es queden en bucle infinit encara que l'usuari hagi
+     demanat expressament que no hi hagi moviment. */
+  .animate-bounce,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin {
+    animation: none !important;
+  }
+}
+
+/* Estat d'ESPERA de l'entrada del hero mentre l'intro cobreix la pantalla.
+   Quan l'IntroLoader emet el senyal de reveal, Hero.tsx canvia la classe a
+   .hero-enter i l'entrada arrenca sincronitzada amb el forat que s'obre.
+   Xarxa de seguretat: keyframes propis (nom diferent perquè el canvi de
+   classe reiniciï l'animació netament) amb delay — si el senyal no arribés
+   mai, el hero entra sol i acaba SEMPRE en opacity 1.
+   Només sota no-preference: amb reduced-motion el hero mai s'amaga. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-enter-wait {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: heroEnterFallback 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.6s
+      forwards;
+  }
+}
+
+@keyframes heroEnterFallback {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

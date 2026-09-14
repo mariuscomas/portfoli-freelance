@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Confirmació · Focus spotlight — prototip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* colors interpolats per JS segons --t (0 clar → 1 fosc) */
+    --bg:  #f2f2f2;
+    --fg:  #0b0b0b;
+    --fg2: #444749;
+    --btn-bg: #1a1a1a;
+    --btn-fg: #ffffff;
+    --hair: rgba(0,0,0,.12);
+    --t: 0;
+    --mx: 50vw;
+    --my: 50vh;
+    --sh: 0;          /* nitidesa de text al punt mig de la transició */
+    --spot-op: 0;     /* halo del focus */
+    --reward-op: 0;   /* capa de recompensa (només en fosc) */
+    --bloom-op: 1;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    background: var(--bg);
+    color: var(--fg);
+    font-family:"Hanken Grotesk", system-ui, sans-serif;
+    overflow:hidden;
+    cursor: none;               /* substituïm el cursor per un anell */
+    transition: none;
+  }
+
+  .stage{ position:fixed; inset:0; display:grid; place-items:center; }
+
+  /* ------- capa de recompensa (revelada pel focus en mode fosc) ------- */
+  .reward{
+    position:absolute; inset:0; pointer-events:none;
+    opacity: var(--reward-op);
+    -webkit-mask: radial-gradient(circle var(--spot-r,180px) at var(--lx) var(--ly), #000 0%, #000 55%, transparent 100%);
+            mask: radial-gradient(circle var(--spot-r,180px) at var(--lx) var(--ly), #000 0%, #000 55%, transparent 100%);
+  }
+  .reward .grain{
+    position:absolute; inset:-20%;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity:.35; mix-blend-mode:screen;
+  }
+  .reward .thanks{
+    position:absolute; right:6vw; top:50%; transform:translateY(-50%);
+    font-family:"Bricolage Grotesque"; font-weight:700;
+    font-size:clamp(80px,16vw,240px); line-height:.9; letter-spacing:-.03em;
+    color:#fff; opacity:.06; white-space:nowrap;
+  }
+
+  /* ------- gran brush check a la dreta ------- */
+  .checkwrap{
+    position:absolute; right:12vw; top:43%; transform:translateY(-50%);
+    width:min(44vw,520px); aspect-ratio:258/273; display:grid; place-items:center;
+    pointer-events:none; perspective:1000px;
+  }
+  .bloom{
+    position:absolute; width:160%; aspect-ratio:1; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 62%);
+    opacity: var(--bloom-op);
+    filter: blur(6px);
+  }
+  svg.check{ width:100%; height:100%; overflow:visible; position:relative;
+    transform: rotateX(var(--tiltx,0deg)) rotateY(var(--tilty,0deg));  /* tilt 3D lleu amb el cursor */
+    transform-style:preserve-3d; will-change:transform;
+    clip-path: inset(0 100% 0 0); }               /* ocult; es revela d'esquerra a dreta */
+  svg.check.drawn{ clip-path: inset(0 0 0 0);
+    transition: clip-path .72s cubic-bezier(.65,0,.35,1); }
+  svg.check path{ fill: var(--fg); }  /* clar en dark; la màscara de foscor li dona el gradient cap a la punta */
+
+  /* ------- bloc de contingut (esquerra) — SEMPRE llegible ------- */
+  .content{
+    position:relative; z-index:3;
+    width:min(92vw,1180px); padding:0 6vw;
+    display:flex; align-items:center;
+  }
+  .col{ max-width:560px; }
+  h1{
+    font-family:"Bricolage Grotesque"; font-weight:600; letter-spacing:-.035em;
+    font-size:clamp(38px,5.4vw,80px); line-height:.98; color:var(--fg);
+    white-space:nowrap;                       /* sempre en una línia */
+    text-shadow:0 0 calc(18px*var(--sh)) var(--bg);
+  }
+  p.lead{                                     /* token Body/MD: Hanken Regular 20/28 */
+    margin-top:22px; max-width:46ch;
+    font-weight:400; font-size:20px; line-height:28px; letter-spacing:0; color:var(--fg2);
+    text-shadow:0 0 calc(14px*var(--sh)) var(--bg);
+  }
+  p.lead a{ color:inherit; text-underline-offset:3px; text-decoration-thickness:1px; }
+  p.lead .ref{ color:var(--fg); font-weight:500; }
+
+  .cta{
+    margin-top:34px;
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--btn-bg); color:var(--btn-fg);
+    font-family:"Hanken Grotesk"; font-weight:500; font-size:17px;
+    padding:16px 26px; border-radius:16px; border:0; cursor:none;
+    box-shadow:0 10px 30px rgba(0,0,0,calc(.18 + .22*var(--t)));
+    transition: transform .25s cubic-bezier(.2,.8,.2,1);
+  }
+  .cta:hover{ transform:translateY(-2px); }
+
+  .links{ margin-top:30px; display:flex; flex-direction:column; gap:14px; }
+  a.secondary{
+    display:inline-flex; align-items:center; gap:10px;
+    color:var(--fg2); text-decoration:none; font-size:15px; width:fit-content;
+    text-shadow:0 0 calc(14px*var(--sh)) var(--bg);
+  }
+  a.secondary svg{ transition:transform .25s ease; }
+  a.secondary:hover svg{ transform:translateX(5px); }
+  a.hatch{ color:var(--fg2); opacity:.55; font-size:13px; text-decoration:none; width:fit-content; }
+  a.hatch:hover{ opacity:.85; }
+
+  /* ------- halo del focus que segueix el cursor ------- */
+  /* --- màscara de foscor: forat clar al centre, s'enfosqueix cap als extrems --- */
+  .vignette{
+    position:absolute; inset:0; pointer-events:none; z-index:5;   /* per sobre del contingut */
+    opacity: var(--t);
+    background: radial-gradient(circle at var(--mx) var(--my),
+      rgba(0,0,0,0)   0,
+      rgba(0,0,0,0)   var(--spot-r,220px),
+      rgba(0,0,0,.82) calc(var(--spot-r,220px) + 70px),
+      rgba(0,0,0,.9)  calc(var(--spot-r,220px) + 320px),
+      rgba(0,0,0,.96) 100%);
+  }
+  /* anell/cursor personalitzat */
+  .ring{
+    position:fixed; z-index:6; pointer-events:none;
+    left:0; top:0; width:26px; height:26px; border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:1.5px solid color-mix(in srgb, var(--fg) 55%, transparent);
+    transition: width .25s ease, height .25s ease, border-color .25s ease;
+    will-change:transform;
+  }
+  .ring.dim{ width:54px; height:54px; border-color:rgba(255,248,236,.6); }
+
+  .hint{
+    position:fixed; left:50%; bottom:34px; transform:translateX(-50%);
+    z-index:6; font-size:12.5px; letter-spacing:.04em; color:var(--fg2);
+    opacity:.0; transition:opacity .6s ease; pointer-events:none;
+    text-transform:uppercase;
+  }
+  .hint.show{ opacity:.6; }
+
+  /* entrada */
+  .reveal{ opacity:0; transform:translateY(14px); }
+  .reveal.in{ opacity:1; transform:none; transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+
+  @media (max-width:820px){
+    .content{ justify-content:center; text-align:center; }
+    .col{ margin:0 auto; }
+    .checkwrap{ right:auto; left:50%; top:26%; transform:translate(-50%,-50%); width:70vw; opacity:.5; }
+    p.lead, .col{ max-width:none; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <!-- recompensa (fosc) -->
+    <div class="reward" aria-hidden="true">
+      <div class="grain"></div>
+      <div class="thanks">gràcies.</div>
+    </div>
+
+    <!-- brush check -->
+    <div class="checkwrap" aria-hidden="true">
+      <div class="bloom"></div>
+      <svg class="check" viewBox="0 0 258 273" role="img" aria-label="Enviat">
+        <path d="M56.0074 272.947C56.0074 269.875 55.4166 268.339 54.235 268.339L46.082 272.238C46.082 270.584 45.1367 269.402 43.2462 268.693L40.4104 268.339C38.5198 268.339 36.1566 269.166 33.3208 270.82C32.8482 269.639 32.2574 268.457 31.5484 267.276C30.8395 266.094 30.2487 265.031 29.7761 264.085C26.7039 258.177 23.6318 251.679 20.5597 244.589C17.7238 237.263 15.0062 230.292 12.4067 223.675C10.0435 217.058 8.15297 211.859 6.73506 208.078C5.78979 205.006 4.72636 200.398 3.54477 194.253C2.36318 188.109 1.18159 180.311 0 170.858C2.5995 172.512 4.6082 173.339 6.02611 173.339C7.68033 173.339 9.2164 170.858 10.6343 165.895C11.3433 166.84 12.643 167.313 14.5336 167.313C15.9515 167.313 17.0149 166.84 17.7238 165.895L23.3955 157.388L29.7761 159.515H30.1305C30.6032 159.515 31.0758 159.278 31.5484 158.806C32.0211 158.333 32.73 157.86 33.6753 157.388C35.5659 156.206 36.9838 155.615 37.929 155.615L38.9925 155.97C44.9004 158.806 48.6815 164.005 50.3357 171.567C54.5894 189.527 58.8432 198.507 63.0969 198.507C67.3506 198.507 72.3133 194.017 77.9849 185.037C80.8207 180.547 83.6566 175.348 86.4924 169.44C89.5645 163.532 92.6366 156.915 95.7088 149.589C96.1814 152.425 96.654 153.843 97.1267 153.843C98.3083 153.843 100.317 150.889 103.153 144.981C106.225 139.073 111.069 130.92 117.686 120.522C121.467 114.142 126.194 106.934 131.865 98.899C137.773 90.8642 144.036 82.5931 150.653 74.0857C157.27 65.5782 163.65 57.5434 169.794 49.9812C176.175 42.4191 181.847 35.9203 186.809 30.485C191.772 25.0497 195.435 21.5049 197.798 19.8507C206.778 13.7064 213.868 7.79848 219.067 2.12686C218.83 3.78107 218.476 5.31714 218.003 6.73506C217.767 7.91665 217.649 8.74376 217.649 9.21639C217.649 10.1617 218.121 10.6343 219.067 10.6343L228.992 5.67162V7.08953C228.992 8.98008 229.465 9.92535 230.41 9.92535C231.119 9.92535 232.537 8.86192 234.664 6.73506C236.791 4.6082 237.972 3.07213 238.208 2.12686L237.5 7.08953L249.552 0L246.716 6.38059C250.497 3.78108 253.215 2.48133 254.869 2.48133C255.814 2.48133 256.523 3.07212 256.996 4.25371C257.468 5.19898 257.705 6.14426 257.705 7.08953C257.705 8.50743 257.114 10.1617 255.932 12.0522C254.751 13.9428 253.215 16.1878 251.324 18.7873C249.906 20.6778 247.543 23.5136 244.235 27.2947C241.162 30.8395 236.436 36.1566 230.056 43.2462C223.675 50.0994 215.167 59.6703 204.533 71.9588C201.697 75.0309 197.325 80.4662 191.418 88.2647C185.51 95.8269 178.775 104.689 171.212 114.851C163.886 124.776 156.561 134.819 149.235 144.981C141.909 155.143 135.41 164.359 129.739 172.63C124.067 180.665 120.05 186.691 117.686 190.709L95.7088 227.929C90.9824 235.963 87.0832 242.58 84.011 247.779C80.9389 252.742 78.5757 256.169 76.9215 258.059C73.3767 262.313 69.4775 266.094 65.2238 269.402L62.0335 267.63L59.1976 269.402L56.0074 272.947Z"/>
+      </svg>
+    </div>
+
+    <!-- contingut sempre llegible -->
+    <div class="content">
+      <div class="col">
+        <h1 class="reveal" role="status">Sol·licitud enviada.</h1>
+        <p class="lead reveal">
+          T'he enviat una còpia a mariuscr23@gmail.com<br>
+          <span class="ref">Ref. #A3F2</span> · Responc en 24 h (dies laborables)<br>
+          amb un primer abast i una proposta concreta.
+        </p>
+        <button class="cta reveal">
+          Reservar una trucada de 20 min
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <div class="links">
+          <a class="secondary reveal" href="#">
+            Mentrestant, fes una ullada als treballs recents
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="hint" id="hint">Mou el ratolí per enfocar</div>
+    <div class="ring" id="ring" aria-hidden="true"></div>
+  </div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = matchMedia('(pointer: coarse)').matches;
+
+  // ---- entrada: brush wipe + stagger ----
+  const check = document.querySelector('svg.check');
+  const reveals = [...document.querySelectorAll('.reveal')];
+  if (reduce){
+    check.style.clipPath='none';
+    reveals.forEach(el=>el.classList.add('in'));
+  } else {
+    setTimeout(()=> check.classList.add('drawn'), 200);           // es pinta d'esquerra a dreta
+    reveals.forEach((el,i)=> setTimeout(()=>el.classList.add('in'), 480 + i*110));
+  }
+
+  // ---- colors clar → fosc ----
+  const A = { bg:[242,242,242], fg:[11,11,11],  fg2:[68,71,73],   bb:[26,26,26],  bf:[255,255,255], ck:[26,26,26] };
+  const B = { bg:[23,23,23],    fg:[247,247,247],fg2:[190,193,196],bb:[244,244,244],bf:[11,11,11] }; // "dark normal" al centre
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const mix=(a,b,t)=>`rgb(${Math.round(lerp(a[0],b[0],t))},${Math.round(lerp(a[1],b[1],t))},${Math.round(lerp(a[2],b[2],t))})`;
+
+  const col = document.querySelector('.col');
+  const ring = document.getElementById('ring');
+  const hint = document.getElementById('hint');
+
+
+  let mx = innerWidth/2, my = innerHeight/2;   // cursor
+  let t = 0, target = 0;                        // foscor esmorteïda
+  let tx = 0, ty = 0; const TILT = 18;          // tilt 3D del check
+  let moved = false;
+
+  function distToRect(x,y,r){
+    const dx = Math.max(r.left - x, 0, x - r.right);
+    const dy = Math.max(r.top  - y, 0, y - r.bottom);
+    return Math.hypot(dx,dy);
+  }
+
+  addEventListener('pointermove', e=>{
+    mx=e.clientX; my=e.clientY;
+    if(!moved){ moved=true; hint.classList.remove('show'); }
+  });
+
+  if(!coarse){
+    setTimeout(()=>{ if(!moved) hint.classList.add('show'); }, 1400);
+  } else {
+    // mòbil: focus que deriva sol, suau
+    let a=0;
+    (function drift(){
+      a+=0.006;
+      mx = innerWidth*(0.5 + 0.28*Math.cos(a));
+      my = innerHeight*(0.5 + 0.20*Math.sin(a*1.3));
+      requestAnimationFrame(drift);
+    })();
+  }
+
+  function frame(){
+    // foscor màxima al CENTRE del bloc de text, caiguda radial gradual
+    const r = col.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    const d = Math.hypot(mx - cx, my - cy);
+    const inner = 130, outer = 560;                 // banda ampla → transició llarga
+    let k = 1 - Math.min(Math.max((d - inner)/(outer - inner), 0), 1);
+    k = k*k*(3 - 2*k);                              // smoothstep → suau, sense esglaó
+    target = reduce ? 0 : k;
+
+    // esmorteïment temporal (limita el ritme → mai strobe)
+    t += (target - t) * 0.08;
+
+    // llum estable, ancorada al cursor (sense parpelleig ni tremolor)
+    const lx = mx, ly = my;
+
+    root.style.setProperty('--t', t.toFixed(3));
+    root.style.setProperty('--mx', mx+'px');
+    root.style.setProperty('--my', my+'px');
+    root.style.setProperty('--lx', lx+'px');
+    root.style.setProperty('--ly', ly+'px');
+    // el focus creix a prop del contingut (t alt) i s'encongeix a les vores (t baix)
+    root.style.setProperty('--spot-r', (90 + 120*t).toFixed(1)+'px');
+
+    // tilt 3D del check seguint el cursor (esmorteït)
+    if(!reduce && !coarse){
+      const tgx = (my/innerHeight - .5) * -TILT;
+      const tgy = (mx/innerWidth  - .5) *  TILT;
+      tx += (tgx - tx)*0.08; ty += (tgy - ty)*0.08;
+      root.style.setProperty('--tiltx', tx.toFixed(2)+'deg');
+      root.style.setProperty('--tilty', ty.toFixed(2)+'deg');
+    }
+    root.style.setProperty('--bg',  mix(A.bg ,B.bg ,t));
+    root.style.setProperty('--fg',  mix(A.fg ,B.fg ,t));
+    root.style.setProperty('--fg2', mix(A.fg2,B.fg2,t));
+    root.style.setProperty('--btn-bg', mix(A.bb,B.bb,t));
+    root.style.setProperty('--btn-fg', mix(A.bf,B.bf,t));
+    root.style.setProperty('--bloom-op', (1-t).toFixed(3));
+    root.style.setProperty('--sh', (4*t*(1-t)).toFixed(3)); // nitidesa al punt mig
+
+    // anell/cursor
+    ring.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    ring.classList.toggle('dim', t>0.5);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

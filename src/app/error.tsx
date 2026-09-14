@@ -41,7 +41,7 @@ export default function GlobalError({
         </div>
 
         <div className="flex flex-col gap-6 max-w-2xl">
-          <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-error">
+          <span className="text-label text-error">
             Error · {error.digest || "Inesperat"}
           </span>
           <h1 className="text-display-h4 text-text-main">

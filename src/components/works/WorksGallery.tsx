@@ -104,12 +104,12 @@ export default function WorksGallery({ projects }: Props) {
                 {/* Background hover subtle effect */}
                 <div className="absolute inset-0 bg-text-main/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
 
-                <h3 className="text-3xl md:text-5xl lg:text-6xl font-medium tracking-tight text-text-main group-hover:-translate-y-1 transition-transform duration-300">
+                <h3 className="text-heading-h1 text-text-main group-hover:-translate-y-1 transition-transform duration-300">
                   {project.title}
                 </h3>
 
                 <div className="flex items-center gap-12 overflow-hidden">
-                  <p className="hidden md:block text-lg lg:text-xl text-text-secondary group-hover:text-text-main transition-colors duration-300">
+                  <p className="hidden md:block text-body-md text-text-secondary group-hover:text-text-main transition-colors duration-300">
                     {project.category}
                   </p>
 

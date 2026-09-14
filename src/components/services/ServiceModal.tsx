@@ -22,6 +22,7 @@ import {
 } from "@phosphor-icons/react";
 import Image from "next/image";
 import TransitionLink from "@/components/common/TransitionLink";
+import Button from "@/components/ui/Button";
 import { submitContact } from "@/app/contacte/actions";
 import { Service } from "@/types";
 import { t } from "@/lib/i18n";
@@ -434,14 +435,17 @@ function PricingView({
 
       {/* Dual-CTA */}
       <div className="flex flex-col gap-5">
-        <button
-          type="button"
+        <Button
+          variant="solid"
+          size="xl"
+          fullWidth
           onClick={onRequestProposal}
-          className="group w-full h-16 bg-primary-main text-text-main-inverse rounded-base text-button-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-main focus-visible:ring-offset-surface-base"
+          iconRight={
+            <ArrowRight size={22} weight="regular" className="group-hover:translate-x-1 transition-transform" />
+          }
         >
           Demanar proposta personalitzada
-          <ArrowRight size={22} weight="regular" className="group-hover:translate-x-1 transition-transform" />
-        </button>
+        </Button>
 
         {CALL_BOOKING_URL ? (
           <a
@@ -530,7 +534,7 @@ function FormView({
       </label>
 
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm text-text-secondary uppercase tracking-wider">Pas 2 de 2</span>
+        <span className="text-label text-text-secondary">Pas 2 de 2</span>
         <h4
           className="text-heading-h2 text-text-main focus:outline-none"
           tabIndex={-1}
@@ -562,7 +566,7 @@ function FormView({
       />
 
       <label className="flex flex-col gap-2">
-        <span className="text-body-sm text-text-secondary uppercase tracking-wider">Missatge (opcional)</span>
+        <span className="text-label text-text-secondary">Missatge (opcional)</span>
         <textarea
           name="message"
           rows={3}
@@ -580,17 +584,19 @@ function FormView({
       )}
 
       <div className="flex flex-col gap-4">
-        <button
+        <Button
+          variant="solid"
+          size="xl"
+          fullWidth
           type="submit"
-          disabled={submitting}
+          loading={submitting}
           aria-describedby={error ? errorId : undefined}
-          className="group w-full h-16 bg-primary-main text-text-main-inverse rounded-base text-button-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-main focus-visible:ring-offset-surface-base"
+          iconRight={
+            <ArrowRight size={22} weight="regular" className="group-hover:translate-x-1 transition-transform" />
+          }
         >
           {submitting ? "Enviant..." : "Enviar i rebre proposta"}
-          {!submitting && (
-            <ArrowRight size={22} weight="regular" className="group-hover:translate-x-1 transition-transform" />
-          )}
-        </button>
+        </Button>
         <button
           type="button"
           onClick={onBack}
@@ -637,7 +643,7 @@ function ConfirmationView({ onClose }: { onClose: () => void }) {
 
       {/* Què passa ara */}
       <div className="bg-surface-card border border-surface-border rounded-card p-6 flex flex-col gap-5">
-        <span className="text-body-sm text-text-secondary uppercase tracking-wider">Què passa ara</span>
+        <span className="text-label text-text-secondary">Què passa ara</span>
         <StepRow index={1} title="Reviso el teu missatge" detail="Avui mateix o demà al matí." />
         <StepRow index={2} title="T'envio una proposta" detail="Abast, fases, timing i pressupost en un PDF curt." />
         <StepRow index={3} title="Decidim plegats com avançar" detail="Si encaixa, agendem el kickoff." />
@@ -726,7 +732,7 @@ function Field({
 }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-body-sm text-text-secondary uppercase tracking-wider">
+      <span className="text-label text-text-secondary">
         {label}
         {required && (
           <>
@@ -786,7 +792,7 @@ function ChipGroup({
 
   return (
     <div className="flex flex-col gap-3">
-      <span id={labelId} className="text-body-sm text-text-secondary uppercase tracking-wider">
+      <span id={labelId} className="text-label text-text-secondary">
         {label}
       </span>
       <div role="radiogroup" aria-labelledby={labelId} className="flex flex-wrap gap-2">

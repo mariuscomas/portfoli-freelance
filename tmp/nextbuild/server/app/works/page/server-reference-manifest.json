@@ -1,0 +1,29 @@
+{
+  "node": {
+    "40c55b548922d4767c1552261d6a1977427978fb96": {
+      "workers": {
+        "app/works/page": {
+          "moduleId": 85129,
+          "async": false,
+          "exportedName": "submitContact",
+          "filename": "src/app/contacte/actions.ts"
+        }
+      },
+      "exportedName": "submitContact",
+      "filename": "src/app/contacte/actions.ts"
+    },
+    "401f0b700a93f33837eaa164877b43725e987ef32e": {
+      "workers": {
+        "app/works/page": {
+          "moduleId": 85129,
+          "async": false,
+          "exportedName": "subscribeNewsletter",
+          "filename": "src/app/actions/newsletter.ts"
+        }
+      },
+      "exportedName": "subscribeNewsletter",
+      "filename": "src/app/actions/newsletter.ts"
+    }
+  },
+  "edge": {}
+}

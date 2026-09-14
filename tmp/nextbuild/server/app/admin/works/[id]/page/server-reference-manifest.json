@@ -1,0 +1,197 @@
+{
+  "node": {
+    "40c55b548922d4767c1552261d6a1977427978fb96": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "submitContact",
+          "filename": "src/app/contacte/actions.ts"
+        }
+      },
+      "exportedName": "submitContact",
+      "filename": "src/app/contacte/actions.ts"
+    },
+    "401f0b700a93f33837eaa164877b43725e987ef32e": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "subscribeNewsletter",
+          "filename": "src/app/actions/newsletter.ts"
+        }
+      },
+      "exportedName": "subscribeNewsletter",
+      "filename": "src/app/actions/newsletter.ts"
+    },
+    "40f419614506793a255a7cedc37c4960872129fc3b": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_1",
+          "filename": "src/app/admin/works/[id]/page.tsx"
+        }
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_1",
+      "filename": "src/app/admin/works/[id]/page.tsx"
+    },
+    "60169d36d9c1406f37cbb3691e4fe5c2013b4d81ea": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_0",
+          "filename": "src/app/admin/works/[id]/page.tsx"
+        }
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_0",
+      "filename": "src/app/admin/works/[id]/page.tsx"
+    },
+    "403edcde6981f96b2d0a703f3bd223ef4fcad7c087": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "createWorkRole",
+          "filename": "src/app/admin/works/taxonomy-actions.ts"
+        }
+      },
+      "exportedName": "createWorkRole",
+      "filename": "src/app/admin/works/taxonomy-actions.ts"
+    },
+    "604fd6bf095315fdb6b6202a555d5286f31db4d852": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "updateWorkRole",
+          "filename": "src/app/admin/works/taxonomy-actions.ts"
+        }
+      },
+      "exportedName": "updateWorkRole",
+      "filename": "src/app/admin/works/taxonomy-actions.ts"
+    },
+    "401280a3d07f8a71baa60a6a7debfefd352c3799b7": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "deleteWorkRole",
+          "filename": "src/app/admin/works/taxonomy-actions.ts"
+        }
+      },
+      "exportedName": "deleteWorkRole",
+      "filename": "src/app/admin/works/taxonomy-actions.ts"
+    },
+    "40e509dd49ffa4c2d5050f069aa52821fd75469dd9": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "createWorkCategory",
+          "filename": "src/app/admin/works/taxonomy-actions.ts"
+        }
+      },
+      "exportedName": "createWorkCategory",
+      "filename": "src/app/admin/works/taxonomy-actions.ts"
+    },
+    "60f90c8b89a7b325b3d205a2a374f7819fd1f72697": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "updateWorkCategory",
+          "filename": "src/app/admin/works/taxonomy-actions.ts"
+        }
+      },
+      "exportedName": "updateWorkCategory",
+      "filename": "src/app/admin/works/taxonomy-actions.ts"
+    },
+    "4007c14d1ef3557c547417b394c3b52ff919593b9c": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "deleteWorkCategory",
+          "filename": "src/app/admin/works/taxonomy-actions.ts"
+        }
+      },
+      "exportedName": "deleteWorkCategory",
+      "filename": "src/app/admin/works/taxonomy-actions.ts"
+    },
+    "00631c8ff7f164dda0e5dacd80cc281b5f5f47d121": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "createDraftWork",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "createDraftWork",
+      "filename": "src/app/admin/works/actions.ts"
+    },
+    "400654f45a1c7471f93e9e9659ee77d01cbfe0ce7a": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "duplicateWork",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "duplicateWork",
+      "filename": "src/app/admin/works/actions.ts"
+    },
+    "404a7a207988760486c6d37da44b2c6810d1347631": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "reorderWorks",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "reorderWorks",
+      "filename": "src/app/admin/works/actions.ts"
+    },
+    "40c165b146b42db71beb58be48b6bb575e21ecac57": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "deleteWork",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "deleteWork",
+      "filename": "src/app/admin/works/actions.ts"
+    },
+    "6096fa97becc9e1c5d6de746cc007411f76e44a4a7": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "updateWork",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "updateWork",
+      "filename": "src/app/admin/works/actions.ts"
+    },
+    "609c90d7a2800a1465a9876810eeb351319a324876": {
+      "workers": {
+        "app/admin/works/[id]/page": {
+          "moduleId": 68876,
+          "async": false,
+          "exportedName": "toggleWorkPublished",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "toggleWorkPublished",
+      "filename": "src/app/admin/works/actions.ts"
+    }
+  },
+  "edge": {}
+}

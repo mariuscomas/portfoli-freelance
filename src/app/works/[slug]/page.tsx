@@ -186,8 +186,9 @@ export default async function ProjectDetailsPage({
     },
   };
 
+  // overflow-x-clip (no hidden) — hidden crearia un scroll container Y niat que atrapa el gest de scroll
   return (
-    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-hidden bg-surface-base">
+    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-clip bg-surface-base">
       {isPreview && <PreviewBanner isPublished={Boolean(work.is_published)} workId={String(work.id)} />}
       <WorkDetailLayout data={mappedData} />
     </main>

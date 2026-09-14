@@ -1,40 +1,37 @@
-import React from "react";
 import SharedPageHero from "@/components/common/SharedPageHero";
-import PageNavPill from "@/components/common/PageNavPill";
-import ServicesList from "@/components/services/ServicesList";
-import { createClient } from "@/utils/supabase/server";
+import { ServicesHeroBottom } from "@/components/services/ServicesViews";
+import ProductsView from "@/components/services/ProductsView";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Serveis",
   description:
-    "Disseny de producte, UI/UX, mobile app, design system i landing pages. Serveis pensats per a fundadors i equips que volen escalar la seva visió.",
+    "Web, landing i auditoria UI/UX amb preus transparents. Configura el teu projecte en dos minuts i rep el pressupost al moment — un sol interlocutor, de principi a fi.",
   path: "/serveis",
 });
 
-const navItems = [
-  { label: "Productes", href: "#productes" },
-  { label: "Col·laboració", href: "#colaboracio" },
-];
-
-export default async function ServicesPage() {
-  const supabase = await createClient();
-
-  const { data: services } = await supabase
-    .from("services")
-    .select("*")
-    .eq("is_published", true)
-    .order("order_index", { ascending: true });
-
+/**
+ * Serveis — oferta de client final (web · landing · auditoria) amb configurador.
+ * La col·laboració amb agències viu a la seva pròpia ruta (/colaboracio); els
+ * pills del hero salten entre les dues àrees. Font de preus: src/lib/pricing.ts.
+ */
+export default function ServicesPage() {
+  // overflow-x-clip (no hidden) — hidden crearia un scroll container Y niat que atrapa el gest de scroll
   return (
-    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-hidden bg-surface-base">
+    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-clip bg-surface-base">
       <SharedPageHero
         title="Serveis"
-        description="La meva història no comença amb un llapis, sinó amb línies de codi. Aquesta base tècnica em permet dissenyar productes viables, escalables i amb una estètica impecable."
-        bottomContent={<PageNavPill items={navItems} />}
+        description="Webs, landings i auditories amb preu clar i abast tancat. Configura el teu projecte en dos minuts i rep el pressupost al moment — un sol interlocutor, de principi a fi."
+        bottomContent={
+          <ServicesHeroBottom
+            active="serveis"
+            scrollHref="#productes"
+            scrollLabel="Descobreix el que podem fer"
+          />
+        }
       />
-      
-      <ServicesList services={services || []} />
+
+      <ProductsView />
     </main>
   );
 }

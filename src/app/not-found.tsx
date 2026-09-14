@@ -115,6 +115,7 @@ export default function NotFound() {
         </motion.span>
 
         {/* Missatge gran — typewriter en bucle amb dos tons */}
+        {/* DS-exception: escala responsiva pròpia perquè el typewriter capiga en 1 línia a cada breakpoint */}
         <h1
           className="font-heading font-normal leading-tight tracking-tight !whitespace-nowrap max-w-full text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
           style={{ whiteSpace: "nowrap" }}

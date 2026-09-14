@@ -1,41 +1,132 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 
 const PlaceholderLogo = ({ name }: { name: string }) => (
   <div className="h-12 md:h-16 flex items-center mb-10 text-text-main">
     {/* A simple typographic placeholder that simulates a logo if no SVG is present */}
-    <span className="font-heading font-bold text-3xl md:text-4xl tracking-tighter">{name}</span>
+    {/* Mida DS (heading-h2); bold + tracking-tighter són overrides deliberats del mur de logos */}
+    <span className="text-heading-h2 font-bold tracking-tighter">{name}</span>
   </div>
 );
 
 const clients = [
-  { logo: "North", name: "The North Studio", desc: "La meva història no comença amb un llapis, sinó amb línies de codi. Aquesta base tècnica em permet dissenyar productes." },
-  { logo: "QUANTION", name: "Quantion", desc: "La meva història no comença amb un llapis, sinó amb línies de codi. Aquesta base tècnica em permet dissenyar productes." },
-  { logo: "CUPRA", name: "Cupra", desc: "La meva història no comença amb un llapis, sinó amb línies de codi. Aquesta base tècnica em permet dissenyar productes." },
-  { logo: "santalucía", name: "Santalucía", desc: "La meva història no comença amb un llapis, sinó amb línies de codi. Aquesta base tècnica em permet dissenyar productes." },
-  { logo: "Alpha", name: "Alpha", desc: "La meva història no comença amb un llapis, sinó amb línies de codi. Aquesta base tècnica em permet dissenyar productes." },
+  { logo: "North", name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria — i sí, va ser tan divertit com sona." },
+  { logo: "QUANTION", name: "Quantion", desc: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples." },
+  { logo: "CUPRA", name: "Cupra", desc: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h." },
+  { logo: "santalucía", name: "Santalucía", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },
+  { logo: "Alphanet", name: "Alphanet Solutions", desc: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema." },
+  { logo: "Onabitz", name: "Onabitz", desc: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall." },
+  { logo: "Iternatura", name: "Iternatura", desc: "UI/UX per a Iternatura: apps de turisme que omplen de reptes interactius les rutes pel municipi." },
 ];
 
 export default function Clients() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' });
-    }
-  };
+  // Duplicació de la llista per a un bucle horitzontal sense costures
+  const loopClients = [...clients, ...clients];
 
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' });
-    }
-  };
+  // --- MECÀNICA C + D: auto-scroll lent + drag amb inèrcia ---
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const AUTO_SPEED = 0.4; // px per frame (auto-scroll lent)
+    const FRICTION = 0.94;  // decaïment de la inèrcia
+    const MIN_VELOCITY = 0.3;
+
+    let raf = 0;
+    let isDragging = false;
+    let isHovering = false;
+    let velocity = 0;
+    let startX = 0;
+    let startScroll = 0;
+    let lastX = 0;
+    let activePointer: number | null = null;
+
+    // Respecta usuaris amb moviment reduït: sense auto-scroll
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const half = () => el.scrollWidth / 2;
+
+    const wrap = () => {
+      const h = half();
+      if (h <= 0) return;
+      if (el.scrollLeft >= h) el.scrollLeft -= h;
+      else if (el.scrollLeft < 0) el.scrollLeft += h;
+    };
+
+    const tick = () => {
+      if (!isDragging) {
+        if (Math.abs(velocity) > MIN_VELOCITY) {
+          // Inèrcia després de deixar anar el drag
+          el.scrollLeft -= velocity;
+          velocity *= FRICTION;
+        } else if (!isHovering && !reduceMotion) {
+          // Auto-scroll en repòs
+          el.scrollLeft += AUTO_SPEED;
+        }
+        wrap();
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      velocity = 0;
+      startX = e.clientX;
+      lastX = e.clientX;
+      startScroll = el.scrollLeft;
+      activePointer = e.pointerId;
+      el.setPointerCapture(e.pointerId);
+      el.style.cursor = 'grabbing';
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      el.scrollLeft = startScroll - dx;
+      velocity = e.clientX - lastX; // velocitat instantània per a la inèrcia
+      lastX = e.clientX;
+      wrap();
+    };
+
+    const endDrag = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      el.style.cursor = 'grab';
+      if (activePointer !== null) {
+        try { el.releasePointerCapture(activePointer); } catch { /* noop */ }
+        activePointer = null;
+      }
+    };
+
+    const onEnter = () => { isHovering = true; };
+    const onLeave = () => { isHovering = false; };
+
+    el.style.cursor = 'grab';
+    el.addEventListener('pointerdown', onPointerDown);
+    el.addEventListener('pointermove', onPointerMove);
+    el.addEventListener('pointerup', endDrag);
+    el.addEventListener('pointercancel', endDrag);
+    el.addEventListener('pointerenter', onEnter);
+    el.addEventListener('pointerleave', onLeave);
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener('pointerdown', onPointerDown);
+      el.removeEventListener('pointermove', onPointerMove);
+      el.removeEventListener('pointerup', endDrag);
+      el.removeEventListener('pointercancel', endDrag);
+      el.removeEventListener('pointerenter', onEnter);
+      el.removeEventListener('pointerleave', onLeave);
+    };
+  }, []);
 
   return (
-    <section className="w-full py-24 md:py-40 bg-surface-base">
+    <section className="w-full py-24 md:py-40">
       <div className="flex flex-col gap-16 md:gap-32 w-full relative">
 
         {/* Header Content */}
@@ -48,49 +139,28 @@ export default function Clients() {
           >
             Clients
           </motion.h2>
-
-          {/* Navigation Arrows */}
-          <div className="flex gap-4 md:gap-6 pb-2 md:pb-6">
-            <button
-              onClick={scrollLeft}
-              className="text-text-main hover:text-text-secondary transition-colors"
-              aria-label="Anterior client"
-            >
-              <ArrowLeft size={32} weight="light" className="md:w-10 md:h-10 lg:w-12 lg:h-12" />
-            </button>
-            <button
-              onClick={scrollRight}
-              className="text-text-main hover:text-text-secondary transition-colors"
-              aria-label="Següent client"
-            >
-              <ArrowRight size={32} weight="light" className="md:w-10 md:h-10 lg:w-12 lg:h-12" />
-            </button>
-          </div>
         </div>
 
-        {/* Horizontal Slider Area */}
+        {/* Horizontal Slider Area — auto-scroll + drag amb inèrcia */}
         <div
           ref={scrollRef}
-          className="w-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pl-4 md:pl-[3vw] lg:pl-[4vw] pr-4 md:pr-[20vw] gap-8 md:gap-16 pb-8"
+          className="w-full flex overflow-x-hidden hide-scrollbar select-none touch-pan-y pl-4 md:pl-[3vw] lg:pl-[4vw] gap-8 md:gap-16 pb-8"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {clients.map((client, index) => (
-            <motion.div
+          {loopClients.map((client, index) => (
+            <div
               key={`${client.name}-${index}`}
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: index * 0.1, duration: 0.6 }}
-              className="flex flex-col items-start min-w-[300px] max-w-[300px] md:min-w-[400px] md:max-w-[400px] snap-start shrink-0 cursor-default"
+              aria-hidden={index >= clients.length}
+              className="flex flex-col items-start min-w-[300px] max-w-[300px] md:min-w-[400px] md:max-w-[400px] shrink-0 cursor-grab active:cursor-grabbing"
             >
               <PlaceholderLogo name={client.logo} />
-              <h3 className="font-sans font-bold text-xl md:text-2xl text-text-main mb-4">
+              <h3 className="text-heading-h3 text-text-main mb-4">
                 {client.name}
               </h3>
-              <p className="font-sans text-base md:text-[17px] text-text-secondary leading-relaxed pr-6 md:pr-12">
+              <p className="text-body-md text-text-secondary leading-relaxed pr-6 md:pr-12">
                 {client.desc}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -12,7 +12,9 @@ interface TransitionContextType {
   colors: string[];
 }
 
-const TRANSITION_COLORS = ["#9B9484", "#C8CFD1"];
+// Tokens del DS (globals.css → --curtain-a/b). S'usen com a backgroundColor
+// inline, així que passem la referència var() i el navegador la resol.
+const TRANSITION_COLORS = ["var(--curtain-a)", "var(--curtain-b)"];
 
 const TransitionContext = createContext<TransitionContextType | undefined>(undefined);
 

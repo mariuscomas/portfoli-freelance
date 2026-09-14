@@ -31,18 +31,9 @@ export default function SobreMiPage() {
   return (
     <main className="flex min-h-[100dvh] flex-col w-full bg-surface-base">
       <SharedPageHero
-        title="Sobre Mi"
-        description="Senior Product Designer amb més de 10 anys d'experiència construint solucions digitals per a corporacions i startups. Combino la precisió d'un programador amb la visió estratègica del disseny per crear productes que no només destaquen visualment, sinó que funcionen, escalen i converteixen."
-        bottomContent={
-          <>
-            <div className="flex items-center gap-3 opacity-60">
-              <span className="text-[14px] font-medium tracking-wider uppercase">(Scroll)</span>
-            </div>
-            <div className="flex items-center gap-6">
-              <button className="font-sans font-medium hover:opacity-70 transition-opacity">CA</button>
-            </div>
-          </>
-        }
+        fullScreen
+        title="Qui soc"
+        description="Senior Product Designer amb més de 10 anys construint productes digitals per a corporacions i startups. La precisió d'un programador i la visió estratègica del disseny: productes que funcionen, escalen i converteixen."
       />
 
       {/* Secció 1: Imatge Parallax */}

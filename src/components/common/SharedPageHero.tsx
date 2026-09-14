@@ -51,6 +51,13 @@ interface SharedPageHeroProps {
    * preservar el comportament a about/serveis/contacte/works.
    */
   parallax?: boolean;
+  /**
+   * Hero a pantalla completa: ocupa exactament el viewport en carregar,
+   * sense deixar entreveure la secció següent a scroll top. `100dvh` per
+   * comportar-se bé amb la barra d'adreces dels mòbils. Per defecte
+   * desactivat (el sizing clàssic deixa un "tease" de la secció següent).
+   */
+  fullScreen?: boolean;
 }
 
 export default function SharedPageHero({
@@ -61,11 +68,11 @@ export default function SharedPageHero({
   textClassName = "text-text-main",
   descriptionClassName = "text-text-main",
   secondaryClassName = "text-text-secondary",
-  strokeColor = "var(--color-text-secondary)",
   style,
   backgroundImage,
   overlayOpacity = 0,
   parallax = false,
+  fullScreen = false,
 }: SharedPageHeroProps) {
   const hasImage = Boolean(backgroundImage)
   const clampedOverlay = Math.max(0, Math.min(80, overlayOpacity)) / 100
@@ -94,7 +101,9 @@ export default function SharedPageHero({
   // (en lloc de `h-screen`) deixa que creixi si el contingut és més alt.
   const sizingClasses = parallax
     ? "min-h-screen sticky top-0 mb-0"
-    : "min-h-[calc(90vh-128px)] lg:min-h-[calc(100vh-40px)] mb-0 md:mb-0";
+    : fullScreen
+      ? "min-h-[100dvh] mb-0"
+      : "min-h-[calc(90vh-128px)] lg:min-h-[calc(100vh-40px)] mb-0 md:mb-0";
 
   return (
     <div
@@ -154,35 +163,23 @@ export default function SharedPageHero({
                 ease: "linear",
                 duration: 50,
               }}
-              className="text-[clamp(4rem,10vw,12.5rem)] font-sans font-medium uppercase leading-none tracking-tight flex items-center gap-8 lg:gap-12 w-max px-6 md:px-12 lg:px-24 shrink-0 py-6 transform-gpu will-change-transform"
+              className="text-[clamp(4rem,10vw,12.5rem)] font-heading font-semibold leading-none tracking-tight flex items-center gap-8 lg:gap-12 w-max px-6 md:px-12 lg:px-24 shrink-0 py-6 transform-gpu will-change-transform"
             >
               {/*
-              Marquee amb alternança solid + outline (hollow letters), però
-              tots dos amb EL MATEIX COLOR. La stroke usa `strokeColor` que
-              ara és el mateix color del text solid (no el secundari) per
-              mantenir uniformitat de to — només varia la textura: filled
-              ↔ outline. Asteriscos giratoris com a separador.
+              Marquee (sync amb Figma): còpies del títol en caixa original
+              (no uppercase) alternant color principal (text-main) i secundari
+              (gris), sense contorn. Asteriscs giratoris com a separador.
             */}
               {/* Set 1 */}
               <h1 className={` ${textClassName}`}>{title}</h1>
               <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
-              <h1
-                className="text-transparent"
-                style={{ WebkitTextStroke: `max(2px, 0.02em) ${strokeColor}` }}
-              >
-                {title}
-              </h1>
+              <h1 className={secondaryClassName}>{title}</h1>
               <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
 
               {/* Set 2 (for seamless loop) */}
               <h1 className={` ${textClassName}`}>{title}</h1>
               <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
-              <h1
-                className="text-transparent"
-                style={{ WebkitTextStroke: `max(2px, 0.02em) ${strokeColor}` }}
-              >
-                {title}
-              </h1>
+              <h1 className={secondaryClassName}>{title}</h1>
               <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
             </motion.div>
           </motion.div>

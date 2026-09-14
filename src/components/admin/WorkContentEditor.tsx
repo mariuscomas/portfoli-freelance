@@ -1385,7 +1385,7 @@ function Section({
   return (
     <section id={id} className="flex flex-col gap-5 scroll-mt-20">
       <div className="flex items-center justify-between gap-4">
-        <h3 className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+        <h3 className="text-label text-text-secondary">
           {title}
         </h3>
         {action}

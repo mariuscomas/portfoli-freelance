@@ -95,7 +95,7 @@ export default function ClientNotesTimeline({
       aria-label="Timeline d'interaccions"
     >
       <header className="flex flex-col">
-        <span className="font-sans font-medium uppercase tracking-[0.18em] text-body-xs text-text-secondary">
+        <span className="text-label text-text-secondary">
           Timeline
         </span>
         <h3 className="text-body-lg text-text-main mt-1">

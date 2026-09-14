@@ -109,7 +109,7 @@ export default async function AdminWorksPage({
         {/* Header */}
         <div className="flex items-end justify-between gap-6 mb-12 md:mb-16">
           <div className="flex flex-col gap-3">
-            <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+            <span className="text-label text-text-secondary">
               Dashboard · Treballs
             </span>
             <h1 className="text-heading-h1 text-text-main">Els teus treballs</h1>

@@ -1,0 +1,53 @@
+{
+  "node": {
+    "40c55b548922d4767c1552261d6a1977427978fb96": {
+      "workers": {
+        "app/admin/works/page": {
+          "moduleId": 13026,
+          "async": false,
+          "exportedName": "submitContact",
+          "filename": "src/app/contacte/actions.ts"
+        }
+      },
+      "exportedName": "submitContact",
+      "filename": "src/app/contacte/actions.ts"
+    },
+    "401f0b700a93f33837eaa164877b43725e987ef32e": {
+      "workers": {
+        "app/admin/works/page": {
+          "moduleId": 13026,
+          "async": false,
+          "exportedName": "subscribeNewsletter",
+          "filename": "src/app/actions/newsletter.ts"
+        }
+      },
+      "exportedName": "subscribeNewsletter",
+      "filename": "src/app/actions/newsletter.ts"
+    },
+    "400654f45a1c7471f93e9e9659ee77d01cbfe0ce7a": {
+      "workers": {
+        "app/admin/works/page": {
+          "moduleId": 13026,
+          "async": false,
+          "exportedName": "duplicateWork",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "duplicateWork",
+      "filename": "src/app/admin/works/actions.ts"
+    },
+    "404a7a207988760486c6d37da44b2c6810d1347631": {
+      "workers": {
+        "app/admin/works/page": {
+          "moduleId": 13026,
+          "async": false,
+          "exportedName": "reorderWorks",
+          "filename": "src/app/admin/works/actions.ts"
+        }
+      },
+      "exportedName": "reorderWorks",
+      "filename": "src/app/admin/works/actions.ts"
+    }
+  },
+  "edge": {}
+}

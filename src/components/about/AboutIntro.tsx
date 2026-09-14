@@ -3,26 +3,30 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Button from "@/components/ui/Button";
+import { useContactModal } from "@/context/ContactModalContext";
 
 export default function AboutIntro() {
+  const { open: openContactModal } = useContactModal();
+
   return (
     <section className="
-      w-full 
-      px-6 
-      md:px-12 
-      lg:px-16 
-      py-20 
+      w-full
+      px-6
+      md:px-12
+      lg:px-16
+      py-20
       md:py-32"
     >
       <div className="
-        flex 
-        flex-col 
-        md:flex-row 
-        gap-12 
-        lg:gap-20 
-        xl:gap-24 
-        w-full 
-        mx-auto 
+        flex
+        flex-col
+        md:flex-row
+        gap-12
+        lg:gap-20
+        xl:gap-24
+        w-full
+        mx-auto
         items-start">
 
         {/* Columna Imatge amb Efecte Hover i Revelat */}
@@ -30,7 +34,7 @@ export default function AboutIntro() {
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="w-full md:w-5/12 lg:w-6/12 group cursor-none-on-hover md:sticky md:top-32 h-fit"
         >
           <div className="relative overflow-hidden bg-surface-border">
@@ -50,43 +54,45 @@ export default function AboutIntro() {
           </div>
         </motion.div>
 
-        {/* Columna Text: 7 columnes de 12 */}
-        <div className="w-full md:w-8/12 lg:w-6/12 flex flex-col gap-8 md:gap-10 lg:gap-12 xl:gap-16 md:sticky md:top-32 h-fit">
-          <h2 className="text-heading-h1">Digital Product Designer especialitzat en UI/UX Design</h2>
-          <div className="text-body-xl font-light text-text-secondary leading-relaxed space-y-6 max-w-[95%]">
-            <p>La meva base en programació i especialització en UI/UX em permeten simplificar la complexitat i dissenyar sistemes estratègics que uneixen els objectius de negoci amb les necessitats de l'usuari, generant resultats tangibles.</p>
-            <p>Aquest enfocament es tradueix en:</p>
-            <ul className="space-y-4">
-              {[
-                "Disseny viable: Handoffs sense friccions i reducció directa de costos tècnics.",
-                "Execució àgil: Prototipat ràpid i de precisió en dinàmiques d'esprint.",
-                "Impacte multisectorial: Solucions provades en sectors com l'automoció, l'insurtech i el sector públic."
-              ].map((item, index) => {
-                // Busquem la posició dels dos punts
-                const colonIndex = item.indexOf(':');
+        {/* Columna Text */}
+        <div className="w-full md:w-8/12 lg:w-6/12 flex flex-col gap-8 md:gap-10 lg:gap-12">
+          {/* Figma 11403:8882 — eyebrow Others/Caption + títol Display/H2 */}
+          <div className="flex flex-col gap-6">
+            <span className="text-caption text-text-secondary">Del disseny al codi</span>
+            <h2 className="text-display-h3 text-text-main">Dissenyo i llanço productes digitals end-to-end</h2>
+          </div>
 
-                // Separem el text si trobem els dos punts
-                const boldPart = colonIndex !== -1 ? item.substring(0, colonIndex) : item;
-                const restPart = colonIndex !== -1 ? item.substring(colonIndex + 1) : '';
+          <div className="text-body-xl font-light text-text-secondary leading-relaxed space-y-6 max-w-prose">
+            <p>
+              Vinc del món de la programació i el desenvolupament web. No
+              dissenyo sobre el paper: dissenyo interfícies sabent exactament
+              com es construiran, amb handoffs sense friccions i menys costos
+              de desenvolupament.
+            </p>
+            <p>
+              Especialitzat en arquitectura de la informació i disseny UI/UX,
+              faig de pont entre els objectius de negoci i les necessitats de
+              l&apos;usuari: guies d&apos;estil robustes, prototips d&apos;alta
+              precisió i treball àgil en esprints.
+            </p>
+            <p>
+              I avui vaig un pas més enllà: desenvolupo i publico projectes web
+              complets — del primer wireframe al desplegament a producció —
+              accelerant el cicle amb eines d&apos;IA. Ja sigui conceptualitzant
+              HMI per a Cupra o llançant MVPs en insurtech i sector públic,
+              l&apos;objectiu és sempre el mateix: eliminar complexitat i
+              generar resultats tangibles.
+            </p>
+          </div>
 
-                return (
-                  <li key={index} className="relative pl-6 text-text-secondary">
-                    {/* El bullet personalitzat */}
-                    <span className="absolute left-0 top-[0.6em] w-1.5 h-1.5 rounded-full bg-text-main opacity-80" />
-
-                    {/* Renderitzem amb el span si hi ha ":", o el text normal si no n'hi ha */}
-                    {colonIndex !== -1 ? (
-                      <>
-                        <span className="font-medium text-text-main">{boldPart}</span>
-                        :{restPart}
-                      </>
-                    ) : (
-                      item
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+          {/* Figma 11403:8886 — Buttons Group: 2× Buttons/Outline/Large, gap 24 */}
+          <div className="flex flex-wrap items-center gap-6">
+            <Button variant="outline" size="xl" onClick={openContactModal}>
+              Comencem un projecte
+            </Button>
+            <Button variant="outline" size="xl" as="a" href="/works">
+              Veure projectes
+            </Button>
           </div>
         </div>
 

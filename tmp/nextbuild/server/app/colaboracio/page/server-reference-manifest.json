@@ -1,0 +1,41 @@
+{
+  "node": {
+    "40c55b548922d4767c1552261d6a1977427978fb96": {
+      "workers": {
+        "app/colaboracio/page": {
+          "moduleId": 74941,
+          "async": false,
+          "exportedName": "submitContact",
+          "filename": "src/app/contacte/actions.ts"
+        }
+      },
+      "exportedName": "submitContact",
+      "filename": "src/app/contacte/actions.ts"
+    },
+    "401f0b700a93f33837eaa164877b43725e987ef32e": {
+      "workers": {
+        "app/colaboracio/page": {
+          "moduleId": 74941,
+          "async": false,
+          "exportedName": "subscribeNewsletter",
+          "filename": "src/app/actions/newsletter.ts"
+        }
+      },
+      "exportedName": "subscribeNewsletter",
+      "filename": "src/app/actions/newsletter.ts"
+    },
+    "403701ceeba739aa33237ead0598c4ac0f64fdabc4": {
+      "workers": {
+        "app/colaboracio/page": {
+          "moduleId": 74941,
+          "async": false,
+          "exportedName": "submitQuote",
+          "filename": "src/app/actions/quotes.ts"
+        }
+      },
+      "exportedName": "submitQuote",
+      "filename": "src/app/actions/quotes.ts"
+    }
+  },
+  "edge": {}
+}

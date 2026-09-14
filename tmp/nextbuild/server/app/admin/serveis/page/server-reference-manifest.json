@@ -1,0 +1,53 @@
+{
+  "node": {
+    "40c55b548922d4767c1552261d6a1977427978fb96": {
+      "workers": {
+        "app/admin/serveis/page": {
+          "moduleId": 95861,
+          "async": false,
+          "exportedName": "submitContact",
+          "filename": "src/app/contacte/actions.ts"
+        }
+      },
+      "exportedName": "submitContact",
+      "filename": "src/app/contacte/actions.ts"
+    },
+    "401f0b700a93f33837eaa164877b43725e987ef32e": {
+      "workers": {
+        "app/admin/serveis/page": {
+          "moduleId": 95861,
+          "async": false,
+          "exportedName": "subscribeNewsletter",
+          "filename": "src/app/actions/newsletter.ts"
+        }
+      },
+      "exportedName": "subscribeNewsletter",
+      "filename": "src/app/actions/newsletter.ts"
+    },
+    "40e07fa0a417c0b969b0f9fb55de5cbef2fde09dbf": {
+      "workers": {
+        "app/admin/serveis/page": {
+          "moduleId": 95861,
+          "async": false,
+          "exportedName": "duplicateService",
+          "filename": "src/app/admin/serveis/actions.ts"
+        }
+      },
+      "exportedName": "duplicateService",
+      "filename": "src/app/admin/serveis/actions.ts"
+    },
+    "4081c432455a650f1e4f03d26cd4baa846f1436039": {
+      "workers": {
+        "app/admin/serveis/page": {
+          "moduleId": 95861,
+          "async": false,
+          "exportedName": "reorderServices",
+          "filename": "src/app/admin/serveis/actions.ts"
+        }
+      },
+      "exportedName": "reorderServices",
+      "filename": "src/app/admin/serveis/actions.ts"
+    }
+  },
+  "edge": {}
+}

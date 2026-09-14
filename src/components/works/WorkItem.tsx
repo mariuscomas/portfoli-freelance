@@ -42,15 +42,15 @@ export default function WorkItem({ project, index, onMouseEnter, onMouseLeave }:
             />
           ) : (
             <div className={`w-full h-full ${project.bgColor || "bg-text-secondary/10"} flex items-center justify-center text-text-secondary`}>
-                <span className="font-heading text-xl opacity-50 uppercase tracking-widest">Project Image</span>
+                <span className="text-heading-h3 opacity-50 uppercase tracking-widest">Project Image</span>
             </div>
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <h3 className="text-3xl lg:text-4xl font-medium tracking-tight text-text-main group-hover:ml-2 transition-all duration-300">
+          <h3 className="text-heading-h2 text-text-main group-hover:ml-2 transition-all duration-300">
             {project.title}
           </h3>
-          <p className="text-lg text-text-secondary uppercase tracking-wider group-hover:ml-2 transition-all duration-300">
+          <p className="text-body-md text-text-secondary uppercase tracking-wider group-hover:ml-2 transition-all duration-300">
             {project.category}
           </p>
         </div>

@@ -2,9 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import TransitionLink from "@/components/common/TransitionLink";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
+import { useContactModal } from "@/context/ContactModalContext";
 
 interface MenuLink {
   label: string;
@@ -23,16 +24,30 @@ const menuLinks: MenuLink[] = [
   { label: "Home", href: "/", color: "hsl(143, 84%, 50%)" },           // verd (accent original)
   { label: "Treballs", href: "/works", color: "hsl(194, 84%, 50%)" },  // cian
   { label: "Serveis", href: "/serveis", color: "hsl(245, 84%, 60%)" }, // blau-violeta (L pujat per llegibilitat)
-  { label: "Sobre Mi", href: "/about", color: "hsl(296, 84%, 60%)" },  // magenta (L pujat)
-  { label: "Behance", href: "https://behance.net", isExternal: true, color: "hsl(347, 84%, 58%)" }, // vermell-coral
-  { label: "LinkedIn", href: "https://linkedin.com", isExternal: true, color: "hsl(38, 84%, 55%)" }, // taronja
+  { label: "Col·laboració", href: "/colaboracio", color: "hsl(270, 84%, 62%)" }, // violeta
+  { label: "Qui soc", href: "/about", color: "hsl(296, 84%, 60%)" },  // magenta (L pujat)
+  { label: "Behance", href: "https://www.behance.net/MariusComas", isExternal: true, color: "hsl(347, 84%, 58%)" }, // vermell-coral
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/mariuscomas/", isExternal: true, color: "hsl(38, 84%, 55%)" }, // taronja
+  // Contacte ja no navega: obre el modal de contacte (cortina). El href es
+  // manté com a identificador per marcar-lo com a especial al render.
   { label: "Contacte", href: "/contacte", color: "hsl(89, 84%, 50%)" }, // groc-llima
 ];
+
+/** Ítems que en lloc de navegar obren el modal de contacte. */
+const isContactLink = (link: MenuLink) => link.href === "/contacte";
 
 export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
+  const { open: openContactModal } = useContactModal();
+
+  // Tanca el menú i obre la cortina de contacte.
+  const handleContactClick = () => {
+    onClose();
+    openContactModal();
+  };
+
+
   // Tripliquem els enllaços per crear l'efecte de loop infinit al fer scroll
   const infiniteLinks = [...menuLinks, ...menuLinks, ...menuLinks, ...menuLinks, ...menuLinks];
 
@@ -75,6 +90,7 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
         >
           {/* Top Bar - Align with Header.tsx padding and style */}
           <div className="fixed top-0 w-full flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 md:py-8 z-[110] bg-transparent pointer-events-none">
+            {/* DS-exception: wordmark del logo, mida pròpia de marca */}
             <TransitionLink href="/" onClick={onClose} className="text-3xl font-bold tracking-tighter text-white pointer-events-auto h-8 lg:h-12 flex items-center">
               M<span className="text-text-secondary">!</span>
             </TransitionLink>
@@ -82,7 +98,7 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
               onClick={onClose}
               className="px-6 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-[16px] hover:scale-105 transition-transform uppercase tracking-normal pointer-events-auto"
             >
-              Cerrar
+              Tancar
             </button>
           </div>
 
@@ -101,6 +117,18 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
               >
                 {menuLinks.map((link, i) => {
                   const isActive = pathname === link.href;
+                  const isContact = isContactLink(link);
+                  const itemContent = (
+                    <div className="flex justify-between items-center">
+                      {/* DS-exception: mides art-directed del menú full-screen (36/60px) */}
+                      <span className={`text-4xl md:text-6xl font-heading font-bold uppercase tracking-tighter transition-all group-hover:translate-x-2 duration-300 ${
+                        isActive ? "text-[var(--link-color)]" : "text-[#e5e5e5] group-hover:text-[var(--link-color)]"
+                      }`}>
+                        {link.label}
+                      </span>
+                      {link.isExternal && <ArrowUpRight size={32} className="opacity-50 group-hover:text-[var(--link-color)] group-hover:opacity-100 transition-all" />}
+                    </div>
+                  );
                   return (
                     <motion.div
                       key={`${link.label}-${i}`}
@@ -116,23 +144,29 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
                         Així cada enllaç té el seu propi accent (active +
                         hover) en lloc d'un únic verd global.
                       */}
-                      <TransitionLink
-                        href={link.href}
-                        onClick={onClose}
-                        style={{ "--link-color": link.color } as React.CSSProperties}
-                        className={`block w-full py-6 border-b border-[#333] group transition-opacity ${
-                          isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
-                        }`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className={`text-4xl md:text-6xl font-bold uppercase tracking-tighter transition-all group-hover:translate-x-2 duration-300 ${
-                            isActive ? "text-[var(--link-color)]" : "text-[#e5e5e5] group-hover:text-[var(--link-color)]"
-                          }`}>
-                            {link.label}
-                          </span>
-                          {link.isExternal && <ArrowUpRight size={32} className="opacity-50 group-hover:text-[var(--link-color)] group-hover:opacity-100 transition-all" />}
-                        </div>
-                      </TransitionLink>
+                      {isContact ? (
+                        <button
+                          type="button"
+                          onClick={handleContactClick}
+                          style={{ "--link-color": link.color } as React.CSSProperties}
+                          className={`block w-full py-6 border-b border-[#333] group transition-opacity text-left ${
+                            isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
+                          }`}
+                        >
+                          {itemContent}
+                        </button>
+                      ) : (
+                        <TransitionLink
+                          href={link.href}
+                          onClick={onClose}
+                          style={{ "--link-color": link.color } as React.CSSProperties}
+                          className={`block w-full py-6 border-b border-[#333] group transition-opacity ${
+                            isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
+                          }`}
+                        >
+                          {itemContent}
+                        </TransitionLink>
+                      )}
                     </motion.div>
                   );
                 })}
@@ -154,6 +188,26 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
               >
                 {infiniteLinks.map((link, i) => {
                   const isActive = pathname === link.href;
+                  const isContact = isContactLink(link);
+                  const itemContent = (
+                    <>
+                      <span className={`font-sans text-[1.5vw] transition-all duration-300 ${
+                        isActive ? "opacity-100 text-[var(--link-color)]" : "opacity-30 group-hover:opacity-100 group-hover:text-[var(--link-color)]"
+                      }`}>
+                        {String((i % menuLinks.length) + 1).padStart(2, '0')}
+                      </span>
+                      <span className={`text-[9vw] font-heading font-bold uppercase leading-[0.85] tracking-tighter transition-all duration-500 ${
+                        isActive ? "text-[var(--link-color)] scale-105" : "text-white/20 group-hover:text-[var(--link-color)]"
+                      }`}>
+                        {link.label}
+                      </span>
+                      {link.isExternal && (
+                        <ArrowUpRight
+                          className="w-[5vw] h-[5vw] opacity-20 group-hover:opacity-100 group-hover:text-[var(--link-color)] transition-all duration-500"
+                        />
+                      )}
+                    </>
+                  );
                   return (
                     <motion.div
                       key={`${link.label}-${i}`}
@@ -168,35 +222,32 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
                         --link-color injectat per link. Mateixa lògica que
                         mobile: cada enllaç té el seu propi color (active +
                         hover). El número i la fletxa external també l'usen.
-                        Mantenim text-white com a hover del label gran perquè
-                        viu millor a la composició massiva (les paraules
-                        senceres en color saturat poden cansar la vista).
-                        El color només pinta número, label active i fletxa.
+                        El label gran també es pinta amb el color del link al
+                        hover, igual que l'estat actiu (ex: Treballs en cian).
                       */}
-                      <TransitionLink
-                        href={link.href}
-                        onClick={onClose}
-                        style={{ "--link-color": link.color } as React.CSSProperties}
-                        className={`group relative inline-flex items-center gap-12 py-4 transition-all duration-500 ease-out hover:scale-105 ${
-                          isActive ? "opacity-100" : "opacity-30 hover:opacity-100"
-                        }`}
-                      >
-                        <span className={`font-sans text-[1.5vw] transition-all duration-300 ${
-                          isActive ? "opacity-100 text-[var(--link-color)]" : "opacity-30 group-hover:opacity-100 group-hover:text-[var(--link-color)]"
-                        }`}>
-                          {String((i % menuLinks.length) + 1).padStart(2, '0')}
-                        </span>
-                        <span className={`text-[9vw] font-bold uppercase leading-[0.85] tracking-tighter transition-all duration-500 ${
-                          isActive ? "text-[var(--link-color)] scale-105" : "text-white/20 group-hover:text-white"
-                        }`}>
-                          {link.label}
-                        </span>
-                        {link.isExternal && (
-                          <ArrowUpRight
-                            className="w-[5vw] h-[5vw] opacity-20 group-hover:opacity-100 group-hover:text-[var(--link-color)] transition-all duration-500"
-                          />
-                        )}
-                      </TransitionLink>
+                      {isContact ? (
+                        <button
+                          type="button"
+                          onClick={handleContactClick}
+                          style={{ "--link-color": link.color } as React.CSSProperties}
+                          className={`group relative inline-flex items-center gap-12 py-4 transition-all duration-500 ease-out hover:scale-105 cursor-pointer ${
+                            isActive ? "opacity-100" : "opacity-30 hover:opacity-100"
+                          }`}
+                        >
+                          {itemContent}
+                        </button>
+                      ) : (
+                        <TransitionLink
+                          href={link.href}
+                          onClick={onClose}
+                          style={{ "--link-color": link.color } as React.CSSProperties}
+                          className={`group relative inline-flex items-center gap-12 py-4 transition-all duration-500 ease-out hover:scale-105 ${
+                            isActive ? "opacity-100" : "opacity-30 hover:opacity-100"
+                          }`}
+                        >
+                          {itemContent}
+                        </TransitionLink>
+                      )}
                     </motion.div>
                   );
                 })}
@@ -207,8 +258,8 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
 
           {/* Bottom Bar (Optional Branding) */}
           <div className="fixed bottom-0 w-full p-10 hidden lg:flex justify-between items-end pointer-events-none opacity-20">
-             <div className="text-sm font-sans uppercase tracking-[0.2em]">Barcelona / 2026</div>
-             <div className="text-sm font-sans uppercase tracking-[0.2em]">MÀRIUS COMAS ROSA</div>
+             <div className="text-label tracking-[0.2em]">Barcelona / 2026</div>
+             <div className="text-label tracking-[0.2em]">MÀRIUS COMAS ROSA</div>
           </div>
         </motion.div>
       )}

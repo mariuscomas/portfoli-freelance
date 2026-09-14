@@ -66,7 +66,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-md w-full">
       <div className="flex flex-col gap-4">
-        <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+        <span className="text-label text-text-secondary">
           Admin · Magic link
         </span>
         <h1 className="text-display-h4 text-text-main">Entra al dashboard</h1>

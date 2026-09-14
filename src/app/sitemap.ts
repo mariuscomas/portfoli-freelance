@@ -15,8 +15,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE.url, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
     { url: `${SITE.url}/works`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE.url}/serveis`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${SITE.url}/colaboracio`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE.url}/about`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.7 },
-    { url: `${SITE.url}/contacte`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.8 },
+    // /contacte ja no s'indexa: ara és un modal; la ruta només redirigeix a la home.
   ];
 
   // Rutes dinàmiques (case studies)

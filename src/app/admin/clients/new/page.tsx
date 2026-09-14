@@ -12,7 +12,7 @@ export default async function AdminClientNewPage() {
     <AdminShell user={user}>
       <div className="w-full max-w-4xl mx-auto px-6 md:px-10 py-10 md:py-16">
         <div className="flex flex-col gap-3 mb-8">
-          <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+          <span className="text-label text-text-secondary">
             Dashboard · Nou client
           </span>
           <h1 className="text-heading-h1 text-text-main">

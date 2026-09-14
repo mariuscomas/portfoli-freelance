@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function AboutTeaser() {
   return (
-    <section className="w-full py-16 md:py-32 bg-surface-base">
+    <section className="w-full py-16 md:py-32">
 
       {/* Heading */}
       <div className="flex justify-between items-end mb-16 md:mb-20 px-4 md:px-[3vw] lg:px-[4vw]">
@@ -31,7 +31,7 @@ export default function AboutTeaser() {
           transition={{ delay: 0.1 }}
           className="col-span-2 md:col-span-1 md:row-span-2 lg:row-span-1 w-full relative overflow-hidden bg-surface-elevated grayscale hover:grayscale-0 transition-all duration-500 aspect-square md:aspect-auto lg:aspect-[4/5] h-full min-h-[300px]"
         >
-          <Image src="/images/home_about_marius_03.png" alt="Marius Comas" fill className="object-cover absolute inset-0" />
+          <Image src="/images/home_about_marius_03.png" alt="Màrius Comas" fill className="object-cover absolute inset-0" />
         </motion.div>
 
         {/* Imatge 2 (Dreta Dalt) */}
@@ -58,14 +58,14 @@ export default function AboutTeaser() {
       </div>
 
       {/* Text Content - Right Aligned (Alineat amb les fotos de la dreta) */}
-      <div className="w-full px-4 md:px-[3vw] lg:px-[4vw] mt-12 md:mt-16 flex justify-end">
-        {/* w-[calc(50%-12px)] fa que l'amplada coincideixi exactament amb la columna dreta del grid a tablet (restant la meitat del gap) */}
-        <div className="w-full md:w-[calc(50%-12px)] lg:w-4/12 flex flex-col gap-10">
+      <div className="w-full px-4 md:px-[3vw] lg:px-[4vw] mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-0">
+        {/* Figma (node 10756:5169): col 6/span 6 d'un grid de 12 → meitat dreta deixant 1 columna (1/12 ≈ 128px) d'aire a la dreta, igual que a l'esquerra de la columna */}
+        <div className="md:col-start-2 lg:col-start-6 lg:col-span-6 flex flex-col gap-10">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-sans text-body-2xl text-text-secondary leading-snug"
+            className="text-body-2xl text-text-secondary"
           >
             Orgullós de col·laborar i poder ajudar a les empreses a aconseguir el seus objectius i millorar les experiències dels seus clients.
           </motion.p>
@@ -78,7 +78,7 @@ export default function AboutTeaser() {
           >
             <a
               href="/about"
-              className="inline-block font-sans font-medium text-lg text-text-main hover:text-text-secondary pb-1 border-b border-text-main hover:border-text-secondary transition-colors"
+              className="inline-block text-body-md font-medium text-text-main hover:text-text-secondary pb-1 border-b border-text-main hover:border-text-secondary transition-colors"
             >
               Descobreix més sobre mi
             </a>

@@ -21,8 +21,8 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
         "ancla" mentre el lector progressa per la columna dreta.
       */}
       <div className={`${viewMode === "visual" ? "w-full md:w-5/12 flex flex-col gap-8 md:sticky md:top-32 md:self-start" : "w-full flex flex-col gap-6"}`}>
-        <span className="text-text-main font-sans text-xl">{text.number}</span>
-        <h2 className="text-xl md:text-2xl font-medium tracking-tight text-text-secondary max-w-[150px]">
+        <span className="text-text-main text-body-md">{text.number}</span>
+        <h2 className="text-heading-h3 text-text-secondary max-w-[150px]">
           {text.title}
         </h2>
       </div>

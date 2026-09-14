@@ -158,7 +158,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
       {/* ====== Header de pàgina ====== */}
       <header className="flex flex-col gap-3">
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+          <span className="text-label text-text-secondary">
             Client
           </span>
           <ClientStatusBadge status={status} size="md" />
@@ -323,7 +323,7 @@ function Card({
     <fieldset className="flex flex-col gap-5 rounded-[var(--radius-base)] border border-surface-border bg-surface-card p-5 md:p-7">
       <legend className="contents">
         <div className="flex flex-col">
-          <span className="font-sans font-medium uppercase tracking-[0.18em] text-body-xs text-text-secondary">
+          <span className="text-label text-text-secondary">
             {eyebrow}
           </span>
           {title && (

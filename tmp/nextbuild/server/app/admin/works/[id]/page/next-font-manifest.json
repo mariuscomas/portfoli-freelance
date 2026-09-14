@@ -1,0 +1,10 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/src/app/admin/works/[id]/page": [
+      "static/media/6849da698cb78e39e8121637_FKGroteskMono_Medium-s.p.162tuc5bvou9s.ttf"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}

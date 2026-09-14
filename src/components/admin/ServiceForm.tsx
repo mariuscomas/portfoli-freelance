@@ -104,7 +104,7 @@ export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props
 
       {/* Header */}
       <header className="flex flex-col gap-2">
-        <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+        <span className="text-label text-text-secondary">
           {isEdit ? 'Servei · Edició' : 'Servei · Nou'}
         </span>
         <h2 className="text-heading-h3 text-text-main">
@@ -509,7 +509,7 @@ function Card({
     >
       <legend className="contents">
         <div className="flex flex-col gap-1">
-          <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+          <span className="text-label text-text-secondary">
             {eyebrow}
           </span>
           {title && <h3 className="text-body-xl text-text-main">{title}</h3>}
@@ -527,7 +527,7 @@ function NarrativeGroup({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-5 pt-4 mt-2 border-t border-surface-border">
       <div className="flex flex-col gap-1">
-        <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+        <span className="text-label text-text-secondary">
           Contingut narratiu
         </span>
         <p className="text-body-sm text-text-secondary max-w-prose">

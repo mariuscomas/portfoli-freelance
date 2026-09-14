@@ -8,6 +8,8 @@ import Logo from "@/components/common/Logo";
 import LogoSmall from "@/components/common/LogoSmall";
 import { useIdle } from "@/hooks/useIdle";
 import { useHeaderContrast } from "@/context/HeaderContrastContext";
+import { useFooterReveal } from "@/context/FooterRevealContext";
+import { useContactModal } from "@/context/ContactModalContext";
 
 /*
   <Header />
@@ -35,7 +37,8 @@ import { useHeaderContrast } from "@/context/HeaderContrastContext";
 const inlineNavLinks: { label: string; href: string }[] = [
   { label: "Treballs", href: "/works" },
   { label: "Serveis", href: "/serveis" },
-  { label: "Sobre Mi", href: "/about" },
+  { label: "Col·laboració", href: "/colaboracio" },
+  { label: "Qui soc", href: "/about" },
 ];
 
 // Histeresi: 50px de "deadband" perquè el toggle no flickeji
@@ -59,6 +62,8 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [isCompact, setIsCompact] = useState(false);
   const { isIdle, hasInteracted } = useIdle(5000);
   const contrast = useHeaderContrast();
+  const { revealed: isFooterRevealed } = useFooterReveal();
+  const { open: openContactModal } = useContactModal();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsCompact((prev) => {
@@ -75,7 +80,9 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     return () => clearTimeout(t);
   }, [pathname]);
 
-  const isVisible = hasMounted && (!hasInteracted || !isIdle);
+  // El Header s'amaga també quan el footer s'està revelant (el bloc fosc
+  // puja per sobre del contingut i el taparia).
+  const isVisible = hasMounted && (!hasInteracted || !isIdle) && !isFooterRevealed;
 
   // Tokens condicionals segons el contrast declarat per la pàgina.
   //  - underline: color de la línia base (estat active).
@@ -232,14 +239,16 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
           className="will-change-transform"
         >
-          <TransitionLink
-            href="/contacte"
-            className={`group relative hidden md:inline-block font-sans text-[14px] lg:text-[20px] font-medium pb-[2px] overflow-hidden whitespace-nowrap transition-colors duration-300 ${c.link}`}
+          {/* Ja no navega a /contacte: obre el modal de contacte (cortina). */}
+          <button
+            type="button"
+            onClick={openContactModal}
+            className={`group relative hidden md:inline-block font-sans text-[14px] lg:text-[20px] font-medium pb-[2px] overflow-hidden whitespace-nowrap transition-colors duration-300 cursor-pointer ${c.link}`}
           >
             Comencem?
             <span className={`absolute left-0 bottom-0 w-full h-[1.5px] origin-right transition-transform duration-300 ease-out group-hover:scale-x-0 ${c.underline}`} />
             <span className={`absolute left-0 bottom-0 w-full h-[1.5px] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 delay-[0.1s] ${c.underlineHover}`} />
-          </TransitionLink>
+          </button>
         </motion.div>
 
         <AnimatePresence mode="popLayout" initial={false}>

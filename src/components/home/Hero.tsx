@@ -1,148 +1,228 @@
 "use client";
 
-import { motion, useScroll, useTransform, Transition } from "framer-motion";
+import { Fragment, useEffect, useState } from "react";
 import { ArrowDown, DribbbleLogo, LinkedinLogo, BehanceLogo } from "@phosphor-icons/react";
+import { onIntroRevealed } from "@/lib/introSignal";
+import HeroTitle from "@/components/home/HeroTitle";
+import HeroField from "@/components/home/HeroField";
+import LanguageSelector from "@/components/common/LanguageSelector";
 import ThemeToggle from "@/components/common/ThemeToggle";
-import { useIdle } from "@/hooks/useIdle";
 
-const container = {
-  hidden: { opacity: 1 },
-  show: {
-    opacity: 1,
-    transition: {
-      // Stagger més ràpid perquè la frase es completi a ~0.9s (era ~1.75s)
-      staggerChildren: 0.08,
-      delayChildren: 0.05,
-    },
-  },
-};
+/**
+ * Hero — secció d'entrada de la home.
+ *
+ * Substitueix l'escena cercle→franja de vídeo (ShowcaseVideo) mentre el
+ * showreel no està produït. El que ocupava el cercle ara és [[HeroField]]:
+ * una retícula que reacciona al punter amb LA MATEIXA física que el lockup,
+ * de manera que titular i superfície són un sol sistema i no dos efectes.
+ *
+ * BARRA INFERIOR — Figma "Navbar Bottom" (desktop 11325:8844, mòbil
+ * 11760:96251). Fins ara n'hi havia DUES d'excloents perquè el desktop era una
+ * cosa distinta (sense línia superior, sense controls, alineada a la dreta) i
+ * el mòbil una altra. La proposta de desktop les fa convergir: 96px d'alçada,
+ * línia a dalt I a baix, controls (tema + idioma) a l'esquerra i xarxes a la
+ * dreta, a totes dues mides. Per això aquí n'hi ha UNA de sola; l'única
+ * diferència real és la llista de disciplines, que per sota de md no hi cap i
+ * es tallava.
+ *
+ * Com que la barra ja porta tema + idioma a QUALSEVOL amplada, els
+ * SiteControls flotants es repleguen a la home sencera (abans només per sota
+ * de md) — veure la nota a SiteControls.
+ *
+ * MÒBIL (< 768px) — Figma "Section Hero" mobile (node 11325:9090). La versió
+ * mòbil NO és la de desktop encongida: el camp deixa de ser una capa absoluta
+ * i passa a ser una franja de 200px del flux, entre el contingut i la barra.
+ */
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      // Reduïm duració per fer-ho més "punchy" sense perdre l'easing editorial
-      duration: 0.7,
-      ease: [0.16, 1, 0.3, 1] as Transition["ease"],
-    },
-  },
-};
+const SOCIALS = [
+  { Icon: DribbbleLogo, label: "Dribbble", href: "https://dribbble.com/mariuscomas" },
+  { Icon: LinkedinLogo, label: "LinkedIn", href: "https://www.linkedin.com/in/mariuscomas/" },
+  { Icon: BehanceLogo, label: "Behance", href: "https://www.behance.net/MariusComas" },
+];
 
-export default function Hero() {
-  const { scrollY } = useScroll();
-  const { isIdle, hasInteracted } = useIdle(5000);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-  const scale = useTransform(scrollY, [0, 300], [1, 0.95]);
+/** Figma desktop (11325:8844) — noms complets, cada un un ítem amb "·" al mig. */
+const DISCIPLINES = [
+  "Product Design",
+  "Branding & Identity Design",
+  "Mobile App Design",
+  "UI/UX Design Audit",
+  "Website Design",
+  "Landing Page Design",
+];
 
-  // Parallax i fade-out per al footer
-  const footerY = useTransform(scrollY, [0, 500], [0, 200]);
-  const footerScrollOpacity = useTransform(scrollY, [0, 250], [1, 0]);
+/**
+ * La llista completa fa ~970px en una línia i la barra no li'n pot cedir tants
+ * fins a 2xl (1536px) — mesurat, no estimat. Per sota s'ensenya aquesta, que
+ * és el mateix contingut resumit i cap de sobres.
+ */
+const DISCIPLINES_SHORT = ["Product Design", "UI/UX", "Front-end"];
 
-  // Opacity per al footer basat en scroll i inactivitat
-  const isVisible = hasInteracted && !isIdle;
+/**
+ * Llista de disciplines de la barra — Body/SM, separadors "·" com a ítems
+ * propis (Figma: flex amb gap 12, no una cadena amb espais).
+ *
+ * El `display` NO va aquí sinó a `className`: `flex` i `hidden` són totes dues
+ * utilities i qui guanya depèn de l'ordre del full generat, no de l'ordre de
+ * l'atribut. Deixant-lo fora, cada instància diu `hidden lg:flex` sense ambigüitat.
+ */
+function DisciplineRow({ items, className }: { items: string[]; className: string }) {
+  return (
+    <p
+      className={`flex-1 flex-wrap items-center justify-end gap-3 text-body-sm text-text-secondary ${className}`}
+    >
+      {items.map((item, i) => (
+        <Fragment key={item}>
+          {i > 0 && <span aria-hidden>·</span>}
+          <span>{item}</span>
+        </Fragment>
+      ))}
+    </p>
+  );
+}
+
+export default function Hero({
+  introPending = false,
+}: {
+  /** True quan l'IntroLoader es reproduirà: l'entrada espera el seu reveal. */
+  introPending?: boolean;
+}) {
+  // Entrada sincronitzada amb el reveal de l'intro. Sense intro (sessió
+  // repetida, altres contextos), entra directament des del SSR com sempre.
+  const [entered, setEntered] = useState(!introPending);
+  useEffect(() => {
+    if (entered) return;
+    return onIntroRevealed(() => setEntered(true));
+  }, [entered]);
 
   return (
-    <section className="h-[100dvh] flex flex-col w-full relative z-10 overflow-hidden bg-surface-base">
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        style={{ opacity, scale }}
-        className="flex-1 flex flex-col justify-center items-start md:items-center px-4 md:px-8 lg:px-24 relative"
+    <section className="relative z-10 flex h-[100dvh] w-full flex-col overflow-hidden bg-surface-base">
+      {/* Camp reactiu — Figma col·loca el "Col" a la meitat dreta EXACTA del
+          frame (x 864 de 1728) i li dona tota l'alçada del contingut: de dalt
+          de tot fins a la línia superior de la barra. D'aquí `w-1/2` (i no una
+          amplada fixa, que a 1920 deixava un buit a la dreta) i `bottom-24`
+          (= els 96px de la barra). */}
+      <HeroField
+        className="pointer-events-none absolute right-0 top-0 bottom-24 hidden w-1/2 lg:block"
+        gap={32}
+        dot={3}
+        magnet={30}
+        radius={170}
+        fade={{ left: 210, right: 0, top: 150, bottom: 150 }}
+      />
+      {/* Sota lg (tablet 810px): el camp passa a configuració de tablet amb gap 26. */}
+      <HeroField
+        className="pointer-events-none absolute inset-x-0 top-24 hidden h-[220px] md:block lg:hidden"
+        gap={26}
+        dot={2.75}
+        magnet={24}
+        radius={140}
+        fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
+      />
+      <div
+        className={`relative z-10 flex flex-1 flex-col items-start justify-center px-6 md:px-12 lg:px-24 ${
+          entered ? "hero-enter" : "hero-enter-wait"
+        }`}
       >
-        {/* Main Hero Title */}
-        <div className="relative text-left flex flex-col items-start md:flex-row md:items-center md:justify-center gap-2 font-heading text-[clamp(1.8rem,4vw,2rem)] leading-[1.1] tracking-tight text-text-main">
-          <motion.h1
-            variants={fadeUp}
-            className="m-0 p-0"
+        <div className="w-full max-w-[744px]">
+          {/* Lockup interactiu (magnètic + aberració) — veure HeroTitle.tsx */}
+          <HeroTitle />
+
+          {/*
+            El desktop de Figma lliga el paràgraf a Body/XL (32/48) i en text
+            /main, no a Body/LG en secundari: és la frase que sosté el lockup,
+            no un peu. `font-normal` perquè el token del DS surt en Light (300)
+            i el Figma el marca Regular (400) — divergència del DS que NO toco
+            aquí per no arrossegar-la a tots els Body/XL del site.
+
+            El `max-md:` porta els valors del Figma mòbil (18/27) allà on no
+            són el token responsiu: al Figma aquest text no està lligat a
+            body/* sinó escrit a mà, i el token (16/22 a 375px) es queda curt
+            per a un hero.
+
+            Nota tècnica: .text-body-* viuen a @layer components, i a Tailwind
+            v4 les variants (md:) només s'apliquen a utilities. Per això
+            l'override va en sentit invers (base = token, max-md = Figma) i no
+            amb md:text-body-xl, que no generaria res.
+
+            El paràgraf és clamp() i no 18px clavats: el Figma dibuixa a 402px,
+            on la primera frase cap just en una línia; a 375px (iPhone SE/13
+            mini) 18px la parteixen i el <br/> deixa un bloc de tres línies
+            desigual. El clamp toca els 18px del disseny a 400px i cedeix uns
+            píxels per sota per mantenir les dues línies previstes.
+
+            Sense `max-w`: a 32px la primera frase fa uns 610px i els 520px
+            d'abans la partien just on el <br/> ja preveu el salt. La columna
+            del contingut (744px) ja fa de límit i deixa lliure la meitat dreta
+            on viu el camp.
+
+            Separacions: el Figma apila títol, paràgraf i link amb un gap únic
+            de 48px (mt-12), no amb dos valors diferents.
+          */}
+          <p className="mt-6 text-body-xl font-normal text-text-main max-md:text-[clamp(1rem,4.5vw,1.125rem)] max-md:leading-[27px] md:mt-12">
+            Dissenyo i construeixo productes digitals.
+            <br />
+            Un sol interlocutor, de principi a fi.
+          </p>
+
+          {/* Buttons/Link (24/28) — el mateix token a totes les amplades, que
+              és com el defineix el Figma. El subratllat cau 6px sota la caixa
+              de text (Figma: Border a bottom -6) i la fletxa fa 20px amb 10px
+              de separació. */}
+          <a
+            href="#treballs"
+            className="mt-6 inline-flex min-h-11 items-center gap-2.5 text-button-link text-text-main md:mt-12"
           >
-            <span className="font-light">ESTRATÈGIA. </span>
-          </motion.h1>
-          <motion.h1
-            variants={fadeUp}
-            className="m-0 p-0"
-          >
-            <span className="font-light">PRODUCTE. </span>
-          </motion.h1>
-          <motion.h1
-            variants={fadeUp}
-            className="m-0 p-0"
-          >
-            <span className="font-extrabold tracking-tighter">IMPACTE.</span>
-          </motion.h1>
-          {/* Down Arrow */}
-          <motion.div variants={fadeUp} className="mt-8 sm:absolute top-30">
-            <ArrowDown
-              size={48}
-              weight="light"
-              className="text-text-main animate-bounce"
-            />
-          </motion.div>
+            <span className="border-b border-text-main pb-1.5">Veure treballs</span>
+            <ArrowDown size={20} weight="regular" aria-hidden />
+          </a>
         </div>
-      </motion.div>
+      </div>
 
+      {/* Mòbil: el camp és una franja del flux (200px) entre el contingut i la
+          barra, no una capa absoluta — així no cal endevinar cap offset quan
+          canvia l'alçada del viewport (barra d'adreces del navegador). */}
+      <HeroField
+        className="pointer-events-none relative block h-[200px] w-full shrink-0 md:hidden"
+        gap={20}
+        dot={2.5}
+        magnet={18}
+        radius={120}
+        fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
+      />
 
-      {/* Hero Footer: Fixed bottom, becomes covered by next section */}
-      <motion.div
-        style={{
-          y: footerY,
-          opacity: footerScrollOpacity
-        }}
-        className="absolute bottom-0 left-0 w-full h-[120px] flex justify-between items-center px-4 md:px-8 lg:px-24 z-0 pointer-events-none"
-      >
-        {/*
-          Apareix per defecte ~1s després del muntatge (acompanya el final del títol).
-          Després, useIdle el desplega/oculta segons activitat de l'usuari.
-        */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{
-            opacity: !hasInteracted ? 1 : (isVisible ? 1 : 0),
-            y: !hasInteracted ? 0 : (isVisible ? 0 : 20)
-          }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: !hasInteracted ? 0.9 : 0 }}
-          className="w-full flex justify-between items-center pointer-events-auto"
-        >
-          {/* Left: Language/Theme Toggle Area */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="flex items-center gap-4"
-          >
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-text-main/10 hover:border-text-main/30 transition-colors cursor-pointer group">
-              <div className="w-2.5 h-2.5 bg-text-main rounded-[2px]" />
-              <span className="font-sans text-[15px] font-medium text-text-main">CA</span>
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className="text-text-secondary group-hover:text-text-main transition-colors">
-                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div className="ml-2">
-              <ThemeToggle />
-            </div>
-          </motion.div>
+      {/* Barra inferior — Figma "Navbar Bottom" (desktop 11325:8844, mòbil
+          11760:96251): 96px, línia a dalt i a baix, controls a l'esquerra i
+          xarxes a la dreta. Una de sola per a totes les amplades; el que canvia
+          és el ritme de padding i separacions (32/24 al mòbil, 96/48 a
+          desktop) i la llista de disciplines, que per sota de md es tallava.
 
-          {/* Right: Social Links */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="flex items-center gap-6"
-          >
-            <a href="#" className="text-text-main hover:opacity-60 transition-opacity" aria-label="Dribbble">
-              <DribbbleLogo size={24} weight="regular" />
-            </a>
-            <a href="#" className="text-text-main hover:opacity-60 transition-opacity" aria-label="LinkedIn">
-              <LinkedinLogo size={24} weight="regular" />
-            </a>
-            <a href="#" className="text-text-main hover:opacity-60 transition-opacity" aria-label="Behance">
-              <BehanceLogo size={24} weight="regular" />
-            </a>
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          Les xarxes van amb `ml-auto` perquè a mòbil, sense la llista pel mig,
+          res no empeny cap a la dreta. Amb la llista visible (`flex-1`) l'auto
+          ja no té espai a repartir i no fa res. */}
+      <div className="relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-surface-border px-8 md:gap-8 md:px-12 lg:px-24 3xl:gap-12">
+        <ThemeToggle />
+        <LanguageSelector variant="bare" />
+        <DisciplineRow items={DISCIPLINES} className="hidden 2xl:flex" />
+        <DisciplineRow items={DISCIPLINES_SHORT} className="hidden md:flex 2xl:hidden" />
+        <ul className="ml-auto flex items-center gap-6">
+          {SOCIALS.map(({ Icon, label, href }) => (
+            <li key={label}>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                /* -m-1.5/p-1.5: l'àrea tàctil arriba a 44px sense moure els
+                   32px visibles ni les separacions de 24 del Figma. */
+                className="-m-1.5 block p-1.5 text-text-main transition-opacity hover:opacity-60"
+              >
+                <Icon size={32} weight="regular" aria-hidden />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
     </section>
   );
 }

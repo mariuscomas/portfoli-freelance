@@ -18,10 +18,10 @@ import {
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import Image from "next/image";
-import TransitionLink from "@/components/common/TransitionLink";
 import ServiceModal from "./ServiceModal";
 import { Service } from "@/types";
 import { t } from "@/lib/i18n";
+import { useContactModal } from "@/context/ContactModalContext";
 
 /**
  * <ServicesList />
@@ -73,6 +73,7 @@ function getIcon(iconName: string): PhosphorIcon {
 export default function ServicesList({ services }: ServicesListProps) {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { open: openContactModal } = useContactModal();
 
   const openService = (service: Service) => {
     setSelectedService(service);
@@ -93,13 +94,15 @@ export default function ServicesList({ services }: ServicesListProps) {
             Estic actualitzant l&apos;oferta de serveis. Si tens un projecte
             entre mans, m&apos;encantarà saber-ne més.
           </p>
-          <TransitionLink
-            href="/contacte"
-            className="group inline-flex items-center gap-3 text-text-main hover:text-accent transition-colors duration-300 text-body-lg font-medium pb-1 border-b border-text-main hover:border-accent"
+          {/* Obre el modal de contacte (cortina) en lloc de navegar. */}
+          <button
+            type="button"
+            onClick={openContactModal}
+            className="group inline-flex items-center gap-3 text-text-main hover:text-accent transition-colors duration-300 text-body-lg font-medium pb-1 border-b border-text-main hover:border-accent cursor-pointer"
           >
             <span>Parlem-ne</span>
             <ArrowRight size={20} weight="regular" className="group-hover:translate-x-1 transition-transform" />
-          </TransitionLink>
+          </button>
         </motion.div>
       </section>
     );

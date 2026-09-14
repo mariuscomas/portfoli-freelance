@@ -446,7 +446,7 @@ export default function TaxonomyCombobox({
                     {isPickingColor && (
                       <div className="flex flex-col gap-2 px-3 py-2 bg-surface-base">
                         <div className="flex items-center justify-between">
-                          <span className="text-body-xs text-text-secondary uppercase tracking-wider">
+                          <span className="text-label text-text-secondary">
                             Color
                           </span>
                           <button

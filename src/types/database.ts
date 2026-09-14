@@ -121,6 +121,105 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string
+          unsubscribed_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string
+          unsubscribed_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string
+          unsubscribed_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          client_id: string | null
+          contact_submission_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          pricing: Json
+          pricing_version: string | null
+          product: string
+          rate_label: string | null
+          selection: Json
+          source: string | null
+          status: string
+          summary: string | null
+          total_eur: number | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          contact_submission_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          pricing?: Json
+          pricing_version?: string | null
+          product: string
+          rate_label?: string | null
+          selection?: Json
+          source?: string | null
+          status?: string
+          summary?: string | null
+          total_eur?: number | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          contact_submission_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          pricing?: Json
+          pricing_version?: string | null
+          product?: string
+          rate_label?: string | null
+          selection?: Json
+          source?: string | null
+          status?: string
+          summary?: string | null
+          total_eur?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_contact_submission_id_fkey"
+            columns: ["contact_submission_id"]
+            isOneToOne: false
+            referencedRelation: "contact_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           content_about: Json | null
@@ -508,6 +607,13 @@ export type ClientNote = Tables<"client_notes">
 
 export type ContactSubmission = Tables<"contact_submissions">
 export type ContactSubmissionInsert = TablesInsert<"contact_submissions">
+
+export type QuoteInsert = TablesInsert<"quotes">
+
+export type Quote = Tables<"quotes">
+
+export type NewsletterSubscriber = Tables<"newsletter_subscribers">
+export type NewsletterSubscriberInsert = TablesInsert<"newsletter_subscribers">
 
 /* ------------------------------------------------------------------ */
 /*  Client status — enum-like — usat al CRM admin                       */

@@ -45,8 +45,13 @@ export default async function TreballsPage() {
     }
   });
 
+  // overflow-x-CLIP (no hidden): `overflow-x: hidden` converteix el main en
+  // un scroll container vertical (per spec, l'eix Y passa de visible a auto).
+  // Els WorkItem amb translateY(50px) d'entrada creen overflow intern i el
+  // gest de scroll del trackpad hi queda atrapat ("es trava") abans
+  // d'encadenar cap al document. `clip` retalla sense crear scroll container.
   return (
-    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-hidden bg-surface-base">
+    <main className="flex min-h-[100dvh] flex-col w-full overflow-x-clip bg-surface-base">
       <WorksGallery projects={projects} />
     </main>
   );

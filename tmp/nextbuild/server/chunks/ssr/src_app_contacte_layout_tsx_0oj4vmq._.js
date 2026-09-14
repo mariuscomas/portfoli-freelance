@@ -1,0 +1,3 @@
+module.exports=[27417,a=>{"use strict";var b=a.i(7997);let c=(0,a.i(57082).buildMetadata)({title:"Contacte",description:"Tens una idea o un producte digital al cap? Parlem-ne. Respostes en menys de 24 hores i primera trucada exploratòria sense compromís.",path:"/contacte"});a.s(["default",0,function({children:a}){return(0,b.jsx)(b.Fragment,{children:a})},"metadata",0,c])},37146,a=>{a.n(a.i(27417))}];
+
+//# sourceMappingURL=src_app_contacte_layout_tsx_0oj4vmq._.js.map

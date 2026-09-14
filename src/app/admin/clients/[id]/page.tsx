@@ -79,7 +79,7 @@ export default async function AdminClientEditPage({ params }: Props) {
     <AdminShell user={user}>
       <div className="w-full max-w-7xl mx-auto px-6 md:px-10 py-10 md:py-16">
         <div className="flex flex-col gap-3 mb-8">
-          <span className="font-sans uppercase tracking-[0.15em] text-body-sm text-text-secondary">
+          <span className="text-label text-text-secondary">
             Dashboard · Edició de client
           </span>
         </div>
@@ -101,7 +101,7 @@ export default async function AdminClientEditPage({ params }: Props) {
             >
               <header className="flex items-end justify-between gap-4 flex-wrap">
                 <div className="flex flex-col">
-                  <span className="font-sans font-medium uppercase tracking-[0.18em] text-body-xs text-text-secondary">
+                  <span className="text-label text-text-secondary">
                     Projectes vinculats
                   </span>
                   <h3

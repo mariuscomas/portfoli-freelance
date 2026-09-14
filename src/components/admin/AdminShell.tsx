@@ -7,6 +7,7 @@ import {
   Briefcase,
   Wrench,
   UsersThree,
+  Receipt,
   SignOut,
   SidebarSimple,
 } from '@phosphor-icons/react'
@@ -28,6 +29,7 @@ import LogoSmall from '@/components/common/LogoSmall'
 const NAV_ITEMS = [
   { href: '/admin/works', label: 'Treballs', icon: Briefcase },
   { href: '/admin/serveis', label: 'Serveis', icon: Wrench },
+  { href: '/admin/quotes', label: 'Pressupostos', icon: Receipt },
   { href: '/admin/clients', label: 'Clients', icon: UsersThree },
 ] as const
 

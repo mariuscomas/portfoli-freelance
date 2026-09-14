@@ -49,13 +49,35 @@ const ACCEPTED_MIME = [
   'image/svg+xml',
 ] as const
 
-const MAX_BYTES = 10 * 1024 * 1024 // 10 MB — coincideix amb el límit del bucket
+/** Límit del bucket `media`. S'aplica al fitxer JA optimitzat, no a l'origen. */
+const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
+/**
+ * Sostre del fitxer d'origen. No és el límit del bucket: els fitxers grans
+ * s'optimitzen abans de pujar-los. Només frenem els absurdament grans, que
+ * farien petar el decodificador d'imatges del navegador.
+ */
+const MAX_INPUT_BYTES = 75 * 1024 * 1024 // 75 MB
 const BUCKET = 'media'
+
+/** Format de sortida de l'optimització — WebP dona la millor ràtio qualitat/pes. */
+const OUTPUT_MIME = 'image/webp'
 
 /** Mime types que no comprimim — SVG és vector, GIF pot tenir animacions. */
 const SKIP_COMPRESS_MIME = new Set<string>(['image/svg+xml', 'image/gif'])
-/** Fitxers més petits que aquest llindar no es comprimeixen (no val la pena). */
+/** Formats ja moderns: si a sobre són petits, re-comprimir no aporta res. */
+const MODERN_MIME = new Set<string>(['image/webp', 'image/avif'])
+/** Fitxers moderns més petits que aquest llindar no es toquen. */
 const SKIP_COMPRESS_BYTES = 300 * 1024 // 300 KB
+
+/** Extensió canònica per mime — el fitxer optimitzat canvia de format. */
+const MIME_EXT: Record<string, string> = {
+  'image/webp': 'webp',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/avif': 'avif',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg',
+}
 
 interface Props {
   /** Etiqueta visible. */
@@ -217,9 +239,16 @@ export default function ImageUploadField({
     if (!ACCEPTED_MIME.includes(file.type as (typeof ACCEPTED_MIME)[number])) {
       return `Format no admès (${file.type || 'desconegut'}). Usa JPG, PNG, WebP, AVIF, GIF o SVG.`
     }
-    if (file.size > MAX_BYTES) {
-      const mb = (file.size / 1024 / 1024).toFixed(1)
-      return `Fitxer massa gran (${mb} MB). Màxim 10 MB.`
+    // Els fitxers grans NO es bloquegen aquí: s'optimitzen a WebP i es
+    // revalida la mida un cop comprimits (veure uploadFile).
+    if (file.size > MAX_INPUT_BYTES) {
+      return `Fitxer massa gran (${formatBytes(file.size)}). Màxim ${formatBytes(MAX_INPUT_BYTES)}.`
+    }
+    // SVG i GIF no es poden optimitzar (vector / animació): han de cabre al
+    // bucket tal com vénen.
+    if (SKIP_COMPRESS_MIME.has(file.type) && file.size > MAX_BYTES) {
+      const kind = file.type === 'image/svg+xml' ? 'SVG' : 'GIF'
+      return `${kind} massa gran (${formatBytes(file.size)}). Màxim ${formatBytes(MAX_BYTES)} — aquest format no es pot optimitzar automàticament.`
     }
     return null
   }
@@ -228,30 +257,31 @@ export default function ImageUploadField({
    * Pre-processament d'una imatge abans de pujar-la:
    *   - SVG i GIF passen tal qual (l'un és vector, l'altre pot tenir
    *     animacions que browser-image-compression no preserva).
-   *   - Si el fitxer ja és prou petit (<300KB) i no és gegant en píxels,
-   *     no val la pena comprimir.
-   *   - Si no, comprimim a max 500KB i max 2400px de costat amb WebWorker
-   *     per no bloquejar la UI.
+   *   - Si el fitxer ja és WebP/AVIF i prou petit (<300KB), no el toquem.
+   *   - La resta es converteixen a WebP amb max 500KB i max 2400px de
+   *     costat, amb WebWorker per no bloquejar la UI. Per això un PNG de
+   *     48 MB és perfectament vàlid: surt d'aquí com un WebP de ~500 KB.
    *
    * Retorna el File a pujar (potser el mateix d'entrada, potser un de nou
-   * més petit). Si la compressió falla, retorna l'original i log d'error
-   * — no és crític.
+   * més petit). Si la conversió falla, retorna l'original i log d'error;
+   * qui crida ja revalida la mida contra el límit del bucket.
    */
-  const compressIfNeeded = useCallback(async (file: File): Promise<File> => {
+  const optimiseImage = useCallback(async (file: File): Promise<File> => {
     if (SKIP_COMPRESS_MIME.has(file.type)) return file
-    if (file.size < SKIP_COMPRESS_BYTES) return file
+    if (MODERN_MIME.has(file.type) && file.size < SKIP_COMPRESS_BYTES) return file
     try {
       const compressed = await imageCompression(file, {
         maxSizeMB: 0.5, // ~500 KB objectiu
         maxWidthOrHeight: 2400, // suficient per retina + heros
+        fileType: OUTPUT_MIME, // converteix a WebP sigui quin sigui l'origen
         useWebWorker: true,
         preserveExif: false,
       })
-      // Si per algun motiu acaba més gran (cas patològic), conservem
-      // l'original — sempre el mínim entre els dos.
+      // Si per algun motiu acaba més gran (cas patològic amb imatges molt
+      // petites), conservem l'original — sempre el mínim entre els dos.
       return compressed.size < file.size ? compressed : file
     } catch (err) {
-      console.warn('[ImageUploadField] compression failed, using original', err)
+      console.warn('[ImageUploadField] optimisation failed, using original', err)
       return file
     }
   }, [])
@@ -269,14 +299,29 @@ export default function ImageUploadField({
 
       try {
         setStatus('compressing')
-        const optimised = await compressIfNeeded(file)
+        const optimised = await optimiseImage(file)
         if (optimised !== file) {
           setLastCompression({ before: file.size, after: optimised.size })
         }
 
+        // Segona validació: el límit real és el del bucket i s'aplica al
+        // fitxer que realment pugem. Només hi arribem si l'optimització ha
+        // fallat o no ha pogut reduir prou.
+        if (optimised.size > MAX_BYTES) {
+          setStatus('error')
+          setLastCompression(null)
+          setError(
+            `No s'ha pogut reduir la imatge per sota de ${formatBytes(MAX_BYTES)} (ha quedat en ${formatBytes(optimised.size)}). Prova d'exportar-la amb menys resolució.`
+          )
+          return
+        }
+
         setStatus('uploading')
         const supabase = createClient()
-        const ext = (optimised.name.split('.').pop() || file.name.split('.').pop() || 'png').toLowerCase()
+        const outType = optimised.type || file.type
+        const ext =
+          MIME_EXT[outType] ||
+          (optimised.name.split('.').pop() || file.name.split('.').pop() || 'png').toLowerCase()
         const baseName = file.name
           .replace(/\.[^.]+$/, '')
           .toLowerCase()
@@ -293,7 +338,7 @@ export default function ImageUploadField({
           .upload(path, optimised, {
             cacheControl: '31536000',
             upsert: false,
-            contentType: optimised.type || file.type,
+            contentType: outType,
           })
 
         if (uploadError) throw uploadError
@@ -308,7 +353,7 @@ export default function ImageUploadField({
         setError(err instanceof Error ? err.message : 'Error desconegut pujant la imatge')
       }
     },
-    [folder, setValue, compressIfNeeded]
+    [folder, setValue, optimiseImage]
   )
 
   // ----- Handlers -----
@@ -466,7 +511,7 @@ export default function ImageUploadField({
             <>
               <CircleNotch size={28} weight="regular" className="animate-spin text-text-main" />
               <span className="text-body-md text-text-main">Optimitzant imatge…</span>
-              <span className="text-body-sm text-text-secondary">Redueix la mida sense pèrdua visible</span>
+              <span className="text-body-sm text-text-secondary">Convertint a WebP i reduint la mida</span>
             </>
           ) : isUploading ? (
             <>
@@ -483,7 +528,7 @@ export default function ImageUploadField({
                   Arrossega una imatge o <span className="underline underline-offset-4">tria un fitxer</span>
                 </span>
                 <span className="text-body-sm text-text-secondary">
-                  JPG, PNG, WebP, AVIF, GIF o SVG · fins a 10 MB
+                  JPG, PNG, WebP, AVIF, GIF o SVG · s&apos;optimitzen a WebP automàticament
                 </span>
               </div>
             </>

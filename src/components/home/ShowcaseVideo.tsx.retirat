@@ -1,0 +1,599 @@
+"use client";
+
+import {
+  useState,
+  useEffect,
+  useRef,
+  type ElementType,
+  type MutableRefObject,
+} from "react";
+import {
+  motion,
+  animate,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useMotionValueEvent,
+  cubicBezier,
+  type MotionValue,
+} from "framer-motion";
+import { onIntroRevealed } from "@/lib/introSignal";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import { DribbbleLogo, LinkedinLogo, BehanceLogo } from "@phosphor-icons/react";
+import Hero from "@/components/home/Hero";
+
+// Easing editorial (com a funció: framer espera una funció d'easing per segment,
+// no l'array de bezier cru).
+const SAT_EASE = cubicBezier(0.16, 1, 0.3, 1);
+
+// ── Compromís direccional de l'escena ─────────────────────────────────────
+// L'escena té DOS estats estables: hero (prog 0) i cinema (prog END). Res
+// habitable entremig — quedar-se a mig camí ensenya el cercle deformat, que és
+// exactament el que la coreografia vol evitar.
+const END = 0.82; // progrés on la franja ja és full-width (després, hold)
+const COMMIT_MS = 1600; // via ràpida: entrada/sortida cinematogràfica
+const SETTLE_MS = 550; // xarxa de seguretat: correcció discreta
+const SETTLE_DELAY = 140; // silenci d'scroll abans de considerar-lo aturat
+const INERTIA_LOCK = 260; // absorbeix el residu inercial del trackpad
+const DOWN_MAX = 0.78; // per sobre: ja ets al cinema → scroll lliure (sortida)
+const UP_MIN = 0.02; // per sota: ja ets al hero
+
+// Velocitat orbital (rad/ms). Molt lenta: una volta completa ≈ 2 min.
+const ORBIT_SPEED = 0.00005;
+
+const TAU = Math.PI * 2;
+// Separació mínima entre centres de satèl·lits, en px sobre el perímetre.
+// Icona de 24px + marge (idle float ±3.4, parallax ±~17) → mai es toquen.
+const MIN_GAP_PX = 72;
+
+/**
+ * Satèl·lit social al voltant del cercle, amb quatre capes de moviment:
+ *  - Òrbita: deriva contínua i lenta al llarg del perímetre del cercle.
+ *  - Idle: flotament continu i suau (sine, fase pròpia) → vida en repòs.
+ *  - Ratolí: parallax lleuger segons el cursor, amb profunditat escalonada.
+ *  - Scroll: sortida suau (deriva petita cap enfora + fade + lleuger shrink).
+ * Respecta prefers-reduced-motion (òrbita/idle/parallax desactivats).
+ */
+function Satellite({
+  progress,
+  Icon,
+  label,
+  href,
+  px,
+  py,
+  ringR,
+  angle,
+  delay,
+  index,
+  angles,
+}: {
+  progress: MotionValue<number>;
+  Icon: ElementType;
+  label: string;
+  href: string;
+  px: number;
+  py: number;
+  ringR: number;
+  angle: number;
+  delay: number;
+  index: number;
+  /** Registre compartit dels angles efectius (wrapped) de tots els satèl·lits. */
+  angles: MutableRefObject<(number | undefined)[]>;
+}) {
+  const innerRef = useRef<HTMLSpanElement>(null);
+
+  // Sortida lligada a l'scroll: el fade es fa amb framer (funciona també amb
+  // prefers-reduced-motion); la deriva radial cap enfora i el zoom-out es fan
+  // al rAF loop perquè necessiten l'angle orbital actual.
+  const end = 0.28 + delay;
+  const scrollOpacity = useTransform(progress, [0, end * 0.45, end], [1, 0.9, 0]);
+
+  // ENTRADA sincronitzada amb el reveal de l'intro (o amb el muntatge, si no
+  // hi ha intro): fade + zoom lleu esglaonats, en lloc del pop en hidratar.
+  const enter = useMotionValue(0);
+  useEffect(() => {
+    let controls: ReturnType<typeof animate> | undefined;
+    const unsubscribe = onIntroRevealed(() => {
+      controls = animate(enter, 1, {
+        duration: 0.7,
+        delay: 0.15 + index * 0.12,
+        ease: SAT_EASE,
+      });
+    });
+    return () => {
+      unsubscribe();
+      controls?.stop();
+    };
+  }, [enter, index]);
+  const opacity = useTransform(
+    [scrollOpacity, enter],
+    ([s, e]: number[]) => s * e
+  );
+  const enterScale = useTransform(enter, [0, 1], [0.6, 1]);
+
+  // Idle float + parallax de ratolí (capa interna, rAF).
+  useEffect(() => {
+    const inner = innerRef.current;
+    if (!inner) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const mouse = { x: 0, y: 0 };
+    const onMove = (e: MouseEvent) => {
+      mouse.x = e.clientX / window.innerWidth - 0.5;
+      mouse.y = e.clientY / window.innerHeight - 0.5;
+    };
+    window.addEventListener("mousemove", onMove);
+    const phase = index * 1.7;
+    const depth = 9 + index * 4;
+    const baseRad = (angle * Math.PI) / 180;
+    // Centre del cercle (derivat de la posició base sobre el ring).
+    const ccx = px - ringR * Math.cos(baseRad);
+    const ccy = py - ringR * Math.sin(baseRad);
+    const OUT = 28; // marge per considerar la icona totalment fora de pantalla
+    const EDGE = -24; // marge del punt d'entrada (just a tocar de la vora)
+    const IN = 40; // marge interior on acaba l'entrada
+    const ENTRY_MS = 900; // durada de l'entrada (slide + fade + zoom)
+    const inside = (ix: number, iy: number, m: number, W: number, H: number) =>
+      ix > m && ix < W - m && iy > m && iy < H - m;
+    const SUCK_ZONE = 160; // px de la vora on comença la succió
+    const SUCK_MAX = 7; // multiplicador màxim de velocitat a tocar de la vora
+    // Separació mínima angular perquè les icones no es toquin mai.
+    const MIN_SEP = MIN_GAP_PX / ringR;
+    const wrapA = (x: number) => ((x % TAU) + TAU) % TAU;
+    // Buit angular per davant (sentit de gir) fins al satèl·lit més proper.
+    const gapAhead = (from: number) => {
+      let g = Infinity;
+      for (let j = 0; j < angles.current.length; j++) {
+        if (j === index) continue;
+        const b = angles.current[j];
+        if (b === undefined) continue;
+        const d = wrapA(b - from);
+        if (d < g) g = d;
+      }
+      return g;
+    };
+    let orbitA = baseRad; // angle acumulat (velocitat variable → integrem)
+    angles.current[index] = wrapA(baseRad);
+    let entryT = -1; // timestamp d'inici de l'entrada (-1 = cap entrada activa)
+    let entryDelta = 0; // arc a recórrer durant l'entrada (vora → IN)
+    let prev = -1;
+    let raf = 0;
+    const loop = (t: number) => {
+      if (prev < 0) prev = t;
+      const dt = Math.min(t - prev, 64);
+      prev = t;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const distEdge = (aa: number) => {
+        const ix = ccx + ringR * Math.cos(aa);
+        const iy = ccy + ringR * Math.sin(aa);
+        return Math.min(ix, W - ix, iy, H - iy);
+      };
+      // Sortida amb scroll (0→1): deriva radial cap enfora + zoom-out + fade.
+      const exit = SAT_EASE(Math.min(Math.max(progress.get() / end, 0), 1));
+      // Succió: si s'acosta a la vora (distància decreixent), accelera
+      // progressivament com si la pantalla se l'empassés. Pausada durant la
+      // sortida amb scroll per evitar salts mentre s'esvaeix.
+      let suck = 0;
+      if (entryT < 0 && exit < 0.4) {
+        const d0 = distEdge(orbitA);
+        if (d0 < SUCK_ZONE && distEdge(orbitA + 0.01) < d0) {
+          suck = 1 - Math.max(d0, 0) / SUCK_ZONE;
+        }
+      }
+      // Increment orbital limitat: encara que la succió l'acceleri, mai
+      // s'acosta a menys de MIN_SEP del satèl·lit que va per davant. Es mesura
+      // des de la posició efectiva final (inclou l'arc d'entrada pendent).
+      const inc = dt * ORBIT_SPEED * (1 + suck * suck * (SUCK_MAX - 1));
+      const effA = wrapA(orbitA + (entryT >= 0 ? entryDelta : 0));
+      orbitA += Math.min(inc, Math.max(0, gapAhead(effA) - MIN_SEP));
+      let a = orbitA;
+      let X = ccx + ringR * Math.cos(a);
+      let Y = ccy + ringR * Math.sin(a);
+      // Si l'òrbita l'ha tret del viewport (el cercle sagna per la cantonada),
+      // salta fins on el perímetre torna a tocar la vora i inicia l'entrada:
+      // llisca per l'arc des de la vora cap endins amb fade + zoom.
+      if (entryT < 0 && exit < 0.4 && !inside(X, Y, -OUT, W, H)) {
+        let edge = -1;
+        for (let d = 0.02; d < Math.PI * 2; d += 0.02) {
+          const na = a + d;
+          const nx = ccx + ringR * Math.cos(na);
+          const ny = ccy + ringR * Math.sin(na);
+          if (edge < 0 && inside(nx, ny, EDGE, W, H)) edge = na;
+          if (edge >= 0 && inside(nx, ny, IN, W, H)) {
+            // Aterra només si tot l'arc d'entrada (± MIN_SEP) queda lliure
+            // d'altres satèl·lits; si està ocupat, segueix buscant més enllà.
+            let clear = true;
+            for (let j = 0; j < angles.current.length; j++) {
+              if (j === index) continue;
+              const b = angles.current[j];
+              if (b === undefined) continue;
+              const rel = wrapA(b - edge);
+              if (rel < na - edge + MIN_SEP || rel > TAU - MIN_SEP) {
+                clear = false;
+                break;
+              }
+            }
+            if (!clear) {
+              edge = -1;
+              continue;
+            }
+            orbitA = edge;
+            a = edge;
+            entryDelta = na - edge;
+            entryT = t;
+            break;
+          }
+        }
+      }
+      // Progressió de l'entrada: avança l'arc extra amb smoothstep.
+      let eased = 1;
+      if (entryT >= 0) {
+        const e = Math.min(1, (t - entryT) / ENTRY_MS);
+        eased = e * e * (3 - 2 * e); // smoothstep: arrenca i acaba suau
+        a += entryDelta * eased;
+        if (e >= 1) {
+          orbitA += entryDelta;
+          entryT = -1;
+        }
+      }
+      X = ccx + ringR * Math.cos(a);
+      Y = ccy + ringR * Math.sin(a);
+      // Publica l'angle efectiu perquè la resta de satèl·lits el vegin.
+      angles.current[index] = wrapA(a);
+      // Deriva radial cap enfora de l'òrbita segons la posició actual.
+      const odx = X - px + Math.cos(a) * exit * 140;
+      const ody = Y - py + Math.sin(a) * exit * 140;
+      const fx = Math.sin(t * 0.00065 + phase) * 3;
+      const fy = Math.cos(t * 0.00052 + phase) * 3.4;
+      inner.style.opacity = eased.toFixed(3);
+      inner.style.transform = `translate(${(odx + fx + mouse.x * depth).toFixed(
+        2
+      )}px, ${(ody + fy + mouse.y * depth).toFixed(2)}px) scale(${(
+        (0.25 + 0.75 * eased) *
+        (1 - 0.3 * suck * suck) *
+        (1 - exit)
+      ).toFixed(3)})`;
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+      angles.current[index] = undefined;
+    };
+  }, [index, angle, ringR, px, py, progress, end, angles]);
+
+  return (
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      style={{ left: px - 12, top: py - 12, opacity, scale: enterScale }}
+      className="absolute pointer-events-auto"
+    >
+      <span
+        ref={innerRef}
+        className="block text-text-main hover:opacity-60 transition-opacity will-change-transform"
+      >
+        <Icon size={24} weight="regular" />
+      </span>
+    </motion.a>
+  );
+}
+
+/**
+ * Escena hero + showreel (un sol vídeo).
+ *
+ * Secció alta amb un stage `sticky` (sense marge negatiu, perquè el sticky
+ * funcioni). Dins:
+ *   - Capa de vídeo: arrenca com a CERCLE a baix-dreta i, en fer scroll, es mou
+ *     al centre i creix fins a una FRANJA full-width centrada verticalment
+ *     (animem geometria width/height/x/y/border-radius).
+ *   - El Hero incrustat (overlay transparent) a sobre, que s'esvaeix amb scroll.
+ * Quan la franja és al centre (pinned), seguir scrollejant deixa anar el sticky
+ * i tot puja cap als serveis. Es manté l'efecte cinema/dark (setAmbientDark).
+ *
+ * Requereix que cap ancestre tingui `overflow:hidden` (a page.tsx el <main> usa
+ * `overflow-x-clip`), altrament el `position:sticky` no enganxa.
+ */
+export default function ShowcaseVideo({
+  introPending = false,
+}: {
+  /** True quan l'IntroLoader es reproduirà (l'entrada del hero l'espera). */
+  introPending?: boolean;
+}) {
+  const sceneRef = useRef<HTMLElement>(null);
+  const videoElRef = useRef<HTMLVideoElement>(null);
+  // Angles efectius (wrapped) dels satèl·lits, compartits per evitar solapaments.
+  const satAnglesRef = useRef<(number | undefined)[]>([]);
+  const { resolvedTheme, setAmbientDark } = useTheme();
+
+  useEffect(() => {
+    const v = videoElRef.current;
+    if (!v) return;
+    // WCAG 2.2.2: un vídeo en bucle automàtic és moviment de més de 5s sense
+    // mecanisme de pausa. Amb reduced-motion es queda al primer frame.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      v.pause();
+      return;
+    }
+    const tryPlay = () => v.play().catch(() => {});
+    tryPlay();
+    v.addEventListener("canplay", tryPlay, { once: true });
+    return () => v.removeEventListener("canplay", tryPlay);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: sceneRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Cinema/dark. Abans: `latest > 0.5 && latest < 0.98` — la foscor arribava
+  // amb la franja gairebé feta i els llums s'encenien 18px abans que el sticky
+  // es deixés anar (tall dur just mentre l'usuari marxa).
+  // Ara la foscor ENCAPÇALA la geometria (0.35) i es retira amb prou marge
+  // (0.90) perquè la transició de 0.8s de globals.css hagi acabat abans del
+  // release. Histèresi als quatre llindars: sense ella, el jitter d'un
+  // trackpad al voltant del punt de tall fa parpellejar tota la paleta.
+  const ambientOnRef = useRef(false);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (resolvedTheme === "dark") return;
+    const on = ambientOnRef.current;
+    const next = on
+      ? latest > 0.28 && latest < 0.9 // encès: es manté fins a sortir del marge
+      : latest > 0.35 && latest < 0.86; // apagat: cal entrar-hi de ple
+    if (next !== on) {
+      ambientOnRef.current = next;
+      setAmbientDark(next);
+    }
+  });
+  useEffect(() => {
+    if (resolvedTheme === "dark") {
+      ambientOnRef.current = false;
+      setAmbientDark(false);
+    }
+  }, [resolvedTheme, setAmbientDark]);
+
+  const [win, setWin] = useState({ w: 1440, h: 900 });
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const update = () => {
+      setWin({ w: window.innerWidth, h: window.innerHeight });
+      setIsMobile(window.innerWidth < 1024);
+      setMounted(true);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // Geometria: cercle gran que SAGNA per la cantonada inferior-dreta (com Figma)
+  // → franja full-width centrada verticalment.
+  const startD = isMobile
+    ? Math.min(win.w * 0.64, win.h * 0.4)
+    : Math.min(win.w * 0.42, win.h * 0.72);
+  const bandW = win.w;
+  const bandH = Math.min(isMobile ? win.w / 1.3 : win.w / 2.4, win.h);
+  const xStart = win.w * (isMobile ? 0.26 : 0.4);
+  const yStart = win.h * (isMobile ? 0.28 : 0.33);
+
+  const width = useTransform(scrollYProgress, [0, END], [startD, bandW]);
+  const height = useTransform(scrollYProgress, [0, END], [startD, bandH]);
+  const x = useTransform(scrollYProgress, [0, END], [xStart, 0]);
+  const y = useTransform(scrollYProgress, [0, END], [yStart, 0]);
+  const radius = useTransform(scrollYProgress, [0, END * 0.85], ["50%", "0%"]);
+
+  // Compromís direccional (substitueix l'auto-scroll d'un sol tret).
+  //
+  //  · Via ràpida (wheel): un gest deliberat completa el trajecte sencer en
+  //    COMMIT_MS. Avall → cinema. Amunt enmig de la transició → torna al hero;
+  //    cancel·lar no vol dir "atura't aquí", vol dir "desfés-ho". Abans el gate
+  //    era `prog < 0.12`: qui arribava amb l'scroll ja començat no activava mai
+  //    la immersió i es quedava plantat al punt intermedi.
+  //  · Xarxa de seguretat (scroll): no intercepta res. Quan QUALSEVOL scroll
+  //    s'atura (touch, teclat, barra, programàtic) i hem quedat al mig, llisca
+  //    cap a l'extrem més proper. Cobreix el que la via ràpida no toca sense
+  //    segrestar el gest — bloquejar `touchmove` a mòbil es llegeix com "la web
+  //    va malament", no com immersió, i interceptar el teclat trenca
+  //    accessibilitat.
+  //
+  // A partir de DOWN_MAX la sortida cap als serveis és lliure i natural: el
+  // cinema és la destinació, no un segon peatge.
+  // prefers-reduced-motion → tots dos mecanismes fora, scroll natiu i punt.
+  useEffect(() => {
+    const el = sceneRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    let animating = false;
+    let lockUntil = 0;
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const sceneTop = () => el.getBoundingClientRect().top + window.scrollY;
+    const sceneRange = () => Math.max(el.offsetHeight - window.innerHeight, 1);
+    // Stage enganxat = l'escena cobreix el viewport sencer.
+    const pinned = () => {
+      const r = el.getBoundingClientRect();
+      return r.top <= 0 && r.bottom >= window.innerHeight;
+    };
+    // Overlay amb scroll-lock actiu (ContactModal, ServiceModal,
+    // FullScreenMenu... tots posen body.overflow = "hidden"): el gest ve de
+    // DINS l'overlay i no ha de moure la pàgina. Sense això, window.scrollTo
+    // funcionaria igualment — un box overflow:hidden segueix sent desplaçable
+    // programàticament — i dispararia l'ambientDark.
+    const locked = () => document.body.style.overflow === "hidden";
+
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      animating = false;
+    };
+
+    const glideTo = (targetY: number, dur: number) => {
+      cancelAnimationFrame(raf);
+      if (Math.abs(targetY - window.scrollY) < 4) {
+        lockUntil = performance.now() + INERTIA_LOCK;
+        return;
+      }
+      animating = true;
+      const fromY = window.scrollY;
+      const t0 = performance.now();
+      const step = (t: number) => {
+        const p = Math.min((t - t0) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        window.scrollTo(0, fromY + (targetY - fromY) * e);
+        if (p < 1) {
+          raf = requestAnimationFrame(step);
+        } else {
+          animating = false;
+          // Finestra morta: sense ella, el residu inercial del trackpad ens
+          // passa de llarg just en arribar.
+          lockUntil = performance.now() + INERTIA_LOCK;
+        }
+      };
+      raf = requestAnimationFrame(step);
+    };
+
+    const commit = (dir: 1 | -1, dur: number) =>
+      glideTo(dir > 0 ? sceneTop() + sceneRange() * END : sceneTop(), dur);
+
+    const onWheel = (ev: WheelEvent) => {
+      if (locked() || !pinned()) return;
+
+      if (animating) {
+        if (ev.deltaY < 0) {
+          stop();
+          commit(-1, COMMIT_MS);
+        }
+        ev.preventDefault();
+        return;
+      }
+      if (performance.now() < lockUntil) {
+        ev.preventDefault();
+        return;
+      }
+
+      const prog = scrollYProgress.get();
+      if (ev.deltaY > 0) {
+        if (prog >= DOWN_MAX) return; // ja al cinema → sortida lliure
+        ev.preventDefault();
+        commit(1, COMMIT_MS);
+      } else {
+        if (prog <= UP_MIN || prog >= DOWN_MAX) return;
+        ev.preventDefault();
+        commit(-1, COMMIT_MS);
+      }
+    };
+
+    const onScroll = () => {
+      if (animating) return;
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        if (animating || locked() || !pinned()) return;
+        if (performance.now() < lockUntil) return;
+        const prog = scrollYProgress.get();
+        if (prog <= UP_MIN || prog >= DOWN_MAX) return;
+        commit(prog < END / 2 ? -1 : 1, SETTLE_MS);
+      }, SETTLE_DELAY);
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      if (settleTimer) clearTimeout(settleTimer);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [scrollYProgress]);
+
+  // Satèl·lits socials sobre l'ARC SUPERIOR del cercle (guia vermella de Figma):
+  // al perímetre, una mica per fora, de dalt-esquerra a dalt-dreta. Es
+  // posicionen per angle (graus: 270 = dalt, 180 = esquerra, 0 = dreta).
+  const cx = win.w / 2 + xStart;
+  const cy = win.h / 2 + yStart;
+  const R = startD / 2;
+  const ringR = R + 48;
+  const rad = (d: number) => (d * Math.PI) / 180;
+  const sats = [
+    { Icon: DribbbleLogo, label: "Dribbble", angle: 230, href: "https://dribbble.com/mariuscomas" },
+    { Icon: LinkedinLogo, label: "LinkedIn", angle: 264, href: "https://www.linkedin.com/in/mariuscomas/" },
+    // 298° queia FORA del viewport a totes les amplades desktop (1280→1920):
+    // el satèl·lit naixia fora i el rescat per arc s'activava a cada càrrega.
+    { Icon: BehanceLogo, label: "Behance", angle: 284, href: "https://www.behance.net/MariusComas" },
+  ].map((s) => ({
+    ...s,
+    dx: ringR * Math.cos(rad(s.angle)),
+    dy: ringR * Math.sin(rad(s.angle)),
+  }));
+
+  return (
+    <>
+      <section ref={sceneRef} className="relative h-[200vh]">
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          {/* Capa de vídeo (z-0): cercle baix-dreta → franja centrada */}
+          <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+            <motion.div
+              style={{ width, height, x, y, borderRadius: radius }}
+              className="relative overflow-hidden bg-surface-card-inverse"
+            >
+              <video
+                ref={videoElRef}
+                src="/videos/master-web.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/10" />
+            </motion.div>
+          </div>
+
+          {/* Hero incrustat (overlay transparent, z-10) */}
+          <Hero embedded introPending={introPending} progress={scrollYProgress} />
+
+          {/* Satèl·lits socials (z-20). Animació de sortida lligada a l'scroll.
+              Es munten després del client (no SSR) per evitar mismatch
+              d'hidratació amb les posicions calculades segons la finestra. */}
+          <div className="absolute inset-0 z-20 hidden lg:block pointer-events-none">
+            {mounted && sats.map((s, i) => (
+              <Satellite
+                key={s.label}
+                progress={scrollYProgress}
+                Icon={s.Icon}
+                label={s.label}
+                href={s.href}
+                px={cx + s.dx}
+                py={cy + s.dy}
+                ringR={ringR}
+                angle={s.angle}
+                delay={i * 0.03}
+                index={i}
+                angles={satAnglesRef}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services List String — sense fons propi perquè durant la transició
+          cinema/dark no aparegui una capa clara; hereta el fons del body. */}
+      <div className="w-full text-center pt-8 md:pt-16 pb-16 md:pb-32 px-4">
+        {/* DS: text-label (Others/Caption uppercase); leading override per multilínia */}
+        <p className="text-label leading-relaxed md:leading-loose text-text-secondary max-w-[95vw] md:max-w-6xl xl:max-w-[100vw] mx-auto">
+          Product Design <span className="mx-2 md:mx-4 opacity-50">·</span>
+          Branding &amp; Identity Design <span className="mx-2 md:mx-4 opacity-50">·</span>
+          Mobile App Design <span className="mx-2 md:mx-4 opacity-50">·</span>
+          UI/UX Design Audit <span className="mx-2 md:mx-4 opacity-50">·</span>
+          Website Design <span className="mx-2 md:mx-4 opacity-50">·</span>
+          Landing Page Design
+        </p>
+      </div>
+    </>
+  );
+}
