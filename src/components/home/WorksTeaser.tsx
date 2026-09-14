@@ -52,7 +52,10 @@ export default async function WorksTeaser() {
   if (projects.length === 0) return null;
 
   return (
-    <section className="w-full py-16 md:py-32 relative overflow-hidden">
+    <section
+      id="treballs"
+      className="w-full scroll-mt-24 py-16 md:py-32 relative overflow-hidden"
+    >
       <div className="w-full">
         {/* Header amb títol + link "Veure tots els projectes" */}
         <div className="flex justify-between items-end mb-16 md:mb-24 px-4 md:px-[3vw] lg:px-[4vw]">
