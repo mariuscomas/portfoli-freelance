@@ -25,7 +25,7 @@ export default function NavigationWrapper({ children }: { children: React.ReactN
   // del Header segons el seu hero, i el Header el llegeixi des del context.
   return (
     <HeaderContrastProvider>
-      <Header onMenuClick={() => setIsMenuOpen(true)} />
+      <Header onMenuClick={() => setIsMenuOpen(true)} isMenuOpen={isMenuOpen} />
       <FullScreenMenu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}

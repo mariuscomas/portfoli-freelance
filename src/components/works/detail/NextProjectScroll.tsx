@@ -128,7 +128,7 @@ export default function NextProjectScroll({ nextProject }: Props) {
   return (
     <section 
       ref={containerRef} 
-      className="relative w-full bg-surface-base pt-16 md:pt-32 pb-16 md:pb-32 flex flex-col justify-center overflow-hidden border-t border-text-main/10"
+      className="relative z-10 w-full bg-surface-base pt-16 md:pt-32 pb-16 md:pb-32 flex flex-col justify-center overflow-hidden border-t border-text-main/10"
     >
       <div className="w-full">
         {/* Top Content: Grid for layout (Text a l'esquerra, Progress bar a la dreta) */}

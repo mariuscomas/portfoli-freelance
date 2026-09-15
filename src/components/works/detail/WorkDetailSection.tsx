@@ -5,6 +5,20 @@ interface Props {
   viewMode: "visual" | "lectura";
 }
 
+/**
+ * Un valor de Details que és una adreça web es mostra com a enllaç.
+ * Es decideix pel valor, no per l'etiqueta, perquè la fitxa pot dir-li
+ * "Url", "Web" o "Enllaç" segons el projecte. Els valors amb espais
+ * ("Web Design", "UI/UX Design & Front-end") no hi entren mai.
+ */
+function detailHref(value: string): string | null {
+  const v = (value || "").trim();
+  if (!v || /\s/.test(v)) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/^(www\.)?[a-z0-9-]+(\.[a-z0-9-]{2,})+$/i.test(v)) return `https://${v}`;
+  return null;
+}
+
 export default function WorkDetailSection({ text, viewMode }: Props) {
   return (
     <section
@@ -65,12 +79,26 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
             {/* h4 baixa a text-body-lg font-medium per harmonitzar amb el body */}
             <h4 className="font-medium text-text-main text-body-lg mb-6">Details</h4>
             <div className="flex flex-col w-full max-w-[640px]">
-              {text.listDetails.map((item, index) => (
-                <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-t border-text-main/10">
-                  <span className="text-text-secondary text-body-md w-full sm:w-1/2">{item.label}</span>
-                  <span className="text-text-main text-body-md sm:w-1/2 text-right">{item.value}</span>
-                </div>
-              ))}
+              {text.listDetails.map((item, index) => {
+                const href = item.href?.trim() || detailHref(item.value);
+                return (
+                  <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-t border-text-main/10">
+                    <span className="text-text-secondary text-body-md w-full sm:w-1/2">{item.label}</span>
+                    {href ? (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-text-main text-body-md sm:w-1/2 text-right hover:underline underline-offset-4 transition-opacity hover:opacity-70"
+                      >
+                        {item.value}
+                      </a>
+                    ) : (
+                      <span className="text-text-main text-body-md sm:w-1/2 text-right">{item.value}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

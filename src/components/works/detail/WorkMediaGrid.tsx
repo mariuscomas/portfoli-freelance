@@ -4,9 +4,15 @@ import Image from "next/image";
 interface Props {
   media: WorkMedia[];
   viewMode: "visual" | "lectura";
+  /**
+   * Treu el coixí inferior. S'activa al darrer bloc de media quan la secció
+   * següent ja aporta el seu propi coixí superior (la conclusió), per no sumar
+   * els dos i trencar la simetria del Figma.
+   */
+  flushBottom?: boolean;
 }
 
-export default function WorkMediaGrid({ media, viewMode }: Props) {
+export default function WorkMediaGrid({ media, viewMode, flushBottom = false }: Props) {
   if (!media || media.length === 0) return null;
 
   // Layout handling logic based on media count
@@ -19,7 +25,7 @@ export default function WorkMediaGrid({ media, viewMode }: Props) {
   };
 
   return (
-    <section className={`w-full ${viewMode === "visual" ? "pb-16 md:pb-32" : ""}`}>
+    <section className={`w-full ${viewMode === "visual" && !flushBottom ? "pb-16 md:pb-32" : ""}`}>
       <div className={`${viewMode === "visual" ? `grid gap-4 md:gap-8` : "grid gap-12"} ${getGridClasses()}`}>
         {media.map((item, index) => {
           // If we have 3 items, make the last one span 2 columns in the layout

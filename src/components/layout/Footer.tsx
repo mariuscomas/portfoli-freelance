@@ -169,7 +169,7 @@ function FooterContent() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-body-2xl-statement text-text-main max-w-[1200px]"
+          className="text-body-2xl-statement text-text-main"
         >
           El següent projecte<br className="hidden md:block" /> comença amb una conversa.
         </motion.h2>

@@ -166,14 +166,22 @@ export default function WorkDetailLayout({ data }: Props) {
             // Header fixed (≈80-90px amb padding) ni que els elements sticky de
             // WorkDetailSection apareguin per sota de MÀRIUS. al primer scroll.
             <div className="flex flex-col w-full pt-32 md:pt-48">
-              {data.blocks.map((block) => (
-                <div key={block.id} className="w-full flex flex-col">
-                  <WorkDetailSection text={block.textSection} viewMode="visual" />
-                  {block.media && block.media.length > 0 && (
-                    <WorkMediaGrid media={block.media} viewMode="visual" />
-                  )}
-                </div>
-              ))}
+              {data.blocks.map((block, i) => {
+                // L'últim bloc de media no posa coixí inferior propi: el coixí
+                // que separa la darrera imatge de la conclusió és el pt de la
+                // secció de conclusió (284 px al Figma), i si tots dos hi fossin
+                // se sumarien.
+                const isLast = i === data.blocks.length - 1;
+                const dropTrailingPad = isLast && Boolean(data.conclusion);
+                return (
+                  <div key={block.id} className="w-full flex flex-col">
+                    <WorkDetailSection text={block.textSection} viewMode="visual" />
+                    {block.media && block.media.length > 0 && (
+                      <WorkMediaGrid media={block.media} viewMode="visual" flushBottom={dropTrailingPad} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 px-6 md:px-12 pt-32 md:pt-48">
@@ -210,7 +218,7 @@ export default function WorkDetailLayout({ data }: Props) {
           Sense prose perquè Tailwind no compon prose-p: amb classes
           custom de @layer components. */}
       {data.conclusion && (
-        <section className="px-6 md:px-12 lg:px-24 pb-32 md:pb-48 lg:pb-64 xl:pb-[284px] flex justify-center bg-surface-base">
+        <section className="relative z-10 px-6 md:px-12 lg:px-24 pt-32 md:pt-48 lg:pt-64 xl:pt-[284px] pb-32 md:pb-48 lg:pb-64 xl:pb-[284px] flex justify-center bg-surface-base">
           <div className="w-full max-w-[1536px] flex flex-col items-center text-center">
             <div
               className="text-[clamp(1.5rem,2.5vw,3rem)] leading-[1.33] tracking-normal text-text-main font-normal
@@ -224,9 +232,10 @@ export default function WorkDetailLayout({ data }: Props) {
         </section>
       )}
 
-      {/* Final Image */}
+      {/* Final Image — bg-surface-base + z-10 com la resta de blocs: sense fons
+          opac, el hero sticky del darrere es veu a través d'aquest contenidor. */}
       {data.finalMedia && data.finalMedia.length > 0 && (
-        <div className="pb-16 md:pb-32">
+        <div className="relative z-10 bg-surface-base pb-16 md:pb-32">
           <WorkMediaGrid media={data.finalMedia} viewMode="lectura" />
         </div>
       )}

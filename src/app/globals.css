@@ -49,6 +49,30 @@
   /* Figma: surface/border */
   --surface-border-strong: #999999;
   /* Figma: surface/border-strong — bordes (dashed) sobre surface/base on border no té prou contrast */
+
+  /* --- COLOR / Border — rampa per promesa de contrast (Figma: border/*) ---
+     Els dos tokens de dalt són LLEGAT: --surface-border fa 1,11:1 sobre
+     surface/base i --surface-border-strong 2,54:1, o sigui que cap dels dos
+     arriba als 3:1 de la WCAG 1.4.11. Es migren un per un.
+
+     La rampa nova té tres graons definits per QUÈ PROMET cadascun, i cada
+     graó es comporta igual als dos temes. Tots surten de primitives que ja
+     existien a la rampa de neutrals — cap valor inventat.
+
+       subtle   1,11 clar / 1,64 fosc  → cap promesa. Filet DECORATIU: només
+                per a separacions que l'aire ja fa i que ningú necessita
+                veure per entendre res.
+       default  3,08 clar / 3,23 fosc  → ≥3:1 contra surface/base I
+                surface/card als dos temes. El filet que FA UNA FEINA:
+                delimita, agrupa, marca la vora d'una card. Compleix 1.4.11.
+       strong   7,17 clar / 5,38 fosc  → ≥4,5:1. Èmfasi: inputs, error,
+                vores dashed, el que hagi de cridar. */
+  --border-subtle: #e5e7eb;
+  /* neutral/100 */
+  --border-default: #8a8a8a;
+  /* neutral/400 */
+  --border-strong: #4d5153;
+  /* neutral/600 */
   --surface-card-inverse: #0a0a0a;
   /* Únic membre "inverse" amb ús real (chips/badges sobre fons fix) */
 
@@ -383,6 +407,14 @@
   --surface-card: #0a0a0a;
   --surface-border: #8a8a8a;
   --surface-border-strong: #999999;
+
+  /* Rampa de border (dark) — mateixos graons, primitives de l'altre extrem */
+  --border-subtle: #444749;
+  /* neutral/700 */
+  --border-default: #737373;
+  /* neutral/500 */
+  --border-strong: #999999;
+  /* neutral/300 */
   --surface-card-inverse: #ffffff;
 
   /* --- COLOR / Primary (dark) — invertit perquè CTA destaqui sobre fons fosc --- */
@@ -420,6 +452,9 @@
   --color-surface-border: var(--surface-border);
   --color-surface-border-strong: var(--surface-border-strong);
   --color-surface-card-inverse: var(--surface-card-inverse);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
   --color-primary-main: var(--primary-main);
   --color-focus-ring: var(--focus-ring);
   --color-error: var(--error-main);
@@ -482,6 +517,13 @@
   --color-text-fixed-light-secondary: var(--text-fixed-light-secondary);
   --color-text-fixed-dark: var(--text-fixed-dark);
   --color-text-fixed-dark-secondary: var(--text-fixed-dark-secondary);
+
+  /* Colors / Border → border-border-subtle, border-border-default, border-border-strong.
+     Nom llarg a posta: el token es diu border/* al Figma i la classe de Tailwind
+     per a un color de vora ja comença per `border-`. */
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
 
   /* Colors / Surface → bg-surface-base, bg-surface-card, border-surface-border, etc. */
   --color-surface-base: var(--surface-base);

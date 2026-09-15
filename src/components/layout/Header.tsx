@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import TransitionLink from "@/components/common/TransitionLink";
 import Logo from "@/components/common/Logo";
 import LogoSmall from "@/components/common/LogoSmall";
-import { useIdle } from "@/hooks/useIdle";
+import { useScrollHide } from "@/hooks/useScrollHide";
 import { useHeaderContrast } from "@/context/HeaderContrastContext";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
@@ -30,7 +30,14 @@ import { useContactModal } from "@/context/ContactModalContext";
 
   Altres comportaments preservats:
   - Apareix al muntar qualsevol pàgina, inclosa la Home (~1s després).
-  - Si l'usuari no fa res durant 5s, s'amaga; mou el ratolí → torna a aparèixer.
+  - AUTO-HIDE DIRECCIONAL (15set26, substitueix l'antic idle-hide de 5s):
+    scroll avall per sota dels 100px → s'amaga; scroll amunt → torna.
+    L'idle amagava la nav mentre l'usuari llegia quiet i a mòbil no hi ha
+    mousemove per recuperar-la; el direccional és intencional i reversible
+    amb el mateix gest. Vegeu useScrollHide per als llindars.
+  - Excepcions que el tornen visible: focus de teclat dins del header
+    (si no, fent Tab el focus aniria a parar a un header fora de pantalla,
+    WCAG 2.4.11) i el tancament del menú o del modal de contacte.
   - Contrast del Header (light/dark/auto) declarat per la pàgina via HeaderContrastContext.
 */
 
@@ -54,16 +61,26 @@ const LAYOUT_SHIFT_DURATION = 0.5;
 // La crossfade Logo ↔ LogoSmall també va més lenta (com a Motto): no
 // és un mer aparèixer/desaparèixer, sinó un morph subtil amb scale.
 const LOGO_TRANSITION_DURATION = 0.5;
+// Entrada/sortida del header sencer per direcció d'scroll.
+const HIDE_DURATION = 0.35;
 
-export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
+export default function Header({
+  onMenuClick,
+  isMenuOpen = false,
+}: {
+  onMenuClick: () => void;
+  isMenuOpen?: boolean;
+}) {
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [hasMounted, setHasMounted] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
-  const { isIdle, hasInteracted } = useIdle(5000);
+  const { hidden: isScrollHidden, show } = useScrollHide(COMPACT_ENTER);
+  const [hasFocusWithin, setHasFocusWithin] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const contrast = useHeaderContrast();
   const { revealed: isFooterRevealed } = useFooterReveal();
-  const { open: openContactModal } = useContactModal();
+  const { open: openContactModal, isOpen: isContactOpen } = useContactModal();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsCompact((prev) => {
@@ -80,9 +97,25 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     return () => clearTimeout(t);
   }, [pathname]);
 
+  // En tancar el menú o el modal de contacte el header torna visible, encara
+  // que abans estigués amagat: no volem deixar l'usuari sense nav just
+  // després de tancar un overlay. Mentre són oberts l'scroll està bloquejat
+  // (overflow:hidden al body), així que el direccional no dispara sol.
+  const isOverlayOpen = isMenuOpen || isContactOpen;
+  const wasOverlayOpen = useRef(isOverlayOpen);
+  useEffect(() => {
+    if (wasOverlayOpen.current && !isOverlayOpen) show();
+    wasOverlayOpen.current = isOverlayOpen;
+  }, [isOverlayOpen, show]);
+
   // El Header s'amaga també quan el footer s'està revelant (el bloc fosc
   // puja per sobre del contingut i el taparia).
-  const isVisible = hasMounted && (!hasInteracted || !isIdle) && !isFooterRevealed;
+  const isVisible =
+    hasMounted && !isFooterRevealed && (!isScrollHidden || hasFocusWithin);
+
+  // Amb reduced-motion el header no es desplaça: només es fon. Llavors sí
+  // que cal tallar-li els clics, perquè invisible segueix ocupant la franja.
+  const pe = isVisible ? "pointer-events-auto" : "pointer-events-none";
 
   // Tokens condicionals segons el contrast declarat per la pàgina.
   //  - underline: color de la línia base (estat active).
@@ -128,9 +161,14 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
       initial={{ opacity: 0, y: -20 }}
       animate={{
         opacity: isVisible ? 1 : 0,
-        y: isVisible ? 0 : -20,
+        y: isVisible ? 0 : prefersReducedMotion ? 0 : "-100%",
       }}
-      transition={{ duration: 0.6, ease: ANIM_EASE }}
+      transition={{
+        duration: hasMounted ? HIDE_DURATION : 0.6,
+        ease: ANIM_EASE,
+      }}
+      onFocusCapture={() => setHasFocusWithin(true)}
+      onBlurCapture={() => setHasFocusWithin(false)}
       className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 md:py-8 pointer-events-none"
     >
       {/*
@@ -139,7 +177,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         perquè el layout no salti al canviar entre Logo full i LogoSmall.
         Mobile: només LogoSmall, no es transicionará.
       */}
-      <div className={`pointer-events-auto flex items-center ${logoColor} transition-colors duration-300`}>
+      <div className={`${pe} flex items-center ${logoColor} transition-colors duration-300`}>
         <TransitionLink href="/" aria-label="Inici" className="hover:opacity-80 transition-opacity">
           {/* Desktop (md+) — crossfade entre Logo i LogoSmall.
               Scale subtil (0.85 → 1) afegeix sensació de morph: el logo
@@ -189,7 +227,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           y: isCompact ? -6 : 0,
         }}
         transition={{ duration: ANIM_DURATION, ease: ANIM_EASE }}
-        style={{ pointerEvents: isCompact ? "none" : "auto" }}
+        style={{ pointerEvents: isCompact || !isVisible ? "none" : "auto" }}
         aria-label="Navegació principal"
         aria-hidden={isCompact}
         className="hidden lg:flex items-center gap-10 will-change-[opacity,transform]"
@@ -233,7 +271,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         immediatament i el `layout` del Comencem? animi el desplaçament en
         paral·lel amb el fade del Menu.
       */}
-      <div className="flex items-center gap-6 lg:gap-8 pointer-events-auto h-10 lg:h-12">
+      <div className={`flex items-center gap-6 lg:gap-8 ${pe} h-10 lg:h-12`}>
         <motion.div
           layout
           transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}

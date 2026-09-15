@@ -13,7 +13,13 @@ export interface WorkTextSection {
   description: string;
   listType?: 'characteristics' | 'what-we-did' | 'none';
   listItems?: string[]; // Array of strings for the list
-  listDetails?: { label: string; value: string }[]; // For UI/UX Design -> Type structure
+  /**
+   * Files de la taula "Details" (bloc 01). `href` és opcional: quan hi és, el
+   * valor es mostra com a enllaç amb aquest destí (p. ex. "App Store" →
+   * apps.apple.com). Sense `href`, un valor que sembli una adreça web
+   * s'enllaça igualment de forma automàtica.
+   */
+  listDetails?: { label: string; value: string; href?: string }[];
 }
 
 export interface WorkBlock {
