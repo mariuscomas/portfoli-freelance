@@ -209,7 +209,7 @@ export default function WorkDetailLayout({ data }: Props) {
       {/* Final Image — bg-surface-base + z-10 com la resta de blocs: sense fons
           opac, el hero sticky del darrere es veu a través d'aquest contenidor. */}
       {data.finalMedia && data.finalMedia.length > 0 && (
-        <div className="relative z-10 bg-surface-base pb-16 md:pb-32">
+        <div className="relative z-10 bg-surface-base px-6 pb-16 md:pb-32">
           <WorkMediaGrid media={data.finalMedia} viewMode="lectura" />
         </div>
       )}

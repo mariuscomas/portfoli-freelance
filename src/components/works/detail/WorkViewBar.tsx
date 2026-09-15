@@ -119,15 +119,16 @@ export default function WorkViewBar({ view, onChange, stopRef }: Props) {
         onMouseLeave={closePeek}
         onFocus={openPeek}
         onBlur={closePeek}
-        className="group pointer-events-auto flex items-center justify-center
+        className={`group pointer-events-auto flex items-center justify-center
           h-14 lg:h-16 xl:h-[72px] rounded-full bg-surface-card text-text-main
           shadow-[0_4px_24px_rgba(0,0,0,0.10)]
           transition-[width,transform] duration-300 ease-out hover:-translate-y-0.5
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-main focus-visible:ring-offset-2"
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-text-main focus-visible:ring-offset-2
+          ${showLabels ? "" : "w-14 lg:w-16 xl:w-[72px]"}`}
       >
         <span
-          className={`flex items-center justify-center gap-3 transition-all duration-300
-            ${showLabels ? "px-5 lg:px-6 xl:px-8" : "w-11 lg:w-12 xl:w-14 px-0"}`}
+          className={`flex items-center justify-center transition-all duration-300
+            ${showLabels ? "gap-3 px-5 lg:px-6 xl:px-8" : "w-full gap-0 px-0"}`}
         >
           <ArrowLeft size={20} weight="regular" className="shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
           <span

@@ -16,7 +16,8 @@ import {
   Eye,
   Rows,
   GridFour,
-  X,
+  CloudArrowUp,
+  CircleNotch,
 } from '@phosphor-icons/react'
 import {
   DndContext,
@@ -38,6 +39,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import ImageUploadField from './ImageUploadField'
+import type { ImageUploadFieldHandle } from './ImageUploadField'
 import RichTextEditor from './RichTextEditor'
 import ColorField from './ColorField'
 import { useConfirm } from './useConfirm'
@@ -1916,107 +1918,153 @@ function MediaRowList({
 }) {
   const hasUrl = Boolean(media.url)
   const filename = filenameFromUrl(media.url) || ''
-  // Refs per ImageUploadField intern (per fer click programàtic des dels
-  // botons d'edit / replace). Reutilitzem el component sense renderitzar-lo
-  // visualment quan ja hi ha url — només per a la lògica d'upload via modal.
-  const [managerOpen, setManagerOpen] = useState(false)
+  /**
+   * `ImageUploadField` en mode headless: no dibuixa res, només aporta la
+   * lògica (picker + compressió + upload + modal de gestió). Els botons de
+   * la fila la disparen via ref, així cada botó fa una cosa diferent:
+   * llapis → modal de gestió, reemplaçar → picker del sistema.
+   */
+  const fieldRef = useRef<ImageUploadFieldHandle>(null)
+  const [busy, setBusy] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  const onStatusChange = useCallback((isBusy: boolean, err: string | null) => {
+    setBusy(isBusy)
+    setUploadError(err)
+  }, [])
+
+  /** Llapis i thumbnail: si ja hi ha imatge, gestionar-la; si no, pujar-ne una. */
+  const openPrimary = () => {
+    if (hasUrl) fieldRef.current?.openManager()
+    else fieldRef.current?.openFilePicker()
+  }
 
   return (
     <div className="flex items-center gap-2.5">
       <DragHandle listeners={listeners} label="Reordenar imatge" />
 
-      <div className="flex-1 min-w-0 flex items-center gap-6 p-3 border border-surface-border rounded-md bg-surface-card">
-        {/* Thumbnail 80×80 amb fons surface-base — Figma 11176:904.
-            En estat buit, mostrem un placeholder clicable que obre el
-            picker via ImageUploadField. */}
-        <div className="shrink-0">
-          {hasUrl ? (
+      <div className="flex-1 min-w-0 flex flex-col gap-2 p-3 border border-surface-border rounded-md bg-surface-card">
+        <div className="flex items-center gap-6">
+          {/* Thumbnail 80×80 amb fons surface-base — Figma 11176:904.
+              En estat buit, el placeholder obre el picker directament. */}
+          <div className="shrink-0">
             <button
               type="button"
-              onClick={() => setManagerOpen(true)}
-              aria-label="Gestionar imatge"
-              title="Gestionar imatge"
-              className="w-20 h-20 rounded-md overflow-hidden border border-surface-border bg-surface-base block"
+              onClick={openPrimary}
+              disabled={busy}
+              aria-label={hasUrl ? 'Gestionar imatge' : 'Pujar imatge'}
+              title={hasUrl ? 'Gestionar imatge' : 'Pujar imatge'}
+              className={`relative w-20 h-20 rounded-md overflow-hidden bg-surface-base block ${
+                hasUrl
+                  ? 'border border-surface-border'
+                  : 'border border-dashed border-surface-border hover:border-text-secondary transition-colors'
+              }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={media.url}
-                alt={media.alt || ''}
-                className="w-full h-full object-cover"
-              />
+              {hasUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={media.url}
+                  alt={media.alt || ''}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="flex items-center justify-center w-full h-full text-text-secondary">
+                  <CloudArrowUp size={18} weight="regular" />
+                </span>
+              )}
+              {busy && (
+                <span className="absolute inset-0 flex items-center justify-center bg-surface-base/80">
+                  <CircleNotch size={18} weight="regular" className="animate-spin text-text-main" />
+                </span>
+              )}
             </button>
-          ) : (
-            <div className="w-20 h-20 rounded-md border border-dashed border-surface-border bg-surface-base flex items-center justify-center text-text-secondary">
-              <ArrowsCounterClockwise size={18} weight="regular" />
-            </div>
-          )}
-        </div>
+          </div>
 
-        {/* File Name — label + filename (sense input editable: el filename
-            ve dictat per l'upload). Crida el modal de gestió al clicar. */}
-        <button
-          type="button"
-          onClick={() => setManagerOpen(true)}
-          className="flex flex-col items-start min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
-        >
-          <span className="text-[14px] leading-4 tracking-[0.3px] text-text-secondary">File Name</span>
-          <span className="text-body-md text-text-main truncate w-full">
-            {filename || <span className="text-text-secondary/70 italic">Sense fitxer</span>}
-          </span>
-        </button>
-
-        {/* Divider vertical */}
-        <div className="w-px h-[60px] bg-surface-border self-center shrink-0" aria-hidden />
-
-        {/* Alt Text — input editable inline */}
-        <label className="flex flex-col items-start min-w-0 flex-1 gap-0.5">
-          <span className="text-[14px] leading-4 tracking-[0.3px] text-text-secondary">Alt Text</span>
-          <input
-            value={media.alt || ''}
-            onChange={(e) => onChange('alt', e.target.value)}
-            placeholder="Descriu què es veu a la imatge"
-            className="w-full bg-transparent border-0 p-0 text-body-md text-text-main placeholder:text-text-secondary/50 focus:outline-none truncate"
-          />
-        </label>
-
-        {/* Divider vertical */}
-        <div className="w-px h-[60px] bg-surface-border self-center shrink-0" aria-hidden />
-
-        {/* 4 botons outline (edit, replace, preview, delete-red) */}
-        <div className="flex items-center gap-2 shrink-0">
-          <OutlineSquareButton label="Editar imatge" onClick={() => setManagerOpen(true)}>
-            <PencilSimple size={14} weight="regular" />
-          </OutlineSquareButton>
-          <OutlineSquareButton label="Reemplaçar imatge" onClick={() => setManagerOpen(true)}>
-            <ArrowsCounterClockwise size={14} weight="regular" />
-          </OutlineSquareButton>
-          <OutlineSquareButton
-            label="Obrir imatge en nova pestanya"
-            disabled={!hasUrl}
-            onClick={() => {
-              if (media.url) window.open(media.url, '_blank', 'noopener,noreferrer')
-            }}
+          {/* File Name — label + filename (sense input editable: el filename
+              ve dictat per l'upload). Obre la gestió al clicar. */}
+          <button
+            type="button"
+            onClick={openPrimary}
+            disabled={busy}
+            className="flex flex-col items-start min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
           >
-            <ArrowSquareOut size={14} weight="regular" />
-          </OutlineSquareButton>
-          <OutlineSquareButton danger label="Eliminar imatge" onClick={onRemove}>
-            <Trash size={14} weight="regular" className="text-error" />
-          </OutlineSquareButton>
+            <span className="text-[14px] leading-4 tracking-[0.3px] text-text-secondary">File Name</span>
+            <span className="text-body-md text-text-main truncate w-full">
+              {filename || <span className="text-text-secondary/70 italic">Sense fitxer</span>}
+            </span>
+          </button>
+
+          {/* Divider vertical */}
+          <div className="w-px h-[60px] bg-surface-border self-center shrink-0" aria-hidden />
+
+          {/* Alt Text — input editable inline */}
+          <label className="flex flex-col items-start min-w-0 flex-1 gap-0.5">
+            <span className="text-[14px] leading-4 tracking-[0.3px] text-text-secondary">Alt Text</span>
+            <input
+              value={media.alt || ''}
+              onChange={(e) => onChange('alt', e.target.value)}
+              placeholder="Descriu què es veu a la imatge"
+              className="w-full bg-transparent border-0 p-0 text-body-md text-text-main placeholder:text-text-secondary/50 focus:outline-none truncate"
+            />
+          </label>
+
+          {/* Divider vertical */}
+          <div className="w-px h-[60px] bg-surface-border self-center shrink-0" aria-hidden />
+
+          {/* 4 botons outline (editar, reemplaçar, obrir, eliminar).
+              Cada un fa una acció diferent: el llapis obre el modal de
+              gestió, el reemplaçar va directe al picker del sistema. */}
+          <div className="flex items-center gap-2 shrink-0">
+            <OutlineSquareButton
+              label={hasUrl ? 'Editar imatge' : 'Pujar imatge'}
+              disabled={busy}
+              onClick={openPrimary}
+            >
+              <PencilSimple size={14} weight="regular" />
+            </OutlineSquareButton>
+            <OutlineSquareButton
+              label="Reemplaçar imatge"
+              disabled={busy}
+              onClick={() => fieldRef.current?.openFilePicker()}
+            >
+              <ArrowsCounterClockwise size={14} weight="regular" />
+            </OutlineSquareButton>
+            <OutlineSquareButton
+              label="Obrir imatge en nova pestanya"
+              disabled={!hasUrl}
+              onClick={() => {
+                if (media.url) window.open(media.url, '_blank', 'noopener,noreferrer')
+              }}
+            >
+              <ArrowSquareOut size={14} weight="regular" />
+            </OutlineSquareButton>
+            <OutlineSquareButton danger label="Eliminar imatge" onClick={onRemove}>
+              <Trash size={14} weight="regular" className="text-error" />
+            </OutlineSquareButton>
+          </div>
         </div>
+
+        {uploadError && (
+          <p role="alert" className="text-body-sm text-error">
+            {uploadError}
+          </p>
+        )}
       </div>
 
-      {/* Modal gestió — renderitzem ImageUploadField ocult per delegar la
-          gestió de fitxer (replace, upload nou, manage modal) al component
-          existent. Quan no hi ha URL i el manager s'obre, mostrem una
-          drop area perquè l'usuari pugui pujar la primera imatge. */}
-      {managerOpen && (
-        <MediaManagerDialog
-          media={media}
-          onChange={onChange}
-          onClose={() => setManagerOpen(false)}
-          onRemove={onRemove}
-        />
-      )}
+      {/* Lògica de fitxer — sense UI pròpia. Esborrar la imatge des del modal
+          equival a treure la fila del bloc: una fila de media sense fitxer no
+          té raó de ser (el botó paperera de la fila fa el mateix). */}
+      <ImageUploadField
+        label=""
+        variant="headless"
+        controlRef={fieldRef}
+        folder="works/blocks"
+        value={media.url}
+        onChange={(v) => (v ? onChange('url', v) : onRemove())}
+        alt={media.alt || ''}
+        onAltChange={(v) => onChange('alt', v)}
+        onStatusChange={onStatusChange}
+      />
     </div>
   )
 }
@@ -2038,14 +2086,38 @@ function MediaCardGrid({
   onRemove: () => void
 }) {
   const hasUrl = Boolean(media.url)
-  const [managerOpen, setManagerOpen] = useState(false)
+  const fieldRef = useRef<ImageUploadFieldHandle>(null)
+  const [busy, setBusy] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  const onStatusChange = useCallback((isBusy: boolean, err: string | null) => {
+    setBusy(isBusy)
+    setUploadError(err)
+  }, [])
+
+  const openPrimary = () => {
+    if (hasUrl) fieldRef.current?.openManager()
+    else fieldRef.current?.openFilePicker()
+  }
+
   return (
     <div className="flex flex-col gap-3 p-3 border border-surface-border rounded-md bg-surface-card">
       <div className="flex items-center justify-between">
         <DragHandle listeners={listeners} label="Reordenar imatge" />
         <div className="flex items-center gap-1.5">
-          <OutlineSquareButton label="Editar imatge" onClick={() => setManagerOpen(true)}>
+          <OutlineSquareButton
+            label={hasUrl ? 'Editar imatge' : 'Pujar imatge'}
+            disabled={busy}
+            onClick={openPrimary}
+          >
             <PencilSimple size={12} weight="regular" />
+          </OutlineSquareButton>
+          <OutlineSquareButton
+            label="Reemplaçar imatge"
+            disabled={busy}
+            onClick={() => fieldRef.current?.openFilePicker()}
+          >
+            <ArrowsCounterClockwise size={12} weight="regular" />
           </OutlineSquareButton>
           <OutlineSquareButton
             label="Obrir imatge"
@@ -2063,16 +2135,23 @@ function MediaCardGrid({
       </div>
       <button
         type="button"
-        onClick={() => setManagerOpen(true)}
-        className="block w-full rounded-md overflow-hidden border border-surface-border bg-surface-base"
+        onClick={openPrimary}
+        disabled={busy}
+        className="relative block w-full rounded-md overflow-hidden border border-surface-border bg-surface-base"
         style={{ aspectRatio: '16 / 10' }}
       >
         {hasUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={media.url} alt={media.alt || ''} className="w-full h-full object-cover" />
         ) : (
-          <span className="flex items-center justify-center w-full h-full text-text-secondary text-body-sm">
+          <span className="flex flex-col items-center justify-center gap-1 w-full h-full text-text-secondary text-body-sm">
+            <CloudArrowUp size={20} weight="regular" />
             Sense imatge
+          </span>
+        )}
+        {busy && (
+          <span className="absolute inset-0 flex items-center justify-center bg-surface-base/80">
+            <CircleNotch size={20} weight="regular" className="animate-spin text-text-main" />
           </span>
         )}
       </button>
@@ -2082,91 +2161,22 @@ function MediaCardGrid({
         placeholder="Alt text"
         className="w-full bg-transparent border-b border-surface-border py-1 text-body-sm text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors"
       />
-      {managerOpen && (
-        <MediaManagerDialog
-          media={media}
-          onChange={onChange}
-          onClose={() => setManagerOpen(false)}
-          onRemove={onRemove}
-        />
+      {uploadError && (
+        <p role="alert" className="text-body-sm text-error">
+          {uploadError}
+        </p>
       )}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  MediaManagerDialog — petit modal que embolcalla ImageUploadField    */
-/*  per gestionar la pujada/reemplaç d'un media item dins un bloc. El   */
-/*  component existent ja inclou drop zone + compressió + supabase      */
-/*  upload, així que aquí només delegem.                                */
-/* ------------------------------------------------------------------ */
-
-function MediaManagerDialog({
-  media,
-  onChange,
-  onClose,
-  onRemove,
-}: {
-  media: WorkMedia
-  onChange: (field: keyof WorkMedia, value: string) => void
-  onClose: () => void
-  onRemove: () => void
-}) {
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        onClose()
-      }
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [onClose])
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Gestionar imatge"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-    >
-      <div aria-hidden className="absolute inset-0 bg-text-main/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-card border border-surface-border rounded-md shadow-xl flex flex-col">
-        <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-surface-border">
-          <h3 className="text-body-lg font-medium text-text-main">Gestionar imatge</h3>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded text-text-secondary hover:text-text-main hover:bg-surface-base transition-colors"
-            aria-label="Tancar"
-          >
-            <X size={16} weight="regular" />
-          </button>
-        </header>
-        <div className="flex flex-col gap-4 p-5">
-          <ImageUploadField
-            label="Imatge"
-            folder="works/blocks"
-            value={media.url}
-            onChange={(v) => onChange('url', v)}
-            alt={media.alt || ''}
-            onAltChange={(v) => onChange('alt', v)}
-          />
-          {media.url && (
-            <button
-              type="button"
-              onClick={() => {
-                onRemove()
-                onClose()
-              }}
-              className="self-start inline-flex items-center gap-1.5 h-9 px-3 rounded-full border border-error/40 text-body-sm text-error hover:bg-error/5 transition-colors"
-            >
-              <Trash size={14} weight="regular" />
-              Eliminar d&apos;aquest bloc
-            </button>
-          )}
-        </div>
-      </div>
+      <ImageUploadField
+        label=""
+        variant="headless"
+        controlRef={fieldRef}
+        folder="works/blocks"
+        value={media.url}
+        onChange={(v) => (v ? onChange('url', v) : onRemove())}
+        alt={media.alt || ''}
+        onAltChange={(v) => onChange('alt', v)}
+        onStatusChange={onStatusChange}
+      />
     </div>
   )
 }

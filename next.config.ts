@@ -18,7 +18,10 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     // Mides per defecte que Next pre-genera. Coincideixen amb els breakpoints
     // típics del portfolio (mobile, tablet, laptop, desktop, wide).
-    deviceSizes: [640, 768, 1024, 1280, 1536, 1920, 2560],
+    // ⚑ 3840 hi és perquè un bloc de media a sang (1680 de caixa útil) en
+    // demana 3360 en retina: sense aquest graó, Next el servia a 2560 i el
+    // navegador l'escalava cap amunt.
+    deviceSizes: [640, 768, 1024, 1280, 1536, 1920, 2560, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Qualities permesos per <Image quality={X}>. Next 16 obliga a llistar-los
     // explícitament; 75 és el default i 100 el fem servir per a imatges

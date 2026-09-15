@@ -1,6 +1,7 @@
 "use client"
 
-import { useId, useRef, useState, useCallback, useEffect } from 'react'
+import { useId, useRef, useState, useCallback, useEffect, useImperativeHandle } from 'react'
+import type { Ref } from 'react'
 import imageCompression from 'browser-image-compression'
 import {
   CloudArrowUp,
@@ -69,6 +70,65 @@ const MODERN_MIME = new Set<string>(['image/webp', 'image/avif'])
 /** Fitxers moderns més petits que aquest llindar no es toquen. */
 const SKIP_COMPRESS_BYTES = 300 * 1024 // 300 KB
 
+/**
+ * Perfils d'optimització per carpeta de destí.
+ *
+ * ⚑ EL PROBLEMA QUE RESOL — abans hi havia un sol perfil per a tothom
+ * (maxSizeMB 0.5 / 2400 px). `browser-image-compression` tracta el
+ * `maxSizeMB` com a objectiu dur i, per arribar-hi, no només baixa qualitat:
+ * també BAIXA RESOLUCIÓ. Els blocs del work detail acabaven a ~2280 px i
+ * ~0,55 bpp quan la ranura en demana 3360 (1680 de caixa útil × 2 de retina).
+ * Escalat cap amunt sobre mockups amb text = mullader.
+ *
+ * Per això el perfil ALTA no porta `maxSizeMB`: només limita el costat llarg
+ * i puja amb qualitat 1. L'única compressió amb pèrdua que compta queda la
+ * d'AVIF de `next/image`, que és on toca fer-la.
+ *
+ * `works/og` va a part i en direcció contrària: una OG image ha de ser
+ * lleugera (1200×630), perquè WhatsApp i altres scrapers no llegeixen
+ * previews grosses.
+ */
+type OptimiseProfile = {
+  /** Límit del costat llarg, en píxels. */
+  maxWidthOrHeight: number
+  /** Qualitat de partida del WebP de sortida (0–1). */
+  initialQuality: number
+  /**
+   * Objectiu de pes. `undefined` = sense objectiu, que és el que evita que la
+   * llibreria sacrifiqui resolució per cabre en un número.
+   */
+  maxSizeMB?: number
+}
+
+/** Va a sang i a retina (work detail): qualitat per sobre de pes. */
+const PROFILE_ALTA: OptimiseProfile = {
+  maxWidthOrHeight: 3456,
+  initialQuality: 1,
+}
+/** Es veu en graella, mai a amplada completa: thumbnails, serveis. */
+const PROFILE_MITJANA: OptimiseProfile = {
+  maxWidthOrHeight: 2400,
+  initialQuality: 0.85,
+  maxSizeMB: 0.8,
+}
+/** Open Graph: mida d'espec i pes petit, que és el que mana aquí. */
+const PROFILE_OG: OptimiseProfile = {
+  maxWidthOrHeight: 1200,
+  initialQuality: 0.85,
+  maxSizeMB: 0.3,
+}
+
+const PROFILE_BY_FOLDER: Record<string, OptimiseProfile> = {
+  'works/blocks': PROFILE_ALTA,
+  'works/hero': PROFILE_ALTA,
+  'works/final': PROFILE_ALTA,
+  'works/og': PROFILE_OG,
+}
+
+/** Carpeta → perfil. Qualsevol carpeta no llistada va a mitjana. */
+const profileFor = (folder: string): OptimiseProfile =>
+  PROFILE_BY_FOLDER[folder] ?? PROFILE_MITJANA
+
 /** Extensió canònica per mime — el fitxer optimitzat canvia de format. */
 const MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
@@ -77,6 +137,18 @@ const MIME_EXT: Record<string, string> = {
   'image/avif': 'avif',
   'image/gif': 'gif',
   'image/svg+xml': 'svg',
+}
+
+/**
+ * Accions que el pare pot disparar sobre el camp sense renderitzar-ne la UI.
+ * Serveix el patró de la fila de media del WorkContentEditor, on els botons
+ * viuen a la fila i el camp només hi posa la lògica (picker + modal).
+ */
+export interface ImageUploadFieldHandle {
+  /** Obre el selector de fitxers del sistema directament. */
+  openFilePicker: () => void
+  /** Obre el modal de gestió (alt, reemplaçar, esborrar). */
+  openManager: () => void
 }
 
 interface Props {
@@ -144,8 +216,21 @@ interface Props {
    *    columna de metadata a la dreta (file name, alt text, accions
    *    visibles). Pensat per al thumbnail principal del work, on
    *    importa veure el nom del fitxer i l'alt sense obrir un modal.
+   *  - `'headless'`: no renderitza res (ni label, ni preview, ni dropzone).
+   *    El pare dibuixa la UI i dispara les accions via `controlRef`. El
+   *    modal de gestió segueix disponible sota demanda.
    */
-  variant?: 'overlay' | 'card-info'
+  variant?: 'overlay' | 'card-info' | 'headless'
+  /**
+   * Ref imperatiu per obrir el picker o el modal des de fora. Pensat per a
+   * `variant='headless'`, però funciona amb qualsevol variant.
+   */
+  controlRef?: Ref<ImageUploadFieldHandle>
+  /**
+   * Notifica el pare de l'estat de la pujada. En mode headless el camp no
+   * pinta cap spinner ni cap error: els ha de mostrar qui dibuixa la UI.
+   */
+  onStatusChange?: (busy: boolean, error: string | null) => void
 }
 
 export default function ImageUploadField({
@@ -165,6 +250,8 @@ export default function ImageUploadField({
   aspectRatio = '16 / 10',
   objectFit = 'contain',
   variant = 'overlay',
+  controlRef,
+  onStatusChange,
 }: Props) {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -258,9 +345,11 @@ export default function ImageUploadField({
    *   - SVG i GIF passen tal qual (l'un és vector, l'altre pot tenir
    *     animacions que browser-image-compression no preserva).
    *   - Si el fitxer ja és WebP/AVIF i prou petit (<300KB), no el toquem.
-   *   - La resta es converteixen a WebP amb max 500KB i max 2400px de
-   *     costat, amb WebWorker per no bloquejar la UI. Per això un PNG de
-   *     48 MB és perfectament vàlid: surt d'aquí com un WebP de ~500 KB.
+   *   - La resta es converteixen a WebP segons el perfil de la carpeta de
+   *     destí (veure `profileFor`), amb WebWorker per no bloquejar la UI.
+   *     Un PNG de 48 MB segueix sent vàlid: en surt un WebP dins del límit
+   *     del bucket. Si el perfil no porta `maxSizeMB`, el guard dels 10 MB
+   *     d'`uploadFile` és l'únic sostre de pes.
    *
    * Retorna el File a pujar (potser el mateix d'entrada, potser un de nou
    * més petit). Si la conversió falla, retorna l'original i log d'error;
@@ -269,10 +358,14 @@ export default function ImageUploadField({
   const optimiseImage = useCallback(async (file: File): Promise<File> => {
     if (SKIP_COMPRESS_MIME.has(file.type)) return file
     if (MODERN_MIME.has(file.type) && file.size < SKIP_COMPRESS_BYTES) return file
+    const profile = profileFor(folder)
     try {
       const compressed = await imageCompression(file, {
-        maxSizeMB: 0.5, // ~500 KB objectiu
-        maxWidthOrHeight: 2400, // suficient per retina + heros
+        maxWidthOrHeight: profile.maxWidthOrHeight,
+        initialQuality: profile.initialQuality,
+        // Només el passem si el perfil en té: la llibreria el tracta com a
+        // objectiu dur i baixa resolució per complir-lo.
+        ...(profile.maxSizeMB !== undefined ? { maxSizeMB: profile.maxSizeMB } : {}),
         fileType: OUTPUT_MIME, // converteix a WebP sigui quin sigui l'origen
         useWebWorker: true,
         preserveExif: false,
@@ -284,7 +377,7 @@ export default function ImageUploadField({
       console.warn('[ImageUploadField] optimisation failed, using original', err)
       return file
     }
-  }, [])
+  }, [folder])
 
   const uploadFile = useCallback(
     async (file: File) => {
@@ -398,9 +491,27 @@ export default function ImageUploadField({
   /** L'usuari està fent feina amb un fitxer (compressing o uploading). */
   const isBusy = isCompressing || isUploading
 
+  /** Accions que el pare pot disparar sense muntar la UI del camp. */
+  useImperativeHandle(
+    controlRef,
+    () => ({
+      openFilePicker: () => inputRef.current?.click(),
+      openManager: () => setModalOpen(true),
+    }),
+    []
+  )
+
+  // Puja l'estat de la pujada al pare — en mode headless és l'única manera
+  // que té de pintar el spinner i l'error.
+  useEffect(() => {
+    onStatusChange?.(isBusy, error)
+  }, [isBusy, error, onStatusChange])
+
+  const headless = variant === 'headless'
+
   return (
-    <div className="flex flex-col gap-2">
-      {label && (
+    <div className={headless ? 'contents' : 'flex flex-col gap-2'}>
+      {label && !headless && (
         <label
           htmlFor={id}
           className={
@@ -485,7 +596,7 @@ export default function ImageUploadField({
       )}
 
       {/* ---- Dropzone (quan no hi ha valor, o mentre puja/comprimix) ---- */}
-      {(!hasValue || isBusy) && (
+      {(!hasValue || isBusy) && !headless && (
         <div
           onDrop={onDrop}
           onDragOver={onDragOver}
@@ -537,7 +648,7 @@ export default function ImageUploadField({
       )}
 
       {/* ---- Error ---- */}
-      {error && (
+      {error && !headless && (
         <p role="alert" className="inline-flex items-start gap-2 text-body-sm text-error">
           <Warning size={16} weight="fill" className="mt-0.5 shrink-0" />
           <span>{error}</span>
@@ -545,7 +656,7 @@ export default function ImageUploadField({
       )}
 
       {/* ---- Feedback de la compressió ---- */}
-      {lastCompression && status === 'idle' && !error && (
+      {lastCompression && status === 'idle' && !error && !headless && (
         <p className="inline-flex items-center gap-1.5 text-body-sm text-accent">
           <span aria-hidden>✓</span>
           <span>
@@ -558,7 +669,7 @@ export default function ImageUploadField({
       )}
 
       {/* ---- Hint ---- */}
-      {hint && !error && !lastCompression && (
+      {hint && !error && !lastCompression && !headless && (
         <p className="text-body-sm text-text-secondary/80 leading-snug">{hint}</p>
       )}
 

@@ -67,8 +67,12 @@ const LAYOUT_SHIFT_DURATION = 0.5;
 // La crossfade Logo ↔ LogoSmall també va més lenta (com a Motto): no
 // és un mer aparèixer/desaparèixer, sinó un morph subtil amb scale.
 const LOGO_TRANSITION_DURATION = 0.5;
-// Entrada/sortida del header sencer per direcció d'scroll.
-const HIDE_DURATION = 0.35;
+// Entrada/sortida del header sencer per direcció d'scroll. Asimètric
+// (15set26): la sortida va lenta perquè marxar sigui un gest suau i no una
+// desaparició seca; el retorn va al doble de ràpid, coherent amb la
+// tolerància asimètrica d'useScrollHide (costa amagar-lo, torna de seguida).
+const HIDE_OUT_DURATION = 0.6;
+const HIDE_IN_DURATION = 0.3;
 
 export default function Header({
   onMenuClick,
@@ -181,7 +185,11 @@ export default function Header({
         y: isVisible ? 0 : prefersReducedMotion ? 0 : "-100%",
       }}
       transition={{
-        duration: hasMounted ? HIDE_DURATION : 0.6,
+        duration: hasMounted
+          ? isVisible
+            ? HIDE_IN_DURATION
+            : HIDE_OUT_DURATION
+          : 0.6,
         ease: ANIM_EASE,
       }}
       onFocusCapture={() => setHasFocusWithin(true)}

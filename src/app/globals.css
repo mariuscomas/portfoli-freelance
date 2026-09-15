@@ -50,6 +50,8 @@
   /* Figma: surface/card */
   --surface-border: #e5e7eb;
   /* Figma: surface/border */
+  --surface-image: #b3b3b3;
+  /* Figma: surface/image (neutral/200) — plaqueta darrere d'imatges */
   --surface-border-strong: #999999;
   /* Figma: surface/border-strong — bordes (dashed) sobre surface/base on border no té prou contrast */
 
@@ -435,6 +437,8 @@
   /* --- COLOR / Surface (dark) --- */
   --surface-base: #262522;
   --surface-card: #0a0a0a;
+  --surface-image: #444749;
+  /* Figma: surface/image mode Dark (neutral/700) — plaqueta discreta, 1,64:1 */
   --surface-border: #737373;
   /* Figma sync 2026-09-15: border/border Dark és #737373 (neutral/500), no #8a8a8a.
      El codi anava un graó per sobre des de sempre. 3,23:1 sobre surface/base
@@ -493,6 +497,7 @@
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
   --color-surface-border-strong: var(--surface-border-strong);
+  --color-surface-image: var(--surface-image);
   --color-surface-card-inverse: var(--surface-card-inverse);
   --color-border-subtle: var(--border-subtle);
   --color-border-default: var(--border-default);
@@ -573,6 +578,7 @@
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
   --color-surface-border-strong: var(--surface-border-strong);
+  --color-surface-image: var(--surface-image);
   --color-surface-card-inverse: var(--surface-card-inverse);
 
   /* Colors / Semantic states → bg-error, text-error, bg-warning, etc. */

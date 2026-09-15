@@ -23,10 +23,25 @@ interface Props {
  *
  * ⚑ RATIO DE LA GRAELLA — al Figma (frame "Works Detail Visual", Section 04 ·
  * Media) tota casella que va en graella de DUES COLUMNES és quadrada: 828×828
- * dins d'una Row de 1728 amb gap 24. Per això la cel·la no apilada és
+ * dins d'una Row de 1728 amb gap 24. El quadrat entra a md, que és on entra la
+ * segona columna; a mòbil la imatge mana la seva alçada. Per això la cel·la no apilada és
  * `aspect-square`; les imatges es pugen ja quadrades, de manera que
  * `object-cover` no retalla res. Abans hi havia un `aspect-[4/3]` que menjava
  * el 25% de l'alçada de cada imatge.
+ *
+ * ⚑ MARGE I GAP — al Figma la Row de media va a padding lateral 24 i gap 24
+ * (1728 → caixa de 1680), contra els 96 del text: el media és deliberadament
+ * més ample que la columna de lectura. Per això `px-6` i `gap-6` de md amunt.
+ *
+ * A MÒBIL baixen a 8 (`px-2` / `gap-2`), com mana el frame "Works -
+ * iPhone 16 Pro" (Section 02 · Media): a 402 px cada píxel de marge surt de
+ * la imatge, i el ratio contra els 24 del text és el mateix que els 96/24 de
+ * desktop. Decisió 15set26.
+ *
+ * ⚑ COIXÍ INFERIOR — el Figma mana 192 (`lg:pb-48`); la rampa fins allà
+ * (64/128/192) és la mateixa forma que la del text. L'últim bloc abans de la
+ * conclusió no en posa (`flushBottom`): el coixí el fa el `pt-[284px]` de la
+ * conclusió, que és el que mana el Figma per a aquella costura.
  *
  * Tot el que va a amplada completa va a ratio natiu, sense caixa forçada: el
  * layout 'column' del bloc, la vista Lectura i el tercer item d'una graella de
@@ -58,24 +73,38 @@ export default function WorkMediaGrid({
   };
 
   return (
-    <section className={`w-full ${viewMode === "visual" && !flushBottom ? "pb-16 md:pb-32" : ""}`}>
-      <div className={`${viewMode === "visual" ? `grid gap-4 md:gap-8` : "grid gap-12"} ${getGridClasses()}`}>
+    <section
+      className={`w-full ${viewMode === "visual" ? "px-2 md:px-6" : ""} ${viewMode === "visual" && !flushBottom ? "pb-16 md:pb-32 lg:pb-48" : ""
+        }`}
+    >
+      <div className={`${viewMode === "visual" ? `grid gap-2 md:gap-6` : "grid gap-12"} ${getGridClasses()}`}>
         {media.map((item, index) => {
           // If we have 3 items, make the last one span 2 columns in the layout
           const isThirdItemInOddGrid = !stacked && media.length === 3 && index === 2;
           /**
-           * Ratio natiu = la imatge marca l'alçada. Hi va tot el que ocupa
-           * amplada completa: el bloc apilat i el tercer item de la graella
-           * de 3. La resta és casella quadrada de dues columnes.
+           * Ratio natiu SEMPRE: el bloc apilat (vista Lectura o layout
+           * 'column') i el tercer item de la graella de 3, que ocupa les
+           * dues columnes.
            */
           const nativeRatio = stacked || isThirdItemInOddGrid;
+          /**
+           * ⚑ La casella de dues columnes és quadrada NOMÉS de md amunt
+           * (`md:aspect-square`). Per sota, on la graella ja cau a una sola
+           * columna, la imatge va a ratio natiu i sense retall — és el que
+           * mana el frame "Works - iPhone 16 Pro" › Section 02 · Media
+           * (10818:8601), on les caixes de 386 conserven la seva proporció.
+           * Forçar el quadrat a mòbil retallava una tira apaïsada a 1:1.
+           */
+          const squareFromMd = !nativeRatio;
 
           return (
             <div
               key={item.id}
-              className={`relative overflow-hidden bg-surface-card ${nativeRatio
-                ? `w-full ${isThirdItemInOddGrid ? "md:col-span-2" : ""}`
-                : "aspect-square"
+              className={`relative overflow-hidden bg-surface-card w-full ${nativeRatio
+                ? isThirdItemInOddGrid
+                  ? "md:col-span-2"
+                  : ""
+                : "md:aspect-square"
                 }`}
             >
               {item.type === 'video' ? (
@@ -85,16 +114,7 @@ export default function WorkMediaGrid({
                   loop
                   muted
                   playsInline
-                  className={`w-full ${!nativeRatio ? "object-cover h-full absolute inset-0" : "h-auto block"}`}
-                />
-              ) : !nativeRatio ? (
-                <Image
-                  src={item.url}
-                  alt={item.alt || "Project media"}
-                  fill
-                  quality={100}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
+                  className={`block w-full h-auto ${squareFromMd ? "md:absolute md:inset-0 md:h-full md:object-cover" : ""}`}
                 />
               ) : (
                 <Image
@@ -103,9 +123,12 @@ export default function WorkMediaGrid({
                   width={0}
                   height={0}
                   quality={100}
-                  sizes={viewMode === "visual" ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
-                  style={{ width: "100%", height: "auto" }}
-                  className="block"
+                  sizes={
+                    nativeRatio && viewMode === "visual"
+                      ? "100vw"
+                      : "(max-width: 768px) 100vw, 50vw"
+                  }
+                  className={`block w-full h-auto ${squareFromMd ? "md:absolute md:inset-0 md:h-full md:object-cover" : ""}`}
                 />
               )}
             </div>
