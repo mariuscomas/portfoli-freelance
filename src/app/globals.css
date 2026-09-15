@@ -55,6 +55,12 @@
   /* --- COLOR / Primary (Brand) --- */
   --primary-main: #1a1a1a;
 
+  /* --- COLOR / Focus ---
+     Figma: colors/focus/ring → buttons-colors/Solid/Default/background →
+     primary/main. O sigui: l'anell d'enfocament és el color del botó solid,
+     i s'inverteix sol amb el tema (#1a1a1a clar / #f2f2f2 fosc). */
+  --focus-ring: var(--primary-main);
+
   /* --- COLOR / Curtain (Brand · transicions) ---
      Cortines de PageTransition i backdrop/cercle de l'IntroLoader.
      Fixos: NO s'inverteixen amb el tema (com text-fixed-*).
@@ -210,6 +216,18 @@
   --body-2xl-letter-spacing: 0;
   --body-2xl-paragraph-spacing: 1rem;
 
+  /* Body 2XL · Statement — variant de TITULAR de la rampa 2XL.
+     Figma: estil "Body/2XL - Statement" + vars body/2xl-statement/*.
+     Mateixa mida i mateixa veu (Hanken Light) que Body/2XL; el que canvia és
+     que compon com a titular i no com a paràgraf.
+     Figma per mode: 56/59/−1 · 36/38/−0,8 · 24/25/−0,5.
+     El line-height va sense unitat (1,05 ≈ 59/56) i el tracking en em perquè
+     escalin sols amb el clamp de la mida: −0,02em dona −1,12 / −0,72 / −0,48px,
+     a una engruna dels valors del Figma.
+     NOMÉS per a frases de remat/statement. Per a lead paragraphs: text-body-2xl. */
+  --body-2xl-statement-line-height: 1.05;
+  --body-2xl-statement-letter-spacing: -0.02em;
+
   --body-xl-font-size: clamp(1rem, 2vw, 2rem);
   /* Figma: 16 / 18 / 32 */
   --body-xl-line-height: clamp(1.375rem, 3vw, 3rem);
@@ -293,6 +311,31 @@
   /* Figma: XL/padding */
   --button-xl-height: 64px;
   /* Figma: XL/height */
+
+  /* --- LAYOUT / Section spacing — rampa `spaces` del Figma ---
+     Modes Desktop/Tablet/Mobile. A tota la rampa VERTICAL, Tablet i Mobile
+     comparteixen valor, així que n'hi ha prou amb un sol salt: el valor base
+     és Tablet+Mobile i el mode Desktop entra al breakpoint (§ TOKENS
+     RESPONSIUS). L'horitzontal x-XL sí que té tres valors i en necessita dos.
+
+     Desktop = `lg` (1024px), el llindar que ja feia servir el layout
+     (Footer: lg:px-24 per als 96px de x-XL). Tablet = `md` (768px).
+
+     Figma D/T/M:
+       y-XL 284/192/192 · y-LG 192/96/96 · y-MD 96/64/64
+       y-SM 48/48/48 · y-XS 24/24/24 · x-XL 96/48/32 */
+  --section-y-xl: 12rem;
+  /* 192 → Desktop 284 */
+  --section-y-lg: 6rem;
+  /* 96 → Desktop 192 */
+  --section-y-md: 4rem;
+  /* 64 → Desktop 96 */
+  --section-y-sm: 3rem;
+  /* 48 a tots els modes */
+  --section-y-xs: 1.5rem;
+  /* 24 a tots els modes */
+  --section-x-xl: 2rem;
+  /* 32 → Tablet 48, Desktop 96 */
 }
 
 /* ============================================================
@@ -306,6 +349,25 @@
 @media (min-width: 768px) {
   :root {
     --display-h1-letter-spacing: -3px;
+
+    /* Mode Tablet de la rampa `spaces` (només x-XL hi canvia) */
+    --section-x-xl: 3rem;
+    /* 48 */
+  }
+}
+
+/* Mode Desktop de la rampa `spaces`. 1024px = `lg`, que és on el layout ja
+   passava a l'amplada gran (Footer: lg:px-24). */
+@media (min-width: 1024px) {
+  :root {
+    --section-y-xl: 17.75rem;
+    /* 284 */
+    --section-y-lg: 12rem;
+    /* 192 */
+    --section-y-md: 6rem;
+    /* 96 */
+    --section-x-xl: 6rem;
+    /* 96 */
   }
 }
 
@@ -326,6 +388,7 @@
   /* --- COLOR / Primary (dark) — invertit perquè CTA destaqui sobre fons fosc --- */
   --primary-main: #f2f2f2;
   /* Figma sync: primary/main Dark */
+  --focus-ring: var(--primary-main);
 
   /* --- COLOR / Semantic (dark) — error més clar per visibilitat sobre fons fosc --- */
   --error-main: #f87171;
@@ -358,6 +421,7 @@
   --color-surface-border-strong: var(--surface-border-strong);
   --color-surface-card-inverse: var(--surface-card-inverse);
   --color-primary-main: var(--primary-main);
+  --color-focus-ring: var(--focus-ring);
   --color-error: var(--error-main);
   --color-accent-surface: var(--accent-surface);
   --color-discipline-ux: var(--discipline-ux-surface);
@@ -378,8 +442,20 @@
   --font-mono: var(--font-mono), monospace;
   --font-caption: var(--font-caption), monospace;
 
+  /* Spacing / Section → py-section-y-lg, px-section-x-xl, etc.
+     Rampa `spaces` del Figma; els valors salten per breakpoint més amunt. */
+  --spacing-section-y-xl: var(--section-y-xl);
+  --spacing-section-y-lg: var(--section-y-lg);
+  --spacing-section-y-md: var(--section-y-md);
+  --spacing-section-y-sm: var(--section-y-sm);
+  --spacing-section-y-xs: var(--section-y-xs);
+  --spacing-section-x-xl: var(--section-x-xl);
+
   /* Colors / Brand → bg-primary-main */
   --color-primary-main: var(--primary-main);
+
+  /* Colors / Focus → ring-focus-ring, outline-focus-ring */
+  --color-focus-ring: var(--focus-ring);
 
   /* Colors / Curtain → bg-curtain-a, bg-curtain-b (transicions, no s'inverteixen) */
   --color-curtain-a: var(--curtain-a);
@@ -481,6 +557,23 @@
     font-family: var(--font-sans);
   }
 
+  /* Salt suau per a qualsevol anchor intern (#treballs del CTA del Hero,
+     TOCs, etc.). Va a <html> i no a body perquè, tot i que <html> fixa
+     l'alçada a 100dvh, l'overflow segueix propagant-se al viewport i
+     l'element que fa scroll continua sent el document.
+
+     `prefers-reduced-motion` el desactiva: qui ha demanat menys moviment ha
+     de rebre el salt instantani de sempre, no una animació de 500ms. */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   /* --- DISPLAY (Grtsk SemiBold Giga) — Heros, Marquees, peces estructurals ---
        Tots els display/* consumeixen tokens responsius del Figma (clamp). */
   .text-display-h1 {
@@ -558,6 +651,16 @@
     font-size: var(--body-2xl-font-size);
     line-height: var(--body-2xl-line-height);
     letter-spacing: var(--body-2xl-letter-spacing);
+  }
+
+  /* Titular de tancament — veure els tokens body-2xl-statement més amunt.
+     Comparteix el font-size de .text-body-2xl a propòsit: és el mateix graó
+     de la rampa, compost com a titular. */
+  .text-body-2xl-statement {
+    @apply font-sans font-light;
+    font-size: var(--body-2xl-font-size);
+    line-height: var(--body-2xl-statement-line-height);
+    letter-spacing: var(--body-2xl-statement-letter-spacing);
   }
 
   .text-body-xl {

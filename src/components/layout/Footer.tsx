@@ -9,6 +9,7 @@ import LogoSmall from "@/components/common/LogoSmall";
 import { usePathname } from "next/navigation";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
+import { LinkUnderline } from "@/components/ui/LinkUnderline";
 
 /**
  * Form de newsletter del footer. Crida la Server Action subscribeNewsletter
@@ -163,14 +164,14 @@ function FooterContent() {
     <>
       {/* CTA — part de la cortina (opac, z-[1]): s'aixeca amb el contingut i
           revela el footer fosc de sota. */}
-      <section className="relative z-[1] w-full bg-surface-base px-6 md:px-12 lg:px-24 py-20 md:py-32 flex flex-col items-start gap-8 md:gap-12">
+      <section className="relative z-[1] w-full bg-surface-base px-section-x-xl py-section-y-lg flex flex-col items-start gap-8 md:gap-12">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-sans font-light text-body-2xl text-text-main leading-[1.05] tracking-tight max-w-[1200px]"
+          className="text-body-2xl-statement text-text-main max-w-[1200px]"
         >
-          Estas preparat per donar<br className="hidden md:block" /> vida a les teves ideas?
+          El següent projecte<br className="hidden md:block" /> comença amb una conversa.
         </motion.h2>
 
         <motion.div
@@ -179,14 +180,12 @@ function FooterContent() {
           viewport={{ once: true }}
           className="mt-2 md:mt-6"
         >
-          {/* Obre el modal de contacte (cortina) en lloc de navegar. */}
-          <button
-            type="button"
-            onClick={openContactModal}
-            className="text-body-md font-medium text-text-main border-b border-text-main pb-1 hover:text-accent hover:border-accent transition-colors duration-300 cursor-pointer"
-          >
+          {/* Obre el modal de contacte (cortina) en lloc de navegar.
+              Figma: instancia de "Buttons / Custom / Link" sense icona
+              (node 11336:9476, Show Icon = false). */}
+          <LinkUnderline onClick={openContactModal}>
             Reserva una trucada
-          </button>
+          </LinkUnderline>
         </motion.div>
       </section>
 

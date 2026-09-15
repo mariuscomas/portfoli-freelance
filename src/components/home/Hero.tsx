@@ -11,6 +11,11 @@ import ThemeToggle from "@/components/common/ThemeToggle";
 /**
  * Hero — secció d'entrada de la home.
  *
+ * MARGES — graella de disposició del DS (docs/graella-disposicio-2026-09-14.md,
+ * estils Figma Graella/1…5): 24 · 48 · 72 · 96 · 144 segons breakpoint. El
+ * contingut i la barra inferior comparteixen la MATEIXA escala; abans la barra
+ * anava a 32 al mòbil i totes dues saltaven de 48 a 96 de cop a lg.
+ *
  * Substitueix l'escena cercle→franja de vídeo (ShowcaseVideo) mentre el
  * showreel no està produït. El que ocupava el cercle ara és [[HeroField]]:
  * una retícula que reacciona al punter amb LA MATEIXA física que el lockup,
@@ -119,7 +124,7 @@ export default function Hero({
         fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
       />
       <div
-        className={`relative z-10 flex flex-1 flex-col items-start justify-center px-6 md:px-12 lg:px-24 ${
+        className={`relative z-10 flex flex-1 flex-col items-start justify-center px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36 ${
           entered ? "hero-enter" : "hero-enter-wait"
         }`}
       >
@@ -193,13 +198,12 @@ export default function Hero({
       {/* Barra inferior — Figma "Navbar Bottom" (desktop 11325:8844, mòbil
           11760:96251): 96px, línia a dalt i a baix, controls a l'esquerra i
           xarxes a la dreta. Una de sola per a totes les amplades; el que canvia
-          és el ritme de padding i separacions (32/24 al mòbil, 96/48 a
-          desktop) i la llista de disciplines, que per sota de md es tallava.
+          és la llista de disciplines, que per sota de md es tallava.
 
           Les xarxes van amb `ml-auto` perquè a mòbil, sense la llista pel mig,
           res no empeny cap a la dreta. Amb la llista visible (`flex-1`) l'auto
           ja no té espai a repartir i no fa res. */}
-      <div className="relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-surface-border px-8 md:gap-8 md:px-12 lg:px-24 3xl:gap-12">
+      <div className="relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-surface-border md:gap-8 3xl:gap-12 px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36">
         <ThemeToggle />
         <LanguageSelector variant="bare" />
         <DisciplineRow items={DISCIPLINES} className="hidden 2xl:flex" />
