@@ -54,7 +54,7 @@ export default async function WorksTeaser() {
   return (
     <section
       id="treballs"
-      className="w-full scroll-mt-24 py-16 md:py-32 relative overflow-hidden"
+      className="w-full scroll-mt-24 py-section-y-lg relative overflow-hidden"
     >
       <div className="w-full">
         {/* Header amb títol + link "Veure tots els projectes" */}

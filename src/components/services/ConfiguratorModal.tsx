@@ -441,7 +441,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
           disabled={submitting}
           aria-invalid={acceptError || undefined}
           aria-describedby={acceptError ? acceptErrorId : undefined}
-          className="mt-0.5 h-5 w-5 shrink-0 rounded-[4px] border border-surface-border accent-primary-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+          className="mt-0.5 h-5 w-5 shrink-0 rounded-[4px] border border-border-default accent-primary-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
         />
         <span className="text-body-sm text-text-secondary">
           Autoritzo l&apos;ús de les meves dades perquè em contactin i em preparin la
@@ -482,7 +482,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
       className="flex h-full w-full flex-col focus:outline-none"
     >
       {/* === HEADER: tancar + títol (esq.) + indicador de pas (dreta) === */}
-      <header className="flex shrink-0 items-center justify-between gap-6 border-b border-surface-border px-6 py-6">
+      <header className="flex shrink-0 items-center justify-between gap-6 border-b border-border-subtle px-6 py-6">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -531,7 +531,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 // faci un salt de ~48px quan es canvia el costat del divisor
                 // durant el lliscament (layout="position" no anima el padding).
                 // Només flipem el border (línia divisòria) segons la fase.
-                className={`flex flex-col gap-6 lg:row-start-1 lg:border-surface-border lg:px-6 ${
+                className={`flex flex-col gap-6 lg:row-start-1 lg:border-border-subtle lg:px-6 ${
                   phase === "config"
                     ? "lg:col-start-3 lg:border-l"
                     : "lg:col-start-1 lg:border-r"
@@ -540,7 +540,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 {quote && (
                   <>
                     <div className="flex flex-col">
-                      <h3 className="border-b border-surface-border py-5 text-heading-h2 text-text-main">
+                      <h3 className="border-b border-border-subtle py-5 text-heading-h2 text-text-main">
                         3. Resum
                       </h3>
                       <SummaryGroup
@@ -572,7 +572,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         </span>
                       </div>
                     </div>
-                    <div className="border-t border-dashed border-surface-border pt-6">
+                    <div className="border-t border-dashed border-border-subtle pt-6">
                       <p className="text-caption uppercase text-text-secondary">
                         No inclòs al total:{" "}
                         {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
@@ -603,7 +603,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
                       stepIndex={1}
-                      className="lg:border-r lg:border-surface-border lg:pr-6"
+                      className="lg:border-r lg:border-border-subtle lg:pr-6"
                     />
                     <ExtresSection
                       quote={quote}
@@ -633,10 +633,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                   >
                     <section
                       aria-label="El brief"
-                      className="flex flex-col gap-6 lg:border-r lg:border-surface-border lg:pr-6"
+                      className="flex flex-col gap-6 lg:border-r lg:border-border-subtle lg:pr-6"
                     >
                       <h3
-                        className="border-b border-surface-border py-5 text-heading-h2 text-text-main focus:outline-none"
+                        className="border-b border-border-subtle py-5 text-heading-h2 text-text-main focus:outline-none"
                         data-autofocus
                         tabIndex={-1}
                       >
@@ -664,7 +664,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                           maxLength={5000}
                           placeholder="Context, objectius, referències… el que ajudi a entendre el projecte."
                           disabled={submitting}
-                          className="w-full resize-y rounded-md border border-surface-border bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
+                          className="w-full resize-y rounded-md border border-border-default bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
                         />
                       </label>
                       {error && (
@@ -674,7 +674,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       )}
                     </section>
                     <section aria-label="Les dades" className="flex flex-col gap-8">
-                      <h3 className="border-b border-surface-border py-5 text-heading-h2 text-text-main">
+                      <h3 className="border-b border-border-subtle py-5 text-heading-h2 text-text-main">
                         Les dades
                       </h3>
                       <Field
@@ -711,7 +711,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
             </div>
           </div>
 
-          <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             <div className="flex w-full flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
               <p className="text-caption text-text-secondary">
                 El total és orientatiu: el tanquem junts a la proposta. O{" "}
@@ -837,7 +837,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       quote={quote}
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
-                      className="lg:border-r lg:border-surface-border lg:pr-6"
+                      className="lg:border-r lg:border-border-subtle lg:pr-6"
                     />
                     <ExtresSection
                       quote={quote}
@@ -858,12 +858,12 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       total={total}
                       baseOpen={false}
                       showTotal
-                      className="lg:border-l lg:border-surface-border lg:pl-6"
+                      className="lg:border-l lg:border-border-subtle lg:pl-6"
                     />
                   </div>
                 </div>
 
-                <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+                <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
                   <div className="flex w-full flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
                     <p className="text-caption text-text-secondary">
                       El total és orientatiu: el tanquem junts a la proposta. O{" "}
@@ -942,7 +942,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                           />
                         </div>
                         <div className="flex flex-col">
-                          <div className="border-b border-surface-border py-5">
+                          <div className="border-b border-border-subtle py-5">
                             <h3 className="text-heading-h4 font-medium text-text-main">
                               Base.
                               <span className="font-normal text-text-secondary"> Sempre inclosa</span>
@@ -951,7 +951,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                           {AUDIT_BASE_INCLUDES.map((item) => (
                             <p
                               key={item}
-                              className="border-b border-surface-border py-4 text-body-sm text-text-main"
+                              className="border-b border-border-subtle py-4 text-body-sm text-text-main"
                             >
                               {item}
                             </p>
@@ -970,7 +970,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                               {f.covers.map((c) => (
                                 <p
                                   key={c}
-                                  className="border-t border-surface-border py-3 text-body-sm text-text-main"
+                                  className="border-t border-border-subtle py-3 text-body-sm text-text-main"
                                 >
                                   {c}
                                 </p>
@@ -1005,7 +1005,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     {mobileStep === 2 && (
                       <div className="flex flex-col">
                         <h3
-                          className="border-b border-surface-border py-5 text-heading-h3 text-text-main focus:outline-none"
+                          className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
                           data-autofocus
                           tabIndex={-1}
                         >
@@ -1025,13 +1025,13 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     {mobileStep === 3 && (
                       <div className="flex flex-col">
                         <h3
-                          className="border-b border-surface-border py-5 text-heading-h3 text-text-main focus:outline-none"
+                          className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
                           data-autofocus
                           tabIndex={-1}
                         >
                           Resum
                         </h3>
-                        <div className="flex items-center gap-6 border-b border-surface-border py-3">
+                        <div className="flex items-center gap-6 border-b border-border-subtle py-3">
                           <span className="flex-1 text-heading-h4 text-text-main">
                             {auditQuote.focuses.length === 3
                               ? "Base · Tot (UX + UI + Dev)"
@@ -1041,7 +1041,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                             {formatEuro(auditQuote.baseTotal)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-6 border-b border-surface-border py-3">
+                        <div className="flex items-center gap-6 border-b border-border-subtle py-3">
                           <span className="flex-1 text-heading-h4 text-text-main">
                             Abast · {auditQuote.size.label}
                           </span>
@@ -1058,7 +1058,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                             lines={auditQuote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
                           />
                         )}
-                        <div className="mt-8 border-t border-dashed border-surface-border pt-6">
+                        <div className="mt-8 border-t border-dashed border-border-subtle pt-6">
                           <p className="text-caption uppercase text-text-secondary">
                             No inclòs al total:{" "}
                             {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
@@ -1079,9 +1079,9 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 {/* COLUMNA A — Base de l'auditoria */}
                 <section
                   aria-label="Base inclosa"
-                  className="flex flex-col lg:border-r lg:border-surface-border lg:pr-6"
+                  className="flex flex-col lg:border-r lg:border-border-subtle lg:pr-6"
                 >
-                  <div className="border-b border-surface-border py-5">
+                  <div className="border-b border-border-subtle py-5">
                     <h3
                       className="text-heading-h4 font-medium text-text-main focus:outline-none"
                       data-autofocus
@@ -1094,7 +1094,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                   {AUDIT_BASE_INCLUDES.map((item) => (
                     <p
                       key={item}
-                      className="border-b border-surface-border py-4 text-body-sm text-text-main"
+                      className="border-b border-border-subtle py-4 text-body-sm text-text-main"
                     >
                       {item}
                     </p>
@@ -1123,7 +1123,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         {f.covers.map((c) => (
                           <p
                             key={c}
-                            className="border-t border-surface-border py-3 text-body-sm text-text-main"
+                            className="border-t border-border-subtle py-3 text-body-sm text-text-main"
                           >
                             {c}
                           </p>
@@ -1162,13 +1162,13 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 {/* COLUMNA C — Resum */}
                 <aside
                   aria-label="Resum"
-                  className="flex flex-col gap-6 lg:border-l lg:border-surface-border lg:pl-6"
+                  className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
                 >
                   <div className="flex flex-col">
-                    <h3 className="border-b border-surface-border py-5 text-heading-h3 text-text-main">
+                    <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
                       Resum
                     </h3>
-                    <div className="flex items-center gap-6 border-b border-surface-border py-3">
+                    <div className="flex items-center gap-6 border-b border-border-subtle py-3">
                       <span className="flex-1 text-heading-h4 text-text-main">
                         {auditQuote.focuses.length === 3
                           ? "Base · Tot (UX + UI + Dev)"
@@ -1178,7 +1178,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         {formatEuro(auditQuote.baseTotal)}
                       </span>
                     </div>
-                    <div className="flex items-center gap-6 border-b border-surface-border py-3">
+                    <div className="flex items-center gap-6 border-b border-border-subtle py-3">
                       <span className="flex-1 text-heading-h4 text-text-main">
                         Abast · {auditQuote.size.label}
                       </span>
@@ -1207,12 +1207,12 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       </span>
                     </div>
                   </div>
-                  <div className="border-t border-dashed border-surface-border pt-2">
+                  <div className="border-t border-dashed border-border-subtle pt-2">
                     <Accordion title="Lliurables" level="h4" defaultOpen={false}>
                       {AUDIT_DELIVERABLES.map((d) => (
                         <p
                           key={d}
-                          className="border-b border-surface-border py-3 text-body-sm text-text-secondary"
+                          className="border-b border-border-subtle py-3 text-body-sm text-text-secondary"
                         >
                           {d}
                         </p>
@@ -1223,7 +1223,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
               </div>
             </div>
 
-            <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+            <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
               <div className="flex w-full flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
                 <p className="text-caption text-text-secondary">
                   El total és orientatiu: el tanquem junts a la proposta. O{" "}
@@ -1361,7 +1361,7 @@ function TipusBaseSection({
       </div>
 
       <div className="flex flex-col">
-        <div className="border-b border-surface-border py-5">
+        <div className="border-b border-border-subtle py-5">
           <h3 className="text-heading-h4 font-medium text-text-main">
             Base.
             <span className="font-normal text-text-secondary">
@@ -1387,7 +1387,7 @@ function TipusBaseSection({
                 ease: [0.16, 1, 0.3, 1],
                 delay: reduce ? 0 : i * 0.03,
               }}
-              className="relative flex items-center gap-4 border-b border-surface-border py-4"
+              className="relative flex items-center gap-4 border-b border-border-subtle py-4"
             >
               <div className="relative min-w-0 flex-1 overflow-hidden">
                 <AnimatePresence mode="popLayout" initial={false}>
@@ -1468,7 +1468,7 @@ function ExtresSection({
   return (
     <section aria-label="Extres" className={`flex flex-col ${className ?? ""}`}>
       <h3
-        className="border-b border-surface-border py-5 text-heading-h2 text-text-main focus:outline-none"
+        className="border-b border-border-subtle py-5 text-heading-h2 text-text-main focus:outline-none"
         data-autofocus
         tabIndex={-1}
       >
@@ -1568,7 +1568,7 @@ function ResumSection({
     >
       <div className="flex flex-col">
         <h3
-          className="border-b border-surface-border py-5 text-heading-h3 text-text-main focus:outline-none"
+          className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
           data-autofocus
           tabIndex={-1}
         >
@@ -1604,7 +1604,7 @@ function ResumSection({
           </div>
         )}
       </div>
-      <div className="border-t border-dashed border-surface-border pt-6">
+      <div className="border-t border-dashed border-border-subtle pt-6">
         <p className="text-caption uppercase text-text-secondary">
           No inclòs al total: {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
         </p>
@@ -1687,7 +1687,7 @@ function MobileTotalFooter({
   describedBy?: string;
 }) {
   return (
-    <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col">
           <span className="text-caption text-text-secondary">Total</span>
@@ -1839,7 +1839,7 @@ function LeadForm({
           disabled={submitting}
           aria-invalid={acceptError || undefined}
           aria-describedby={acceptError ? acceptErrorId : undefined}
-          className="mt-0.5 h-5 w-5 shrink-0 rounded-[4px] border border-surface-border accent-primary-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+          className="mt-0.5 h-5 w-5 shrink-0 rounded-[4px] border border-border-default accent-primary-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
         />
         <span className="text-body-sm text-text-secondary">
           Autoritzo l&apos;ús de les meves dades perquè em contactin i em preparin la
@@ -1933,7 +1933,7 @@ function LeadForm({
                     maxLength={5000}
                     placeholder="Context, objectius, referències… el que ajudi a entendre el projecte."
                     disabled={submitting}
-                    className="w-full resize-y rounded-md border border-surface-border bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
+                    className="w-full resize-y rounded-md border border-border-default bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
                   />
                 </label>
               </div>
@@ -1962,10 +1962,10 @@ function LeadForm({
           {/* COLUMNA A — Les dades */}
           <section
             aria-label="Les dades"
-            className="flex flex-col gap-8 lg:border-r lg:border-surface-border lg:pr-6"
+            className="flex flex-col gap-8 lg:border-r lg:border-border-subtle lg:pr-6"
           >
             <h3
-              className="border-b border-surface-border py-5 text-heading-h3 text-text-main focus:outline-none"
+              className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
               data-autofocus
               tabIndex={-1}
             >
@@ -2003,9 +2003,9 @@ function LeadForm({
           {/* COLUMNA B — El brief */}
           <section
             aria-label="El brief"
-            className="flex flex-col gap-6 lg:border-r lg:border-surface-border lg:pr-6"
+            className="flex flex-col gap-6 lg:border-r lg:border-border-subtle lg:pr-6"
           >
-            <h3 className="border-b border-surface-border py-5 text-heading-h3 text-text-main">
+            <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
               El brief
             </h3>
             <ChipGroup
@@ -2030,7 +2030,7 @@ function LeadForm({
                 maxLength={5000}
                 placeholder="Context, objectius, referències… el que ajudi a entendre el projecte."
                 disabled={submitting}
-                className="w-full resize-y rounded-md border border-surface-border bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
+                className="w-full resize-y rounded-md border border-border-default bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
               />
             </label>
             {error && (
@@ -2043,10 +2043,10 @@ function LeadForm({
           {/* COLUMNA C — Resum (fix a la dreta als dos passos) */}
           <aside
             aria-label="Resum"
-            className="flex flex-col gap-6 lg:border-l lg:border-surface-border lg:pl-6"
+            className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
           >
             <div className="flex flex-col">
-              <h3 className="border-b border-surface-border py-5 text-heading-h3 text-text-main">
+              <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
                 Resum
               </h3>
               {quote && (
@@ -2077,7 +2077,7 @@ function LeadForm({
                 </span>
               </div>
             </div>
-            <div className="border-t border-dashed border-surface-border pt-6">
+            <div className="border-t border-dashed border-border-subtle pt-6">
               <p className="text-caption uppercase text-text-secondary">
                 No inclòs al total:{" "}
                 {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
@@ -2088,7 +2088,7 @@ function LeadForm({
       </div>
 
       {/* Footer: nota + Tornar + Enviar */}
-      <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         <div className="flex w-full flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
           <p className="text-caption text-text-secondary">
             El total és orientatiu: el tanquem junts a la proposta. O{" "}

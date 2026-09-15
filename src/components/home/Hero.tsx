@@ -114,17 +114,15 @@ export default function Hero({
         radius={170}
         fade={{ left: 210, right: 0, top: 150, bottom: 150 }}
       />
-      {/* Sota lg (tablet 810px): el camp passa a configuració de tablet amb gap 26. */}
-      <HeroField
-        className="pointer-events-none absolute inset-x-0 top-24 hidden h-[220px] md:block lg:hidden"
-        gap={26}
-        dot={2.75}
-        magnet={24}
-        radius={140}
-        fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
-      />
+      {/* pt-[var(--header-h)] — el Header és `fixed` i transparent, així que no
+          descompta res del flux: sense aquest padding, `justify-center` centra
+          el bloc a (100dvh − barra) i el titular queda MIG HEADER massa amunt
+          (mesurat: 52px d'aire a dalt contra 161 a baix a ≥1280). Amb el
+          padding, el bloc queda centrat entre el filet inferior del navbar i el
+          superior de la barra, que és el que marca el Figma (Section · Hero
+          11325:8842, Content amb padding-top = alçada del navbar). */}
       <div
-        className={`relative z-10 flex flex-1 flex-col items-start justify-center px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36 ${
+        className={`relative z-10 flex flex-1 flex-col items-start justify-center pt-[var(--header-h)] px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36 ${
           entered ? "hero-enter" : "hero-enter-wait"
         }`}
       >
@@ -183,15 +181,28 @@ export default function Hero({
         </div>
       </div>
 
-      {/* Mòbil: el camp és una franja del flux (200px) entre el contingut i la
-          barra, no una capa absoluta — així no cal endevinar cap offset quan
-          canvia l'alçada del viewport (barra d'adreces del navegador). */}
+      {/* Sota lg el camp és una FRANJA DEL FLUX entre el contingut i la barra,
+          no una capa absoluta: així no cal endevinar cap offset quan canvia
+          l'alçada del viewport (barra d'adreces del navegador). El tablet feia
+          banda absoluta a dalt (`top-24`, 220px) i s'ha alineat amb el Figma
+          (Section Hero tablet 10756:7440, Camp de 260 sota el Content) i amb
+          el mòbil: un sol patró per a tot el que no és desktop. Són dues
+          instàncies i no una perquè gap/dot/radius són props de JS i no poden
+          commutar per breakpoint. */}
       <HeroField
         className="pointer-events-none relative block h-[200px] w-full shrink-0 md:hidden"
         gap={20}
         dot={2.5}
         magnet={18}
         radius={120}
+        fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
+      />
+      <HeroField
+        className="pointer-events-none relative hidden h-[260px] w-full shrink-0 md:block lg:hidden"
+        gap={26}
+        dot={2.75}
+        magnet={24}
+        radius={140}
         fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
       />
 
@@ -203,7 +214,7 @@ export default function Hero({
           Les xarxes van amb `ml-auto` perquè a mòbil, sense la llista pel mig,
           res no empeny cap a la dreta. Amb la llista visible (`flex-1`) l'auto
           ja no té espai a repartir i no fa res. */}
-      <div className="relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-surface-border md:gap-8 3xl:gap-12 px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36">
+      <div className="relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-border-subtle md:gap-8 3xl:gap-12 px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36">
         <ThemeToggle />
         <LanguageSelector variant="bare" />
         <DisciplineRow items={DISCIPLINES} className="hidden 2xl:flex" />

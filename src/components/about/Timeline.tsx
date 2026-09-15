@@ -123,7 +123,7 @@ export default function Timeline() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full pt-20 md:pt-32 pb-24 md:pb-40 bg-surface-base border-t border-surface-border overflow-x-clip"
+      className="relative w-full pt-20 md:pt-32 pb-24 md:pb-40 bg-surface-base border-t border-border-subtle overflow-x-clip"
     >
       {/* --- LÍNIA CENTRAL --- */}
       {/* Track estàtic */}

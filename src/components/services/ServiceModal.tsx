@@ -411,7 +411,7 @@ function PricingView({
 
         {/* Card blanc interior amb les fites de pagament */}
         {hasMilestones && (
-          <div className="bg-surface-card border border-surface-border rounded-card p-6 flex flex-col gap-3">
+          <div className="bg-surface-card border border-border-subtle rounded-card p-6 flex flex-col gap-3">
             {milestones.map((m, i) => (
               <MilestoneRow
                 key={i}
@@ -573,7 +573,7 @@ function FormView({
           maxLength={5000}
           placeholder="Què tens ja? Què t'amoïna?"
           disabled={submitting}
-          className="w-full bg-surface-card border border-surface-border rounded-md p-4 text-text-main font-sans text-body-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus:border-text-main transition-colors placeholder:text-text-secondary/40 resize-y disabled:opacity-50"
+          className="w-full bg-surface-card border border-border-default rounded-md p-4 text-text-main font-sans text-body-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus:border-text-main transition-colors placeholder:text-text-secondary/40 resize-y disabled:opacity-50"
         />
       </label>
 
@@ -642,7 +642,7 @@ function ConfirmationView({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Què passa ara */}
-      <div className="bg-surface-card border border-surface-border rounded-card p-6 flex flex-col gap-5">
+      <div className="bg-surface-card border border-border-subtle rounded-card p-6 flex flex-col gap-5">
         <span className="text-label text-text-secondary">Què passa ara</span>
         <StepRow index={1} title="Reviso el teu missatge" detail="Avui mateix o demà al matí." />
         <StepRow index={2} title="T'envio una proposta" detail="Abast, fases, timing i pressupost en un PDF curt." />
@@ -712,7 +712,7 @@ function StepRow({ index, title, detail }: { index: number; title: string; detai
   return (
     <div className="flex items-start gap-4">
       <span
-        className="shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-surface-border text-body-sm text-text-main tabular-nums"
+        className="shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-border-subtle text-body-sm text-text-main tabular-nums"
         aria-hidden="true"
       >
         {index}
@@ -812,7 +812,7 @@ function ChipGroup({
               className={`inline-flex items-center min-h-11 px-4 rounded-full text-body-sm border transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
                 active
                   ? "bg-primary-main text-text-main-inverse border-primary-main"
-                  : "bg-surface-card text-text-secondary border-surface-border hover:border-text-main hover:text-text-main"
+                  : "bg-surface-card text-text-secondary border-border-default hover:border-text-main hover:text-text-main"
               }`}
             >
               {opt}

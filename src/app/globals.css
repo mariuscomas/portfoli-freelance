@@ -25,6 +25,9 @@
   /* Figma: text/secondary */
   --text-main-inverse: #f2f2f2;
   --text-secondary-inverse: #999999;
+  --text-disabled: #b3b3b3;
+  /* Figma: text/disabled (neutral/200) — estat desactivat de tot el sistema.
+     1,87:1 sobre --surface-base; 8,3:1 contra el Default dels botons. */
 
   /* --- COLOR / Text (fixed) ---
      Colors de text que NO s'inverteixen amb el tema del visitant.
@@ -94,6 +97,14 @@
   --curtain-b: #c8cfd1;
   /* Gris blavós clar — cercle intro + cortina senar */
 
+  /* --- COLOR / Link (enllaços a contingut extern) ---
+     Blau d'enllaç clàssic, demanat explícitament per a les files d'enllaç
+     dels Details de les fitxes de feina. Fora d'aquest ús, els enllaços del
+     site segueixen el mestre "Buttons / Custom / Link" (text-main + subratllat).
+     #0b5fd9 sobre --surface-base (#f2f2f2) = 5.9:1 → WCAG AA. */
+  --link-main: #0b5fd9;
+  --link-hover: #073f92;
+
   /* --- COLOR / Accent (Brand · ús puntual) --- */
   --accent-main: #13ec6d;
   /* Figma: accent/main */
@@ -148,7 +159,7 @@
   /* NOU */
   --outline-disabled-border: var(--surface-border);
   /* NOU — abans #b2b2b2 */
-  --outline-disabled-font-color: var(--text-secondary-inverse);
+  --outline-disabled-font-color: var(--text-disabled);
 
   /* --- COLOR / Ghost Button --- */
   --ghost-default-font-color: var(--text-main);
@@ -161,7 +172,7 @@
   --ghost-pressed-font-color: var(--text-main);
   /* NOU */
   --ghost-disabled-background: var(--surface-base);
-  --ghost-disabled-font-color: var(--text-secondary-inverse);
+  --ghost-disabled-font-color: var(--text-disabled);
 
   /* --- TYPOGRAPHY / Display (Grtsk SemiBold Giga) ---
      Tots els tokens display/* tenen mode responsiu al Figma (Desktop/Tablet/Mobile).
@@ -335,6 +346,10 @@
   /* Figma: XL/padding */
   --button-xl-height: 64px;
   /* Figma: XL/height */
+  --button-icon-size: 56px;
+  /* Figma: Buttons / Ghost / Square Large / Neutral — botó-icona quadrat */
+  --button-square-radius: 4px;
+  /* Figma: properties/large/border-radius */
 
   /* --- LAYOUT / Section spacing — rampa `spaces` del Figma ---
      Modes Desktop/Tablet/Mobile. A tota la rampa VERTICAL, Tablet i Mobile
@@ -360,6 +375,15 @@
   /* 24 a tots els modes */
   --section-x-xl: 2rem;
   /* 32 → Tablet 48, Desktop 96 */
+
+  /* ALÇADA DEL HEADER FIX (Header.tsx: py-6 + clúster h-10 / md:h-12).
+     88 a mòbil i 96 de md amunt — la mateixa que la barra inferior del hero.
+     No és un espaiat de la rampa: és una MESURA estructural. El hero l'usa
+     per deixar lliure la franja del navbar abans de centrar-hi el contingut
+     (si no, el bloc queda mig header massa amunt). Si canvia el padding o
+     l'alçada dels controls del Header, aquest número el segueix. */
+  --header-h: 5.5rem;
+  /* 88 = 24*2 + 40 (mòbil) */
 }
 
 /* ============================================================
@@ -377,6 +401,9 @@
     /* Mode Tablet de la rampa `spaces` (només x-XL hi canvia) */
     --section-x-xl: 3rem;
     /* 48 */
+
+    --header-h: 6rem;
+    /* 96 = 24*2 + 48 — igual que la Navbar Bottom del hero */
   }
 }
 
@@ -392,6 +419,7 @@
     /* 96 */
     --section-x-xl: 6rem;
     /* 96 */
+
   }
 }
 
@@ -401,12 +429,20 @@
   --text-secondary: #999999;
   --text-main-inverse: #262522;
   --text-secondary-inverse: #4d5153;
+  --text-disabled: #4d5153;
+  /* Figma: text/disabled mode Dark (neutral/600) */
 
   /* --- COLOR / Surface (dark) --- */
   --surface-base: #262522;
   --surface-card: #0a0a0a;
-  --surface-border: #8a8a8a;
+  --surface-border: #737373;
+  /* Figma sync 2026-09-15: border/border Dark és #737373 (neutral/500), no #8a8a8a.
+     El codi anava un graó per sobre des de sempre. 3,23:1 sobre surface/base
+     — segueix per damunt de 3:1, o sigui que els inputs de l'admin compleixen. */
   --surface-border-strong: #999999;
+  /* Figma sync 2026-09-15: border/border-strong en fosc era #ffffff (neutral/0,
+     15,33:1 sobre surface/base — un crit en un filet d'1px). Corregit AL FIGMA
+     cap a neutral/300, que és el que el codi ja feia. Aquí no calia tocar res. */
 
   /* Rampa de border (dark) — mateixos graons, primitives de l'altre extrem */
   --border-subtle: #444749;
@@ -421,6 +457,11 @@
   --primary-main: #f2f2f2;
   /* Figma sync: primary/main Dark */
   --focus-ring: var(--primary-main);
+
+  /* --- COLOR / Link (dark) — blau clar per llegir-se sobre fons fosc.
+     #7fb2ff sobre --surface-base dark (#262522) = 7.4:1 → WCAG AAA. */
+  --link-main: #7fb2ff;
+  --link-hover: #a8cbff;
 
   /* --- COLOR / Semantic (dark) — error més clar per visibilitat sobre fons fosc --- */
   --error-main: #f87171;
@@ -447,6 +488,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-main-inverse: var(--text-main-inverse);
   --color-text-secondary-inverse: var(--text-secondary-inverse);
+  --color-text-disabled: var(--text-disabled);
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
   --color-surface-border: var(--surface-border);
@@ -510,6 +552,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-main-inverse: var(--text-main-inverse);
   --color-text-secondary-inverse: var(--text-secondary-inverse);
+  --color-text-disabled: var(--text-disabled);
 
   /* Colors / Text fixed → text-text-fixed-light, text-text-fixed-dark, etc.
      No s'inverteixen amb el tema; pensats per heros amb fons admin-controlat. */
@@ -788,6 +831,22 @@
    UTILITIES
    ============================================================ */
 @layer utilities {
+  /* Enllaç a contingut extern (files d'enllaç dels Details de les fitxes de
+     feina). Classe pròpia i no utilitat de Tailwind: amb --color-link al
+     @theme, Tailwind v4 NO genera `text-link` (el nom col·lideix amb la
+     pseudo-classe :link), tot i que `text-error` o `bg-accent` sí que surten.
+     Verificat al CSS compilat el 15set26. */
+  .link-external {
+    color: var(--link-main);
+    text-decoration-line: underline;
+    text-underline-offset: 4px;
+    transition: color .2s ease;
+  }
+
+  .link-external:hover {
+    color: var(--link-hover);
+  }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;

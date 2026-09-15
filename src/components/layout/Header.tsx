@@ -38,6 +38,12 @@ import { useContactModal } from "@/context/ContactModalContext";
   - Excepcions que el tornen visible: focus de teclat dins del header
     (si no, fent Tab el focus aniria a parar a un header fora de pantalla,
     WCAG 2.4.11) i el tancament del menú o del modal de contacte.
+  - ALÇADA (15set26): 88 a mòbil i 96 de md amunt — la MATEIXA que la Navbar
+    Bottom del hero, perquè el marc de dalt i el de baix pesin igual. Surt de
+    py-6 (24×2) + el clúster dret (h-10 / md:h-12). Els 48 del clúster són la
+    RESERVA del botó Menu de l'estat compacte: sense ells el header creixeria
+    de cop en scroll. El token --header-h de globals.css mira aquests números
+    i el hero l'usa per centrar-se; si canvien aquí, canvia'l allà.
   - Contrast del Header (light/dark/auto) declarat per la pàgina via HeaderContrastContext.
 */
 
@@ -90,11 +96,22 @@ export default function Header({
     });
   });
 
-  // Inicialitzem abans del primer scroll event i marquem el muntatge
+  // Inicialitzem abans del primer scroll event i marquem el muntatge.
+  //
+  // La lectura de scrollY va dins d'un rAF i no al cos de l'efecte: un
+  // setState sincrònic aquí força un segon render abans de pintar
+  // (react-hooks/set-state-in-effect). No canvia el que es veu — useEffect ja
+  // corre després del primer paint —, i en una recàrrega amb scroll restaurat
+  // el header es compacta igualment dins del primer frame.
   useEffect(() => {
-    setIsCompact(window.scrollY > COMPACT_ENTER);
+    const raf = requestAnimationFrame(() => {
+      setIsCompact(window.scrollY > COMPACT_ENTER);
+    });
     const t = setTimeout(() => setHasMounted(true), 1000);
-    return () => clearTimeout(t);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t);
+    };
   }, [pathname]);
 
   // En tancar el menú o el modal de contacte el header torna visible, encara
@@ -169,7 +186,7 @@ export default function Header({
       }}
       onFocusCapture={() => setHasFocusWithin(true)}
       onBlurCapture={() => setHasFocusWithin(false)}
-      className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 md:py-8 pointer-events-none"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 pointer-events-none"
     >
       {/*
         Esquerra: Logo amb crossfade absolute-stacked.
@@ -271,7 +288,7 @@ export default function Header({
         immediatament i el `layout` del Comencem? animi el desplaçament en
         paral·lel amb el fade del Menu.
       */}
-      <div className={`flex items-center gap-6 lg:gap-8 ${pe} h-10 lg:h-12`}>
+      <div className={`flex items-center gap-6 lg:gap-8 ${pe} h-10 md:h-12`}>
         <motion.div
           layout
           transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}

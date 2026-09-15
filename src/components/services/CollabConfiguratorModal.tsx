@@ -108,9 +108,9 @@ function CollabContent({ onClose }: { onClose: () => void }) {
               {/* COLUMNA A — Com treballo */}
               <section
                 aria-label="Com treballo"
-                className="flex flex-col lg:border-r lg:border-surface-border lg:pr-6"
+                className="flex flex-col lg:border-r lg:border-border-subtle lg:pr-6"
               >
-                <div className="border-b border-surface-border py-5">
+                <div className="border-b border-border-subtle py-5">
                   <h3
                     className="text-heading-h3 text-text-main focus:outline-none"
                     data-autofocus
@@ -129,7 +129,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                 ].map((item) => (
                   <p
                     key={item}
-                    className="border-b border-surface-border py-3 text-body-sm text-text-main"
+                    className="border-b border-border-subtle py-3 text-body-sm text-text-main"
                   >
                     {item}
                   </p>
@@ -148,13 +148,13 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                 </Accordion>
 
                 <Accordion title="Intensitat i urgència" level="h3" defaultOpen>
-                  <div className="flex items-center gap-6 border-b border-surface-border py-4">
+                  <div className="flex items-center gap-6 border-b border-border-subtle py-4">
                     <span className="flex-1 text-body-md text-text-main">
                       Dedicació parcial (&lt;20 h/setmana)
                     </span>
                     <Switch label="Dedicació parcial" checked={partial} onChange={setPartial} />
                   </div>
-                  <div className="flex items-center gap-6 border-b border-surface-border py-4">
+                  <div className="flex items-center gap-6 border-b border-border-subtle py-4">
                     <span className="flex-1 text-body-md text-text-main">Ho necessites en &lt;48 h?</span>
                     <Switch label="Urgència" checked={urgent} onChange={setUrgent} />
                   </div>
@@ -164,10 +164,10 @@ function CollabContent({ onClose }: { onClose: () => void }) {
               {/* COLUMNA C — Resum */}
               <aside
                 aria-label="Resum"
-                className="flex flex-col gap-6 lg:border-l lg:border-surface-border lg:pl-6"
+                className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
               >
                 <div className="flex flex-col">
-                  <h3 className="border-b border-surface-border py-5 text-heading-h3 text-text-main">
+                  <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
                     Resum
                   </h3>
                   <div className="flex items-center gap-6 py-5">
@@ -176,7 +176,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                       des de {rateLabel}
                     </span>
                   </div>
-                  <div className="flex items-center gap-6 border-b border-surface-border py-3">
+                  <div className="flex items-center gap-6 border-b border-border-subtle py-3">
                     <span className="flex-1 text-heading-h4 text-text-main">Segons modalitat</span>
                     <span className="shrink-0 text-caption text-text-secondary tabular-nums">
                       {quote.equivalent
@@ -189,7 +189,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                       {quote.modifiers.map((m) => (
                         <p
                           key={m}
-                          className="border-b border-surface-border py-3 text-body-sm text-text-secondary"
+                          className="border-b border-border-subtle py-3 text-body-sm text-text-secondary"
                         >
                           {m}
                         </p>
@@ -197,14 +197,14 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                     </Accordion>
                   )}
                 </div>
-                <div className="border-t border-dashed border-surface-border pt-6">
+                <div className="border-t border-dashed border-border-subtle pt-6">
                   <p className="text-caption uppercase text-text-secondary">{CONDITIONS}</p>
                 </div>
               </aside>
             </div>
           </div>
 
-          <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12 lg:px-24">
+          <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12 lg:px-24">
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
               <p className="text-caption text-text-secondary">
                 Tarifa orientativa, la tanquem segons abast i durada. O{" "}
@@ -359,10 +359,10 @@ function CollabForm({
           {/* COLUMNA A — Les teves dades */}
           <section
             aria-label="Les teves dades"
-            className="flex flex-col gap-8 lg:border-r lg:border-surface-border lg:pr-6"
+            className="flex flex-col gap-8 lg:border-r lg:border-border-subtle lg:pr-6"
           >
             <h3
-              className="border-b border-surface-border py-5 text-heading-h3 text-text-main focus:outline-none"
+              className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
               data-autofocus
               tabIndex={-1}
             >
@@ -384,7 +384,7 @@ function CollabForm({
 
           {/* COLUMNA B — El teu encàrrec */}
           <section aria-label="El teu encàrrec" className="flex flex-col gap-6">
-            <h3 className="border-b border-surface-border py-5 text-heading-h3 text-text-main">
+            <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
               El teu encàrrec
             </h3>
             <ChipGroup
@@ -409,7 +409,7 @@ function CollabForm({
                 maxLength={5000}
                 placeholder="Què necessiteu? Perfil, stack, ritme de treball…"
                 disabled={submitting}
-                className="w-full resize-y rounded-md border border-surface-border bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
+                className="w-full resize-y rounded-md border border-border-default bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
               />
             </label>
             {error && (
@@ -422,10 +422,10 @@ function CollabForm({
           {/* COLUMNA C — Resum */}
           <aside
             aria-label="Resum"
-            className="flex flex-col gap-6 lg:border-l lg:border-surface-border lg:pl-6"
+            className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
           >
             <div className="flex flex-col">
-              <h3 className="border-b border-surface-border py-5 text-heading-h3 text-text-main">
+              <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
                 Resum
               </h3>
               <div className="flex items-center gap-6 py-5">
@@ -433,14 +433,14 @@ function CollabForm({
                 <span className="text-heading-h2 text-text-main tabular-nums">des de {rateLabel}</span>
               </div>
             </div>
-            <div className="border-t border-dashed border-surface-border pt-6">
+            <div className="border-t border-dashed border-border-subtle pt-6">
               <p className="text-caption uppercase text-text-secondary">{CONDITIONS}</p>
             </div>
           </aside>
         </div>
       </div>
 
-      <footer className="shrink-0 border-t border-surface-border bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12 lg:px-24">
+      <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12 lg:px-24">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
           <p className="text-caption text-text-secondary">
             Tarifa orientativa, la tanquem segons abast i durada.
@@ -504,7 +504,7 @@ function CollabConfirmation({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <div className="flex w-full max-w-[488px] flex-col gap-5 rounded-card border border-surface-border bg-surface-card p-6 text-left">
+      <div className="flex w-full max-w-[488px] flex-col gap-5 rounded-card border border-border-subtle bg-surface-card p-6 text-left">
         <span className="text-label text-text-secondary">Què passa ara</span>
         <CollabStep index={1} title="Reviso l'encàrrec" detail="Perfil, stack i ritme. Avui o demà al matí." />
         <CollabStep index={2} title="Reservem una trucada" detail="Vols reservar-la ara" href={COLLAB_CALENDAR_URL} />
@@ -537,7 +537,7 @@ function CollabStep({
   return (
     <div className="flex items-start gap-4">
       <span
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-surface-border text-body-sm text-text-main tabular-nums"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border-subtle text-body-sm text-text-main tabular-nums"
         aria-hidden="true"
       >
         {index}

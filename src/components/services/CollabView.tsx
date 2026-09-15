@@ -73,7 +73,7 @@ function ValueSection() {
 
 function RatesSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="EL DESCOMPTE ES GUANYA AMB COMPROMÍS" title="Tarifes per durada" />
       </Reveal>
@@ -82,7 +82,7 @@ function RatesSection() {
           {COLLAB_RATES.map((r) => (
             <li
               key={r.modality}
-              className="flex flex-col gap-2 border-b border-surface-border py-7 md:flex-row md:items-center md:gap-8"
+              className="flex flex-col gap-2 border-b border-border-subtle py-7 md:flex-row md:items-center md:gap-8"
             >
               <span className="flex-1 text-body-lg text-text-main">{r.modality}</span>
               <span className="flex-1 text-body-sm text-text-secondary">{r.detail}</span>
@@ -106,14 +106,14 @@ function RatesSection() {
 
 function IntegrationSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="ZERO FRICCIÓ" title="Com m'integro" />
       </Reveal>
       <Reveal className="mt-14">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {COLLAB_INTEGRATION.map((item) => (
-            <div key={item.title} className="flex flex-col gap-3 border-t border-surface-border pt-6">
+            <div key={item.title} className="flex flex-col gap-3 border-t border-border-subtle pt-6">
               <h3 className="text-heading-h3 text-text-main">{item.title}</h3>
               <p className="text-body-sm text-text-secondary">{item.text}</p>
             </div>
@@ -128,7 +128,7 @@ function IntegrationSection() {
 
 function AvailabilitySection() {
   return (
-    <section className={`${SECTION_PX} py-16 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-16 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
           <span className="flex items-center gap-3">
@@ -149,7 +149,7 @@ function AvailabilitySection() {
 
 function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
   return (
-    <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <div className="flex flex-col gap-12 md:gap-16">
           <p className="text-eyebrow text-text-secondary">05 — Comencem</p>

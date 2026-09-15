@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function AboutTeaser() {
   return (
-    <section className="w-full py-16 md:py-32">
+    <section className="w-full border-t border-border-subtle py-section-y-lg">
 
       {/* Heading */}
       <div className="flex justify-between items-end mb-16 md:mb-20 px-4 md:px-[3vw] lg:px-[4vw]">

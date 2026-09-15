@@ -111,7 +111,7 @@ function IncludesSection() {
           {WEB_INCLUDES.map((item, i) => (
             <li
               key={item}
-              className="flex items-baseline gap-6 border-t border-surface-border py-5 md:gap-10"
+              className="flex items-baseline gap-6 border-t border-border-subtle py-5 md:gap-10"
             >
               <span className="text-caption uppercase tabular-nums text-text-secondary">
                 {String(i + 1).padStart(2, "0")}
@@ -133,7 +133,7 @@ function IncludesSection() {
 
 function FocusSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="02 — ABAST" title="Tria fins on arribo" />
       </Reveal>
@@ -148,7 +148,7 @@ function FocusSection() {
           {DISCIPLINE_ORDER.map((d) => (
             <article
               key={d}
-              className="flex flex-col gap-4 rounded-card border border-surface-border bg-surface-card p-8 lg:p-10"
+              className="flex flex-col gap-4 rounded-card border border-border-subtle bg-surface-card p-8 lg:p-10"
             >
               <span className="text-caption uppercase text-text-secondary">
                 {DISCIPLINES[d].shortLabel}
@@ -173,7 +173,7 @@ function FocusSection() {
 
 function ExtrasSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="03 — EXTRES" title="Fes-la teva" />
       </Reveal>
@@ -182,7 +182,7 @@ function ExtrasSection() {
           {WEB_EXTRAS.map((extra) => (
             <li
               key={extra.id}
-              className="flex flex-col gap-2 border-b border-surface-border py-6 md:flex-row md:items-center md:gap-8"
+              className="flex flex-col gap-2 border-b border-border-subtle py-6 md:flex-row md:items-center md:gap-8"
             >
               <span className="flex-1 text-body-lg text-text-main">{extra.label}</span>
               <span className="text-caption uppercase text-text-secondary md:w-44">
@@ -246,14 +246,14 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
 
 function ProcessSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="04 — COM TREBALLO" title="De la idea a producció" />
       </Reveal>
       <Reveal className="mt-14">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {PROCESS_STEPS.map((step) => (
-            <div key={step.num} className="flex flex-col gap-3 border-t border-surface-border pt-6">
+            <div key={step.num} className="flex flex-col gap-3 border-t border-border-subtle pt-6">
               <span className="text-caption text-text-secondary">{step.num}</span>
               <h3 className="text-heading-h3 text-text-main">{step.title}</h3>
               <p className="text-body-sm text-text-secondary">{step.text}</p>
@@ -276,7 +276,7 @@ function ProcessSection() {
 
 function FaqSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="05 — PREGUNTES" title="Dubtes freqüents" />
       </Reveal>
@@ -285,7 +285,7 @@ function FaqSection() {
           {FAQ.map(({ q, a }) => (
             <div
               key={q}
-              className="flex flex-col gap-3 border-t border-surface-border py-6 md:flex-row md:gap-12"
+              className="flex flex-col gap-3 border-t border-border-subtle py-6 md:flex-row md:gap-12"
             >
               <dt className="text-body-lg text-text-main md:w-2/5">{q}</dt>
               <dd className="flex-1 text-body-lg text-text-secondary">{a}</dd>
@@ -301,7 +301,7 @@ function FaqSection() {
 
 function RecurrentsSection() {
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <SectionHeader caption="06 — DESPRÉS DEL LLANÇAMENT" title="Recurrents, sempre a part" />
       </Reveal>
@@ -310,7 +310,7 @@ function RecurrentsSection() {
           {RECURRENTS.map((r) => (
             <li
               key={r.label}
-              className="flex items-center justify-between gap-8 border-b border-surface-border py-6"
+              className="flex items-center justify-between gap-8 border-b border-border-subtle py-6"
             >
               <span className="text-body-lg text-text-main">{r.label}</span>
               <span className="text-body-lg text-text-secondary">{r.price}</span>
@@ -326,7 +326,7 @@ function RecurrentsSection() {
 
 function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
   return (
-    <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-surface-border`}>
+    <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <h2 className="max-w-3xl text-display-h3 text-text-main">Comencem la teva web?</h2>
         <div className="mt-10 flex flex-col gap-4">

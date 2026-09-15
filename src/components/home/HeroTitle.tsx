@@ -17,8 +17,10 @@ import { useTheme } from "@/components/providers/ThemeProvider";
  *  - Cursor personalitzat (anella + punt, mix-blend difference) que segueix amb
  *                 lag i creix sobre el text. Es desactiva en tàctil.
  *  - Eco estàtic de repòs amb fade (molt subtil) darrere el lockup.
- *  - TÀCTIL (sense cursor) → l'efecte té vida pròpia: el punt de referència es
- *                 passeja sol pel titular; en tocar/arrossegar el segueix.
+ *  - REPÒS → sense punter actiu no hi ha animació: el lockup queda quiet.
+ *                 L'efecte NOMÉS reacciona al cursor (decisió 15set26); abans el
+ *                 punt de referència es passejava sol i no parava mai.
+ *  - TÀCTIL (sense cursor) → quiet fins que es toca o s'arrossega el titular.
  *  - prefers-reduced-motion → lockup estàtic, sense animació.
  *
  * PENDENT: mostrar el VÍDEO real (videoSrc) dins les lletres del focus. Retallar
@@ -159,14 +161,16 @@ export default function HeroTitle({
     const cur = { x: 0, y: 0, vis: 0 };
     let raf = 0;
 
-    const loop = (now: number) => {
+    // SENSE CURSOR NO HI HA MOVIMENT. Abans el punt de referencia es passejava
+    // sol pel titular (dues sinusoides) i l'efecte no parava mai. Ara, quan el
+    // punter no es actiu, el punt se'n va fora de tot radi possible: cap lletra
+    // no rep forca i totes tornen al seu repos.
+    const OFF = -1e5;
+    const loop = () => {
       const rb = root.getBoundingClientRect();
-      // Objectiu idle (sense cursor): es passeja sol pel titular.
-      const ax = rb.width * 0.4 + Math.sin(now * 0.0006) * rb.width * 0.32;
-      const ay = rb.height * 0.5 + Math.sin(now * 0.0012) * rb.height * 0.42;
       const usePointer = pointer.current.active;
-      const tx = usePointer ? pointer.current.x : ax;
-      const ty = usePointer ? pointer.current.y : ay;
+      const tx = usePointer ? pointer.current.x : OFF;
+      const ty = usePointer ? pointer.current.y : OFF;
 
       // Cursor personalitzat — només visible sobre la caixa de text de l'H1.
       if (cursorRef.current && !coarse) {
@@ -246,7 +250,10 @@ export default function HeroTitle({
           el.style.textShadow = "none";
         }
         const rev = revealRef.current;
-        if (rev) {
+        if (rev && !usePointer) {
+          // Repos: sense cursor no hi ha finestra de revelat.
+          rev.style.opacity = "0";
+        } else if (rev) {
           rev.style.opacity = "1";
           const lr = rev.getBoundingClientRect();
           const rx = tx - (lr.left - rb.left);

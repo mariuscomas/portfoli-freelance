@@ -12,7 +12,7 @@ import { motion, type HTMLMotionProps } from "framer-motion";
    ============================================================ */
 
 export type ButtonVariant = "solid" | "outline" | "ghost";
-export type ButtonSize = "md" | "lg" | "xl";
+export type ButtonSize = "md" | "lg" | "xl" | "icon";
 export type ButtonShape = "default" | "pill" | "square";
 
 type CommonButtonProps = {
@@ -121,6 +121,12 @@ const sizeClasses: Record<ButtonSize, string> = {
     "px-[var(--button-xl-padding)]",
     "gap-[8px]",
   ].join(" "),
+  // Botó-icona quadrat: caixa fixa, sense padding ni gap. Sempre amb aria-label,
+  // que no porta text. Figma: Buttons / Ghost / Square Large / Neutral (56×56, icona 32)
+  icon: [
+    "size-[var(--button-icon-size)]",
+    "p-0 gap-0 shrink-0",
+  ].join(" "),
 };
 
 /* ------------------------------------------------------------
@@ -129,7 +135,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 const shapeClasses: Record<ButtonShape, string> = {
   default: "rounded-[var(--radius-base)]",   // 16px (Figma: radius / number)
   pill: "rounded-full",
-  square: "rounded-none",
+  square: "rounded-[var(--button-square-radius)]",
 };
 
 /* ============================================================

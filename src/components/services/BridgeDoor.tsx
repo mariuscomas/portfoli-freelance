@@ -25,7 +25,7 @@ export default function BridgeDoor({
   return (
     <TransitionLink
       href={href}
-      className="group flex w-full max-w-2xl flex-col gap-3 rounded-card border border-surface-border bg-surface-card/30 p-8 transition-colors hover:border-surface-border-strong"
+      className="group flex w-full max-w-2xl flex-col gap-3 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-surface-border-strong"
     >
       <span className="text-eyebrow text-text-secondary">{eyebrow}</span>
       <span className="text-body-sm text-text-secondary">{line}</span>

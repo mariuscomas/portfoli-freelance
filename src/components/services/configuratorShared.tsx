@@ -64,7 +64,7 @@ export const chipClass = (active: boolean) =>
   `inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-body-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
     active
       ? "border-primary-main bg-primary-main text-text-main-inverse"
-      : "border-surface-border bg-surface-card text-text-secondary hover:border-text-main hover:text-text-main"
+      : "border-border-default bg-surface-card text-text-secondary hover:border-text-main hover:text-text-main"
   }`;
 
 /* ============================================================
@@ -186,7 +186,7 @@ function CurtainShell({
       onKeyDown={handleTrap}
       className="flex h-full w-full flex-col focus:outline-none"
     >
-      <header className="flex shrink-0 items-center justify-between gap-6 border-b border-surface-border px-6 py-6 md:px-12 lg:px-24">
+      <header className="flex shrink-0 items-center justify-between gap-6 border-b border-border-subtle px-6 py-6 md:px-12 lg:px-24">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -220,7 +220,7 @@ export function ConfigRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-6 border-b border-surface-border py-6">
+    <div className="flex items-center gap-6 border-b border-border-subtle py-6">
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <span className="text-body-md text-text-main">{label}</span>
         <span className="text-caption-sm uppercase text-text-secondary">{caption}</span>
@@ -231,7 +231,7 @@ export function ConfigRow({
 }
 
 const STEP_BTN =
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-surface-border text-body-md text-text-main transition-colors hover:border-text-main disabled:opacity-30 disabled:hover:border-surface-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base";
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border-subtle text-body-md text-text-main transition-colors hover:border-text-main disabled:opacity-30 disabled:hover:border-border-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base";
 
 export function Stepper({
   label,
@@ -332,7 +332,7 @@ export function Accordion({
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex items-center gap-4 border-b border-surface-border py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+        className="flex items-center gap-4 border-b border-border-subtle py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
       >
         <span className={`flex-1 ${headClass} text-text-main`}>{title}</span>
         <CaretDown
@@ -435,7 +435,7 @@ export function SummaryGroup({
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex items-center gap-6 border-b border-surface-border py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+        className="flex items-center gap-6 border-b border-border-subtle py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
       >
         <span className="flex flex-1 items-center gap-2">
           <span className="text-heading-h4 text-text-main">{title}</span>
@@ -464,7 +464,7 @@ export function SummaryGroup({
               {lines.map((l) => (
                 <div
                   key={l.label}
-                  className="flex items-center gap-6 border-b border-surface-border py-3"
+                  className="flex items-center gap-6 border-b border-border-subtle py-3"
                 >
                   <span className="flex-1 text-body-sm text-text-secondary">{l.label}</span>
                   <span className="text-caption text-text-secondary tabular-nums">
@@ -626,7 +626,7 @@ export function ChipGroup({
               className={`inline-flex min-h-11 items-center rounded-full border px-4 text-body-sm transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
                 active
                   ? "border-primary-main bg-primary-main text-text-main-inverse"
-                  : "border-surface-border bg-surface-card text-text-secondary hover:border-text-main hover:text-text-main"
+                  : "border-border-default bg-surface-card text-text-secondary hover:border-text-main hover:text-text-main"
               }`}
             >
               {opt}
@@ -723,7 +723,7 @@ function DisciplineChip({
           ? // seleccionat: badge a l'esquerra → padding esquerre reduït (Figma:
             // pl 12 / gap 4 / pr 16) per compensar el marge òptic del cercle
             "py-1.5 pr-4 pl-3 text-text-main"
-          : "px-4 py-1.5 border-surface-border text-text-secondary hover:border-text-main hover:text-text-main"
+          : "px-4 py-1.5 border-border-default text-text-secondary hover:border-text-main hover:text-text-main"
       } ${locked ? "cursor-default" : ""}`}
     >
       <AnimatePresence initial={false}>

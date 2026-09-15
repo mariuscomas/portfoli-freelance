@@ -89,7 +89,7 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-text-main text-body-md sm:w-1/2 text-right hover:underline underline-offset-4 transition-opacity hover:opacity-70"
+                        className="link-external text-body-md sm:w-1/2 text-right"
                       >
                         {item.value}
                       </a>

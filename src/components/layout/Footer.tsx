@@ -164,7 +164,7 @@ function FooterContent() {
     <>
       {/* CTA — part de la cortina (opac, z-[1]): s'aixeca amb el contingut i
           revela el footer fosc de sota. */}
-      <section className="relative z-[1] w-full bg-surface-base px-section-x-xl py-section-y-lg flex flex-col items-start gap-8 md:gap-12">
+      <section className="relative z-[1] w-full border-t border-border-subtle bg-surface-base px-section-x-xl py-section-y-lg flex flex-col items-start gap-8 md:gap-12">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

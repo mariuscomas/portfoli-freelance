@@ -146,12 +146,14 @@ export default function HeroField({
     window.addEventListener("pointerup", onLeave, { passive: true });
     document.addEventListener("pointerleave", onLeave);
 
-    const loop = (t: number) => {
-      const r = host.getBoundingClientRect();
-      const ax = r.width * 0.5 + Math.sin(t * 0.00042) * r.width * 0.46;
-      const ay = r.height * 0.48 + Math.sin(t * 0.00097) * r.height * 0.3;
-      const tx = pointer.on ? pointer.x : ax;
-      const ty = pointer.on ? pointer.y : ay;
+    // Sense cursor el camp queda quiet — mateixa regla que el lockup
+    // (HeroTitle): els dos sistemes nomes reaccionen al punter.
+    const OFF = -1e5;
+    const loop = () => {
+      // El rect del host ja no cal a cada frame: nomes servia per als objectius
+      // sinusoidals del vagareig. Un getBoundingClientRect menys per frame.
+      const tx = pointer.on ? pointer.x : OFF;
+      const ty = pointer.on ? pointer.y : OFF;
 
       for (let i = 0; i < dots.length; i++) {
         const d = dots[i];

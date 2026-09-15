@@ -446,7 +446,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                       onKeyDown={handleTextareaKeyDown}
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? "contact-step-error" : undefined}
-                      className="w-full resize-none overscroll-contain border-b border-surface-border bg-transparent px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
+                      className="w-full resize-none overscroll-contain border-b border-border-default bg-transparent px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
                     />
                   ) : (
                     <input
@@ -467,7 +467,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                       }}
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? "contact-step-error" : undefined}
-                      className="w-full border-b border-surface-border bg-transparent px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
+                      className="w-full border-b border-border-default bg-transparent px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
                     />
                   )}
 

@@ -1,13 +1,28 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/Button";
 
-const PlaceholderLogo = ({ name }: { name: string }) => (
-  <div className="h-12 md:h-16 flex items-center mb-10 text-text-main">
-    {/* A simple typographic placeholder that simulates a logo if no SVG is present */}
+/* ------------------------------------------------------------
+   Logotip de client.
+   Placeholder tipogràfic fins que els SVG reals siguin al repo
+   (de moment només hi ha public/logos/logo Onabitz.svg).
+   El nom del client ja NO surt com a línia pròpia a la card
+   — decisió 15set26 —, així que aquest és l'únic lloc on
+   s'anuncia: d'aquí el role/aria-label.
+   ------------------------------------------------------------ */
+const ClientLogo = ({ logo, name }: { logo: string; name: string }) => (
+  <div
+    role="img"
+    aria-label={name}
+    className="mb-6 flex h-14 items-center text-text-main"
+  >
     {/* Mida DS (heading-h2); bold + tracking-tighter són overrides deliberats del mur de logos */}
-    <span className="text-heading-h2 font-bold tracking-tighter">{name}</span>
+    <span aria-hidden="true" className="text-heading-h2 font-bold tracking-tighter">
+      {logo}
+    </span>
   </div>
 );
 
@@ -15,149 +30,119 @@ const clients = [
   { logo: "North", name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria — i sí, va ser tan divertit com sona." },
   { logo: "QUANTION", name: "Quantion", desc: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples." },
   { logo: "CUPRA", name: "Cupra", desc: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h." },
-  { logo: "santalucía", name: "Santalucía", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },
+  { logo: "santalucía", name: "Santalucía Impulsa", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },
   { logo: "Alphanet", name: "Alphanet Solutions", desc: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema." },
   { logo: "Onabitz", name: "Onabitz", desc: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall." },
-  { logo: "Iternatura", name: "Iternatura", desc: "UI/UX per a Iternatura: apps de turisme que omplen de reptes interactius les rutes pel municipi." },
 ];
 
 export default function Clients() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
 
-  // Duplicació de la llista per a un bucle horitzontal sense costures
-  const loopClients = [...clients, ...clients];
+  // Estat dels dos extrems: alimenta el `disabled` de les fletxes
+  const syncEdges = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setCanPrev(el.scrollLeft > 1);
+    setCanNext(el.scrollLeft < max - 1);
+  }, []);
 
-  // --- MECÀNICA C + D: auto-scroll lent + drag amb inèrcia ---
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
-    const AUTO_SPEED = 0.4; // px per frame (auto-scroll lent)
-    const FRICTION = 0.94;  // decaïment de la inèrcia
-    const MIN_VELOCITY = 0.3;
-
-    let raf = 0;
-    let isDragging = false;
-    let isHovering = false;
-    let velocity = 0;
-    let startX = 0;
-    let startScroll = 0;
-    let lastX = 0;
-    let activePointer: number | null = null;
-
-    // Respecta usuaris amb moviment reduït: sense auto-scroll
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const half = () => el.scrollWidth / 2;
-
-    const wrap = () => {
-      const h = half();
-      if (h <= 0) return;
-      if (el.scrollLeft >= h) el.scrollLeft -= h;
-      else if (el.scrollLeft < 0) el.scrollLeft += h;
-    };
-
-    const tick = () => {
-      if (!isDragging) {
-        if (Math.abs(velocity) > MIN_VELOCITY) {
-          // Inèrcia després de deixar anar el drag
-          el.scrollLeft -= velocity;
-          velocity *= FRICTION;
-        } else if (!isHovering && !reduceMotion) {
-          // Auto-scroll en repòs
-          el.scrollLeft += AUTO_SPEED;
-        }
-        wrap();
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    const onPointerDown = (e: PointerEvent) => {
-      isDragging = true;
-      velocity = 0;
-      startX = e.clientX;
-      lastX = e.clientX;
-      startScroll = el.scrollLeft;
-      activePointer = e.pointerId;
-      el.setPointerCapture(e.pointerId);
-      el.style.cursor = 'grabbing';
-    };
-
-    const onPointerMove = (e: PointerEvent) => {
-      if (!isDragging) return;
-      const dx = e.clientX - startX;
-      el.scrollLeft = startScroll - dx;
-      velocity = e.clientX - lastX; // velocitat instantània per a la inèrcia
-      lastX = e.clientX;
-      wrap();
-    };
-
-    const endDrag = () => {
-      if (!isDragging) return;
-      isDragging = false;
-      el.style.cursor = 'grab';
-      if (activePointer !== null) {
-        try { el.releasePointerCapture(activePointer); } catch { /* noop */ }
-        activePointer = null;
-      }
-    };
-
-    const onEnter = () => { isHovering = true; };
-    const onLeave = () => { isHovering = false; };
-
-    el.style.cursor = 'grab';
-    el.addEventListener('pointerdown', onPointerDown);
-    el.addEventListener('pointermove', onPointerMove);
-    el.addEventListener('pointerup', endDrag);
-    el.addEventListener('pointercancel', endDrag);
-    el.addEventListener('pointerenter', onEnter);
-    el.addEventListener('pointerleave', onLeave);
-    raf = requestAnimationFrame(tick);
-
+    syncEdges();
+    el.addEventListener("scroll", syncEdges, { passive: true });
+    window.addEventListener("resize", syncEdges);
     return () => {
-      cancelAnimationFrame(raf);
-      el.removeEventListener('pointerdown', onPointerDown);
-      el.removeEventListener('pointermove', onPointerMove);
-      el.removeEventListener('pointerup', endDrag);
-      el.removeEventListener('pointercancel', endDrag);
-      el.removeEventListener('pointerenter', onEnter);
-      el.removeEventListener('pointerleave', onLeave);
+      el.removeEventListener("scroll", syncEdges);
+      window.removeEventListener("resize", syncEdges);
     };
+  }, [syncEdges]);
+
+  // Un pas = una card + el gap viu, llegit del layout real
+  const step = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return 0;
+    const first = el.firstElementChild as HTMLElement | null;
+    if (!first) return el.clientWidth;
+    const styles = window.getComputedStyle(el);
+    const gap = parseFloat(styles.columnGap || "0") || 0;
+    return first.offsetWidth + gap;
   }, []);
+
+  const scrollByStep = useCallback(
+    (dir: 1 | -1) => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollBy({ left: dir * step(), behavior: reduce ? "auto" : "smooth" });
+    },
+    [step]
+  );
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") { e.preventDefault(); scrollByStep(1); }
+    if (e.key === "ArrowLeft")  { e.preventDefault(); scrollByStep(-1); }
+  };
 
   return (
     <section className="w-full py-24 md:py-40">
-      <div className="flex flex-col gap-16 md:gap-32 w-full relative">
+      <div className="relative flex w-full flex-col gap-16 md:gap-32">
 
-        {/* Header Content */}
-        <div className="px-4 md:px-[3vw] lg:px-[4vw] w-full flex justify-between items-end">
+        {/* Header: títol + control del carrusel */}
+        <div className="flex w-full items-center justify-between gap-6 px-4 md:gap-12 md:px-[3vw] lg:px-[4vw]">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-heading text-heading-h1 uppercase text-text-main leading-none m-0"
+            className="m-0 font-heading text-heading-h1 leading-none text-text-main"
           >
             Clients
           </motion.h2>
+
+          <div className="flex shrink-0 items-center gap-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              shape="square"
+              aria-label="Clients anteriors"
+              disabled={!canPrev}
+              onClick={() => scrollByStep(-1)}
+            >
+              <ArrowLeft size={32} weight="regular" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              shape="square"
+              aria-label="Clients següents"
+              disabled={!canNext}
+              onClick={() => scrollByStep(1)}
+            >
+              <ArrowRight size={32} weight="regular" aria-hidden="true" />
+            </Button>
+          </div>
         </div>
 
-        {/* Horizontal Slider Area — auto-scroll + drag amb inèrcia */}
+        {/* Carrusel: scroll natiu (rodeta, gest, teclat) + les fletxes de dalt.
+            overflow-x-auto i no -hidden: volem un scroll container de veritat. */}
         <div
           ref={scrollRef}
-          className="w-full flex overflow-x-hidden hide-scrollbar select-none touch-pan-y pl-4 md:pl-[3vw] lg:pl-[4vw] gap-8 md:gap-16 pb-8"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          role="region"
+          aria-label="Clients"
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          className="hide-scrollbar flex w-full gap-12 overflow-x-auto pb-8 pl-4 md:gap-16 md:pl-[3vw] lg:gap-24 lg:pl-[4vw] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
         >
-          {loopClients.map((client, index) => (
+          {clients.map((client) => (
             <div
-              key={`${client.name}-${index}`}
-              aria-hidden={index >= clients.length}
-              className="flex flex-col items-start min-w-[300px] max-w-[300px] md:min-w-[400px] md:max-w-[400px] shrink-0 cursor-grab active:cursor-grabbing"
+              key={client.name}
+              className="flex w-[300px] shrink-0 flex-col items-start"
             >
-              <PlaceholderLogo name={client.logo} />
-              <h3 className="text-heading-h3 text-text-main mb-4">
-                {client.name}
-              </h3>
-              <p className="text-body-md text-text-secondary leading-relaxed pr-6 md:pr-12">
+              <ClientLogo logo={client.logo} name={client.name} />
+              <p className="text-body-md leading-relaxed text-text-secondary">
                 {client.desc}
               </p>
             </div>

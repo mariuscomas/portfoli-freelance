@@ -153,7 +153,7 @@ function TriadaSection({
   onToggle: (d: Discipline) => void;
 }) {
   return (
-    <section id="productes" className="scroll-mt-24 border-t border-surface-border bg-surface-base">
+    <section id="productes" className="scroll-mt-24 border-t border-border-subtle bg-surface-base">
       <Reveal className={`${SECTION_PX} py-16`}>
         <SectionHeader
           caption="SERVEIS · PREUS ORIENTATIUS"
@@ -174,7 +174,7 @@ function TriadaSection({
 
       {/* Columnes a sang separades per filets (Figma), no cards flotants */}
       <Reveal>
-        <div className="grid grid-cols-1 border-y border-surface-border md:grid-cols-3 lg:px-12">
+        <div className="grid grid-cols-1 border-y border-border-subtle md:grid-cols-3 lg:px-12">
           {PRODUCTS.map((p, i) => (
             <ProductCard
               key={p.id}
@@ -182,9 +182,9 @@ function TriadaSection({
               disciplines={disciplines}
               className={
                 i === 0
-                  ? "border-b border-surface-border md:border-b-0"
+                  ? "border-b border-border-subtle md:border-b-0"
                   : i === 1
-                    ? "border-b border-surface-border md:border-x md:border-b-0"
+                    ? "border-b border-border-subtle md:border-x md:border-b-0"
                     : ""
               }
             />
@@ -237,7 +237,7 @@ function ProcessSection() {
       <Reveal className="mt-16">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {PROCESS_STEPS.map((step) => (
-            <div key={step.num} className="flex flex-col gap-4 border-t border-surface-border pt-6">
+            <div key={step.num} className="flex flex-col gap-4 border-t border-border-subtle pt-6">
               <span className="text-caption-sm text-text-secondary">{step.num}</span>
               <h3 className="text-heading-h3 text-text-main">{step.title}</h3>
               <p className="text-body-sm text-text-secondary">{step.text}</p>
@@ -273,7 +273,7 @@ function RecurrentsSection() {
           {RECURRENTS.map((r) => (
             <div
               key={r.label}
-              className="flex items-center justify-between gap-12 border-b border-surface-border py-8"
+              className="flex items-center justify-between gap-12 border-b border-border-subtle py-8"
             >
               <dt className="text-body-lg text-text-main">{r.label}</dt>
               <dd className="shrink-0 text-right text-body-lg text-text-secondary">{r.price}</dd>
@@ -290,7 +290,7 @@ function RecurrentsSection() {
 function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void }) {
   return (
     <section
-      className={`${SECTION_PX} border-t border-surface-border bg-surface-base pt-24 pb-32 lg:pb-48`}
+      className={`${SECTION_PX} border-t border-border-subtle bg-surface-base pt-24 pb-32 lg:pb-48`}
     >
       <Reveal>
         <div className="flex flex-col gap-16 lg:flex-row lg:items-start">
@@ -325,7 +325,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
               Al Figma és una card lateral, no una banda sota el CTA. */}
           <TransitionLink
             href="/colaboracio"
-            className="group flex flex-col gap-6 rounded-card border border-surface-border bg-surface-card/30 p-8 transition-colors hover:border-surface-border-strong lg:w-[412px] lg:shrink-0"
+            className="group flex flex-col gap-6 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-surface-border-strong lg:w-[412px] lg:shrink-0"
           >
             <span className="flex flex-col gap-4 text-text-secondary">
               <span className="text-eyebrow">Ets una agència o estudi?</span>

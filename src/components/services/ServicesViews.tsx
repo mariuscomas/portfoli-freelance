@@ -20,7 +20,7 @@ function CrossNav({ active }: { active: ServicesArea }) {
     <div
       role="navigation"
       aria-label="Àrees"
-      className="flex items-center gap-1 rounded-full border border-surface-border bg-surface-card p-1"
+      className="flex items-center gap-1 rounded-full border border-border-default bg-surface-card p-1"
     >
       {PILLS.map((p) => {
         const isActive = active === p.id;

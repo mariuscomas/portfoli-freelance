@@ -17,11 +17,20 @@ import { CaretLeftIcon } from "@phosphor-icons/react";
  *    inferior del hero al Figma (11325:8844 desktop, 11760:96251 mòbil), on la
  *    vora pròpia sobraria perquè la barra ja té les seves línies.
  */
+/**
+ * ⚑ DESACTIVAT TEMPORALMENT (15set26) — el switcher d'idioma no surt a la web
+ * mentre no estigui acabat l'i18n. Posa-ho a `true` per tornar-lo a veure;
+ * no cal tocar res més (Hero i SiteControls ja el consulten).
+ */
+export const LANGUAGE_SELECTOR_ENABLED = false;
+
 export default function LanguageSelector({
   variant = "pill",
 }: {
   variant?: "pill" | "bare";
 }) {
+  if (!LANGUAGE_SELECTOR_ENABLED) return null;
+
   if (variant === "bare") {
     return (
       <div className="flex cursor-pointer items-center gap-2.5 text-text-main">

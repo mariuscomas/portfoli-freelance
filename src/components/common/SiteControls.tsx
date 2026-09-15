@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import LanguageSelector from "@/components/common/LanguageSelector";
+import LanguageSelector, {
+  LANGUAGE_SELECTOR_ENABLED,
+} from "@/components/common/LanguageSelector";
 import ThemeToggle from "@/components/common/ThemeToggle";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 
@@ -88,7 +90,9 @@ export default function SiteControls() {
       } ${hidden ? "pointer-events-none" : ""}`}
     >
       <LanguageSelector />
-      <div className="ml-2">
+      {/* L'ml-2 només té sentit quan el selector d'idioma hi és; sense ell
+          desplaçaria el tema respecte de la columna del hero. */}
+      <div className={LANGUAGE_SELECTOR_ENABLED ? "ml-2" : undefined}>
         <ThemeToggle />
       </div>
     </motion.div>
