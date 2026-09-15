@@ -3,6 +3,15 @@ export interface WorkMedia {
   url: string;
   type?: 'image' | 'video'; // In case we support videos
   alt?: string;
+  /**
+   * Dimensions nadiues del fitxer pujat, en píxels. Les fa servir
+   * WorkMediaGrid per donar a la cel·la l'aspect ratio de la pròpia imatge
+   * (com al Figma, on la casella fa 828 d'ample i l'alçada la marca el
+   * contingut) i així evitar qualsevol crop. Opcionals: les imatges pujades
+   * abans que existís aquest camp cauen al fallback height:auto.
+   */
+  width?: number;
+  height?: number;
 }
 
 export interface WorkTextSection {
@@ -22,10 +31,21 @@ export interface WorkTextSection {
   listDetails?: { label: string; value: string; href?: string }[];
 }
 
+/**
+ * Disposició del media d'un bloc a la vista Visual. Es tria a l'editor:
+ * · 'auto' (per defecte) — la graella es dedueix del recompte d'imatges.
+ * · 'row' — força la graella de dues columnes a partir de `md:`.
+ * · 'column' — apila les imatges a amplada completa i respecta el ratio
+ *   natiu de cadascuna, sense retall. Pensat per a captures apaïsades.
+ */
+export type WorkMediaLayout = 'auto' | 'row' | 'column';
+
 export interface WorkBlock {
   id: string;
   textSection: WorkTextSection;
   media: WorkMedia[]; // Grid can be 1 to 4 images/videos, length dictates grid type
+  /** Disposició del media. Absent = 'auto' (retrocompatible). */
+  mediaLayout?: WorkMediaLayout;
 }
 
 export interface WorkNextProject {

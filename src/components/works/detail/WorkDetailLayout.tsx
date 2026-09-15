@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WorkDetailData } from "@/types/works";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import WorkDetailSection from "./WorkDetailSection";
 import WorkMediaGrid from "./WorkMediaGrid";
 import NextProjectScroll from "./NextProjectScroll";
+import WorkViewBar from "./WorkViewBar";
 import SharedPageHero from "@/components/common/SharedPageHero";
-import Link from "next/link";
 import { useSetHeaderContrast } from "@/context/HeaderContrastContext";
 
 interface Props {
@@ -16,6 +16,8 @@ interface Props {
 
 export default function WorkDetailLayout({ data }: Props) {
   const [view, setView] = useState<"visual" | "lectura">("visual");
+  // El bloc de projecte següent amaga la barra fixa: té el seu propi gest.
+  const endRef = useRef<HTMLDivElement>(null);
   const setHeaderContrast = useSetHeaderContrast();
   const { scrollY } = useScroll();
 
@@ -98,51 +100,18 @@ export default function WorkDetailLayout({ data }: Props) {
         strokeColor={contrast.strokeColor}
         parallax
         bottomContent={
-          <div className="flex flex-col md:flex-row items-center justify-between w-full mt-auto relative z-20 top-2 lg:top-4">
-
-            {/* Esquerra: Scroll Indicator */}
-            <div className={`hidden md:flex items-center w-full md:w-1/3 justify-start opacity-70 ${contrast.text}`}>
-              <div className="flex items-center gap-2">
-                <div className={`w-4 h-6 border ${contrast.border} rounded-sm opacity-50 relative`}>
-                  <div className={`w-full h-[1px] ${contrast.bg} absolute top-1/2 left-0 opacity-50`} />
-                </div>
-                <span className="text-[14px] font-sans tracking-wider uppercase">(SCROLL) ↓</span>
+          /* El hero només convida a baixar. El selector de vista i el retorn
+             viuen a WorkViewBar, que apareix en sortir del hero: tenir-los
+             als dos llocs els duplicava i, a més, amb escales diferents
+             (el hero anava a 15px i la barra va a la rampa buttons-menu).
+             Patró de wearemotto.com/portfolio/protege. */
+          <div className={`flex items-center w-full mt-auto relative z-20 opacity-70 ${contrast.text}`}>
+            <div className="flex items-center gap-2">
+              <div className={`w-4 h-6 border ${contrast.border} rounded-sm opacity-50 relative`}>
+                <div className={`w-full h-[1px] ${contrast.bg} absolute top-1/2 left-0 opacity-50`} />
               </div>
+              <span className="text-[14px] font-sans tracking-wider uppercase">(SCROLL) ↓</span>
             </div>
-
-            {/* Centre: Toggle Button */}
-            <div className="flex items-center justify-center w-full md:w-1/3 my-4 md:my-0">
-              <div className="flex items-center p-1.5 rounded-full bg-surface-base shadow-lg border border-text-main/5">
-                {(["visual", "lectura"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setView(mode)}
-                    className={`relative z-10 px-8 py-2.5 rounded-full text-[15px] font-medium transition-colors duration-300 capitalize ${view === mode ? "text-surface-base" : "text-text-main hover:text-text-secondary"
-                      }`}
-                  >
-                    {view === mode && (
-                      <motion.div
-                        layoutId="worksDetailHeroToggle"
-                        className="absolute inset-0 bg-text-main rounded-full -z-10"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                    )}
-                    {mode}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Dreta: Link Tots els projectes */}
-            <div className={`flex items-center justify-center md:justify-end w-full md:w-1/3 ${contrast.text}`}>
-              <Link
-                href="/works"
-                className={`font-sans font-medium text-[15px] tracking-wide hover:opacity-70 transition-opacity underline underline-offset-[6px] ${contrast.decoration} ${contrast.decorationHover} h-full`}
-              >
-                Veure tots els projectes
-              </Link>
-            </div>
-
           </div>
         }
       />
@@ -177,7 +146,12 @@ export default function WorkDetailLayout({ data }: Props) {
                   <div key={block.id} className="w-full flex flex-col">
                     <WorkDetailSection text={block.textSection} viewMode="visual" />
                     {block.media && block.media.length > 0 && (
-                      <WorkMediaGrid media={block.media} viewMode="visual" flushBottom={dropTrailingPad} />
+                      <WorkMediaGrid
+                        media={block.media}
+                        viewMode="visual"
+                        layout={block.mediaLayout}
+                        flushBottom={dropTrailingPad}
+                      />
                     )}
                   </div>
                 );
@@ -241,7 +215,13 @@ export default function WorkDetailLayout({ data }: Props) {
       )}
 
       {/* Next Project Nav */}
-      <NextProjectScroll nextProject={data.nextProject} />
+      <div ref={endRef}>
+        <NextProjectScroll nextProject={data.nextProject} />
+      </div>
+
+      {/* Barra fixa: selector de vista + retorn. Viu fora del hero perquè el
+          hero és sticky i el seu contingut fa fade amb el parallax. */}
+      <WorkViewBar view={view} onChange={setView} stopRef={endRef} />
     </div>
   );
 }

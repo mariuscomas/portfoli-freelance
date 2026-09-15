@@ -7,32 +7,32 @@ import { Button } from "@/components/ui/Button";
 
 /* ------------------------------------------------------------
    Logotip de client.
-   Placeholder tipogràfic fins que els SVG reals siguin al repo
-   (de moment només hi ha public/logos/logo Onabitz.svg).
+   Els SVG viuen a public/logos/, exportats del Figma ja
+   normalitzats. L'ALÇADA és la dimensió que normalitza (els
+   logos s'igualen per alçada de caixa alta, no per amplada),
+   així que fixem height i deixem l'amplada automàtica: així no
+   es poden deformar mai.
+   La caixa de 56px és l'slot del Figma (160×56, contingut a
+   l'esquerra i centrat vertical).
    El nom del client ja NO surt com a línia pròpia a la card
-   — decisió 15set26 —, així que aquest és l'únic lloc on
-   s'anuncia: d'aquí el role/aria-label.
+   — decisió 15set26 —, així que l'alt del logo és l'únic lloc
+   on s'anuncia de qui parla.
    ------------------------------------------------------------ */
-const ClientLogo = ({ logo, name }: { logo: string; name: string }) => (
-  <div
-    role="img"
-    aria-label={name}
-    className="mb-6 flex h-14 items-center text-text-main"
-  >
-    {/* Mida DS (heading-h2); bold + tracking-tighter són overrides deliberats del mur de logos */}
-    <span aria-hidden="true" className="text-heading-h2 font-bold tracking-tighter">
-      {logo}
-    </span>
+const ClientLogo = ({ src, name, height }: { src: string; name: string; height: number }) => (
+  <div className="mb-6 flex h-14 items-center">
+    {/* eslint-disable-next-line @next/next/no-img-element -- SVG local de mida fixa; next/image no hi aporta res */}
+    <img src={src} alt={name} height={height} style={{ height, width: "auto" }} />
   </div>
 );
 
+// `h` = alçada normalitzada al Figma (slot 160×56, igualat per caixa alta)
 const clients = [
-  { logo: "North", name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria — i sí, va ser tan divertit com sona." },
-  { logo: "QUANTION", name: "Quantion", desc: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples." },
-  { logo: "CUPRA", name: "Cupra", desc: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h." },
-  { logo: "santalucía", name: "Santalucía Impulsa", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },
-  { logo: "Alphanet", name: "Alphanet Solutions", desc: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema." },
-  { logo: "Onabitz", name: "Onabitz", desc: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall." },
+  { src: "/logos/north.svg",      h: 30, name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria — i sí, va ser tan divertit com sona." },
+  { src: "/logos/quantion.svg",   h: 34, name: "Quantion", desc: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples." },
+  { src: "/logos/cupra.svg",      h: 52, name: "Cupra", desc: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h." },
+  { src: "/logos/santalucia.svg", h: 32, name: "Santalucía Impulsa", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },
+  { src: "/logos/alphanet.svg",   h: 18, name: "Alphanet Solutions", desc: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema." },
+  { src: "/logos/onabitz.svg",    h: 30, name: "Onabitz", desc: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall." },
 ];
 
 export default function Clients() {
@@ -141,7 +141,7 @@ export default function Clients() {
               key={client.name}
               className="flex w-[300px] shrink-0 flex-col items-start"
             >
-              <ClientLogo logo={client.logo} name={client.name} />
+              <ClientLogo src={client.src} name={client.name} height={client.h} />
               <p className="text-body-md leading-relaxed text-text-secondary">
                 {client.desc}
               </p>

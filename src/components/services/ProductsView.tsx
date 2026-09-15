@@ -196,7 +196,7 @@ function TriadaSection({
           configurador no cobreix es pressuposta per trucada. */}
       <Reveal>
         <div
-          className={`${SECTION_PX} flex flex-col gap-8 border-b border-dashed border-surface-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
+          className={`${SECTION_PX} flex flex-col gap-8 border-b border-dashed border-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
         >
           <div className="flex flex-1 flex-col gap-3">
             <span className="text-caption uppercase text-text-secondary">APPS, BRANDING I MÉS</span>
@@ -325,7 +325,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
               Al Figma és una card lateral, no una banda sota el CTA. */}
           <TransitionLink
             href="/colaboracio"
-            className="group flex flex-col gap-6 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-surface-border-strong lg:w-[412px] lg:shrink-0"
+            className="group flex flex-col gap-6 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-border-strong lg:w-[412px] lg:shrink-0"
           >
             <span className="flex flex-col gap-4 text-text-secondary">
               <span className="text-eyebrow">Ets una agència o estudi?</span>

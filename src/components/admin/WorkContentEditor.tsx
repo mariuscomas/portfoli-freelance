@@ -41,7 +41,13 @@ import ImageUploadField from './ImageUploadField'
 import RichTextEditor from './RichTextEditor'
 import ColorField from './ColorField'
 import { useConfirm } from './useConfirm'
-import type { WorkDetailData, WorkBlock, WorkMedia, WorkTextSection } from '@/types/works'
+import type {
+  WorkDetailData,
+  WorkBlock,
+  WorkMedia,
+  WorkMediaLayout,
+  WorkTextSection,
+} from '@/types/works'
 
 /**
  * <WorkContentEditor />
@@ -117,6 +123,7 @@ type Action =
   | { type: 'REMOVE_BLOCK_MEDIA'; index: number; mediaIndex: number }
   | { type: 'REORDER_BLOCK_MEDIA'; index: number; fromId: string; toId: string }
   | { type: 'SET_BLOCK_MEDIA_FIELD'; index: number; mediaIndex: number; field: keyof WorkMedia; value: string }
+  | { type: 'SET_BLOCK_MEDIA_LAYOUT'; index: number; value: WorkMediaLayout }
   | { type: 'ADD_FINAL_MEDIA' }
   | { type: 'REMOVE_FINAL_MEDIA'; index: number }
   | { type: 'SET_FINAL_MEDIA_FIELD'; index: number; field: keyof WorkMedia; value: string }
@@ -251,6 +258,14 @@ function reducer(state: ContentState, action: Action): ContentState {
           i === action.index
             ? { ...b, textSection: { ...b.textSection, listDetails: action.value } }
             : b
+        ),
+      }
+
+    case 'SET_BLOCK_MEDIA_LAYOUT':
+      return {
+        ...state,
+        blocks: state.blocks.map((b, i) =>
+          i === action.index ? { ...b, mediaLayout: action.value } : b
         ),
       }
 
@@ -427,6 +442,10 @@ function normalizeInitial(initial: unknown): ContentState {
                 }))
               : undefined,
           },
+          mediaLayout: ((): WorkMediaLayout => {
+            const v = asString((b as { mediaLayout?: unknown }).mediaLayout)
+            return v === 'row' || v === 'column' ? v : 'auto'
+          })(),
           media: Array.isArray(b.media)
             ? b.media.map((m) => ({
                 id: asString(m.id, genId('m')),
@@ -1080,6 +1099,10 @@ export function BlocksSection({
                   {/* ─── Article 3: Media ─── */}
                   <MediaEditor
                     media={block.media}
+                    layout={block.mediaLayout || 'auto'}
+                    onLayoutChange={(value) =>
+                      dispatch({ type: 'SET_BLOCK_MEDIA_LAYOUT', index: idx, value })
+                    }
                     onAdd={() => dispatch({ type: 'ADD_BLOCK_MEDIA', index: idx })}
                     onRemove={(mi) => dispatch({ type: 'REMOVE_BLOCK_MEDIA', index: idx, mediaIndex: mi })}
                     onChange={(mi, field, value) =>
@@ -1685,12 +1708,17 @@ function OutlineSquareButton({
 
 function MediaEditor({
   media,
+  layout = 'auto',
+  onLayoutChange,
   onAdd,
   onRemove,
   onChange,
   onReorder,
 }: {
   media: WorkMedia[]
+  /** Disposició del media del bloc a la vista Visual del case study. */
+  layout?: WorkMediaLayout
+  onLayoutChange?: (value: WorkMediaLayout) => void
   onAdd: () => void
   onRemove: (mi: number) => void
   onChange: (mi: number, field: keyof WorkMedia, value: string) => void
@@ -1739,9 +1767,36 @@ function MediaEditor({
          vertical + "Afegir Imatge" ghost button. */
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <span className="text-body-sm font-medium text-text-secondary">
-          MEDIA · {media.length} {media.length === 1 ? 'FITXER' : 'FITXERS'}
-        </span>
+        {/* Cluster esquerre — Figma 11187:11718: label · filet · select de
+            disposició. El contingut del bloc va a l'esquerra; les accions
+            d'editor (vista, afegir) a la dreta. */}
+        <div className="flex items-center gap-4">
+          <span className="text-body-sm font-medium text-text-secondary">
+            MEDIA · {media.length} {media.length === 1 ? 'FITXER' : 'FITXERS'}
+          </span>
+
+          <div className="h-8 w-px bg-surface-border" aria-hidden />
+
+          {/* Mateix patró de <select> que el WorkForm: appearance-none +
+              caret propi perquè quedi idèntic als inputs del form. */}
+          <div className="relative">
+            <select
+              aria-label="Disposició del media"
+              value={layout}
+              onChange={(e) => onLayoutChange?.(e.target.value as WorkMediaLayout)}
+              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-surface-border rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+            >
+              <option value="auto">Disposició: Auto</option>
+              <option value="row">Disposició: Fila</option>
+              <option value="column">Disposició: Columna</option>
+            </select>
+            <CaretDown
+              size={16}
+              weight="regular"
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary"
+            />
+          </div>
+        </div>
 
         <div className="flex items-center gap-4">
           {/* View toggle group — 2 botons quadrats ghost amb estat actiu */}
