@@ -174,7 +174,7 @@ export default function LeadsList({
                     >
                       <CaretDown
                         size={16}
-                        className={`shrink-0 text-text-secondary transition-transform ${open ? '' : '-rotate-90'}`}
+                        className={`shrink-0 text-text-secondary transition-transform ${open ? 'rotate-180' : ''}`}
                         aria-hidden
                       />
                       <span

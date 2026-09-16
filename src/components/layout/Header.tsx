@@ -11,6 +11,7 @@ import { useMediaQuery, BELOW_LG_QUERY } from "@/hooks/useMediaQuery";
 import { useHeaderContrast } from "@/context/HeaderContrastContext";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
+import Button from "@/components/ui/Button";
 
 /*
   <Header />
@@ -162,14 +163,14 @@ export default function Header({
           link: "text-text-fixed-light hover:text-text-fixed-light/80",
           underline: "bg-text-fixed-light",
           underlineHover: "bg-text-fixed-light",
-          button: "bg-text-fixed-light text-text-fixed-dark",
+          button: "!bg-text-fixed-light !text-text-fixed-dark",
         }
       : contrast === "dark"
       ? {
           link: "text-text-fixed-dark hover:text-text-fixed-dark/80",
           underline: "bg-text-fixed-dark",
           underlineHover: "bg-text-fixed-dark",
-          button: "bg-text-fixed-dark text-text-fixed-light",
+          button: "!bg-text-fixed-dark !text-text-fixed-light",
         }
       : {
           // Hover classic: secondary → main (negre en light theme, blanc en
@@ -178,7 +179,7 @@ export default function Header({
           link: "text-text-secondary hover:text-text-main",
           underline: "bg-text-secondary",
           underlineHover: "bg-text-main",
-          button: "bg-text-main text-text-main-inverse",
+          button: "!bg-text-main !text-text-main-inverse",
         };
 
   const logoColor =
@@ -327,8 +328,11 @@ export default function Header({
 
         <AnimatePresence mode="popLayout" initial={false}>
           {showMenuButton && (
-            <motion.button
+            <Button
               key="menu-btn"
+              variant="solid"
+              shape="pill"
+              size="md"
               layout
               onClick={onMenuClick}
               initial={{ opacity: 0, scale: 0.85 }}
@@ -336,12 +340,19 @@ export default function Header({
               exit={{ opacity: 0, scale: 0.85 }}
               transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
               style={{ transformOrigin: "right center" }}
-              className={`flex items-center justify-center px-5 lg:px-6 py-2 rounded-full font-sans font-medium text-[14px] lg:text-[16px] hover:scale-105 transition-colors duration-300 whitespace-nowrap will-change-[opacity,transform]
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-text-main focus-visible:ring-offset-surface-base ${c.button}`}
+              /*
+                Botó del DS (Figma: Buttons / Solid / Large amb modes MD + Pill).
+                Abans era una pastilla dibuixada a mà: l'únic botó del site que no
+                sortia del sistema. El color el sobreescriu `c.button` amb `!`
+                perquè el contrast depèn del hero que hi ha a sota, no del tema.
+                Text visible "Menú": WCAG 2.5.3 demana que el nom accessible
+                ("Obrir Menú") contingui el text visible.
+              */
+              className={`hover:scale-105 will-change-[opacity,transform] ${c.button}`}
               aria-label="Obrir Menú"
             >
-              Menu
-            </motion.button>
+              Menú
+            </Button>
           )}
         </AnimatePresence>
       </div>

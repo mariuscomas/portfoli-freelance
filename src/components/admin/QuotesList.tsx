@@ -218,7 +218,7 @@ export default function QuotesList({
                   >
                     <CaretDown
                       size={16}
-                      className={`shrink-0 text-text-secondary transition-transform ${open ? '' : '-rotate-90'}`}
+                      className={`shrink-0 text-text-secondary transition-transform ${open ? 'rotate-180' : ''}`}
                       aria-hidden
                     />
                     <span className="inline-flex shrink-0 rounded-full border border-border-subtle px-3 py-1 text-caption uppercase text-text-secondary">
