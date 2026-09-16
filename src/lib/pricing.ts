@@ -555,7 +555,7 @@ export const PRODUCTS: Product[] = [
     priceLabel: "DES DE",
     price: AUDIT_BASE_BY_COUNT[1],
     description:
-      "Auditoria completa i accionable: fins a 2 fluxos o 10 pantalles, informe prioritzat, sessió de retorn de 90 min i roadmap. I si en 3 mesos fem el projecte, te la descomptes íntegra.",
+      "Auditoria completa i accionable, dimensionada segons la mida del producte: informe prioritzat, sessió de retorn de 90 min i roadmap. I si en 3 mesos fem el projecte, te la descomptes íntegra.",
     cta: "Mira el detall",
     includes: [
       "Revisió heurística experta: UI, UX i conversió",
@@ -576,8 +576,8 @@ export const RECURRENTS = [
 
 export const PROCESS_STEPS = [
   { num: "01", title: "Descoberta", text: "Objectius, contingut i referents. Sortim amb l’abast clar." },
-  { num: "02", title: "Proposta", text: "Preu tancat amb la fórmula. Sense sorpreses després." },
-  { num: "03", title: "Disseny + dev", text: "Un sol responsable de la primera pantalla a l’últim commit." },
+  { num: "02", title: "Proposta", text: "Preu tancat i abast definit, amb el desglòs de cada fase." },
+  { num: "03", title: "Disseny i codi", text: "Disseny a Figma i implementació en codi. Ho veus funcionant, no en captures." },
   { num: "04", title: "Llançament", text: "QA, producció i acompanyament el dia que surt." },
 ] as const;
 

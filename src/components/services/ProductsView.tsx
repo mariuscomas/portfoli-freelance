@@ -95,10 +95,18 @@ function LinkArrow({ children, className = "" }: { children: React.ReactNode; cl
  */
 function priceFor(product: Product, disciplines: Discipline[]): number {
   if (product.id === "auditoria") {
-    return AUDIT_BASE_BY_COUNT[disciplines.length] ?? product.price;
+    // L'auditoria NO reacciona als chips: els chips són disciplines de projecte
+    // i l'auditoria es dimensiona per focus i mida de producte. Passar-li
+    // disciplines.length feia que amb els tres chips (l'estat per defecte)
+    // mostrés 1.100 € en comptes del seu preu d'entrada.
+    return AUDIT_BASE_BY_COUNT[1];
   }
   return calcConfiguration({ product: product.id, disciplines }).baseTotal;
 }
+
+/** Abast que es mostra a la card: l'auditoria no es mesura per disciplines. */
+const scopeFor = (product: Product, disciplines: Discipline[]): string =>
+  product.id === "auditoria" ? "Segons la mida del producte" : scopeLabel(disciplines);
 
 function ProductCard({
   product,
@@ -126,7 +134,7 @@ function ProductCard({
         </div>
         <div className="flex flex-col gap-3">
           <span className="text-caption uppercase text-text-secondary">
-            {scopeLabel(disciplines)}
+            {scopeFor(product, disciplines)}
           </span>
           <p className="text-body-sm text-text-secondary">{product.description}</p>
         </div>
@@ -158,7 +166,7 @@ function TriadaSection({
     <section id="productes" className="scroll-mt-24 border-t border-border-subtle bg-surface-base">
       <Reveal className={`${SECTION_PX} py-16`}>
         <SectionHeader
-          caption="SERVEIS · PREUS ORIENTATIUS"
+          caption="SERVEIS · PREUS DES DE"
           title="Punts de partida"
           aside={
             <div className="flex flex-col gap-6 lg:items-end">
