@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X, ArrowRight, ArrowUpRight, Check } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import { submitContact } from "@/app/contacte/actions";
+import { RESPONSE_SLA } from "@/lib/pricing";
 
 /**
  * <ContactModal />
@@ -369,8 +370,8 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
               </span>
               <h3 className="text-heading-h2 text-text-main">Missatge enviat.</h3>
               <p className="text-body-lg text-text-secondary leading-relaxed">
-                T&apos;he rebut, {values.name.trim().split(" ")[0]}. Responc en menys de
-                24 hores feiners a {values.email.trim()}.
+                T&apos;he rebut, {values.name.trim().split(" ")[0]}. Responc en menys de{" "}
+                {RESPONSE_SLA} a {values.email.trim()}.
               </p>
               <Button variant="solid" shape="pill" size="xl" onClick={onClose} className="mt-2">
                 Tancar

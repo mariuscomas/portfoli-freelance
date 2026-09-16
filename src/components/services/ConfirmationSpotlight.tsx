@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, ArrowRight } from "@phosphor-icons/react";
 import TransitionLink from "@/components/common/TransitionLink";
+import { RESPONSE_SLA } from "@/lib/pricing";
 
 /**
  * Confirmació del configurador amb efecte "focus": el centre és el dark normal
@@ -212,7 +213,7 @@ export default function ConfirmationSpotlight({
                 <span className="ref">Ref. #{reference}</span> ·{" "}
               </>
             ) : null}
-            Responc en 24 h (dies laborables)
+            Responc en {RESPONSE_SLA}
             <br />
             amb un primer abast i una proposta concreta.
           </p>

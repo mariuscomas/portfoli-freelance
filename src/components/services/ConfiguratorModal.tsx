@@ -46,6 +46,7 @@ import {
   type ConfigQuote,
   type AuditFocus,
   type AuditSize,
+  RESPONSE_SLA,
 } from "@/lib/pricing";
 
 /**
@@ -366,7 +367,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
     phase === "config"
       ? "Pas 1 de 2 · Tipus de projecte i extres"
       : phase === "form"
-        ? `${configurable ? "Pas 2 de 2 · " : ""}Explica'm el teu projecte. Et responc en menys de 24 hores feiners.`
+        ? `${configurable ? "Pas 2 de 2 · " : ""}Explica'm el teu projecte. Et responc en menys de ${RESPONSE_SLA}.`
         : null;
 
   // ————— Submit del layout unificat (web/landing desktop) —————

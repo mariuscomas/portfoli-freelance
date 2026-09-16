@@ -581,6 +581,15 @@ export const PROCESS_STEPS = [
   { num: "04", title: "Llançament", text: "QA, producció i acompanyament el dia que surt." },
 ] as const;
 
+/**
+ * Compromís públic de resposta (docs/estrategia-negoci.md §6).
+ *
+ * UNA sola font: aquesta promesa estava escrita a mà a vuit pantalles i havia
+ * derivat a "24 hores", el doble de ràpid del que es va decidir. Qualsevol text
+ * que la digui ha de llegir d'aquí.
+ */
+export const RESPONSE_SLA = "48 hores laborables";
+
 export const CONDITIONS = [
   "Pagament 50/50",
   "2 rondes de revisió per fase",

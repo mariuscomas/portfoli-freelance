@@ -13,6 +13,7 @@ import {
   COLLAB_TIERS,
   COLLAB_CALENDAR_URL,
   type CollabModality,
+  RESPONSE_SLA,
 } from "@/lib/pricing";
 import {
   Curtain,
@@ -498,8 +499,8 @@ function CollabConfirmation({ onClose }: { onClose: () => void }) {
             Rebut.
           </h3>
           <p className="max-w-prose text-body-md text-text-secondary">
-            He rebut el teu encàrrec. Et responc en menys de 24 h feiners amb disponibilitat i una
-            tarifa tancada.
+            He rebut el teu encàrrec. Et responc en menys de {RESPONSE_SLA} amb disponibilitat i
+            una tarifa tancada.
           </p>
         </div>
       </div>

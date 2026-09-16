@@ -26,6 +26,7 @@ import Button from "@/components/ui/Button";
 import { submitContact } from "@/app/contacte/actions";
 import { Service } from "@/types";
 import { t } from "@/lib/i18n";
+import { RESPONSE_SLA } from "@/lib/pricing";
 
 /**
  * <ServiceModal />
@@ -470,7 +471,7 @@ function PricingView({
         )}
 
         <p className="text-body-sm text-text-secondary text-center">
-          Et responc en 24h amb un primer abast i una proposta concreta.
+          Et responc en {RESPONSE_SLA} amb un primer abast i una proposta concreta.
         </p>
       </div>
     </div>
@@ -543,7 +544,7 @@ function FormView({
           Explica&apos;m el teu projecte
         </h4>
         <p className="text-body-md text-text-secondary">
-          Et responc en menys de 24 hores feiners.
+          Et responc en menys de {RESPONSE_SLA}.
         </p>
       </div>
 
@@ -636,7 +637,7 @@ function ConfirmationView({ onClose }: { onClose: () => void }) {
             Missatge enviat.
           </h4>
           <p className="text-body-md text-text-secondary max-w-prose">
-            T&apos;he rebut. Responc en menys de 24 hores feiners amb un primer abast i una proposta concreta.
+            T&apos;he rebut. Responc en menys de {RESPONSE_SLA} amb un primer abast i una proposta concreta.
           </p>
         </div>
       </div>
