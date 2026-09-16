@@ -338,7 +338,7 @@ export function Accordion({
         <CaretDown
           size={16}
           weight="regular"
-          className={`shrink-0 text-text-secondary transition-transform ${open ? "" : "-rotate-90"}`}
+          className={`shrink-0 text-text-secondary transition-transform ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
       </button>
@@ -442,7 +442,7 @@ export function SummaryGroup({
           <CaretDown
             size={16}
             weight="regular"
-            className={`text-text-secondary transition-transform ${open ? "" : "-rotate-90"}`}
+            className={`text-text-secondary transition-transform ${open ? "rotate-180" : ""}`}
             aria-hidden="true"
           />
         </span>
