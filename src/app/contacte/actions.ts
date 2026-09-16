@@ -3,6 +3,7 @@
 import { headers } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 import type { ContactSubmissionInsert } from "@/types/database"
+import { notifyNewContact } from "@/lib/notifyLead"
 
 /**
  * Server Action invocada des del form de /contacte.
@@ -72,6 +73,11 @@ export async function submitContact(input: SubmitInput): Promise<ContactResult> 
   }
 
   const { error } = await supabase.from("contact_submissions").insert(insert)
+
+  if (!error) {
+    // L'avís va després de desar: si el correu falla, el lead no es perd.
+    await notifyNewContact({ email, name: name || null, message, source: "/contacte" })
+  }
 
   if (error) {
     // Postgres pot retornar errors de check constraint si el regex de email

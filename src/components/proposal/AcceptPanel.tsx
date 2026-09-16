@@ -44,7 +44,7 @@ export default function AcceptPanel({
   if (expired) {
     return (
       <section className={`border-t border-border-subtle pb-32 pt-24 ${SECTION_PX}`}>
-        <span className="text-caption uppercase text-text-secondary">04 — Què pots fer</span>
+        <span className="text-caption uppercase text-text-secondary">04 · Què pots fer</span>
         <h2 className="mt-6 text-display-h3 text-text-main">Te&apos;n faig una d&apos;actualitzada</h2>
         <div className="mt-10">
           <Button as="a" href={`mailto:mariuscr23@gmail.com?subject=Proposta caducada`}>
@@ -63,7 +63,7 @@ export default function AcceptPanel({
   if (state === "done") {
     return (
       <section className={`border-t border-border-subtle pb-32 pt-24 ${SECTION_PX}`}>
-        <span className="text-caption uppercase text-text-secondary">04 — Fet</span>
+        <span className="text-caption uppercase text-text-secondary">04 · Fet</span>
         <h2 className="mt-6 text-display-h3 text-text-main">Proposta acceptada</h2>
         <p className="mt-8 max-w-2xl text-body-md text-text-secondary">
           Queda registrat. Et confirmo dates i t&apos;envio la factura del 50% per començar; si
@@ -75,7 +75,7 @@ export default function AcceptPanel({
 
   return (
     <section className={`border-t border-border-subtle pb-32 pt-24 ${SECTION_PX}`}>
-      <span className="text-caption uppercase text-text-secondary">04 — Com seguim</span>
+      <span className="text-caption uppercase text-text-secondary">04 · Com seguim</span>
       <h2 className="mt-6 text-display-h3 text-text-main">Comencem?</h2>
 
       <div className="mt-10 flex flex-col gap-6 md:flex-row md:items-end md:gap-8">

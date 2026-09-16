@@ -153,7 +153,7 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
     <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <div className="flex flex-col gap-12 md:gap-16">
-          <p className="text-eyebrow text-text-secondary">05 — Comencem</p>
+          <p className="text-eyebrow text-text-secondary">05 · Comencem</p>
 
           <h2 className="max-w-3xl text-display-h3 text-text-main">
             Necessites un perfil sènior a l’equip demà mateix?

@@ -170,7 +170,7 @@ export default function ProposalView({
 
       {/* Desglòs */}
       {(phases.length > 0 || extras.length > 0) && (
-        <Section caption="01 — Desglòs" title="D'on surt el preu">
+        <Section caption="01 · Desglòs" title="D'on surt el preu">
           {phases.length > 0 && (
             <>
               <span className="text-caption uppercase text-text-secondary">
@@ -213,7 +213,7 @@ export default function ProposalView({
       )}
 
       {/* Condicions */}
-      <Section caption="02 — Condicions" title="Com ho fem">
+      <Section caption="02 · Condicions" title="Com ho fem">
         <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-10">
           {CONDITIONS.map((c) => (
             <li key={c} className="border-t border-border-subtle pt-5 text-body-sm text-text-main">
@@ -224,7 +224,7 @@ export default function ProposalView({
       </Section>
 
       {/* Recurrents */}
-      <Section caption="03 — Després del llançament" title="El que va a part">
+      <Section caption="03 · Després del llançament" title="El que va a part">
         <ul className="flex flex-col">
           {RECURRENTS.map((r) => (
             <MoneyRow key={r.label} label={r.label} amount={r.price} />

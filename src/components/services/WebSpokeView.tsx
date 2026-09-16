@@ -106,7 +106,7 @@ function IncludesSection() {
   return (
     <section id="que-inclou" className={`${SECTION_PX} pt-20 pb-20 bg-surface-base`}>
       <Reveal>
-        <SectionHeader caption="01 — QUÈ INCLOU" title="Tot el que entra a la base" />
+        <SectionHeader caption="01 · QUÈ INCLOU" title="Tot el que entra a la base" />
       </Reveal>
       <Reveal className="mt-14">
         <ul>
@@ -136,7 +136,7 @@ function FocusSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="02 — ABAST" title="Tria fins on arribo" />
+        <SectionHeader caption="02 · ABAST" title="Tria fins on arribo" />
       </Reveal>
       <Reveal className="mt-8">
         <p className="max-w-2xl text-body-lg text-text-secondary">
@@ -176,7 +176,7 @@ function ExtrasSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="03 — EXTRES" title="Fes-la teva" />
+        <SectionHeader caption="03 · EXTRES" title="Fes-la teva" />
       </Reveal>
       <Reveal className="mt-14">
         <ul>
@@ -251,7 +251,7 @@ function ProcessSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="04 — COM TREBALLO" title="De la idea a producció" />
+        <SectionHeader caption="04 · COM TREBALLO" title="De la idea a producció" />
       </Reveal>
       <Reveal className="mt-14">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -281,7 +281,7 @@ function FaqSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="05 — PREGUNTES" title="Dubtes freqüents" />
+        <SectionHeader caption="05 · PREGUNTES" title="Dubtes freqüents" />
       </Reveal>
       <Reveal className="mt-14">
         <dl>
@@ -306,7 +306,7 @@ function RecurrentsSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="06 — DESPRÉS DEL LLANÇAMENT" title="Recurrents, sempre a part" />
+        <SectionHeader caption="06 · DESPRÉS DEL LLANÇAMENT" title="Recurrents, sempre a part" />
       </Reveal>
       <Reveal className="mt-14">
         <ul>
@@ -373,7 +373,7 @@ export default function WebSpokeView() {
   return (
     <>
       <SpokeHero
-        eyebrow="SERVEIS — WEB A MIDA"
+        eyebrow="SERVEIS · WEB A MIDA"
         headline={
           <>
             {"La teva web, dissenyada i "}

@@ -8,6 +8,7 @@ import {
   Wrench,
   UsersThree,
   Receipt,
+  EnvelopeSimple,
   SignOut,
   SidebarSimple,
 } from '@phosphor-icons/react'
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { href: '/admin/serveis', label: 'Serveis', icon: Wrench },
   { href: '/admin/quotes', label: 'Pressupostos', icon: Receipt },
   { href: '/admin/clients', label: 'Clients', icon: UsersThree },
+  { href: '/admin/leads', label: 'Leads', icon: EnvelopeSimple },
 ] as const
 
 const STORAGE_KEY = 'admin-sidebar-collapsed'

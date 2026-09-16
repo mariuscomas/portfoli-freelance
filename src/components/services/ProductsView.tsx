@@ -306,7 +306,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
       <Reveal>
         <div className="flex flex-col gap-16 lg:flex-row lg:items-start">
           <div className="flex flex-1 flex-col gap-16">
-            <p className="text-eyebrow text-text-secondary">05 — Comencem</p>
+            <p className="text-eyebrow text-text-secondary">05 · Comencem</p>
 
             <h2 className="text-display-h3 text-text-main">
               {CONFIGURATOR_ENABLED

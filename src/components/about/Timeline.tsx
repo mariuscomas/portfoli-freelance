@@ -206,7 +206,7 @@ export default function Timeline() {
                   >
                     <Image
                       src={item.image}
-                      alt={`${item.year} — ${item.title}`}
+                      alt={`${item.year}, ${item.title}`}
                       fill
                       sizes="(min-width: 1024px) 34rem, (min-width: 768px) 26rem, 80vw"
                       className={`object-contain pointer-events-none select-none ${item.flip ? "-scale-y-100 rotate-180" : ""}`}

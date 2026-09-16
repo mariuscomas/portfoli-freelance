@@ -111,7 +111,7 @@ function IncludesSection() {
   return (
     <section id="que-inclou" className={`${SECTION_PX} pt-20 pb-20 bg-surface-base`}>
       <Reveal>
-        <SectionHeader caption="01 — QUÈ INCLOU" title="Què t'enduus" />
+        <SectionHeader caption="01 · QUÈ INCLOU" title="Què t'enduus" />
       </Reveal>
       <Reveal className="mt-8">
         <div className="flex flex-col gap-1.5">
@@ -150,7 +150,7 @@ function FocusSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="02 — FOCUS" title="Tria on miro" />
+        <SectionHeader caption="02 · FOCUS" title="Tria on miro" />
       </Reveal>
       <Reveal className="mt-8">
         <p className="max-w-2xl text-body-lg text-text-secondary">
@@ -186,7 +186,7 @@ function SizesSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="03 — TALLA" title="Tria la profunditat" />
+        <SectionHeader caption="03 · TALLA" title="Tria la profunditat" />
       </Reveal>
       <Reveal className="mt-14">
         <ul>
@@ -214,7 +214,7 @@ function ExtrasSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="04 — EXTRES" title="Aprofundeix-hi" />
+        <SectionHeader caption="04 · EXTRES" title="Aprofundeix-hi" />
       </Reveal>
       <Reveal className="mt-14">
         <ul>
@@ -284,7 +284,7 @@ function ProcessSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="05 — COM FUNCIONA" title="Com funciona" />
+        <SectionHeader caption="05 · COM FUNCIONA" title="Com funciona" />
       </Reveal>
       <Reveal className="mt-14">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -307,7 +307,7 @@ function FaqSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="06 — PREGUNTES" title="Dubtes freqüents" />
+        <SectionHeader caption="06 · PREGUNTES" title="Dubtes freqüents" />
       </Reveal>
       <Reveal className="mt-14">
         <dl>
@@ -374,7 +374,7 @@ export default function AuditoriaSpokeView() {
   return (
     <>
       <SpokeHero
-        eyebrow="SERVEIS — AUDITORIA UI/UX"
+        eyebrow="SERVEIS · AUDITORIA UI/UX"
         headline={
           <>
             {"Sabràs exactament què falla "}
