@@ -15,20 +15,16 @@ export default function Template({ children }: { children: React.ReactNode }) {
   // Així funciona també per a rutes filles, on el template arrel no es re-munta.
 
   useEffect(() => {
-    // Quan la transició s'ha acabat (o si ja estava acabada), muntem el contingut
-    // Afegim un petit marge extra (300ms) perquè la cortina hagi començat a pujar
-    // i l'usuari pugui veure l'animació de la pàgina nova amb "aire"
-    if (!isTransitioning) {
-      if (hasStartedTransition) {
-        const timer = setTimeout(() => {
-          setShouldRender(true);
-        }, 300);
-        return () => clearTimeout(timer);
-      } else {
-        // Si és el muntatge inicial (refresh), no cal delay
-        setShouldRender(true);
-      }
-    }
+    // Només ens interessa el cas "la transició acaba de tancar-se": muntem el
+    // contingut 300 ms després perquè la cortina hagi començat a pujar i
+    // l'animació de la pàgina nova es vegi amb aire.
+    //
+    // Al muntatge inicial (refresh) no cal fer res: l'estat inicial ja és true,
+    // i escriure'l aquí seria un render de més (react-hooks/set-state-in-effect).
+    if (isTransitioning || !hasStartedTransition) return;
+
+    const timer = setTimeout(() => setShouldRender(true), 300);
+    return () => clearTimeout(timer);
   }, [isTransitioning, hasStartedTransition]);
 
   return (

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { ADMIN_EMAIL } from '@/lib/supabase'
+import { isAdminEmail } from '@/lib/admin'
 
 /**
  * Magic link callback.
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       // Verifiquem que l'usuari resultat és l'admin
       const { data: { user } } = await supabase.auth.getUser()
-      if (user?.email === ADMIN_EMAIL) {
+      if (isAdminEmail(user?.email)) {
         return NextResponse.redirect(`${origin}${safeRedirect}`)
       }
       // No és admin → fora

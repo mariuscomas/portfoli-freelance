@@ -1,13 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isAdminEmail } from '@/lib/admin'
 
-/**
- * Email que considerem "admin" del portfolio. Coincideix amb el valor usat
- * a la funció `public.is_admin()` de Supabase (Postgres RLS).
- *
- * Si canvies aquest email, actualitza també la migració RLS.
- */
-const ADMIN_EMAIL = 'mariuscr23@gmail.com'
+
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -51,7 +46,7 @@ export async function updateSession(request: NextRequest) {
   const isAuthCallback = path.startsWith('/auth/callback')
 
   if (isAdminArea && !isLoginPage && !isAuthCallback) {
-    const isAdmin = user?.email === ADMIN_EMAIL
+    const isAdmin = isAdminEmail(user?.email)
     if (!isAdmin) {
       const loginUrl = request.nextUrl.clone()
       loginUrl.pathname = '/admin/login'
