@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
+import { CONFIGURATOR_ENABLED } from "@/lib/flags";
+import { useContactModal } from "@/context/ContactModalContext";
 import SpokeHero from "@/components/services/SpokeHero";
 import {
   PRODUCTS,
@@ -197,7 +199,7 @@ function ExtrasSection() {
           ))}
         </ul>
         <p className="mt-10 text-caption text-text-secondary">
-          Cada extra actualitza el total en viu al configurador.
+          Cada extra queda desglossat al pressupost, amb el seu import.
         </p>
       </Reveal>
     </section>
@@ -212,7 +214,9 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
     <section className={`dark ${SECTION_PX} py-24 bg-surface-base`}>
       <Reveal>
         <h2 className="max-w-3xl text-display-h3 text-text-main">
-          Configura la teva landing en dos minuts i rep el pressupost al moment.
+          {CONFIGURATOR_ENABLED
+            ? "Configura la teva landing en dos minuts i rep el pressupost al moment."
+            : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
         </h2>
         <div className="mt-10 flex flex-col gap-4">
           <button
@@ -220,7 +224,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
             onClick={onConfigure}
             className="group inline-flex min-h-11 items-center gap-2 self-start text-heading-h3 text-text-main underline underline-offset-8 decoration-1 hover:decoration-2"
           >
-            Obre el configurador
+            {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
             <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" aria-hidden />
           </button>
           <p className="text-body-sm text-text-secondary">
@@ -335,7 +339,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
             onClick={onConfigure}
             className="group inline-flex min-h-11 items-center gap-2 self-start text-heading-h3 text-text-main underline underline-offset-8 decoration-1 hover:decoration-2"
           >
-            Obre el configurador
+            {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
             <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" aria-hidden />
           </button>
           <p className="text-body-sm text-text-secondary">
@@ -357,7 +361,15 @@ export default function LandingSpokeView() {
   // Configurador full-screen (cortina). Mantenim el producte seleccionat
   // en tancar perquè l'animació de sortida no es talli. Aquí és sempre "landing".
   const [configOpen, setConfigOpen] = useState(false);
-  const openConfigurator = () => setConfigOpen(true);
+  const contact = useContactModal();
+  const openConfigurator = () => {
+    // Configurador tancat per al llançament: el CTA obre el contacte.
+    if (!CONFIGURATOR_ENABLED) {
+      contact.open();
+      return;
+    }
+    setConfigOpen(true);
+  };
 
   return (
     <>
@@ -379,7 +391,7 @@ export default function LandingSpokeView() {
         }
         price={formatPrice(PRODUCTS.find((p) => p.id === "landing")!.price)}
         scopeNote="Projecte complet · o per fases (UX · UI · Dev)"
-        ctaLabel="Configura la teva landing"
+        ctaLabel={CONFIGURATOR_ENABLED ? "Configura la teva landing" : "Demana pressupost"}
         onCta={openConfigurator}
       />
       <IncludesSection />
@@ -391,11 +403,13 @@ export default function LandingSpokeView() {
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} />
 
-      <ConfiguratorModal
-        isOpen={configOpen}
-        onClose={() => setConfigOpen(false)}
-        productId="landing"
-      />
+      {CONFIGURATOR_ENABLED && (
+          <ConfiguratorModal
+            isOpen={configOpen}
+            onClose={() => setConfigOpen(false)}
+            productId="landing"
+          />
+        )}
     </>
   );
 }

@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import CollabConfiguratorModal from "./CollabConfiguratorModal";
+import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import BridgeDoor from "@/components/services/BridgeDoor";
 import {
   COLLAB_RATES,
@@ -51,7 +52,7 @@ function ValueSection() {
           COL·LABORACIÓ AMB AGÈNCIES I ESTUDIS
         </span>
         <h2 className="mt-6 max-w-4xl text-display-h3 text-text-main">
-          Un perfil senior que dissenya i entén el codi, integrat al teu equip en 48 hores.
+          Un perfil sènior que dissenya i entén el codi, integrat al teu equip en 48 hores.
         </h2>
         <p className="mt-8 max-w-2xl text-body-md text-text-secondary">
           Disseny UX/UI de producte per a equips que necessiten múscul sènior sense passar per una
@@ -160,24 +161,43 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-              <Button
-                variant="solid"
-                size="xl"
-                onClick={onConfigure}
-                iconRight={<ArrowRight aria-hidden />}
-                className="self-start"
-              >
-                Configura la col·laboració
-              </Button>
-              <a
-                href={COLLAB_CALENDAR_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-body-md text-text-secondary underline underline-offset-4 hover:text-text-main"
-              >
-                O reserva una trucada
-                <span className="sr-only"> (s’obre en una pestanya nova)</span>
-              </a>
+              {CONFIGURATOR_ENABLED ? (
+                <>
+                  <Button
+                    variant="solid"
+                    size="xl"
+                    onClick={onConfigure}
+                    iconRight={<ArrowRight aria-hidden />}
+                    className="self-start"
+                  >
+                    Configura la col·laboració
+                  </Button>
+                  <a
+                    href={COLLAB_CALENDAR_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-body-md text-text-secondary underline underline-offset-4 hover:text-text-main"
+                  >
+                    O reserva una trucada
+                    <span className="sr-only"> (s’obre en una pestanya nova)</span>
+                  </a>
+                </>
+              ) : (
+                // Configurador de tarifa tancat: la trucada passa a ser l'acció
+                // principal i no es repeteix com a enllaç secundari.
+                <Button
+                  as="a"
+                  href={COLLAB_CALENDAR_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="solid"
+                  size="xl"
+                  iconRight={<ArrowRight aria-hidden />}
+                  className="self-start"
+                >
+                  Reserva una trucada
+                </Button>
+              )}
             </div>
             <p className="text-body-sm text-text-secondary">
               O escriu-me directament:{" "}
@@ -209,7 +229,9 @@ export default function CollabView() {
       <IntegrationSection />
       <AvailabilitySection />
       <CollabCtaSection onConfigure={() => setConfigOpen(true)} />
-      <CollabConfiguratorModal isOpen={configOpen} onClose={() => setConfigOpen(false)} />
+      {CONFIGURATOR_ENABLED && (
+        <CollabConfiguratorModal isOpen={configOpen} onClose={() => setConfigOpen(false)} />
+      )}
     </>
   );
 }

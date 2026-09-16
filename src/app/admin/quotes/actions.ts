@@ -146,6 +146,15 @@ export async function sendProposal(id: string) {
   if (error || !quote) throw new Error(error?.message || 'Quote no trobada.')
   if (!quote.email) throw new Error('Aquesta quote no té email: no hi ha on enviar-la.')
 
+  // Un enllaç a localhost dins un correu al client és un correu cremat: val més
+  // aturar-ho aquí que enviar-lo i haver-ho d'explicar després.
+  const site = process.env.NEXT_PUBLIC_SITE_URL || ''
+  if (!site || site.includes('localhost') || site.includes('127.0.0.1')) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL apunta a localhost: l'enllaç de la proposta no funcionaria. Posa-hi el domini abans d'enviar-la.",
+    )
+  }
+
   const now = new Date()
   const sentAt = quote.sent_at ?? now.toISOString()
   const expiresAt =

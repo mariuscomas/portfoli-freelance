@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
+import { CONFIGURATOR_ENABLED } from "@/lib/flags";
+import { useContactModal } from "@/context/ContactModalContext";
 import TransitionLink from "@/components/common/TransitionLink";
 import { DisciplineChips } from "@/components/services/configuratorShared";
 import {
@@ -193,7 +195,7 @@ function TriadaSection({
       </Reveal>
 
       {/* A mida: banda a sang amb filet inferior discontinu — el que el
-          configurador no cobreix es pressuposta per trucada. */}
+          catàleg no cobreix es pressuposta per trucada. */}
       <Reveal>
         <div
           className={`${SECTION_PX} flex flex-col gap-8 border-b border-dashed border-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
@@ -202,7 +204,8 @@ function TriadaSection({
             <span className="text-caption uppercase text-text-secondary">APPS, BRANDING I MÉS</span>
             <h3 className="text-heading-h2 text-text-main">Una altra cosa al cap?</h3>
             <p className="text-body-sm text-text-secondary">
-              El que no encaixa al configurador el pressupostem junts després d’una trucada.
+              El que no encaixa en aquests punts de partida el pressupostem junts després d’una
+              trucada.
             </p>
           </div>
           <a
@@ -298,12 +301,16 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
             <p className="text-eyebrow text-text-secondary">05 — Comencem</p>
 
             <h2 className="text-display-h3 text-text-main">
-              No saps per on començar? Configura el teu producte en dos minuts.
+              {CONFIGURATOR_ENABLED
+                ? "No saps per on començar? Configura el teu projecte en dos minuts."
+                : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
             </h2>
 
             <div className="flex flex-col gap-8">
               <button type="button" onClick={() => onConfigure("web")} className="group self-start">
-                <LinkArrow className="text-eyebrow">Obre el configurador</LinkArrow>
+                <LinkArrow className="text-eyebrow">
+                  {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
+                </LinkArrow>
               </button>
               <p className="text-body-sm text-text-secondary">
                 Si ho prefereixes,{" "}
@@ -354,7 +361,14 @@ export default function ProductsView() {
   // en tancar perquè l'animació de sortida no es talli.
   const [configProduct, setConfigProduct] = useState<ProductId | null>(null);
   const [configOpen, setConfigOpen] = useState(false);
+  const contact = useContactModal();
   const openConfigurator = (id: ProductId) => {
+    // Amb el configurador tancat, el mateix CTA porta al contacte: el visitant
+    // explica el projecte i el pressupost surt de la revisió.
+    if (!CONFIGURATOR_ENABLED) {
+      contact.open();
+      return;
+    }
     setConfigProduct(id);
     setConfigOpen(true);
   };
@@ -366,11 +380,13 @@ export default function ProductsView() {
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} />
 
-      <ConfiguratorModal
-        isOpen={configOpen}
-        onClose={() => setConfigOpen(false)}
-        productId={configProduct}
-      />
+      {CONFIGURATOR_ENABLED && (
+        <ConfiguratorModal
+          isOpen={configOpen}
+          onClose={() => setConfigOpen(false)}
+          productId={configProduct}
+        />
+      )}
     </>
   );
 }

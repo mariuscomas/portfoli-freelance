@@ -1,12 +1,12 @@
 import SharedPageHero from "@/components/common/SharedPageHero";
-import { ServicesHeroBottom } from "@/components/services/ServicesViews";
+import { ServicesHeroBottom, ServicesHeroCta } from "@/components/services/ServicesViews";
 import CollabView from "@/components/services/CollabView";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Col·laboració",
   description:
-    "Disseny UX/UI de producte per a agències i estudis. Un perfil senior que entén el codi, integrat al teu equip en 48 hores, amb tarifes clares per durada.",
+    "Disseny UX/UI de producte per a agències i estudis. Un perfil sènior que entén el codi, integrat al teu equip en 48 hores, amb tarifes clares per durada.",
   path: "/colaboracio",
 });
 
@@ -20,13 +20,16 @@ export default function CollaboracioPage() {
     <main className="flex min-h-[100dvh] flex-col w-full overflow-x-clip bg-surface-base">
       <SharedPageHero
         title="Col·laboració"
-        description="Disseny UX/UI de producte per a agències i estudis. Un perfil senior que entén el codi, s'integra al teu equip en 48 hores i treballa amb les teves eines — sense passar per una contractació."
-        bottomContent={
-          <ServicesHeroBottom
-            active="colaboracio"
-            scrollHref="#colaboracio"
-            scrollLabel="Consulta tarifes i disponibilitat"
+        description="Disseny UX/UI de producte per a agències i estudis. Un perfil sènior que entén el codi, s'integra al teu equip en 48 hores i treballa amb les teves eines — sense passar per una contractació."
+        afterDescription={
+          <ServicesHeroCta
+            href="#colaboracio"
+            label="Consulta tarifes i disponibilitat"
+            shortLabel="Consulta tarifes"
           />
+        }
+        bottomContent={
+          <ServicesHeroBottom crossHref="/serveis" crossLabel="Projectes amb preu tancat" />
         }
       />
 
