@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
 import SpokeHero from "@/components/services/SpokeHero";
+import Button from "@/components/ui/Button";
 import {
   AUDIT_FOCUSES,
   AUDIT_SIZES,
@@ -198,7 +198,7 @@ function SizesSection() {
             >
               <span className="flex-1 text-body-lg text-text-main">{s.label}</span>
               <span className="text-caption uppercase text-text-secondary md:w-56">{s.range}</span>
-              <span className="text-body-lg text-text-secondary md:w-44 md:text-right">
+              <span className="text-body-lg text-text-main md:w-44 md:text-right">
                 {s.increment === 0 ? "inclosa" : `+${formatPrice(s.increment)}`}
               </span>
             </li>
@@ -225,7 +225,7 @@ function ExtrasSection() {
               className="flex flex-col gap-2 border-b border-border-subtle py-6 md:flex-row md:items-center md:gap-8"
             >
               <span className="flex-1 text-body-lg text-text-main">{extra.label}</span>
-              <span className="text-body-lg text-text-secondary md:w-44 md:text-right">
+              <span className="text-body-lg text-text-main md:w-44 md:text-right">
                 {`+${formatPrice(extra.price)}`}
               </span>
             </li>
@@ -252,14 +252,14 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
             : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
         </h2>
         <div className="mt-10 flex flex-col gap-4">
-          <button
-            type="button"
+          <Button
+            variant="solid"
+            size="lg"
+            className="self-start"
             onClick={onConfigure}
-            className="group inline-flex min-h-11 items-center gap-2 self-start text-heading-h3 text-text-main underline underline-offset-8 decoration-1 hover:decoration-2"
           >
-            {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
-            <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" aria-hidden />
-          </button>
+            {CONFIGURATOR_ENABLED ? "Demana la teva auditoria" : "Demana pressupost"}
+          </Button>
           <p className="text-body-sm text-text-secondary">
             O{" "}
             <a
@@ -335,14 +335,14 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
       <Reveal>
         <h2 className="max-w-3xl text-display-h3 text-text-main">Comencem amb una auditoria?</h2>
         <div className="mt-10 flex flex-col gap-4">
-          <button
-            type="button"
+          <Button
+            variant="solid"
+            size="lg"
+            className="self-start"
             onClick={onConfigure}
-            className="group inline-flex min-h-11 items-center gap-2 self-start text-heading-h3 text-text-main underline underline-offset-8 decoration-1 hover:decoration-2"
           >
-            {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
-            <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" aria-hidden />
-          </button>
+            {CONFIGURATOR_ENABLED ? "Demana la teva auditoria" : "Demana pressupost"}
+          </Button>
           <p className="text-body-sm text-text-secondary">
             O escriu-me directament:{" "}
             <a

@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
 import SpokeHero from "@/components/services/SpokeHero";
+import Button from "@/components/ui/Button";
 import {
   calcConfiguration,
   EXTRAS,
@@ -191,7 +191,7 @@ function ExtrasSection() {
               <span className="text-caption uppercase text-text-secondary md:w-44">
                 {appliesLabel(extra.appliesTo)}
               </span>
-              <span className="text-body-lg text-text-secondary md:w-44 md:text-right">
+              <span className="text-body-lg text-text-main md:w-44 md:text-right">
                 {extra.price === null
                   ? "a pressupostar"
                   : `+${extra.price} €${extra.unit ? `/${extra.unit}` : ""}`}
@@ -220,14 +220,14 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
             : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
         </h2>
         <div className="mt-10 flex flex-col gap-4">
-          <button
-            type="button"
+          <Button
+            variant="solid"
+            size="lg"
+            className="self-start"
             onClick={onConfigure}
-            className="group inline-flex min-h-11 items-center gap-2 self-start text-heading-h3 text-text-main underline underline-offset-8 decoration-1 hover:decoration-2"
           >
-            {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
-            <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" aria-hidden />
-          </button>
+            {CONFIGURATOR_ENABLED ? "Configura la teva landing" : "Demana pressupost"}
+          </Button>
           <p className="text-body-sm text-text-secondary">
             O{" "}
             <a
@@ -318,7 +318,7 @@ function RecurrentsSection() {
               className="flex items-center justify-between gap-8 border-b border-border-subtle py-6"
             >
               <span className="text-body-lg text-text-main">{r.label}</span>
-              <span className="text-body-lg text-text-secondary">{r.price}</span>
+              <span className="text-body-lg text-text-main">{r.price}</span>
             </li>
           ))}
         </ul>
@@ -335,14 +335,14 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
       <Reveal>
         <h2 className="max-w-3xl text-display-h3 text-text-main">Comencem la teva landing?</h2>
         <div className="mt-10 flex flex-col gap-4">
-          <button
-            type="button"
+          <Button
+            variant="solid"
+            size="lg"
+            className="self-start"
             onClick={onConfigure}
-            className="group inline-flex min-h-11 items-center gap-2 self-start text-heading-h3 text-text-main underline underline-offset-8 decoration-1 hover:decoration-2"
           >
-            {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
-            <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" aria-hidden />
-          </button>
+            {CONFIGURATOR_ENABLED ? "Configura la teva landing" : "Demana pressupost"}
+          </Button>
           <p className="text-body-sm text-text-secondary">
             O escriu-me directament:{" "}
             <a

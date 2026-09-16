@@ -44,25 +44,15 @@ function Reveal({ children, className }: { children: React.ReactNode; className?
 
 /**
  * Capçalera de secció de /serveis (Figma: "Serveis - Header").
- * Dues columnes alineades a baix: eyebrow + títol a l'esquerra, slot lliure
- * a la dreta (els chips d'abast només els porta "Punts de partida").
+ * Eyebrow + títol. El slot lateral dret es va retirar el 16set26 quan els
+ * chips d'abast van baixar a la seva pròpia fila sobre la tríada; al Figma
+ * segueix existint al mestre (11615:10828) però amagat com a override.
  */
-function SectionHeader({
-  caption,
-  title,
-  aside,
-}: {
-  caption: string;
-  title: string;
-  aside?: React.ReactNode;
-}) {
+function SectionHeader({ caption, title }: { caption: string; title: string }) {
   return (
-    <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:gap-6">
-      <div className="flex flex-1 flex-col gap-6">
-        <span className="text-caption uppercase text-text-secondary">{caption}</span>
-        <h2 className="text-heading-h1 text-text-main">{title}</h2>
-      </div>
-      {aside && <div className="lg:shrink-0">{aside}</div>}
+    <div className="flex flex-col gap-6">
+      <span className="text-caption uppercase text-text-secondary">{caption}</span>
+      <h2 className="text-heading-h1 text-text-main">{title}</h2>
     </div>
   );
 }
@@ -148,10 +138,14 @@ function ProductCard({
 /**
  * Punts de partida — tríada Web · Landing · Auditoria.
  *
- * Els chips de la capçalera ("Què necessites?") són el selector d'abast: en
- * treure una disciplina el preu de cada card baixa en viu. Tanca l'expectativa
- * d'interacció que el toggle antic només insinuava (docs/analisi-estrategica-
- * serveis-2026-07-16.md §3.2).
+ * Els chips són el selector d'abast: en treure una disciplina, el preu de les
+ * TRES cards baixa en viu (disciplines a web i landing, focus a l'auditoria).
+ *
+ * Viuen en una fila pròpia just sobre la tríada, no al racó superior dret del
+ * header: allà l'afordança deia "filtre" quan el comportament és "configura el
+ * preu", i el control quedava a uns 600 px del número que canvia. Figma:
+ * frame "Row — Abast" (11942:11376) del Desktop 1728.
+ * Veure docs/punts-de-partida-chips-abast-2026-09-16.md §4.
  */
 function TriadaSection({
   products,
@@ -165,21 +159,20 @@ function TriadaSection({
   return (
     <section id="productes" className="scroll-mt-24 border-t border-border-subtle bg-surface-base">
       <Reveal className={`${SECTION_PX} py-16`}>
-        <SectionHeader
-          caption="SERVEIS · PREUS DES DE"
-          title="Punts de partida"
-          aside={
-            <div className="flex flex-col gap-6 lg:items-end">
-              <span className="text-caption uppercase text-text-secondary">Què necessites?</span>
-              <DisciplineChips
-                disciplines={disciplines}
-                onToggle={onToggle}
-                label="Abast del projecte"
-                className="lg:justify-end"
-              />
-            </div>
-          }
-        />
+        <SectionHeader caption="SERVEIS · PREUS DES DE" title="Punts de partida" />
+      </Reveal>
+
+      {/* Fila d'abast — alineada amb el títol, 24 px sobre la línia de les
+          cards. A mòbil el caption va sobre els chips i aquests fan wrap. */}
+      <Reveal className={`${SECTION_PX} pb-6`}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <span className="text-caption uppercase text-text-secondary">Abast del projecte</span>
+          <DisciplineChips
+            disciplines={disciplines}
+            onToggle={onToggle}
+            label="Abast del projecte"
+          />
+        </div>
       </Reveal>
 
       {/* Columnes a sang separades per filets (Figma), no cards flotants */}

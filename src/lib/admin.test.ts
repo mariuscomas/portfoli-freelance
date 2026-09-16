@@ -4,10 +4,11 @@
  *   node --experimental-strip-types --test src/lib/admin.test.ts
  *
  * Aquesta funció ha de coincidir amb `public.is_admin()` de Postgres, que és
- * qui aplica les polítiques RLS. Comprovat el 16set26: la funció SQL fa
- * `lower(auth.jwt() ->> 'email') in (...)` amb aquestes mateixes dues
- * adreces. Si algú canvia una banda sense l'altra, l'admin i la base de dades
- * deixen de dir el mateix; aquests tests almenys fixen el comportament d'aquí.
+ * qui aplica les polítiques RLS. Comprovat el 16set26, després de treure el
+ * compte de transició: la funció SQL fa
+ * `lower(auth.jwt() ->> 'email') = 'hello@mariusfreelance.com'`. Si algú canvia
+ * una banda sense l'altra, l'admin i la base de dades deixen de dir el mateix;
+ * aquests tests almenys fixen el comportament d'aquí.
  */
 import { test } from "node:test"
 import assert from "node:assert/strict"
@@ -22,6 +23,12 @@ test("els comptes de la llista entren", () => {
 test("les majúscules no deixen ningú fora", () => {
   assert.equal(isAdminEmail("HELLO@MARIUSFREELANCE.COM"), true)
   assert.equal(isAdminEmail("Hello@Mariusfreelance.com"), true)
+})
+
+test("el compte de transició ja no hi és", () => {
+  // Es va treure el 16set26 (migració 20260916190000_admin_single_account.sql).
+  assert.equal(isAdminEmail("mariuscr23@gmail.com"), false)
+  assert.equal(ADMIN_EMAILS.length, 1)
 })
 
 test("qualsevol altre compte queda fora", () => {

@@ -10,12 +10,13 @@
  * l'organització mariusfreelance.com, així que cap compte de fora pot ni
  * començar el flux. Aquesta llista és la segona barrera, no la primera.
  *
- * mariuscr23@gmail.com hi és de transició, mentre quedin sessions obertes del
- * magic link; es pot treure quan el login amb Google estigui rodat.
+ * Un sol compte des del 16set26: mariuscr23@gmail.com hi era de transició
+ * mentre quedessin sessions obertes del magic link, i es va treure en
+ * comprovar que hello@ ja entrava amb Google i que el Gmail no entrava des del
+ * 19 de juny (migració 20260916190000_admin_single_account.sql).
  */
 export const ADMIN_EMAILS = [
   'hello@mariusfreelance.com',
-  'mariuscr23@gmail.com',
 ] as const
 
 export function isAdminEmail(email: string | null | undefined): boolean {

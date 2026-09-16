@@ -88,7 +88,7 @@ test("De principi a fi · 1 pàgina + Motion = 3.000 €", () => {
   assert.equal(c.total, 3000);
   assert.deepEqual(c.extras, [
     { id: "pagina", label: "Pàgines extra", amount: 200 },
-    { id: "motion", label: "Motion i interacció premium", amount: 400 },
+    { id: "motion", label: "Motion i microinteraccions avançades", amount: 400 },
   ]);
 });
 
@@ -102,7 +102,7 @@ test("Desenvolupament · 1 pàgina + Motion = 1.940 €", () => {
   assert.equal(c.total, 1940);
   assert.deepEqual(c.extras, [
     { id: "pagina", label: "Pàgines extra", amount: 100 },
-    { id: "motion", label: "Motion i interacció premium", amount: 400 },
+    { id: "motion", label: "Motion i microinteraccions avançades", amount: 400 },
   ]);
 });
 

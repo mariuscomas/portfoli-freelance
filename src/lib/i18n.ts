@@ -26,17 +26,54 @@ export function isTranslatable(v: unknown): v is Translatable {
   return keys.every((k) => LANG_KEYS.has(k))
 }
 
+/** Ordre de preferència quan l'idioma demanat no hi és. */
+const FALLBACK_ORDER: readonly string[] = ['ca', 'en', 'es']
+
 /**
  * Extreu un string d'un camp jsonb translatable.
- * Prioritza l'idioma demanat → CA → primera disponible → string buit.
+ * Prioritza l'idioma demanat → CA → EN → ES → qualsevol altre amb text.
+ *
+ * Dues coses que abans feien desaparèixer text i ara no (16set26):
+ *
+ *  1. La cadena buida no compta com a traducció. Amb `??`, un camp desat com
+ *     `{ca: '', en: 'Hello'}` (que és el que deixa l'admin quan es buida el
+ *     català) retornava '' i amagava l'anglès que sí que hi era.
+ *  2. La caiguda no es limita a ca/en/es. `isTranslatable` accepta set
+ *     idiomes, així que `{fr: 'Bonjour'}` és un camp vàlid; abans retornava ''
+ *     perquè cap de les tres claus conegudes hi era.
+ *
+ * Retornar buit segueix sent possible, però només quan de debò no hi ha text
+ * enlloc.
  */
 export function t(field: unknown, locale: Locale = 'ca'): string {
   if (typeof field === 'string') return field
   if (field == null) return ''
-  if (isTranslatable(field)) {
-    return field[locale] ?? field.ca ?? field.en ?? field.es ?? ''
+  if (!isTranslatable(field)) {
+    // Si no és translatable ni string, no és un text vàlid
+    return ''
   }
-  // Si no és translatable ni string, no és un text vàlid
+
+  const entries = field as Record<string, unknown>
+  const pick = (key: string): string | null => {
+    const v = entries[key]
+    return typeof v === 'string' && v.trim().length > 0 ? v : null
+  }
+
+  const preferred = pick(locale)
+  if (preferred) return preferred
+
+  for (const key of FALLBACK_ORDER) {
+    const v = pick(key)
+    if (v) return v
+  }
+
+  // Últim recurs: qualsevol idioma amb text. Val més un títol en francès que
+  // una targeta sense títol.
+  for (const key of Object.keys(entries)) {
+    const v = pick(key)
+    if (v) return v
+  }
+
   return ''
 }
 

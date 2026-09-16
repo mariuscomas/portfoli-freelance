@@ -263,8 +263,8 @@ export interface ConfigExtraDef {
 export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA" },
   idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA" },
-  motion: { id: "motion", label: "Motion i interacció premium", control: "toggle", basis: "flat", price: 400 },
-  cms: { id: "cms", label: "CMS bàsic", control: "toggle", basis: "flat", price: 500 },
+  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400 },
+  cms: { id: "cms", label: "Panell d'edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500 },
   redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80 },
 };
 
@@ -582,8 +582,8 @@ export interface Extra {
 export const EXTRAS: Extra[] = [
   { id: "pagina", label: "Pàgina extra", price: 200, unit: "pàgina", appliesTo: ["web"] },
   { id: "idioma", label: "Idioma extra (traduccions del client)", price: 150, unit: "idioma", appliesTo: ["web", "landing"] },
-  { id: "motion", label: "Motion i interacció premium", price: 400, appliesTo: ["web", "landing"] },
-  { id: "cms", label: "CMS bàsic", price: 500, appliesTo: ["web"] },
+  { id: "motion", label: "Motion i microinteraccions avançades", price: 400, appliesTo: ["web", "landing"] },
+  { id: "cms", label: "Panell d'edició de continguts (CMS)", price: 500, appliesTo: ["web"] },
   { id: "redaccio", label: "Redacció de textos", price: 80, unit: "pàgina", appliesTo: ["web", "landing"] },
   { id: "illustracio", label: "Il·lustració i iconografia a mida", price: null, appliesTo: ["web", "landing"] },
 ];
@@ -646,8 +646,13 @@ export const PRODUCTS: Product[] = [
     // es vol revertir; la font del càlcul és AUDIT_BASE_BY_COUNT (calcAudit).
     priceLabel: "DES DE",
     price: AUDIT_BASE_BY_COUNT[1],
+    // Versió combinada aprovada el 16set26: manté la terminologia d'ofici
+    // ("revisió heurística") i recupera l'argument del descompte, que és el que
+    // elimina el risc de comprar-la. Fora "Auditoria completa i accionable":
+    // autoelogi, contra la veu de marca. Aquest text és el FALLBACK; el que es
+    // publica viu a la taula `services`.
     description:
-      "Auditoria completa i accionable, dimensionada segons la mida del producte: informe prioritzat, sessió de retorn de 90 min i roadmap. I si en 3 mesos fem el projecte, te la descomptes íntegra.",
+      "Revisió heurística de fins a 2 fluxos o 10 pantalles: informe prioritzat, sessió de retorn de 90 min i roadmap. Si en 3 mesos fem el projecte, te la descomptes íntegra.",
     cta: "Mira el detall",
     includes: [
       "Revisió heurística experta: UI, UX i conversió",
