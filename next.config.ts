@@ -24,9 +24,12 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 768, 1024, 1280, 1536, 1920, 2560, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Qualities permesos per <Image quality={X}>. Next 16 obliga a llistar-los
-    // explícitament; 75 és el default i 100 el fem servir per a imatges
-    // crítiques del work detail (work_detail_image_09.png, etc).
-    qualities: [75, 100],
+    // explícitament. 75 és el default; 90 és el que fa servir el media del
+    // work detail. ⚑ El 100 es va retirar el 15set26 després de mesurar-ho
+    // sobre un export real: a 3360 px, q100 pesa 1303 KB i q90 460 KB, per
+    // només 3,5 dB de PSNR de diferència (53,8 vs 50,3) — invisible, i 2,8×
+    // el pes. Si algun dia cal tornar-hi, afegeix el graó aquí primer.
+    qualities: [75, 90],
     remotePatterns: [
       // Supabase Storage (per quan afegim upload d'imatges al dashboard).
       // El hostname es resol dinàmicament de NEXT_PUBLIC_SUPABASE_URL.

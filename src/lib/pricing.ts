@@ -519,7 +519,7 @@ export const PRODUCTS: Product[] = [
     configNote: "Projecte complet · o per fases (UX · UI · Dev)",
     description:
       "Web corporativa a mida, de 5 pàgines a tot el que necessitis: disseny, desenvolupament i publicació.",
-    cta: "Configura-la",
+    cta: "Mira el detall",
     includes: [
       "5 pàgines: inici, qui som, serveis, contacte i legals",
       "Disseny UX/UI i desenvolupament a mida, responsive (Mobile First)",
@@ -536,7 +536,7 @@ export const PRODUCTS: Product[] = [
     price: BASE_LANDING,
     description:
       "Una sola pàgina orientada a convertir: disseny i desenvolupament a mida, formulari i publicació.",
-    cta: "Configura-la",
+    cta: "Mira el detall",
     includes: [
       "1 pàgina llarga orientada a convertir",
       "Disseny i desenvolupament a mida, responsive",
@@ -556,7 +556,7 @@ export const PRODUCTS: Product[] = [
     price: AUDIT_BASE_BY_COUNT[1],
     description:
       "Auditoria completa i accionable: fins a 2 fluxos o 10 pantalles, informe prioritzat, sessió de retorn de 90 min i roadmap. I si en 3 mesos fem el projecte, te la descomptes íntegra.",
-    cta: "Demana-la",
+    cta: "Mira el detall",
     includes: [
       "Revisió heurística experta: UI, UX i conversió",
       "Fins a 2 fluxos o 10 pantalles",

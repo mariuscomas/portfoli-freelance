@@ -5,10 +5,19 @@ import { useRouter } from 'next/navigation'
 import { MagnifyingGlass, CaretDown, Trash } from '@phosphor-icons/react'
 import type { Quote } from '@/types/database'
 import {
+  QUOTE_STATUSES,
+  QUOTE_STATUS_META,
+  QUOTE_REASONS_BY_STATUS,
+  QUOTE_OUTCOME_REASON_LABELS,
+  type QuoteStatus,
+  type QuoteOutcomeReason,
+} from '@/types/database'
+import {
   updateQuoteStatus,
   deleteQuote,
   linkQuoteToClient,
   createClientFromQuote,
+  sendProposal,
 } from '@/app/admin/quotes/actions'
 
 export interface ClientOption {
@@ -24,15 +33,22 @@ export interface ClientOption {
  * Server Actions i refresquen la ruta.
  */
 
-const STATUSES = ['nou', 'revisat', 'proposta', 'guanyat', 'perdut'] as const
-type Status = (typeof STATUSES)[number]
-const STATUS_LABEL: Record<Status, string> = {
-  nou: 'Nou',
-  revisat: 'Revisat',
-  proposta: 'Proposta',
-  guanyat: 'Guanyat',
-  perdut: 'Perdut',
-}
+const STATUSES = QUOTE_STATUSES
+type Status = QuoteStatus
+
+/** Etiqueta d'un estat que ve de la BD (string) sense confiar-hi a cegues. */
+const labelOf = (status: string) =>
+  QUOTE_STATUS_META[status as QuoteStatus]?.label ?? status
+
+/** Una proposta viva que ja ha passat la validesa. L'estat 'caducada' es posa
+ *  a mà: això només és l'avís visual perquè no passi desapercebut. */
+const isOverdue = (q: Quote) =>
+  !!q.expires_at &&
+  new Date(q.expires_at) < new Date() &&
+  ['proposta', 'vista', 'negociacio'].includes(q.status)
+
+const daysLeft = (iso: string) =>
+  Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000)
 
 const PRODUCT_LABEL: Record<string, string> = {
   web: 'Web',
@@ -84,9 +100,27 @@ export default function QuotesList({
     })
   }, [quotes, activeStatus, query])
 
-  const setStatus = (id: string, status: string) =>
+  /** Estat que espera motiu abans d'aplicar-se (declinada / perduda). */
+  const [askReason, setAskReason] = useState<{ id: string; status: Status } | null>(null)
+
+  const setStatus = (id: string, status: string) => {
+    // declinada i perduda no s'apliquen fins que hi ha motiu: és el que
+    // converteix un lead perdut en informació aprofitable.
+    if (QUOTE_REASONS_BY_STATUS[status]) {
+      setAskReason({ id, status: status as Status })
+      return
+    }
+    setAskReason(null)
     startTransition(async () => {
       await updateQuoteStatus(id, status)
+      router.refresh()
+    })
+  }
+
+  const confirmReason = (id: string, status: Status, reason: QuoteOutcomeReason) =>
+    startTransition(async () => {
+      await updateQuoteStatus(id, status, reason)
+      setAskReason(null)
       router.refresh()
     })
 
@@ -103,6 +137,16 @@ export default function QuotesList({
       await linkQuoteToClient(quoteId, clientId || null)
       router.refresh()
     })
+
+  const send = (q: Quote) => {
+    if (!q.email) { alert('Aquesta configuració no porta email: no hi ha on enviar-la.'); return }
+    const when = q.sent_at ? 'Ja s\'ha enviat abans. Tornar a enviar el mateix enllaç?' : ''
+    if (!confirm(`Enviar la proposta a ${q.email}?\n${when}`)) return
+    startTransition(async () => {
+      await sendProposal(q.id)
+      router.refresh()
+    })
+  }
 
   const createClient = (quoteId: string) =>
     startTransition(async () => {
@@ -128,7 +172,7 @@ export default function QuotesList({
                     : 'border-surface-border text-text-secondary hover:border-text-main'
                 }`}
               >
-                {s === 'all' ? 'Tots' : STATUS_LABEL[s]}
+                {s === 'all' ? 'Tots' : QUOTE_STATUS_META[s].label}
                 <span className="tabular-nums opacity-70">{counts[s] ?? 0}</span>
               </button>
             )
@@ -182,9 +226,37 @@ export default function QuotesList({
                   </button>
 
                   <span className="text-body-md text-text-main tabular-nums">{amountOf(q)}</span>
-                  <span className="hidden text-body-sm text-text-secondary tabular-nums md:block">
-                    {fmtDate(q.created_at)}
+                  <span className="hidden flex-col items-end gap-1 md:flex">
+                    <span className="text-body-sm text-text-secondary tabular-nums">
+                      {fmtDate(q.created_at)}
+                    </span>
+                    {q.outcome_reason && (
+                      <span className="text-caption uppercase text-text-secondary">
+                        {QUOTE_OUTCOME_REASON_LABELS[
+                          q.outcome_reason as QuoteOutcomeReason
+                        ] ?? q.outcome_reason}
+                      </span>
+                    )}
+                    {isOverdue(q) ? (
+                      <span className="text-caption uppercase text-error">Validesa vençuda</span>
+                    ) : (
+                      q.expires_at && (
+                        <span className="text-caption uppercase text-text-secondary tabular-nums">
+                          Caduca en {daysLeft(q.expires_at)} d
+                        </span>
+                      )
+                    )}
                   </span>
+
+                  <button
+                    type="button"
+                    onClick={() => send(q)}
+                    disabled={pending}
+                    className="rounded-full border border-surface-border px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
+                    title={q.sent_at ? 'Torna a enviar el mateix enllaç' : 'Envia la proposta i arrenca la validesa de 30 dies'}
+                  >
+                    {q.sent_at ? 'Reenvia' : 'Envia proposta'}
+                  </button>
 
                   <select
                     value={q.status}
@@ -195,7 +267,7 @@ export default function QuotesList({
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
-                        {STATUS_LABEL[s]}
+                        {QUOTE_STATUS_META[s].label}
                       </option>
                     ))}
                   </select>
@@ -211,8 +283,47 @@ export default function QuotesList({
                   </button>
                 </div>
 
+                {askReason?.id === q.id && (
+                  <div className="flex flex-wrap items-center gap-2 border-t border-surface-border bg-surface-base/60 px-4 py-3 md:px-6">
+                    <span className="text-body-sm text-text-secondary">
+                      Per què? ({labelOf(askReason.status).toLowerCase()})
+                    </span>
+                    {(QUOTE_REASONS_BY_STATUS[askReason.status] ?? []).map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        disabled={pending}
+                        onClick={() => confirmReason(q.id, askReason.status, r)}
+                        className="rounded-full border border-surface-border px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
+                      >
+                        {QUOTE_OUTCOME_REASON_LABELS[r]}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setAskReason(null)}
+                      className="ml-auto text-body-sm text-text-secondary underline underline-offset-4 hover:text-text-main"
+                    >
+                      Cancel·la
+                    </button>
+                  </div>
+                )}
+
                 {open && (
                   <div className="flex flex-col gap-4 border-t border-surface-border bg-surface-base/60 p-4 md:p-6">
+                    {q.sent_at && (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-label text-text-secondary">Enllaç del client</span>
+                        <a
+                          href={`/proposta/${q.token}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="break-all text-body-sm text-text-main underline underline-offset-4"
+                        >
+                          /proposta/{q.token}
+                        </a>
+                      </div>
+                    )}
                     {q.summary && (
                       <div className="flex flex-col gap-1">
                         <span className="text-label text-text-secondary">Resum</span>

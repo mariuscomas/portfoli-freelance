@@ -18,6 +18,9 @@ export default function WorkDetailLayout({ data }: Props) {
   const [view, setView] = useState<"visual" | "lectura">("visual");
   // El bloc de projecte següent amaga la barra fixa: té el seu propi gest.
   const endRef = useRef<HTMLDivElement>(null);
+  // Contenidor de contingut (just després del hero). En canviar de mode ens
+  // hi situem a dalt per començar a llegir amb el nou format.
+  const contentRef = useRef<HTMLDivElement>(null);
   const setHeaderContrast = useSetHeaderContrast();
   const { scrollY } = useScroll();
 
@@ -39,6 +42,23 @@ export default function WorkDetailLayout({ data }: Props) {
     // Quan deixem el case study, sempre retornem el Header a "auto"
     return () => setHeaderContrast("auto");
   }, [heroIsLight, setHeaderContrast]);
+
+  /*
+    Canvi de vista: el contingut es reordena sencer (visual ↔ lectura), així
+    que mantenir la posició d'scroll deixava el lector a mitja pàgina d'un
+    layout que ja no existia. Saltem a l'inici del contenidor de contingut
+    —no al hero, que ja s'ha vist— de manera instantània, sota el crossfade
+    de 0.4s de l'AnimatePresence, perquè no es vegi el recorregut.
+  */
+  const handleViewChange = (next: "visual" | "lectura") => {
+    if (next === view) return;
+    setView(next);
+    if (typeof window === "undefined") return;
+    const node = contentRef.current;
+    if (!node) return;
+    const top = node.getBoundingClientRect().top + window.scrollY;
+    if (window.scrollY > top) window.scrollTo({ top, behavior: "auto" });
+  };
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     // Llindar: ~85% del viewport. A aquest punt la secció següent (z-10,
@@ -118,68 +138,75 @@ export default function WorkDetailLayout({ data }: Props) {
 
       {/*
         relative z-10 + bg-surface-base: el contenidor de seccions ha de
-        lliscar per sobre del hero sticky (reveal Motto). Sense aquest
-        fons opac, veuriem el hero a través del contingut.
+        lliscar per sobre del hero sticky (reveal Motto). Sense aquest fons
+        opac veuríem el hero a través del contingut — i durant el canvi de
+        vista el fade-out el deixava veure igualment, perquè el fons anava al
+        mateix element que s'animava. Ara el fons i el z-10 viuen en aquest
+        contenidor, que NO s'anima; el motion.div de dins només porta el fade.
+        min-h-screen evita que el frame buit entre l'exit i l'entrada
+        (AnimatePresence mode="wait") col·lapsi l'alçada i ensenyi el hero.
       */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={view}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="w-full relative z-10 bg-surface-base"
-        >
-          {view === "visual" ? (
-            // pt-32 / md:pt-48 garanteix que la primera secció no es solapi amb el
-            // Header fixed (≈80-90px amb padding) ni que els elements sticky de
-            // WorkDetailSection apareguin per sota de MÀRIUS. al primer scroll.
-            <div className="flex flex-col w-full pt-32 md:pt-48">
-              {data.blocks.map((block, i) => {
-                // L'últim bloc de media no posa coixí inferior propi: el coixí
-                // que separa la darrera imatge de la conclusió és el pt de la
-                // secció de conclusió (284 px al Figma), i si tots dos hi fossin
-                // se sumarien.
-                const isLast = i === data.blocks.length - 1;
-                const dropTrailingPad = isLast && Boolean(data.conclusion);
-                return (
-                  <div key={block.id} className="w-full flex flex-col">
-                    <WorkDetailSection text={block.textSection} viewMode="visual" />
-                    {block.media && block.media.length > 0 && (
-                      <WorkMediaGrid
-                        media={block.media}
-                        viewMode="visual"
-                        layout={block.mediaLayout}
-                        flushBottom={dropTrailingPad}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 px-6 md:px-12 pt-32 md:pt-48">
-              {/* Left Column: All Media */}
-              <div className="w-4/12 flex flex-col gap-8 w-full">
-                {data.blocks.map(
-                  (block) =>
-                    block.media &&
-                    block.media.length > 0 && (
-                      <WorkMediaGrid key={`media-${block.id}`} media={block.media} viewMode="lectura" />
-                    )
-                )}
+      <div ref={contentRef} className="relative z-10 bg-surface-base min-h-screen">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={view}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="w-full"
+          >
+            {view === "visual" ? (
+              // pt-32 / md:pt-48 garanteix que la primera secció no es solapi amb el
+              // Header fixed (≈80-90px amb padding) ni que els elements sticky de
+              // WorkDetailSection apareguin per sota de MÀRIUS. al primer scroll.
+              <div className="flex flex-col w-full pt-32 md:pt-48">
+                {data.blocks.map((block, i) => {
+                  // L'últim bloc de media no posa coixí inferior propi: el coixí
+                  // que separa la darrera imatge de la conclusió és el pt de la
+                  // secció de conclusió (284 px al Figma), i si tots dos hi fossin
+                  // se sumarien.
+                  const isLast = i === data.blocks.length - 1;
+                  const dropTrailingPad = isLast && Boolean(data.conclusion);
+                  return (
+                    <div key={block.id} className="w-full flex flex-col">
+                      <WorkDetailSection text={block.textSection} viewMode="visual" />
+                      {block.media && block.media.length > 0 && (
+                        <WorkMediaGrid
+                          media={block.media}
+                          viewMode="visual"
+                          layout={block.mediaLayout}
+                          flushBottom={dropTrailingPad}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 px-6 md:px-12 pt-32 md:pt-48">
+                {/* Left Column: All Media */}
+                <div className="w-4/12 flex flex-col gap-8 w-full">
+                  {data.blocks.map(
+                    (block) =>
+                      block.media &&
+                      block.media.length > 0 && (
+                        <WorkMediaGrid key={`media-${block.id}`} media={block.media} viewMode="lectura" />
+                      )
+                  )}
+                </div>
 
-              {/* Right Column: All Text */}
-              <div className="w-8/12 flex flex-col gap-24 w-full h-max">
-                {data.blocks.map((block) => (
-                  <WorkDetailSection key={`text-${block.id}`} text={block.textSection} viewMode="lectura" />
-                ))}
+                {/* Right Column: All Text */}
+                <div className="w-8/12 flex flex-col gap-24 w-full h-max">
+                  {data.blocks.map((block) => (
+                    <WorkDetailSection key={`text-${block.id}`} text={block.textSection} viewMode="lectura" />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Conclusion Section — `conclusion` és HTML (RichTextEditor).
           Valors alineats amb el node Figma 10682-5666:
@@ -221,7 +248,7 @@ export default function WorkDetailLayout({ data }: Props) {
 
       {/* Barra fixa: selector de vista + retorn. Viu fora del hero perquè el
           hero és sticky i el seu contingut fa fade amb el parallax. */}
-      <WorkViewBar view={view} onChange={setView} stopRef={endRef} />
+      <WorkViewBar view={view} onChange={handleViewChange} stopRef={endRef} />
     </div>
   );
 }

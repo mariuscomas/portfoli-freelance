@@ -148,60 +148,107 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_events: {
+        Row: {
+          created_at: string
+          id: string
+          meta: Json
+          quote_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          meta?: Json
+          quote_id: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          meta?: Json
+          quote_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_events_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quotes: {
         Row: {
           client_id: string | null
           contact_submission_id: string | null
           created_at: string
           email: string | null
+          expires_at: string | null
           id: string
           name: string | null
+          outcome_reason: string | null
           pricing: Json
           pricing_version: string | null
           product: string
           rate_label: string | null
           selection: Json
+          sent_at: string | null
           source: string | null
           status: string
           summary: string | null
+          token: string
           total_eur: number | null
           updated_at: string
+          viewed_at: string | null
         }
         Insert: {
           client_id?: string | null
           contact_submission_id?: string | null
           created_at?: string
           email?: string | null
+          expires_at?: string | null
           id?: string
           name?: string | null
+          outcome_reason?: string | null
           pricing?: Json
           pricing_version?: string | null
           product: string
           rate_label?: string | null
           selection?: Json
+          sent_at?: string | null
           source?: string | null
           status?: string
           summary?: string | null
+          token?: string
           total_eur?: number | null
           updated_at?: string
+          viewed_at?: string | null
         }
         Update: {
           client_id?: string | null
           contact_submission_id?: string | null
           created_at?: string
           email?: string | null
+          expires_at?: string | null
           id?: string
           name?: string | null
+          outcome_reason?: string | null
           pricing?: Json
           pricing_version?: string | null
           product?: string
           rate_label?: string | null
           selection?: Json
+          sent_at?: string | null
           source?: string | null
           status?: string
           summary?: string | null
+          token?: string
           total_eur?: number | null
           updated_at?: string
+          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -611,6 +658,126 @@ export type ContactSubmissionInsert = TablesInsert<"contact_submissions">
 export type QuoteInsert = TablesInsert<"quotes">
 
 export type Quote = Tables<"quotes">
+
+export type QuoteEvent = Tables<"quote_events">
+export type QuoteEventInsert = TablesInsert<"quote_events">
+
+/* ------------------------------------------------------------------ */
+/*  Quote lifecycle — pipeline comercial (docs/estrategia-negoci.md §6)  */
+/*                                                                      */
+/*  Si s'hi afegeix un estat o un motiu, cal tocar TRES llocs:           */
+/*  (1) el CHECK de la BD, (2) aquestes constants, (3) el META de sota.  */
+/* ------------------------------------------------------------------ */
+
+export const QUOTE_STATUSES = [
+  'rebuda',
+  'revisant',
+  'proposta',
+  'vista',
+  'negociacio',
+  'acceptada',
+  'declinada',
+  'perduda',
+  'caducada',
+] as const
+export type QuoteStatus = (typeof QUOTE_STATUSES)[number]
+
+type QuoteStatusMeta = {
+  label: string
+  description: string
+  tone: 'info' | 'neutral' | 'warning' | 'success' | 'error'
+}
+
+export const QUOTE_STATUS_META: Record<QuoteStatus, QuoteStatusMeta> = {
+  rebuda: {
+    label: 'Rebuda',
+    description: 'Ha entrat pel configurador. El rellotge de les 48 h corre.',
+    tone: 'info',
+  },
+  revisant: {
+    label: 'En revisió',
+    description: 'Estic mirant si encaixa i amb quin abast.',
+    tone: 'info',
+  },
+  proposta: {
+    label: 'Proposta enviada',
+    description: 'Preu tancat enviat al client. Validesa 30 dies.',
+    tone: 'warning',
+  },
+  vista: {
+    label: 'Vista',
+    description: 'El client ha obert la proposta i encara no respon.',
+    tone: 'warning',
+  },
+  negociacio: {
+    label: 'En negociació',
+    description: 'Hi ha una contraproposta d\'abast sobre la taula. Només una.',
+    tone: 'warning',
+  },
+  acceptada: {
+    label: 'Acceptada',
+    description: 'Tancada a favor. Toca crear el projecte.',
+    tone: 'success',
+  },
+  declinada: {
+    label: 'Declinada per mi',
+    description: 'La decisió és meva: no encaixa o no hi ha capacitat.',
+    tone: 'neutral',
+  },
+  perduda: {
+    label: 'Perduda',
+    description: 'La decisió és del client: no segueix endavant.',
+    tone: 'error',
+  },
+  caducada: {
+    label: 'Caducada',
+    description: 'Ha passat la validesa sense resposta. Es recalcularia.',
+    tone: 'neutral',
+  },
+}
+
+/** Estats que exigeixen motiu tipificat (el CHECK de la BD els força). */
+export const QUOTE_STATUSES_WITH_REASON = ['declinada', 'perduda'] as const
+
+export const QUOTE_DECLINE_REASONS = [
+  'fora_rang',
+  'abast_difus',
+  'timing',
+  'mal_encaix',
+  'capacitat',
+] as const
+
+export const QUOTE_LOST_REASONS = [
+  'preu',
+  'altre_proveidor',
+  'projecte_aturat',
+  'sense_resposta',
+] as const
+
+export type QuoteOutcomeReason =
+  | (typeof QUOTE_DECLINE_REASONS)[number]
+  | (typeof QUOTE_LOST_REASONS)[number]
+
+export const QUOTE_OUTCOME_REASON_LABELS: Record<QuoteOutcomeReason, string> = {
+  fora_rang: 'Fora de rang',
+  abast_difus: 'Abast difús',
+  timing: 'Timing impossible',
+  mal_encaix: 'Mal encaix',
+  capacitat: 'Capacitat plena',
+  preu: 'Preu',
+  altre_proveidor: 'Va triar un altre',
+  projecte_aturat: 'Projecte aturat',
+  sense_resposta: 'Sense resposta',
+}
+
+/** Motius vàlids per a cada estat, tal com els valida el CHECK de la BD. */
+export const QUOTE_REASONS_BY_STATUS: Record<string, readonly QuoteOutcomeReason[]> = {
+  declinada: QUOTE_DECLINE_REASONS,
+  perduda: QUOTE_LOST_REASONS,
+}
+
+/** Dies de validesa d'una proposta (condicions de docs/estrategia-negoci.md). */
+export const QUOTE_VALIDITY_DAYS = 30
 
 export type NewsletterSubscriber = Tables<"newsletter_subscribers">
 export type NewsletterSubscriberInsert = TablesInsert<"newsletter_subscribers">

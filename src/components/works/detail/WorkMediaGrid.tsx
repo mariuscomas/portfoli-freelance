@@ -38,15 +38,19 @@ interface Props {
  * la imatge, i el ratio contra els 24 del text és el mateix que els 96/24 de
  * desktop. Decisió 15set26.
  *
- * ⚑ COIXÍ INFERIOR — el Figma mana 192 (`lg:pb-48`); la rampa fins allà
- * (64/128/192) és la mateixa forma que la del text. L'últim bloc abans de la
- * conclusió no en posa (`flushBottom`): el coixí el fa el `pt-[284px]` de la
- * conclusió, que és el que mana el Figma per a aquella costura.
+ * ⚑ COIXÍ INFERIOR — 96/128/192 (`pb-24 md:pb-32 lg:pb-48`): 192 el mana el
+ * frame desktop i 96 el frame mòbil. La rampa manté a mòbil la mateixa
+ * proporció que a desktop entre el coixí del text (128) i el de la imatge
+ * (96); amb 64 la imatge quedava el doble d'enganxada al text següent.
+ * L'últim bloc abans de la conclusió no en posa (`flushBottom`): el coixí el
+ * fa el `pt-[284px]` de la conclusió, que és el que mana el Figma per a
+ * aquella costura.
  *
  * Tot el que va a amplada completa va a ratio natiu, sense caixa forçada: el
- * layout 'column' del bloc, la vista Lectura i el tercer item d'una graella de
- * 3 (que ocupa les dues columnes). Abans aquell tercer item duia un 21/9 fix,
- * que era el mateix retall amb un altre número.
+ * layout 'column' del bloc, la vista Lectura, el bloc d'una sola imatge i el
+ * tercer item d'una graella de 3 (que ocupa les dues columnes). Abans aquell
+ * tercer item duia un 21/9 fix, que era el mateix retall amb un altre número,
+ * i el bloc d'una imatge es quadrava tot i anar sol a la fila.
  */
 export default function WorkMediaGrid({
   media,
@@ -74,7 +78,7 @@ export default function WorkMediaGrid({
 
   return (
     <section
-      className={`w-full ${viewMode === "visual" ? "px-2 md:px-6" : ""} ${viewMode === "visual" && !flushBottom ? "pb-16 md:pb-32 lg:pb-48" : ""
+      className={`w-full ${viewMode === "visual" ? "px-2 md:px-6" : ""} ${viewMode === "visual" && !flushBottom ? "pb-24 md:pb-32 lg:pb-48" : ""
         }`}
     >
       <div className={`${viewMode === "visual" ? `grid gap-2 md:gap-6` : "grid gap-12"} ${getGridClasses()}`}>
@@ -82,11 +86,22 @@ export default function WorkMediaGrid({
           // If we have 3 items, make the last one span 2 columns in the layout
           const isThirdItemInOddGrid = !stacked && media.length === 3 && index === 2;
           /**
-           * Ratio natiu SEMPRE: el bloc apilat (vista Lectura o layout
-           * 'column') i el tercer item de la graella de 3, que ocupa les
-           * dues columnes.
+           * El quadrat val NOMÉS per a les caselles que realment van a dues
+           * columnes: cal que el bloc tingui 2+ imatges o que el layout 'row'
+           * ho forci. Un bloc d'una sola imatge ja ocupa l'amplada completa —
+           * el quadrat li retallaria el pla ample.
            */
-          const nativeRatio = stacked || isThirdItemInOddGrid;
+          const inTwoCols =
+            !stacked &&
+            !isThirdItemInOddGrid &&
+            (layout === "row" || media.length >= 2);
+          /**
+           * Ratio natiu SEMPRE que no sigui casella de dues columnes: el bloc
+           * apilat (vista Lectura o layout 'column'), el bloc d'una sola
+           * imatge i el tercer item de la graella de 3, que ocupa les dues
+           * columnes.
+           */
+          const nativeRatio = !inTwoCols;
           /**
            * ⚑ La casella de dues columnes és quadrada NOMÉS de md amunt
            * (`md:aspect-square`). Per sota, on la graella ja cau a una sola
@@ -122,7 +137,7 @@ export default function WorkMediaGrid({
                   alt={item.alt || "Project media"}
                   width={0}
                   height={0}
-                  quality={100}
+                  quality={90}
                   sizes={
                     nativeRatio && viewMode === "visual"
                       ? "100vw"

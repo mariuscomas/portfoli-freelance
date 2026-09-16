@@ -91,7 +91,7 @@ export default function AboutIntro() {
               Comencem un projecte
             </Button>
             <Button variant="outline" size="xl" as="a" href="/works">
-              Veure projectes
+              Veure els treballs
             </Button>
           </div>
         </div>

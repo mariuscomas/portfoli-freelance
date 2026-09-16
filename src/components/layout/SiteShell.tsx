@@ -16,7 +16,13 @@ import { ContactModalProvider } from '@/context/ContactModalContext'
  */
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isInternalArea = pathname.startsWith('/admin') || pathname.startsWith('/auth')
+  // Zones sense Header/Footer del portfoli: l'admin, l'auth i les propostes
+  // (qui obre /proposta ve d'un enllaç privat i ja té capçalera pròpia;
+  // un menú de màrqueting només li oferiria sortides).
+  const isInternalArea =
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/proposta')
 
   if (isInternalArea) {
     // Zones internes: render minimalista, sense Header ni Footer del portfoli

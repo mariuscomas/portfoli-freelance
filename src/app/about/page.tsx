@@ -32,7 +32,7 @@ export default function SobreMiPage() {
     <main className="flex min-h-[100dvh] flex-col w-full bg-surface-base">
       <SharedPageHero
         fullScreen
-        title="Qui soc"
+        title="Sobre mi"
         description="Senior Product Designer amb més de 10 anys construint productes digitals per a corporacions i startups. La precisió d'un programador i la visió estratègica del disseny: productes que funcionen, escalen i converteixen."
       />
 

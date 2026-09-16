@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { Json, QuoteInsert } from "@/types/database";
 import { PRICING_VERSION } from "@/lib/pricing";
 import { notifyNewQuote } from "@/lib/notifyQuote";
+import { notifyQuoteReceived } from "@/lib/notifyProposal";
 
 /**
  * Server Action dels configuradors (web/landing/auditoria/col·laboració).
@@ -102,6 +103,10 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
       message: "No hem pogut enviar-ho. Torna-ho a provar en uns minuts.",
     };
   }
+
+  // Acusament de rebuda al client: sense això, qui envia una configuració es
+  // queda 48 h sense cap senyal que hagi arribat enlloc.
+  await notifyQuoteReceived({ to: email, name: name || null, product: input.product });
 
   // Notificació per email (opt-in via RESEND_API_KEY). No bloqueja el resultat.
   await notifyNewQuote({
