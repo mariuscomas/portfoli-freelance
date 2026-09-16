@@ -30,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ["/serveis/auditoria", 0.8, "monthly"],
       ["/colaboracio", 0.9, "monthly"],
       ["/about", 0.7, "yearly"],
+      ["/privacitat", 0.3, "yearly"],
     ] as const
   ).map(([path, priority, changeFrequency]) => ({
     url: `${SITE.url}${path}`,

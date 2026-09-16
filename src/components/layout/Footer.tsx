@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
+import { CONSENT_CHANGE_EVENT } from "@/lib/analytics"
 
 /**
  * Form de newsletter del footer. Crida la Server Action subscribeNewsletter
@@ -260,8 +261,25 @@ function FooterContent() {
         {/* Bottom Bar: Copyright & Socials */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-0 pb-4">
 
-          <div className="flex items-center font-sans text-text-secondary-inverse text-[15px] font-medium w-full md:w-auto justify-center md:justify-start">
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-5 font-sans text-text-secondary-inverse text-[15px] font-medium w-full md:w-auto justify-center md:justify-start">
             <span>© 2009-{new Date().getFullYear()} Màrius Freelance</span>
+            <TransitionLink
+              href="/privacitat"
+              className="hover:text-text-main-inverse transition-colors py-2 -my-2"
+            >
+              Privacitat
+            </TransitionLink>
+            <button
+              type="button"
+              onClick={() =>
+                window.dispatchEvent(
+                  new CustomEvent(CONSENT_CHANGE_EVENT, { detail: "reopen" }),
+                )
+              }
+              className="hover:text-text-main-inverse transition-colors py-2 -my-2"
+            >
+              Cookies
+            </button>
           </div>
 
           {/* Socials Centered */}

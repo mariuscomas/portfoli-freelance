@@ -9,7 +9,6 @@ import { useContactModal } from "@/context/ContactModalContext";
 import TransitionLink from "@/components/common/TransitionLink";
 import { DisciplineChips } from "@/components/services/configuratorShared";
 import {
-  PRODUCTS,
   PROCESS_STEPS,
   CONDITIONS,
   RECURRENTS,
@@ -156,9 +155,11 @@ function ProductCard({
  * serveis-2026-07-16.md §3.2).
  */
 function TriadaSection({
+  products,
   disciplines,
   onToggle,
 }: {
+  products: Product[];
   disciplines: Discipline[];
   onToggle: (d: Discipline) => void;
 }) {
@@ -185,7 +186,7 @@ function TriadaSection({
       {/* Columnes a sang separades per filets (Figma), no cards flotants */}
       <Reveal>
         <div className="grid grid-cols-1 border-y border-border-subtle md:grid-cols-3 lg:px-12">
-          {PRODUCTS.map((p, i) => (
+          {products.map((p, i) => (
             <ProductCard
               key={p.id}
               product={p}
@@ -354,7 +355,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
   );
 }
 
-export default function ProductsView() {
+export default function ProductsView({ products }: { products: Product[] }) {
   // Abast triat als chips de "Punts de partida". Per defecte les tres
   // disciplines (l'anchor de valor: el projecte sencer).
   const [disciplines, setDisciplines] = useState<Discipline[]>([...DISCIPLINE_ORDER]);
@@ -383,7 +384,7 @@ export default function ProductsView() {
 
   return (
     <>
-      <TriadaSection disciplines={disciplines} onToggle={toggleDiscipline} />
+      <TriadaSection products={products} disciplines={disciplines} onToggle={toggleDiscipline} />
       <ProcessSection />
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} />

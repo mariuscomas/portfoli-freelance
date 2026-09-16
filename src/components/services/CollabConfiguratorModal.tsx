@@ -25,6 +25,7 @@ import {
   formatEuro,
   type RadioOption,
 } from "./configuratorShared";
+import { EVENTS, trackEvent } from "@/lib/analytics";
 
 /**
  * <CollabConfiguratorModal /> — Línia A (col·laboració amb agències).
@@ -263,7 +264,10 @@ function CollabContent({ onClose }: { onClose: () => void }) {
               } as unknown as Json
             }
             onBack={() => setPhase("config")}
-            onSent={() => setPhase("sent")}
+            onSent={() => {
+              setPhase("sent");
+              trackEvent(EVENTS.collabSubmit);
+            }}
           />
         </motion.div>
       )}

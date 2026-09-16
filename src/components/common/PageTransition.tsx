@@ -3,19 +3,25 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useTransition as useAppTransition } from "@/context/TransitionContext";
 import LogoSmall from "./LogoSmall";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function PageTransition() {
   const { isTransitioning, hasStartedTransition, colorIndex, colors } = useAppTransition();
   const [isAnimationFinished, setIsAnimationFinished] = useState(true);
   const [displayColorIndex, setDisplayColorIndex] = useState(colorIndex);
+  const [wasTransitioning, setWasTransitioning] = useState(isTransitioning);
 
-  useEffect(() => {
+  // Ajust d'estat durant el render, no dins d'un efecte: quan arrenca una
+  // transició congelem el color que toca i reobrim l'animació. Fer-ho a
+  // useEffect provocava un render en cascada (react-hooks/set-state-in-effect)
+  // i, sobretot, pintava un fotograma amb el color antic abans de corregir-lo.
+  if (isTransitioning !== wasTransitioning) {
+    setWasTransitioning(isTransitioning);
     if (isTransitioning) {
       setIsAnimationFinished(false);
       setDisplayColorIndex(colorIndex);
     }
-  }, [isTransitioning, colorIndex]);
+  }
 
   // Si no hem començat mai una transició (refresh), no mostrem res
   if (!hasStartedTransition && !isTransitioning) {

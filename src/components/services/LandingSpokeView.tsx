@@ -8,7 +8,6 @@ import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
 import SpokeHero from "@/components/services/SpokeHero";
 import {
-  PRODUCTS,
   EXTRAS,
   RECURRENTS,
   PROCESS_STEPS,
@@ -18,6 +17,7 @@ import {
   DISCIPLINES,
   PRICING_LANDING,
   type Discipline,
+  type Product,
 } from "@/lib/pricing";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
@@ -32,8 +32,6 @@ const appliesLabel = (appliesTo: string[]) =>
 /** Preu "des de" d'una disciplina solta: Immersió + disciplina + tancament. */
 const disciplinePriceFrom = (d: Discipline) =>
   PRICING_LANDING.immersio + PRICING_LANDING.disciplinePrice[d] + PRICING_LANDING.tancament;
-
-const LANDING_INCLUDES = PRODUCTS.find((p) => p.id === "landing")!.includes;
 
 const LANDING_EXTRAS = EXTRAS.filter((e) => e.appliesTo.includes("landing"));
 
@@ -102,7 +100,7 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
 
 // ————————————————————————————————— 01 · Què inclou
 
-function IncludesSection() {
+function IncludesSection({ includes }: { includes: string[] }) {
   return (
     <section id="que-inclou" className={`${SECTION_PX} pt-20 pb-20 bg-surface-base`}>
       <Reveal>
@@ -110,7 +108,7 @@ function IncludesSection() {
       </Reveal>
       <Reveal className="mt-14">
         <ul>
-          {LANDING_INCLUDES.map((item, i) => (
+          {includes.map((item, i) => (
             <li
               key={item}
               className="flex items-baseline gap-6 border-t border-border-subtle py-5 md:gap-10"
@@ -357,7 +355,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
   );
 }
 
-export default function LandingSpokeView() {
+export default function LandingSpokeView({ product }: { product: Product }) {
   // Configurador full-screen (cortina). Mantenim el producte seleccionat
   // en tancar perquè l'animació de sortida no es talli. Aquí és sempre "landing".
   const [configOpen, setConfigOpen] = useState(false);
@@ -389,12 +387,12 @@ export default function LandingSpokeView() {
             {"i desenvolupament a mida fins a producció. Preu tancat, sense sorpreses."}
           </>
         }
-        price={formatPrice(PRODUCTS.find((p) => p.id === "landing")!.price)}
+        price={formatPrice(product.price)}
         scopeNote="Projecte complet · o per fases (UX · UI · Dev)"
         ctaLabel={CONFIGURATOR_ENABLED ? "Configura la teva landing" : "Demana pressupost"}
         onCta={openConfigurator}
       />
-      <IncludesSection />
+      <IncludesSection includes={product.includes} />
       <FocusSection />
       <ExtrasSection />
       <ConfiguratorTeaser onConfigure={openConfigurator} />

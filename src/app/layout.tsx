@@ -7,6 +7,8 @@ import { TransitionProvider } from "@/context/TransitionContext";
 import PageTransition from "@/components/common/PageTransition";
 import { buildMetadata } from "@/lib/seo";
 import "./globals.css";
+import Analytics from "@/components/analytics/Analytics";
+import CookieBanner from "@/components/common/CookieBanner";
 
 // Cos (body, headings, botons, caption) → Hanken Grotesk
 // Font del sistema sincronitzat amb Figma (variable font-family-body)
@@ -83,10 +85,12 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-sans min-h-full flex flex-col bg-surface-base text-text-main">
+        <Analytics />
         <ThemeProvider>
           <TransitionProvider>
             <PageTransition />
             <SiteShell>{children}</SiteShell>
+            <CookieBanner />
           </TransitionProvider>
         </ThemeProvider>
       </body>

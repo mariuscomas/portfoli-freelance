@@ -48,6 +48,7 @@ import {
   type AuditSize,
   RESPONSE_SLA,
 } from "@/lib/pricing";
+import { EVENTS, trackEvent } from "@/lib/analytics";
 
 /**
  * <ConfiguratorModal />
@@ -100,6 +101,16 @@ interface ConfiguratorModalProps {
 }
 
 export default function ConfiguratorModal({ isOpen, onClose, productId }: ConfiguratorModalProps) {
+  // Obertura del configurador: un sol event per obertura, amb el producte.
+  const openedRef = useRef(false);
+  useEffect(() => {
+    if (isOpen && !openedRef.current) {
+      openedRef.current = true;
+      trackEvent(EVENTS.configuratorOpen, { product: productId ?? "desconegut" });
+    }
+    if (!isOpen) openedRef.current = false;
+  }, [isOpen, productId]);
+
   const isClient = useIsClient();
   const reduce = useReducedMotion();
 
@@ -275,7 +286,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
   };
   const advanceConfig = () => {
     if (mobileWizard && mobileStep < CONFIG_SUBSTEPS - 1) setMobileStep((s) => s + 1);
-    else setPhase("form");
+    else {
+      setPhase("form");
+      trackEvent(EVENTS.configuratorStep, { product: product.id, step: "form" });
+    }
   };
 
   // Recap compacte per al pas de dades en mòbil (el Resum queda un pas enrere).
@@ -425,6 +439,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
     if (res.status === "ok") {
       setSentInfo({ email, ref: res.ref });
       setPhase("sent");
+      trackEvent(EVENTS.configuratorSubmit, { product: product.id });
     } else setError(res.message);
   };
 

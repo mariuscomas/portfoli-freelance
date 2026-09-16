@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import ContactModal from "@/components/contact/ContactModal"
+import { EVENTS, trackEvent } from "@/lib/analytics"
 
 /**
  * ContactModalContext
@@ -25,7 +26,10 @@ const ContactModalContext = createContext<ContactModalContextValue | null>(null)
 
 export function ContactModalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
-  const open = useCallback(() => setIsOpen(true), [])
+  const open = useCallback(() => {
+    setIsOpen(true)
+    trackEvent(EVENTS.contactOpen)
+  }, [])
   const close = useCallback(() => setIsOpen(false), [])
   const value = useMemo(() => ({ isOpen, open, close }), [isOpen, open, close])
 
