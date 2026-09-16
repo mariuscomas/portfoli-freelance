@@ -123,7 +123,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                 </div>
                 {[
                   "Extensió del teu equip, com un membre més",
-                  "Les teves eines: Figma, Slack, Linear, Notion — sense onboarding",
+                  "Les teves eines (Figma, Slack, Linear, Notion), sense onboarding",
                   "Sprints i cerimònies del teu equip",
                   "Remot amb overlap horari complet (CET)",
                   "Incorporació en 48 h si cal, sense període de prova",

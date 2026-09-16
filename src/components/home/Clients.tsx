@@ -27,7 +27,7 @@ const ClientLogo = ({ src, name, height }: { src: string; name: string; height: 
 
 // `h` = alçada normalitzada al Figma (slot 160×56, igualat per caixa alta)
 const clients = [
-  { src: "/logos/north.svg",      h: 30, name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria — i sí, va ser tan divertit com sona." },
+  { src: "/logos/north.svg",      h: 30, name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria. I sí, va ser tan divertit com sona." },
   { src: "/logos/quantion.svg",   h: 34, name: "Quantion", desc: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples." },
   { src: "/logos/cupra.svg",      h: 52, name: "Cupra", desc: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h." },
   { src: "/logos/santalucia.svg", h: 32, name: "Santalucía Impulsa", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },

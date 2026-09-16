@@ -138,7 +138,7 @@ function AvailabilitySection() {
           </span>
           {/* TODO: alimentar des de Supabase (taula availability) */}
           <p className="text-body-md text-text-main">
-            Obert a noves col·laboracions aquest trimestre — 2 slots.
+            Obert a noves col·laboracions aquest trimestre: 2 slots.
           </p>
         </div>
       </Reveal>

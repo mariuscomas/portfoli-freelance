@@ -413,7 +413,7 @@ export const AUDIT_BASE_INCLUDES = [
   "Informe prioritzat: quick wins i millores estructurals",
   "Roadmap accionable (impacte / esforç)",
   "Sessió de retorn de 90 min",
-  "Val per si sola — si fem el projecte en 3 mesos, es descompta íntegra",
+  "Val per si sola: si fem el projecte en 3 mesos, es descompta íntegra",
 ] as const;
 
 export const AUDIT_DELIVERABLES = [
@@ -563,7 +563,7 @@ export const PRODUCTS: Product[] = [
       "Informe prioritzat: quick wins i millores estructurals",
       "Sessió de retorn de 90 min",
       "Roadmap de millores accionable",
-      "Val per si sola — i si fem el projecte en 3 mesos, es descompta íntegra",
+      "Val per si sola: si fem el projecte en 3 mesos, es descompta íntegra",
     ],
   },
 ];

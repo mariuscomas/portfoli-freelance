@@ -77,7 +77,7 @@ export default function AboutIntro() {
             </p>
             <p>
               I avui vaig un pas més enllà: desenvolupo i publico projectes web
-              complets — del primer wireframe al desplegament a producció —
+              complets (del primer wireframe al desplegament a producció),
               accelerant el cicle amb eines d&apos;IA. Ja sigui conceptualitzant
               HMI per a Cupra o llançant MVPs en insurtech i sector públic,
               l&apos;objectiu és sempre el mateix: eliminar complexitat i

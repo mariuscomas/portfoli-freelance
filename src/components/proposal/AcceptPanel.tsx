@@ -99,7 +99,7 @@ export default function AcceptPanel({
             rel="noopener noreferrer"
             className="text-body-md text-text-secondary underline underline-offset-4 hover:text-text-main"
           >
-            Tinc dubtes — parlem-ne
+            Tinc dubtes, parlem-ne
           </a>
         </div>
       </div>

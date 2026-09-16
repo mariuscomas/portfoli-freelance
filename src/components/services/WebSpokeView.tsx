@@ -123,8 +123,7 @@ function IncludesSection() {
           ))}
         </ul>
         <p className="mt-10 text-caption text-text-secondary">
-          Els continguts — textos, logo i imatges — els aportes tu. Si no els tens, la redacció és un
-          extra.
+          Els textos, el logo i les imatges els aportes tu. Si no els tens, la redacció és un extra.
         </p>
       </Reveal>
     </section>
@@ -238,7 +237,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
               reserva 15 minuts
               <span className="sr-only"> (s’obre en una pestanya nova)</span>
             </a>{" "}
-            i en parlem — sense compromís.
+            i en parlem, sense compromís.
           </p>
         </div>
       </Reveal>
