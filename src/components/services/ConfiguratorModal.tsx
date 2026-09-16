@@ -349,7 +349,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
       return lines.join("\n");
     }
     if (!quote) {
-      return `Producte: ${product.name} — ${formatEuro(product.price)} (preu tancat)`;
+      return `Producte: ${product.name} · ${formatEuro(product.price)} (preu tancat)`;
     }
     const lines = [
       `Configuració: ${product.name} · ${quote.scopeLabel}`,

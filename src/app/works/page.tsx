@@ -7,7 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Treballs",
   description:
-    "Selecció de case studies recents — disseny de producte, UI/UX, design systems i mobile apps.",
+    "Selecció de case studies recents: disseny de producte, UI/UX, design systems i mobile apps.",
   path: "/works",
 });
 

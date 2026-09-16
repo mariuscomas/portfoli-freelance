@@ -416,7 +416,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                   </span>
                   <span className="sr-only">
                     {" "}
-                    (obligatori) — pas {step + 1} de {STEPS.length}
+                    (obligatori). Pas {step + 1} de {STEPS.length}
                   </span>
                 </label>
 

@@ -49,7 +49,7 @@ const caption = Geist_Mono({
 export const metadata = buildMetadata({
   title: "Digital Product Designer",
   description:
-    "Portfoli professional de Màrius Comas — Digital Product Designer especialitzat en UI/UX. Estratègia, producte i sistemes per a startups i corporacions.",
+    "Portfoli professional de Màrius Comas, Digital Product Designer especialitzat en UI/UX. Estratègia, producte i sistemes per a startups i corporacions.",
   path: "/",
 });
 

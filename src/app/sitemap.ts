@@ -1,26 +1,49 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import { SITE } from "@/lib/seo";
 import { t } from "@/lib/i18n";
 
 /**
- * Sitemap dinàmic. Llegim works i serveis publicats de Supabase i
- * generem una entrada per cada slug. Next genera /sitemap.xml.
+ * Sitemap dinàmic. Llegim els works publicats de Supabase i generem una
+ * entrada per slug. Next el serveix a /sitemap.xml.
+ *
+ * Fem servir el client anònim, no el de `utils/supabase/server`: aquell crida
+ * `cookies()`, que converteix la ruta en una API de temps de petició. Amb el
+ * client anònim la ruta es pot generar al build i revalidar cada hora, que és
+ * el que vol un sitemap. El sitemap no necessita sessió: només llegeix el que
+ * ja és públic.
+ *
+ * /contacte no hi és: només redirigeix a la home.
  */
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = await createClient();
+  const now = new Date();
 
-  // Rutes estàtiques principals
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: SITE.url, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
-    { url: `${SITE.url}/works`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE.url}/serveis`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE.url}/colaboracio`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${SITE.url}/about`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.7 },
-    // /contacte ja no s'indexa: ara és un modal; la ruta només redirigeix a la home.
-  ];
+  const staticRoutes: MetadataRoute.Sitemap = (
+    [
+      ["", 1, "monthly"],
+      ["/works", 0.9, "monthly"],
+      ["/serveis", 0.9, "monthly"],
+      ["/serveis/web", 0.8, "monthly"],
+      ["/serveis/landing", 0.8, "monthly"],
+      ["/serveis/auditoria", 0.8, "monthly"],
+      ["/colaboracio", 0.9, "monthly"],
+      ["/about", 0.7, "yearly"],
+    ] as const
+  ).map(([path, priority, changeFrequency]) => ({
+    url: `${SITE.url}${path}`,
+    lastModified: now,
+    changeFrequency,
+    priority,
+  }));
 
-  // Rutes dinàmiques (case studies)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false } },
+  );
+
   const { data: works } = await supabase
     .from("works")
     .select("slug, created_at")
@@ -28,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const workRoutes: MetadataRoute.Sitemap = (works || []).map((w) => ({
     url: `${SITE.url}/works/${t(w.slug)}`,
-    lastModified: w.created_at ? new Date(w.created_at) : new Date(),
+    lastModified: w.created_at ? new Date(w.created_at) : now,
     changeFrequency: "monthly",
     priority: 0.8,
   }));
