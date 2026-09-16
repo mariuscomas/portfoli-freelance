@@ -8,6 +8,7 @@ import LanguageSelector, {
 } from "@/components/common/LanguageSelector";
 import ThemeToggle from "@/components/common/ThemeToggle";
 import { useFooterReveal } from "@/context/FooterRevealContext";
+import { useHeroOwnsControls } from "@/context/HeroControlsContext";
 
 /**
  * SiteControls — controls d'utilitat globals (idioma + tema).
@@ -22,10 +23,15 @@ import { useFooterReveal } from "@/context/FooterRevealContext";
  *   l'esquerra + fade + blur) i reapareixen en tornar a dalt. La sortida és
  *   lateral (no cap avall) per no creuar-se amb el contingut que puja en fer
  *   scroll. S'aplica a totes les pàgines públiques (muntat a SiteShell).
- * - Alineació vertical amb la barra del hero: `bottom-12` (= pb-12 del
- *   SharedPageHero) + alçada fixa de 52px (la del toggle pill) amb
- *   items-center, perquè CA/tema quedin centrats a la mateixa línia que el
- *   link d'scroll i el toggle.
+ * - Alineació vertical: `bottom-12` = el `pb-12` del SharedPageHero, és a dir
+ *   la mateixa línia (48px) on el Figma posa el `Footer` del hero. L'alçada
+ *   fixa de 52px que hi havia aquí era el residu d'una pastilla retirada i
+ *   pujava el toggle 12px per sobre d'aquesta línia.
+ * - Aquesta còpia FLOTANT és el pla B. Al Figma el botó de mode és fill del
+ *   `Footer` del hero (mestre Section Hero 10670:2687), i quan un hero el pinta
+ *   a la seva fila (<SiteControls inline />) aquesta es retira — veure
+ *   HeroControlsContext. Cal perquè el hero acaba per sobre del fons del
+ *   viewport (min-h-[calc(100vh-40px)]) i un element fix mai hi cau alineat.
  * - Fade-out quan el footer es revela (useFooterReveal), igual que el Header,
  *   per no flotar per sobre del bloc fosc.
  * - z-40: per sota del Header (z-50) i del menú full-screen (z-[100]) dins
@@ -45,12 +51,13 @@ import { useFooterReveal } from "@/context/FooterRevealContext";
 /** Píxels d'scroll a partir dels quals els controls fan la sortida. */
 const SCROLL_HIDE_THRESHOLD = 80;
 
-export default function SiteControls() {
+export default function SiteControls({ inline = false }: { inline?: boolean } = {}) {
   const { revealed } = useFooterReveal();
+  const heroOwnsControls = useHeroOwnsControls();
   const pathname = usePathname();
   // Veure la nota de la capçalera: a la home els controls viuen dins de la
   // barra del hero, no flotant.
-  const heroOwnsControls = pathname === "/";
+  const heroIsHome = pathname === "/";
 
   // Sortida en scroll — histèresi lleugera per evitar parpelleig al llindar.
   const { scrollY } = useScroll();
@@ -72,6 +79,21 @@ export default function SiteControls() {
 
   const hidden = revealed || scrolledAway;
 
+  // Variant INLINE — va dins de la fila inferior del hero, en flux normal.
+  // Sense motion propi: l'entrada la fa la fila del SharedPageHero i la
+  // sortida, el scroll de la pàgina. No cal ni sortida lateral ni fade de
+  // footer, que existeixen només perquè la còpia flotant és `fixed`.
+  if (inline) {
+    return (
+      <div className="flex items-center gap-4">
+        <LanguageSelector />
+        <div className={LANGUAGE_SELECTOR_ENABLED ? "ml-2" : undefined}>
+          <ThemeToggle />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -85,8 +107,8 @@ export default function SiteControls() {
         ease: [0.16, 1, 0.3, 1],
         delay: entered ? 0 : 0.9,
       }}
-      className={`fixed bottom-12 left-6 md:left-12 lg:left-16 xl:left-24 z-40 h-[52px] items-center gap-4 ${
-        heroOwnsControls ? "hidden" : "flex"
+      className={`fixed bottom-12 left-6 md:left-12 lg:left-16 xl:left-24 z-40 items-center gap-4 ${
+        heroIsHome || heroOwnsControls ? "hidden" : "flex"
       } ${hidden ? "pointer-events-none" : ""}`}
     >
       <LanguageSelector />

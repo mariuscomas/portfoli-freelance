@@ -28,6 +28,7 @@ export default function CollaboracioPage() {
             shortLabel="Consulta tarifes"
           />
         }
+        showControls
         bottomContent={
           <ServicesHeroBottom crossHref="/serveis" crossLabel="Projectes amb preu tancat" />
         }

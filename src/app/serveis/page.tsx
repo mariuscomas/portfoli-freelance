@@ -29,6 +29,7 @@ export default function ServicesPage() {
             shortLabel="Descobreix-ho"
           />
         }
+        showControls
         bottomContent={
           <ServicesHeroBottom crossHref="/colaboracio" crossLabel="Dedicació continuada" />
         }

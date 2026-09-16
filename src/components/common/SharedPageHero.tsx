@@ -3,6 +3,8 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { AsteriskIcon } from "@phosphor-icons/react";
+import SiteControls from "@/components/common/SiteControls";
+import { useClaimHeroControls } from "@/context/HeroControlsContext";
 
 interface SharedPageHeroProps {
   title: string;
@@ -15,6 +17,23 @@ interface SharedPageHeroProps {
    */
   afterDescription?: React.ReactNode;
   bottomContent?: React.ReactNode;
+  /**
+   * Pinta els controls d'utilitat (tema + idioma) com a primera peça de la
+   * fila inferior, tal com al Figma: al mestre `Section Hero` (10670:2687) el
+   * `Buttons / Color Mode` és fill del `Footer`, centrat amb la resta de la
+   * fila. Mentre és actiu, la còpia flotant de SiteShell es retira
+   * (HeroControlsContext) perquè no n'hi hagi dues.
+   *
+   * Cal perquè el hero acaba 40px per sobre del fons del viewport
+   * (min-h-[calc(100vh-40px)]): un element `fixed bottom-12` queda sempre 40px
+   * per sota de la fila del hero, i a <lg la diferència encara creix.
+   *
+   * Amb els controls a dins, la fila passa a `items-center` (el Figma centra
+   * les peces de la fila: a Works el Button Menu de 72 i el botó de 28
+   * comparteixen eix). Sense controls es manté `items-end` per no moure
+   * /works ni el work detail, que encara no s'han migrat.
+   */
+  showControls?: boolean;
   containerClassName?: string;
   textClassName?: string;
   /**
@@ -72,6 +91,7 @@ export default function SharedPageHero({
   description,
   afterDescription,
   bottomContent,
+  showControls = false,
   containerClassName = "bg-transparent",
   textClassName = "text-text-main",
   descriptionClassName = "text-text-main",
@@ -82,6 +102,8 @@ export default function SharedPageHero({
   parallax = false,
   fullScreen = false,
 }: SharedPageHeroProps) {
+  useClaimHeroControls(showControls);
+
   const hasImage = Boolean(backgroundImage)
   const clampedOverlay = Math.max(0, Math.min(80, overlayOpacity)) / 100
 
@@ -251,8 +273,11 @@ export default function SharedPageHero({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="flex items-end justify-between w-full mt-auto pt-16 md:pt-0"
+          className={`flex justify-between w-full mt-auto pt-16 md:pt-0 ${
+            showControls ? "items-center" : "items-end"
+          }`}
         >
+          {showControls && <SiteControls inline />}
           {bottomContent}
         </motion.div>
 

@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer'
 import SiteControls from '@/components/common/SiteControls'
 import { FooterRevealProvider } from '@/context/FooterRevealContext'
 import { ContactModalProvider } from '@/context/ContactModalContext'
+import { HeroControlsProvider } from '@/context/HeroControlsContext'
 
 /**
  * SiteShell — embolcalla el contingut amb Header/Footer del portfoli públic,
@@ -47,6 +48,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <FooterRevealProvider>
       <ContactModalProvider>
+        <HeroControlsProvider>
         <div className="relative z-[1] bg-surface-base transition-colors duration-[800ms] ease-in-out">
           <NavigationWrapper>{children}</NavigationWrapper>
           {/* Controls d'utilitat globals (idioma + tema), fixos a baix a
@@ -55,6 +57,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           <SiteControls />
         </div>
         <Footer />
+        </HeroControlsProvider>
       </ContactModalProvider>
     </FooterRevealProvider>
   )
