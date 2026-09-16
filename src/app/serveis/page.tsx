@@ -1,5 +1,5 @@
 import SharedPageHero from "@/components/common/SharedPageHero";
-import { ServicesHeroBottom } from "@/components/services/ServicesViews";
+import { ServicesHeroBottom, ServicesHeroCta } from "@/components/services/ServicesViews";
 import ProductsView from "@/components/services/ProductsView";
 import { buildMetadata } from "@/lib/seo";
 
@@ -22,12 +22,15 @@ export default function ServicesPage() {
       <SharedPageHero
         title="Serveis"
         description="Webs, landings i auditories amb preu clar i abast tancat. Configura el teu projecte en dos minuts i rep el pressupost al moment — un sol interlocutor, de principi a fi."
-        bottomContent={
-          <ServicesHeroBottom
-            active="serveis"
-            scrollHref="#productes"
-            scrollLabel="Descobreix el que podem fer"
+        afterDescription={
+          <ServicesHeroCta
+            href="#productes"
+            label="Descobreix el que podem fer"
+            shortLabel="Descobreix-ho"
           />
+        }
+        bottomContent={
+          <ServicesHeroBottom crossHref="/colaboracio" crossLabel="Dedicació continuada" />
         }
       />
 

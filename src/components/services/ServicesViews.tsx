@@ -1,75 +1,100 @@
 "use client";
 
-import { ArrowDown } from "@phosphor-icons/react";
+import { ArrowDown, ArrowRight } from "@phosphor-icons/react";
 import TransitionLink from "@/components/common/TransitionLink";
+import { LinkUnderline } from "@/components/ui/LinkUnderline";
+
+/* ============================================================
+   Hero de /serveis i /colaboracio — dues peces
+   ------------------------------------------------------------
+   Doc: docs/fila-inferior-hero-serveis-2026-09-16.md
+   Figma: mestre Section Hero 10670:2687 (propietat `Show CTA`)
+
+   1. <ServicesHeroCta>    — enllaç d'scroll a la primera secció. Va SOTA la
+      descripció (SharedPageHero → afterDescription), no a la fila inferior.
+   2. <ServicesHeroBottom> — fila inferior: esquerra reservada als SiteControls
+      fixos, i un sol enllaç creuat a la dreta cap a l'altra àrea.
+
+   El creuat nomena el MODEL DE CONTRACTACIÓ (pressupost tancat ↔ dedicació
+   continuada), no l'audiència: "Col·laboració" és etiqueta interna de línia de
+   negoci i no qualifica el visitant.
+
+   Les pastilles CrossNav que hi havia aquí estan retirades (16set26): forma de
+   segmented control per a una navegació entre pàgines, mitja pastilla inerta
+   (enllaç a la pàgina on ja ets) i duplicaven l'ítem del navbar.
+   ============================================================ */
 
 /**
- * Navegació creuada Serveis ↔ Col·laboració (doble funnel).
- * Substitueix el toggle antic ?vista=: ara són dues pàgines/rutes pròpies
- * (/serveis i /colaboracio) i aquests pills salten d'una a l'altra.
+ * Enllaç d'scroll a la primera secció de la pàgina.
+ *
+ * `shortLabel` no és una floritura: a 402px, amb el text a 24px, els labels
+ * llargs sortien de la caixa de 370 (3px a /serveis, 18px a /colaboracio).
+ * Es va resoldre amb còpia i no tocant la rampa tipogràfica. El canvi va al
+ * mateix breakpoint on salta el marge del hero.
  */
-export type ServicesArea = "serveis" | "colaboracio";
-
-const PILLS: { id: ServicesArea; label: string; href: string }[] = [
-  { id: "serveis", label: "Serveis", href: "/serveis" },
-  { id: "colaboracio", label: "Col·laboració", href: "/colaboracio" },
-];
-
-function CrossNav({ active }: { active: ServicesArea }) {
+export function ServicesHeroCta({
+  href,
+  label,
+  shortLabel,
+}: {
+  href: string;
+  label: string;
+  shortLabel: string;
+}) {
   return (
-    <div
-      role="navigation"
-      aria-label="Àrees"
-      className="flex items-center gap-1 rounded-full border border-border-default bg-surface-card p-1"
+    <LinkUnderline
+      as="a"
+      href={href}
+      aria-label={label}
+      icon={
+        <ArrowDown
+          size={20}
+          className="shrink-0 transition-transform group-hover:translate-y-1"
+          aria-hidden
+        />
+      }
     >
-      {PILLS.map((p) => {
-        const isActive = active === p.id;
-        return (
-          <TransitionLink
-            key={p.id}
-            href={p.href}
-            aria-current={isActive ? "page" : undefined}
-            className={`inline-flex min-h-11 items-center rounded-full px-6 text-button-lg transition-colors ${
-              isActive
-                ? "bg-text-main font-medium text-surface-base"
-                : "text-text-secondary hover:bg-surface-border/50"
-            }`}
-          >
-            {p.label}
-          </TransitionLink>
-        );
-      })}
-    </div>
+      <span aria-hidden className="md:hidden">
+        {shortLabel}
+      </span>
+      <span aria-hidden className="hidden md:inline">
+        {label}
+      </span>
+    </LinkUnderline>
   );
 }
 
 /**
- * Fila inferior del hero (3 zones): esquerra reservada als SiteControls fixos
- * (idioma + tema), enllaç d'scroll centrat, i navegació creuada a la dreta.
+ * Fila inferior del hero. La zona esquerra queda buida a propòsit: l'ocupen
+ * els SiteControls fixos (tema + idioma), ancorats a bottom-left.
+ *
+ * El <LinkUnderline as="span"> és presentacional — l'element navegable és el
+ * <TransitionLink> que l'embolcalla, perquè un <a> dins d'un <a> no seria
+ * HTML vàlid ni navegable amb teclat.
  */
 export function ServicesHeroBottom({
-  active,
-  scrollHref,
-  scrollLabel,
+  crossHref,
+  crossLabel,
 }: {
-  active: ServicesArea;
-  scrollHref: string;
-  scrollLabel: string;
+  crossHref: string;
+  crossLabel: string;
 }) {
   return (
-    <div className="grid w-full grid-cols-1 items-start gap-6 md:grid-cols-3 md:items-center">
-      {/* Zona esquerra: buida — l'ocupen els SiteControls fixos (bottom-left) */}
-      <div className="hidden md:block" aria-hidden />
-      <a
-        href={scrollHref}
-        className="group flex items-center gap-2 text-body-lg font-medium transition-opacity hover:opacity-70 md:justify-self-center"
-      >
-        <span>{scrollLabel}</span>
-        <ArrowDown size={18} className="transition-transform group-hover:translate-y-1" aria-hidden />
-      </a>
-      <div className="md:justify-self-end">
-        <CrossNav active={active} />
-      </div>
+    <div className="flex w-full items-center justify-end">
+      <TransitionLink href={crossHref} className="group">
+        <LinkUnderline
+          as="span"
+          icon={
+            <ArrowRight
+              size={20}
+              className="shrink-0 transition-transform group-hover:translate-x-1"
+              aria-hidden
+            />
+          }
+        >
+          {crossLabel}
+        </LinkUnderline>
+      </TransitionLink>
     </div>
   );
 }

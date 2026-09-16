@@ -52,7 +52,19 @@ type AsAnchor = CommonProps &
     href: string;
   };
 
-export type LinkUnderlineProps = AsButton | AsAnchor;
+type AsSpan = CommonProps &
+  Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "className"> & {
+    /**
+     * Variant presentacional: pinta el link del DS sense element interactiu
+     * propi. Pensada per anar DINS d'un `<TransitionLink>` o un `<button>`,
+     * on un <a> niat no seria HTML vàlid ni navegable amb teclat. El focus i
+     * el hover els governa el pare (`group`).
+     */
+    as: "span";
+    href?: never;
+  };
+
+export type LinkUnderlineProps = AsButton | AsAnchor | AsSpan;
 
 const base = [
   "group inline-flex min-h-11 w-fit items-center gap-2.5",
@@ -90,6 +102,14 @@ export const LinkUnderline = forwardRef<
   // `as` és API del component, no un atribut d'HTML: no ha d'arribar al DOM.
   const domProps: Record<string, unknown> = { ...rest };
   delete domProps.as;
+
+  if (rest.as === "span") {
+    return (
+      <span className={classes} {...(domProps as React.HTMLAttributes<HTMLSpanElement>)}>
+        {content}
+      </span>
+    );
+  }
 
   if (rest.as === "a") {
     return (

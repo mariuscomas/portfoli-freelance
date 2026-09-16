@@ -7,6 +7,13 @@ import { AsteriskIcon } from "@phosphor-icons/react";
 interface SharedPageHeroProps {
   title: string;
   description: string;
+  /**
+   * Contingut que va JUST SOTA la descripció, dins del bloc superior del hero.
+   * A Figma és la propietat `Show CTA` del mestre `Section Hero` (10670:2687),
+   * per defecte desactivada. Pensat per a l'enllaç d'scroll a la primera secció.
+   * Opcional: els heros que no el passen queden exactament com abans.
+   */
+  afterDescription?: React.ReactNode;
   bottomContent?: React.ReactNode;
   containerClassName?: string;
   textClassName?: string;
@@ -63,6 +70,7 @@ interface SharedPageHeroProps {
 export default function SharedPageHero({
   title,
   description,
+  afterDescription,
   bottomContent,
   containerClassName = "bg-transparent",
   textClassName = "text-text-main",
@@ -222,6 +230,19 @@ export default function SharedPageHero({
               </span>
             ))}
           </motion.div>
+
+          {/* CTA sota la descripció (Figma: `Show CTA`). El salt d'espaiat
+              acompanya el salt de marge del hero: 32 / 48 / 64. */}
+          {afterDescription && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="mt-8 md:mt-12 lg:mt-16"
+            >
+              {afterDescription}
+            </motion.div>
+          )}
 
         </div>
 
