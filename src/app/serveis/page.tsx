@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Serveis",
   description:
-    "Web, landing i auditoria UI/UX amb preus transparents i abast tancat. Explica'm el projecte i et torno una proposta amb el preu tancat — un sol interlocutor, de principi a fi.",
+    "Web, landing i auditoria UI/UX amb preus transparents i abast tancat. Explica'm el projecte i et torno una proposta. Un sol interlocutor, de principi a fi.",
   path: "/serveis",
 });
 
@@ -21,7 +21,7 @@ export default function ServicesPage() {
     <main className="flex min-h-[100dvh] flex-col w-full overflow-x-clip bg-surface-base">
       <SharedPageHero
         title="Serveis"
-        description="Webs, landings i auditories amb preu clar i abast tancat. Explica'm el projecte i et torno una proposta amb el preu tancat — un sol interlocutor, de principi a fi."
+        description="Webs, landings i auditories amb abast i preu tancats. Explica'm el projecte i et torno una proposta. Un sol interlocutor, de principi a fi."
         afterDescription={
           <ServicesHeroCta
             href="#productes"

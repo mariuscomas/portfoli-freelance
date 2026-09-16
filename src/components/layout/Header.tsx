@@ -7,6 +7,7 @@ import TransitionLink from "@/components/common/TransitionLink";
 import Logo from "@/components/common/Logo";
 import LogoSmall from "@/components/common/LogoSmall";
 import { useScrollHide } from "@/hooks/useScrollHide";
+import { useMediaQuery, BELOW_LG_QUERY } from "@/hooks/useMediaQuery";
 import { useHeaderContrast } from "@/context/HeaderContrastContext";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
@@ -27,6 +28,11 @@ import { useContactModal } from "@/context/ContactModalContext";
   - Histeresi al threshold (enter 100 / exit 50) → si l'usuari scrolla
     a la vora dels 100px, no flickeja entre estats.
   - Mobile: sempre compacte (no hi caben links inline).
+  - EL BOTÓ MENU NO DEPÈN DE L'SCROLL PER SOTA DE lg (16set26): els links
+    inline són `hidden lg:flex`, així que per sota d'aquest breakpoint el
+    Menu és l'ÚNICA sortida de navegació. Lligar-lo a `isCompact` deixava
+    mòbil i tauleta sense cap navegació a scroll 0. A lg+ es manté el patró
+    Motto: apareix quan el header es compacta.
 
   Altres comportaments preservats:
   - Apareix al muntar qualsevol pàgina, inclosa la Home (~1s després).
@@ -86,6 +92,11 @@ export default function Header({
   const [hasMounted, setHasMounted] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const { hidden: isScrollHidden, show } = useScrollHide(COMPACT_ENTER);
+  // Per sota de lg no hi ha links inline: el Menu hi ha de ser sempre.
+  const isBelowLg = useMediaQuery(BELOW_LG_QUERY);
+  // A lg+ el Menu és el relleu dels links inline quan es compacta; per sota
+  // hi és sempre, perquè allà no hi ha cap més sortida de navegació.
+  const showMenuButton = isCompact || isBelowLg;
   const [hasFocusWithin, setHasFocusWithin] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const contrast = useHeaderContrast();
@@ -315,7 +326,7 @@ export default function Header({
         </motion.div>
 
         <AnimatePresence mode="popLayout" initial={false}>
-          {isCompact && (
+          {showMenuButton && (
             <motion.button
               key="menu-btn"
               layout
