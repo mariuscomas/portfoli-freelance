@@ -42,7 +42,31 @@ export const LANDING_BASE_PAGES = 1;
 /** Els dos productes que comparteixen el mateix motor de configuració per rol. */
 export type ConfigProduct = "web" | "landing";
 
-export type ConfigExtraId = "pagina" | "idioma" | "motion" | "cms" | "redaccio";
+export type ConfigExtraId =
+  // Model v1.4
+  | "pagina"
+  | "idioma"
+  | "motion"
+  | "cms"
+  | "redaccio"
+  // Mòduls del pla modular 2026 (només amb PRICING_V2_ENABLED)
+  | "seo"
+  | "accessibilitat"
+  | "analitica"
+  | "integracio"
+  | "blog"
+  | "areaPrivada"
+  | "migracio"
+  | "formacio";
+
+/** Famílies del pas d'extres del configurador. */
+export type ExtraFamily = "amplia" | "capacitats" | "rendiment";
+
+export const EXTRA_FAMILIES: { id: ExtraFamily; label: string }[] = [
+  { id: "amplia", label: "Amplia el projecte" },
+  { id: "capacitats", label: "Suma capacitats" },
+  { id: "rendiment", label: "Fes-la rendir" },
+];
 
 // ─── Model modular per DISCIPLINES (multi-select) ───────────────────────────
 // L'usuari tria una o més disciplines; les tres juntes són "De principi a fi".
@@ -204,18 +228,38 @@ export const PRICING_WEB = PRICING.web;
  *  immersio + disciplinePrice[d] + tancament. No dupliquis xifres: llegeix d'aquí. */
 export const PRICING_LANDING = PRICING.landing;
 
-/** Extres disponibles segons producte i disciplines. Reprodueix la
- *  disponibilitat dels antics paquets: idioma/motion/cms lligats a Dev,
- *  redacció lligada a UX, pàgina només a web. */
-function availableExtras(product: ConfigProduct, has: Set<Discipline>): ConfigExtraId[] {
-  const out: ConfigExtraId[] = [];
-  if (product === "web") out.push("pagina");
-  if (has.has("dev")) {
-    out.push("idioma", "motion");
-    if (product === "web") out.push("cms");
+/**
+ * Extres disponibles per a una configuració. Surt del catàleg, no d'una llista
+ * a mà: cada extra porta la seva condició a `when`, i els mòduls marcats
+ * `v2Only` només s'ofereixen amb el joc de preus v2.
+ *
+ * L'ordre és el del catàleg (v1 primer, després els mòduls del pla), i dins
+ * del configurador la família de cada extra decideix a quin grup es pinta.
+ */
+function availableExtras(ctx: ExtraContext, esV2: boolean): ConfigExtraId[] {
+  return (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]).filter((id) => {
+    const def = CONFIG_EXTRAS[id];
+    if (def.v2Only && !esV2) return false;
+    return def.when ? def.when(ctx) : true;
+  });
+}
+
+/** Quantitats demanades, normalitzades a un mapa id → unitats. */
+function selectedAmounts(selection: ConfigSelection): Map<ConfigExtraId, number> {
+  const m = new Map<ConfigExtraId, number>();
+  const set = (id: ConfigExtraId, n: number) => {
+    if (n > 0) m.set(id, n);
+  };
+  set("pagina", toInt(selection.pages));
+  set("idioma", toInt(selection.languages));
+  set("motion", selection.motion ? 1 : 0);
+  set("cms", selection.cms ? 1 : 0);
+  set("redaccio", selection.redaccio ? 1 : 0);
+  for (const [id, valor] of Object.entries(selection.modules ?? {})) {
+    if (!valor) continue;
+    set(id as ConfigExtraId, typeof valor === "number" ? toInt(valor) : 1);
   }
-  if (has.has("ux")) out.push("redaccio");
-  return out;
+  return m;
 }
 
 /** Etiqueta llegible de l'abast triat. */
@@ -248,6 +292,13 @@ export const disciplineIncludeLine = (chosen: Discipline[]): string =>
  *  - counter · perUnit : preu × quantitat (pàgines usen el preu del rol)
  *  - toggle  · flat    : preu fix quan està actiu
  *  - toggle  · perPage : preu × (pàgines base + extra) quan està actiu */
+export interface ExtraContext {
+  product: ConfigProduct;
+  has: Set<Discipline>;
+  /** Extres ja actius a la selecció (la formació depèn del CMS). */
+  actius: Set<ConfigExtraId>;
+}
+
 export interface ConfigExtraDef {
   id: ConfigExtraId;
   label: string;
@@ -256,17 +307,65 @@ export interface ConfigExtraDef {
   price: number;
   /** Sufix d'unitat per a la UI ("PÀGINA", "IDIOMA"). */
   unitLabel?: string;
+  /**
+   * Text d'ajuda de l'extra (toggletip al configurador). Copy validat al Figma,
+   * frame "Tooltip — Còpia dels extres".
+   */
+  help?: string;
+  /** Família del pas d'extres del configurador. */
+  family: ExtraFamily;
+  /** Només amb el joc de preus v2 (mòduls del pla modular 2026). */
+  v2Only?: boolean;
+  /** Condició de disponibilitat. Sense `when`, sempre disponible. */
+  when?: (ctx: ExtraContext) => boolean;
 }
 
-/** Catàleg d'extres del configurador. El preu de "pagina" és orientatiu (200):
- *  el preu real l'aplica cada rol via pageExtraPrice. */
+/**
+ * Catàleg d'extres. El preu de "pagina" és orientatiu (200): el real l'aplica
+ * cada abast via `pageExtraPrice`.
+ *
+ * `family` situa l'extra al pas del configurador; `v2Only` marca els vuit
+ * mòduls del pla modular, que no s'ofereixen mentre PRICING_V2_ENABLED estigui
+ * tancat (els seus preus són del model nou); `when` és la condició de
+ * disponibilitat, que pot dependre del producte, de les disciplines i dels
+ * altres extres actius (la formació de CMS no es pot vendre sense el CMS).
+ */
 export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
-  pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA" },
-  idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA" },
-  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400 },
-  cms: { id: "cms", label: "Panell d'edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500 },
-  redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80 },
+  pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA", family: "amplia", when: ({ product }) => product === "web" },
+  idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA", family: "amplia", when: ({ has }) => has.has("dev") },
+  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, family: "capacitats", when: ({ has }) => has.has("dev") },
+  cms: { id: "cms", label: "Panell d'edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500, family: "capacitats", when: ({ product, has }) => product === "web" && has.has("dev") },
+  redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80, family: "rendiment", when: ({ has }) => has.has("ux") },
+
+  // ——— Mòduls del pla modular 2026 (35 €/h, marge 25%) ———
+  blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, when: ({ product, has }) => product === "web" && has.has("dev") },
+  areaPrivada: { id: "areaPrivada", label: "Àrea privada", control: "toggle", basis: "flat", price: 500, family: "amplia", v2Only: true, when: ({ product, has }) => product === "web" && has.has("dev") },
+  integracio: { id: "integracio", label: "Integracions externes", control: "counter", basis: "perUnit", price: 250, unitLabel: "INTEGRACIÓ", family: "capacitats", v2Only: true, when: ({ has }) => has.has("dev") },
+  seo: { id: "seo", label: "SEO tècnic", control: "toggle", basis: "flat", price: 300, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev") },
+  analitica: { id: "analitica", label: "Analítica i conversió", control: "toggle", basis: "flat", price: 250, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev") },
+  accessibilitat: { id: "accessibilitat", label: "Accessibilitat WCAG 2.2 AA", control: "toggle", basis: "flat", price: 350, family: "rendiment", v2Only: true, when: ({ has }) => has.has("ui") || has.has("dev") },
+  migracio: { id: "migracio", label: "Migració de continguts", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev") },
+  // Sense CMS no hi ha res a ensenyar a fer servir.
+  formacio: { id: "formacio", label: "Formació i manual del CMS", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ actius }) => actius.has("cms") },
 };
+
+/**
+ * Packs drecera del pla modular: 10% de descompte sobre la suma dels seus
+ * mòduls. El descompte s'aplica SOL quan la configuració té tots els mòduls
+ * del pack, i surt com una línia pròpia al desglòs. Així ningú no paga 120 €
+ * de més per no haver trobat la drecera.
+ */
+export interface PackDef {
+  id: "contingut" | "rendiment";
+  label: string;
+  modules: ConfigExtraId[];
+  discountPct: number;
+}
+
+export const PACKS: PackDef[] = [
+  { id: "contingut", label: "Pack Contingut", modules: ["cms", "blog", "formacio", "migracio"], discountPct: 10 },
+  { id: "rendiment", label: "Pack Rendiment", modules: ["seo", "analitica", "accessibilitat"], discountPct: 10 },
+];
 
 /** Selecció de l'usuari al configurador. Tots els extres són opcionals. */
 export interface ConfigSelection {
@@ -279,6 +378,12 @@ export interface ConfigSelection {
   motion?: boolean;
   cms?: boolean;
   redaccio?: boolean;
+  /**
+   * Canal genèric per als mòduls del pla modular: `{ seo: true, integracio: 2 }`.
+   * Els cinc extres del v1 conserven el seu camp propi per no trencar el
+   * configurador ni els tests que ja hi són.
+   */
+  modules?: Partial<Record<ConfigExtraId, number | boolean>>;
 }
 
 export interface QuoteLine {
@@ -347,30 +452,50 @@ export function calcConfiguration(
     ...(has.has("dev") ? P.devIncludes : []),
   ];
 
-  const avail = availableExtras(product, has);
-  const available = new Set(avail);
   const pageExtraPrice = P.pageExtra(has);
 
   const pages = toInt(selection.pages);
-  const languages = toInt(selection.languages);
   const totalPages = P.basePages + pages;
+
+  // Els mòduls del pla modular només existeixen amb el joc v2.
+  const esV2 = pricing === PRICING_SETS.v2;
+
+  // Disponibilitat en dues passades: la de `formacio` depèn que el CMS hi sigui,
+  // i el CMS al seu torn depèn del producte i de les disciplines.
+  const demanats = selectedAmounts(selection);
+  const primera = new Set(availableExtras({ product, has, actius: new Set() }, esV2));
+  const actius = new Set<ConfigExtraId>(
+    [...demanats.keys()].filter((id) => primera.has(id)),
+  );
+  const avail = availableExtras({ product, has, actius }, esV2);
+  const available = new Set(avail);
 
   const extras: QuoteLine[] = [];
 
-  if (available.has("pagina") && pages > 0) {
-    extras.push({ id: "pagina", label: CONFIG_EXTRAS.pagina.label, amount: pageExtraPrice * pages });
+  for (const id of avail) {
+    const unitats = demanats.get(id) ?? 0;
+    if (unitats <= 0) continue;
+    const def = CONFIG_EXTRAS[id];
+    // "pagina" cobra el preu de l'abast, no el del catàleg (que és orientatiu).
+    const unitari = id === "pagina" ? pageExtraPrice : def.price;
+    const amount =
+      def.basis === "perUnit"
+        ? unitari * unitats
+        : def.basis === "perPage"
+          ? def.price * totalPages
+          : def.price;
+    extras.push({ id, label: def.label, amount });
   }
-  if (available.has("idioma") && languages > 0) {
-    extras.push({ id: "idioma", label: CONFIG_EXTRAS.idioma.label, amount: CONFIG_EXTRAS.idioma.price * languages });
-  }
-  if (available.has("motion") && selection.motion) {
-    extras.push({ id: "motion", label: CONFIG_EXTRAS.motion.label, amount: CONFIG_EXTRAS.motion.price });
-  }
-  if (available.has("cms") && selection.cms) {
-    extras.push({ id: "cms", label: CONFIG_EXTRAS.cms.label, amount: CONFIG_EXTRAS.cms.price });
-  }
-  if (available.has("redaccio") && selection.redaccio) {
-    extras.push({ id: "redaccio", label: CONFIG_EXTRAS.redaccio.label, amount: CONFIG_EXTRAS.redaccio.price * totalPages });
+
+  // Packs: 10% sobre la suma dels seus mòduls, només si hi són tots. Surt com
+  // una línia negativa pròpia perquè el desglòs expliqui d'on ve el descompte.
+  for (const pack of PACKS) {
+    if (!pack.modules.every((id) => available.has(id) && (demanats.get(id) ?? 0) > 0)) continue;
+    const suma = pack.modules.reduce((acc, id) => acc + CONFIG_EXTRAS[id].price, 0);
+    const descompte = Math.round((suma * pack.discountPct) / 100);
+    if (descompte > 0) {
+      extras.push({ id: `pack-${pack.id}`, label: `${pack.label} (−${pack.discountPct}%)`, amount: -descompte });
+    }
   }
 
   const extrasTotal = extras.reduce((sum, e) => sum + e.amount, 0);
@@ -645,7 +770,10 @@ export const PRODUCTS: Product[] = [
     // El preu tancat antic (PRICE_AUDIT = 900) es manté com a constant per si
     // es vol revertir; la font del càlcul és AUDIT_BASE_BY_COUNT (calcAudit).
     priceLabel: "DES DE",
-    price: AUDIT_BASE_BY_COUNT[1],
+    // Configuració completa (3 focus), mateix criteri que BASE_WEB i
+    // BASE_LANDING: el "des de" del catàleg és l'abast sencer, i el terra d'un
+    // sol focus viu a la nota d'abast. Unificat el 16set26.
+    price: AUDIT_BASE_BY_COUNT[3],
     // Versió combinada aprovada el 16set26: manté la terminologia d'ofici
     // ("revisió heurística") i recupera l'argument del descompte, que és el que
     // elimina el risc de comprar-la. Fora "Auditoria completa i accionable":

@@ -289,6 +289,12 @@
   --body-md-letter-spacing: 0;
 
   --body-sm-font-size: clamp(0.75rem, 1vw, 1rem);
+
+  /* Figma: Body/XS - Regular (14/20). Graó auxiliar, sense clamp: és text de
+     suport (tooltips, notes) que no ha d'escalar amb el breakpoint. */
+  --body-xs-font-size: 0.875rem;
+  --body-xs-line-height: 1.25rem;
+  --body-xs-letter-spacing: 0;
   /* Figma: 12 / 14 / 16 */
   --body-sm-line-height: clamp(1.125rem, 1.5vw, 1.75rem);
   /* Figma: 18 / 22 / 28 */
@@ -504,6 +510,10 @@
    TAILWIND v4 @theme — Mapeig de tokens a utility classes
    ============================================================ */
 @theme {
+  /* Figma: estil d'efecte "Soft Shadow" — bombolla del toggletip i superfícies
+     que floten sobre el contingut. */
+  --shadow-soft: 0 4px 20px -2px rgb(0 0 0 / 0.08);
+
   /* Breakpoints — 3xl per a monitors externs (els laptops, incloent-hi el MBP 16" a 1728px, queden per sota) */
   --breakpoint-3xl: 120rem; /* 1920px */
 
@@ -760,6 +770,13 @@
     font-size: var(--body-md-font-size);
     line-height: var(--body-md-line-height);
     letter-spacing: var(--body-md-letter-spacing);
+  }
+
+  .text-body-xs {
+    @apply font-sans font-normal;
+    font-size: var(--body-xs-font-size);
+    line-height: var(--body-xs-line-height);
+    letter-spacing: var(--body-xs-letter-spacing);
   }
 
   .text-body-sm {

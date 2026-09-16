@@ -388,6 +388,8 @@ export default function WebSpokeView({ product }: { product: Product }) {
         }
         price={formatPrice(product.price)}
         scopeNote="Projecte complet · o per fases (UX · UI · Dev)"
+        scrollCta={{ href: "#que-inclou", label: "Mira què inclou" }}
+        showControls
         ctaLabel={CONFIGURATOR_ENABLED ? "Configura la teva web" : "Demana pressupost"}
         onCta={openConfigurator}
       />

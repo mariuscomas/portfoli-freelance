@@ -26,8 +26,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith('/proposta')
 
   if (isInternalArea) {
-    // Zones internes: render minimalista, sense Header ni Footer del portfoli
-    return <main>{children}</main>
+    // Zones internes: render minimalista, sense Header ni Footer del portfoli.
+    // Sense <main> propi: AdminShell, /admin/login i ProposalView ja en declaren un.
+    return <>{children}</>
   }
 
   // FooterRevealProvider permet que el Header sàpiga quan el footer es revela

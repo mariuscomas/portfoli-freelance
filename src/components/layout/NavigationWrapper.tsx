@@ -30,7 +30,11 @@ export default function NavigationWrapper({ children }: { children: React.ReactN
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
       />
-      <main>{children}</main>
+      {/* Embolcall neutre, NO <main>: cada page.tsx públic ja declara el seu
+          propi <main> amb el layout de la pàgina. Tenir-ne un aquí feia
+          <main> dins de <main> a totes les rutes (axe: landmark-no-duplicate-main,
+          landmark-main-is-top-level, landmark-unique). */}
+      <div>{children}</div>
     </HeaderContrastProvider>
   );
 }

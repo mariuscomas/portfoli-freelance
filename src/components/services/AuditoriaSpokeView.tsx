@@ -24,7 +24,17 @@ const CONTACT_EMAIL = SITE_EMAIL;
 const formatPrice = (n: number) =>
   `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
 
-/** Preu terra: la configuració mínima és 1 focus. Font: AUDIT_BASE_BY_COUNT. */
+/**
+ * Preus del hero i de la secció 01.
+ *
+ * Criteri unificat el 16set26: el hero d'un spoke mostra la configuració
+ * COMPLETA, com fan web (2.400) i landing (1.440) amb `product.price`. Abans
+ * l'auditoria ensenyava el terra d'1 focus i el visitant que venia del hub
+ * (1.100 € amb els tres chips) veia baixar el preu en canviar de pàgina.
+ *
+ * El terra no es perd: va a la nota d'abast, com "o per fases" als germans.
+ */
+const FULL_PRICE = AUDIT_BASE_BY_COUNT[3];
 const MIN_PRICE = AUDIT_BASE_BY_COUNT[1];
 
 /** Frase de preus per nombre de focus (1/2/3), derivada del catàleg. */
@@ -117,9 +127,9 @@ function IncludesSection() {
       <Reveal className="mt-8">
         <div className="flex flex-col gap-1.5">
           <span className="text-caption uppercase text-text-secondary">DES DE</span>
-          <span className="text-display-h5 text-text-main">{formatPrice(MIN_PRICE)}</span>
+          <span className="text-display-h5 text-text-main">{formatPrice(FULL_PRICE)}</span>
           <span className="text-caption text-text-secondary">
-            Es descompta íntegra si fem el projecte en 3 mesos.
+            Tots tres focus. Un de sol, {formatPrice(MIN_PRICE)}.
           </span>
         </div>
       </Reveal>
@@ -285,7 +295,7 @@ function ProcessSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="05 · COM FUNCIONA" title="Com funciona" />
+        <SectionHeader caption="05 · COM TREBALLEM" title="Com funciona" />
       </Reveal>
       <Reveal className="mt-14">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -390,8 +400,10 @@ export default function AuditoriaSpokeView() {
             {"i pla d'acció. I si fem el projecte en 3 mesos, te la descomptes íntegra."}
           </>
         }
-        price={formatPrice(MIN_PRICE)}
-        scopeNote="Es descompta íntegra si fem el projecte en 3 mesos"
+        price={formatPrice(FULL_PRICE)}
+        scopeNote={`Tots tres focus · un de sol, ${formatPrice(MIN_PRICE)}`}
+        scrollCta={{ href: "#que-inclou", label: "Mira què inclou" }}
+        showControls
         ctaLabel="Demana la teva auditoria"
         onCta={openConfigurator}
       />

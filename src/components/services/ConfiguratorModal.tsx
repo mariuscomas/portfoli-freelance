@@ -434,6 +434,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
       selection: quoteSelection,
       pricing: quotePricing,
       totalEur: total,
+      breakdown: buildSummary(),
     });
     setSubmitting(false);
     if (res.status === "ok") {
@@ -1501,6 +1502,7 @@ function ExtresSection({
             <ConfigRow
               label={CONFIG_EXTRAS.pagina.label}
               caption={`+${quote.pageExtraPrice} €/PÀGINA`}
+              help={CONFIG_EXTRAS.pagina.help}
             >
               <Stepper label={CONFIG_EXTRAS.pagina.label} value={pages} onChange={setPages} />
             </ConfigRow>
@@ -1511,6 +1513,7 @@ function ExtresSection({
             <ConfigRow
               label={CONFIG_EXTRAS.idioma.label}
               caption={`+${CONFIG_EXTRAS.idioma.price} €/IDIOMA`}
+              help={CONFIG_EXTRAS.idioma.help}
             >
               <Stepper
                 label={CONFIG_EXTRAS.idioma.label}
@@ -1527,14 +1530,22 @@ function ExtresSection({
         )}
         {quote.availableExtras.includes("motion") && (
           <ExtraReveal key="motion" reduce={reduce}>
-            <ConfigRow label={CONFIG_EXTRAS.motion.label} caption={`+${CONFIG_EXTRAS.motion.price} €`}>
+            <ConfigRow
+              label={CONFIG_EXTRAS.motion.label}
+              caption={`+${CONFIG_EXTRAS.motion.price} €`}
+              help={CONFIG_EXTRAS.motion.help}
+            >
               <Switch label={CONFIG_EXTRAS.motion.label} checked={motionOn} onChange={setMotionOn} />
             </ConfigRow>
           </ExtraReveal>
         )}
         {quote.availableExtras.includes("cms") && (
           <ExtraReveal key="cms" reduce={reduce}>
-            <ConfigRow label={CONFIG_EXTRAS.cms.label} caption={`+${CONFIG_EXTRAS.cms.price} €`}>
+            <ConfigRow
+              label={CONFIG_EXTRAS.cms.label}
+              caption={`+${CONFIG_EXTRAS.cms.price} €`}
+              help={CONFIG_EXTRAS.cms.help}
+            >
               <Switch label={CONFIG_EXTRAS.cms.label} checked={cms} onChange={setCms} />
             </ConfigRow>
           </ExtraReveal>
@@ -1548,6 +1559,7 @@ function ExtresSection({
                   ? `+${CONFIG_EXTRAS.redaccio.price * (basePages + pages)} € (${basePages + pages} pàg. × ${CONFIG_EXTRAS.redaccio.price} €)`
                   : `+${CONFIG_EXTRAS.redaccio.price} €/PÀGINA`
               }
+              help={CONFIG_EXTRAS.redaccio.help}
             >
               <Switch label={CONFIG_EXTRAS.redaccio.label} checked={redaccio} onChange={setRedaccio} />
             </ConfigRow>
@@ -1834,6 +1846,7 @@ function LeadForm({
       selection,
       pricing,
       totalEur: total,
+      breakdown: summary,
     });
     setSubmitting(false);
 

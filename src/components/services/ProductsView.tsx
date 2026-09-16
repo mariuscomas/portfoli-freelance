@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
+import { SITE_EMAIL } from "@/lib/site";
 import { useContactModal } from "@/context/ContactModalContext";
 import TransitionLink from "@/components/common/TransitionLink";
 import { DisciplineChips } from "@/components/services/configuratorShared";
@@ -209,15 +210,22 @@ function TriadaSection({
               trucada.
             </p>
           </div>
-          <a
-            href={PRODUCT_CALL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group shrink-0"
-          >
-            <LinkArrow>Reserva una trucada</LinkArrow>
-            <span className="sr-only">(s’obre en una pestanya nova)</span>
-          </a>
+          {/* Dues sortides, com al Figma: trucada per a qui vol parlar, correu
+              per a qui prefereix escriure. No repeteixen substantiu. */}
+          <div className="flex shrink-0 flex-col gap-6 lg:flex-row lg:items-center lg:gap-12">
+            <a
+              href={PRODUCT_CALL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <LinkArrow>Reserva una trucada</LinkArrow>
+              <span className="sr-only">(s’obre en una pestanya nova)</span>
+            </a>
+            <a href={`mailto:${SITE_EMAIL}`} className="group">
+              <LinkArrow>Escriu-me</LinkArrow>
+            </a>
+          </div>
         </div>
       </Reveal>
     </section>

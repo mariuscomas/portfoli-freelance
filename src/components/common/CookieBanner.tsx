@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   CONSENT_CHANGE_EVENT,
   readConsent,
@@ -29,6 +30,9 @@ function subscribe(callback: () => void) {
 }
 
 export default function CookieBanner() {
+  // Si a /admin no hi ha analítica, demanar-hi consentiment no té sentit.
+  const pathname = usePathname()
+
   // Al servidor diem que ja hi ha decisió: així el banner no apareix mai al
   // primer paint i no hi ha ni flash ni mismatch d'hidratació.
   const hasDecision = useSyncExternalStore(
@@ -46,7 +50,8 @@ export default function CookieBanner() {
     return () => window.removeEventListener(CONSENT_CHANGE_EVENT, onChange)
   }, [])
 
-  const visible = reopened || !hasDecision
+  // El guard va aquí i no amunt: cap return abans d'haver cridat tots els hooks.
+  const visible = (reopened || !hasDecision) && !pathname?.startsWith("/admin")
   if (!visible) return null
 
   const decide = (value: ConsentValue) => {

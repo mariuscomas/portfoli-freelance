@@ -8,6 +8,7 @@ import Button from "@/components/ui/Button";
 import { submitContact } from "@/app/contacte/actions";
 import { RESPONSE_SLA } from "@/lib/pricing";
 import { SITE_EMAIL } from "@/lib/site";
+import { EVENTS, trackEvent } from "@/lib/analytics";
 
 /**
  * <ContactModal />
@@ -292,8 +293,12 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
     });
     setSubmitting(false);
 
-    if (res.status === "ok") setSent(true);
-    else setError(res.message);
+    if (res.status === "ok") {
+      setSent(true);
+      trackEvent(EVENTS.contactSubmit);
+    } else {
+      setError(res.message);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

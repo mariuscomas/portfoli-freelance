@@ -11,6 +11,7 @@
  */
 
 import { sendMail, type MailResult } from "./mail";
+import { RESPONSE_SLA } from "@/lib/pricing";
 
 function config() {
   const key = process.env.RESEND_API_KEY;
@@ -28,22 +29,32 @@ export async function notifyQuoteReceived(input: {
   to: string;
   name: string | null;
   product: string;
+  /** Desglossament del Resum. La pantalla de confirmació promet una còpia: és aquesta. */
+  breakdown?: string | null;
+  /** Referència curta (la mateixa que es mostra a la confirmació). */
+  ref?: string | null;
 }): Promise<MailResult> {
   const c = config();
   if (!c) return { ok: false, skipped: true };
   const hi = input.name ? `Hola, ${input.name}` : "Hola";
+  const subject = input.ref
+    ? `He rebut la teva configuració (ref. ${input.ref})`
+    : "He rebut la teva configuració";
   return sendMail(
     {
       from: c.from,
       to: input.to,
       reply_to: c.to,
-      subject: "He rebut la teva configuració",
+      subject,
       text: [
         `${hi},`,
         "",
         "He rebut el que has configurat i ja hi estic mirant.",
+        ...(input.breakdown
+          ? ["", "Aquesta és la teva configuració:", "", input.breakdown, "", "El total és orientatiu: el tanquem junts a la proposta."]
+          : []),
         "",
-        "Et responc en un màxim de 48 hores laborables amb una proposta tancada o, si veig que hi ha una manera millor d'encarar-ho, amb una alternativa.",
+        `Et responc en un màxim de ${RESPONSE_SLA} amb una proposta tancada o, si veig que hi ha una manera millor d'encarar-ho, amb una alternativa.`,
         "",
         "Si mentrestant vols afegir res, respon aquest correu.",
         "",

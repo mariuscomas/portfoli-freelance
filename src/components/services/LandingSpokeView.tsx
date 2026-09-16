@@ -123,10 +123,6 @@ function IncludesSection({ includes }: { includes: string[] }) {
             </li>
           ))}
         </ul>
-        <p className="mt-10 text-caption text-text-secondary">
-          A la landing, els textos, el logo i les imatges els aportes tu. Si no els tens, la redacció
-          és un extra.
-        </p>
       </Reveal>
     </section>
   );
@@ -392,6 +388,8 @@ export default function LandingSpokeView({ product }: { product: Product }) {
         }
         price={formatPrice(product.price)}
         scopeNote="Projecte complet · o per fases (UX · UI · Dev)"
+        scrollCta={{ href: "#que-inclou", label: "Mira què inclou" }}
+        showControls
         ctaLabel={CONFIGURATOR_ENABLED ? "Configura la teva landing" : "Demana pressupost"}
         onCta={openConfigurator}
       />

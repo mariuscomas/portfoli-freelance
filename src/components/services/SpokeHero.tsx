@@ -3,6 +3,9 @@
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
+import SiteControls from "@/components/common/SiteControls";
+import { useClaimHeroControls } from "@/context/HeroControlsContext";
+import { ServicesHeroCta } from "@/components/services/ServicesViews";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
 
@@ -24,6 +27,21 @@ export interface SpokeHeroProps {
   ctaLabel: string;
   /** Obre el configurador (o l'acció principal). */
   onCta: () => void;
+  /**
+   * Enllaç d'scroll a la primera secció, sota la descripció. Mateix patró que
+   * el hub (Figma: `CTA scroll — Què inclou` al hero de cada spoke).
+   */
+  scrollCta?: { href: string; label: string; shortLabel?: string };
+  /**
+   * Ancora els controls d'utilitat (tema + idioma) a la fila inferior del
+   * hero; mentre és actiu, la còpia flotant de SiteShell es retira.
+   *
+   * La fila NO porta enllaç creuat: es va provar amb el nom del producte
+   * germà i es va retirar el 16set26 perquè un nom de producte sol, amb una
+   * fletxa i sense marc, no diu si és una secció, un altre producte o una
+   * altra ruta. Als germans s'arriba pel hub i pel navbar.
+   */
+  showControls?: boolean;
 }
 
 /**
@@ -42,8 +60,11 @@ export default function SpokeHero({
   scopeNote,
   ctaLabel,
   onCta,
+  scrollCta,
+  showControls = false,
 }: SpokeHeroProps) {
   const reduce = useReducedMotion();
+  useClaimHeroControls(showControls);
   const rise = (delay: number) => ({
     initial: reduce ? (false as const) : { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
@@ -66,6 +87,12 @@ export default function SpokeHero({
         <motion.p {...rise(0.12)} className="max-w-5xl text-body-xl font-medium text-text-secondary">
           {subhead}
         </motion.p>
+
+        {scrollCta && (
+          <motion.div {...rise(0.16)}>
+            <ServicesHeroCta {...scrollCta} />
+          </motion.div>
+        )}
 
         <motion.div
           {...rise(0.18)}
@@ -92,6 +119,13 @@ export default function SpokeHero({
           </button>
         </motion.div>
       </div>
+
+      {/* Fila inferior del hero (Figma: `Footer`, SiteControls a l'esquerra). */}
+      {showControls && (
+        <motion.div {...rise(0.24)} className="mt-20 flex items-center md:mt-24">
+          <SiteControls inline />
+        </motion.div>
+      )}
     </section>
   );
 }

@@ -35,11 +35,12 @@ import { LinkUnderline } from "@/components/ui/LinkUnderline";
 export function ServicesHeroCta({
   href,
   label,
-  shortLabel,
+  shortLabel = label,
 }: {
   href: string;
   label: string;
-  shortLabel: string;
+  /** Només si el label llarg no cap a 402px. Per defecte, el mateix label. */
+  shortLabel?: string;
 }) {
   return (
     <LinkUnderline

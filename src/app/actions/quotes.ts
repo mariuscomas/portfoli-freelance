@@ -48,6 +48,12 @@ interface SubmitQuoteInput {
   rateLabel?: string | null;
   /** Canal d'atribució declarat ("Com m'has conegut?"). NULL si no s'omple. */
   source?: string | null;
+  /**
+   * Desglossament llegible de la configuració (fases, extres i total), tal com
+   * el veu l'usuari al Resum. Va a la còpia que rep el client: la pantalla de
+   * confirmació li promet una còpia, i sense això l'acusament no en portava cap.
+   */
+  breakdown?: string;
 }
 
 const PRODUCTS: QuoteProduct[] = ["web", "landing", "auditoria", "collaboracio"];
@@ -103,7 +109,13 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
 
   // Acusament de rebuda al client: sense això, qui envia una configuració es
   // queda 48 h sense cap senyal que hagi arribat enlloc.
-  await notifyQuoteReceived({ to: email, name: name || null, product: input.product });
+  await notifyQuoteReceived({
+    to: email,
+    name: name || null,
+    product: input.product,
+    breakdown: input.breakdown || null,
+    ref: refFromId(id),
+  });
 
   // Notificació per email (opt-in via RESEND_API_KEY). No bloqueja el resultat.
   await notifyNewQuote({

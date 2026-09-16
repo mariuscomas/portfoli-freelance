@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, useId } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion, useSpring, useTransform, useAnimationControls } from "framer-motion";
-import { X, CaretDown, Check } from "@phosphor-icons/react";
+import { X, CaretDown, Check, Question } from "@phosphor-icons/react";
 import { DISCIPLINES, DISCIPLINE_ORDER, type Discipline } from "@/lib/pricing";
 
 /* ============================================================
@@ -210,22 +210,217 @@ function CurtainShell({
 /* ============================================================
    Files, stepper i switch
    ============================================================ */
+/* ------------------------------------------------------------
+   Ajuda per extra. Dos patrons, un sol copy (pricing.ts → CONFIG_EXTRAS.help):
+   · desktop  → toggletip (clic fixa, hover i focus revelen, Esc i clic fora
+     tanquen). La bombolla va en PORTAL perquè el `?` viu dins d'un contenidor
+     amb overflow-clip i el modal té scroll propi.
+   · mòbil    → desplegable inline: tota la caixa d'info és el trigger tàctil i
+     el `?` només fa d'afordança. Obrir-ne un tanca l'anterior.
+   Figma: component "Tooltip" (280 · Body/XS · Soft Shadow) i frame
+   "Extres — mòbil (inline)".
+   ------------------------------------------------------------ */
+
+const HELP_EVENT = "configurator:help";
+const announceHelp = (id: string) => {
+  window.dispatchEvent(new CustomEvent(HELP_EVENT, { detail: id }));
+};
+
+/** Tanca aquesta ajuda quan se n'obre una altra: només una oberta alhora. */
+function useCloseOnOtherHelp(id: string, open: boolean, close: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const onOther = (e: Event) => {
+      if ((e as CustomEvent).detail !== id) close();
+    };
+    window.addEventListener(HELP_EVENT, onOther);
+    return () => window.removeEventListener(HELP_EVENT, onOther);
+  }, [id, open, close]);
+}
+
+const HELP_W = 280;
+const HELP_GAP = 12;
+
+function HelpBubble({ text, anchor }: { text: string; anchor: DOMRect }) {
+  // Si no hi cap a sobre, cau a sota i la fletxa canvia de costat.
+  const below = anchor.top < 160;
+  const left = Math.min(
+    Math.max(12, anchor.left + anchor.width / 2 - HELP_W / 2),
+    window.innerWidth - HELP_W - 12
+  );
+  const arrowLeft = anchor.left + anchor.width / 2 - left - 6;
+  return (
+    <div
+      role="status"
+      className="pointer-events-none fixed z-[120]"
+      style={{
+        left,
+        top: below ? anchor.bottom + HELP_GAP : anchor.top - HELP_GAP,
+        width: HELP_W,
+        transform: below ? undefined : "translateY(-100%)",
+      }}
+    >
+      <div className="relative rounded-xl border border-border-subtle bg-surface-card px-4 py-3 text-body-xs text-text-main shadow-soft">
+        {text}
+        <span
+          aria-hidden="true"
+          style={{ left: arrowLeft }}
+          className={`absolute h-3 w-3 rotate-45 bg-surface-card ${
+            below ? "-top-1.5 border-l border-t" : "-bottom-1.5 border-r border-b"
+          } border-border-subtle`}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Trigger `?` de 32 amb hit-area de 44 (pseudo-element, no infla la fila). */
+export function HelpToggle({ label, text }: { label: string; text: string }) {
+  const id = useId();
+  const isClient = useIsClient();
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [pinned, setPinned] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const open = pinned || hovered;
+
+  const measure = () => {
+    if (btnRef.current) setRect(btnRef.current.getBoundingClientRect());
+  };
+  const closeAll = () => {
+    setPinned(false);
+    setHovered(false);
+  };
+  useCloseOnOtherHelp(id, open, closeAll);
+
+  useEffect(() => {
+    if (!open) return;
+    const reposition = () => measure();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeAll();
+    };
+    const onDown = (e: PointerEvent) => {
+      if (!btnRef.current?.contains(e.target as Node)) closeAll();
+    };
+    // capture:true → també els scrolls del contenidor del modal, no només el de window
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onDown);
+    return () => {
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onDown);
+    };
+  }, [open]);
+
+  const reveal = () => {
+    measure();
+    setHovered(true);
+    announceHelp(id);
+  };
+
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-label={`Què inclou: ${label}`}
+        aria-expanded={open}
+        onClick={() => {
+          const next = !pinned;
+          setPinned(next);
+          if (next) {
+            measure();
+            announceHelp(id);
+          }
+        }}
+        onMouseEnter={reveal}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={reveal}
+        onBlur={() => setHovered(false)}
+        className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']"
+      >
+        <Question size={16} weight="light" />
+      </button>
+      {isClient && open && rect
+        ? createPortal(<HelpBubble text={text} anchor={rect} />, document.body)
+        : null}
+    </>
+  );
+}
+
 export function ConfigRow({
   label,
   caption,
+  help,
   children,
 }: {
   label: string;
   caption: string;
+  /** Text d'ajuda de l'extra. Sense això no surt cap `?`. */
+  help?: string;
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex items-center gap-6 border-b border-border-subtle py-6">
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
+  const id = useId();
+  const isMobile = useMediaQuery("(max-width: 1023px)");
+  const reduce = useReducedMotion();
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  useCloseOnOtherHelp(id, open, close);
+
+  const info = (
+    <>
+      <span className="flex items-center gap-1">
         <span className="text-body-md text-text-main">{label}</span>
-        <span className="text-caption-sm uppercase text-text-secondary">{caption}</span>
+        {help && !isMobile ? <HelpToggle label={label} text={help} /> : null}
+        {help && isMobile ? (
+          <Question size={16} weight="light" aria-hidden="true" className="shrink-0 text-text-secondary" />
+        ) : null}
+      </span>
+      <span className="text-caption-sm uppercase text-text-secondary">{caption}</span>
+    </>
+  );
+
+  return (
+    <div className="border-b border-border-subtle py-6">
+      <div className="flex items-center gap-6">
+        {help && isMobile ? (
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={`${id}-help`}
+            onClick={() => {
+              const next = !open;
+              setOpen(next);
+              if (next) announceHelp(id);
+            }}
+            className="flex min-w-0 flex-1 flex-col items-start gap-2 text-left"
+          >
+            {info}
+          </button>
+        ) : (
+          <div className="flex min-w-0 flex-1 flex-col gap-2">{info}</div>
+        )}
+        {children}
       </div>
-      {children}
+      {help && isMobile ? (
+        <AnimatePresence initial={false}>
+          {open ? (
+            <motion.div
+              id={`${id}-help`}
+              initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+              exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              transition={{ duration: reduce ? 0 : 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <p className="pt-3 text-body-xs text-text-secondary">{help}</p>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      ) : null}
     </div>
   );
 }

@@ -1,16 +1,24 @@
 "use client"
 
 import Script from "next/script"
+import { usePathname } from "next/navigation"
 import { GA_MEASUREMENT_ID, CONSENT_STORAGE_KEY } from "@/lib/analytics"
 
 /**
  * Càrrega de GA4 amb Consent Mode.
+ *
+ * No es carrega a /admin.
  *
  * L'ordre importa: primer el consentiment per defecte (denegat), i només
  * després la llibreria. Així gtag no envia res mentre el visitant no decideix,
  * i si ja havia acceptat abans, la decisió es restaura a la mateixa passada.
  */
 export default function Analytics() {
+  // L'admin no es mesura: la meva pròpia feina d'edició no és una visita i
+  // embrutaria l'embut. Prou amb no muntar res: sense gtag no hi ha dades.
+  const pathname = usePathname()
+  if (pathname?.startsWith("/admin")) return null
+
   return (
     <>
       <Script id="ga-consent-default" strategy="beforeInteractive">

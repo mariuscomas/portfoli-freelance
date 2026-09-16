@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useState, useId, useEffect, useRef } from "react";
 import { useReducedMotion, motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, ArrowUpRight, Check } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
@@ -61,6 +61,16 @@ export default function CollabConfiguratorModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  // Obertura del configurador de col·laboració: un sol event per obertura.
+  const openedRef = useRef(false);
+  useEffect(() => {
+    if (isOpen && !openedRef.current) {
+      openedRef.current = true;
+      trackEvent(EVENTS.collabOpen);
+    }
+    if (!isOpen) openedRef.current = false;
+  }, [isOpen]);
+
   return (
     <Curtain isOpen={isOpen} onClose={onClose} title="Configura la col·laboració">
       {isOpen && <CollabContent onClose={onClose} />}

@@ -1,12 +1,17 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await updateSession(request)
 }
 
 /**
  * Només /admin i /auth.
+ *
+ * Fitxer renombrat de `middleware.ts` a `proxy.ts` el 16set26: Next 16 deprecà
+ * el conveni `middleware` i el va reanomenar `proxy` (mateixa API, només canvia
+ * el nom del fitxer i de la funció). `src/utils/supabase/middleware.ts` NO es
+ * toca: és un mòdul propi, no un conveni de Next.
  *
  * Abans el matcher cobria tot el web, i `updateSession` crida
  * `supabase.auth.getUser()` — una petició al servidor d'auth de Supabase a
