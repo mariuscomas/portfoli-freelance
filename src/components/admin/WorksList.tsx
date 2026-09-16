@@ -124,7 +124,7 @@ export default function WorksList({ works: initialWorks }: { works: WorkRow[] })
         items={works.map((w) => w.id)}
         strategy={verticalListSortingStrategy}
       >
-        <ul className="flex flex-col divide-y divide-surface-border">
+        <ul className="flex flex-col divide-y divide-border-subtle">
           {works.map((w) => (
             <SortableWorkItem key={w.id} work={w} />
           ))}
@@ -172,7 +172,7 @@ function SortableWorkItem({ work: w }: { work: WorkRow }) {
         {/* Color chip + títol */}
         <div className="flex items-center gap-4 min-w-0 flex-1">
           <div
-            className="w-8 h-8 rounded-md shrink-0 border border-surface-border"
+            className="w-8 h-8 rounded-md shrink-0 border border-border-subtle"
             style={{ backgroundColor: chipColor }}
             aria-hidden="true"
           />

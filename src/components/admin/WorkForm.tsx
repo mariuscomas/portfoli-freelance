@@ -482,7 +482,7 @@ export default function WorkForm({
         a 1700px deixava un buit lateral lleig en monitors grans. El
         contingut del form per sota ja té el seu propi `max-w-[1700px]`
         per mantenir-se llegible — només el top bar és sense límit. */}
-    <div className="sticky top-0 z-20 -mx-6 md:-mx-10 bg-surface-base/90 backdrop-blur-md border-b border-surface-border">
+    <div className="sticky top-0 z-20 -mx-6 md:-mx-10 bg-surface-base/90 backdrop-blur-md border-b border-border-subtle">
       <div className="flex items-center justify-between gap-4 px-6 md:px-10 py-3">
         <Link
           href="/admin/works"
@@ -518,7 +518,7 @@ export default function WorkForm({
               className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-body-sm ${
                 previewOpen
                   ? 'bg-text-main border-text-main text-text-main-inverse'
-                  : 'border-surface-border text-text-main hover:border-text-main'
+                  : 'border-border-default text-text-main hover:border-text-main'
               }`}
               title="Obre el panell lateral amb el case study tal com es veurà al públic. Pots obrir-lo en una pestanya nova des del header del panell."
             >
@@ -652,7 +652,7 @@ export default function WorkForm({
           />
 
           {/* Divider abans dels camps de text */}
-          <div className="h-px bg-surface-border" aria-hidden />
+          <div className="h-px bg-border-subtle" aria-hidden />
 
           {/* Títol i18n — només el camp visible per locale */}
           {(isEdit ? (['ca', 'en', 'es'] as const) : (['ca'] as const)).map((locale) => (
@@ -1024,7 +1024,7 @@ function Card({
         children
       ) : (
         <div
-          className={`flex flex-col gap-6 rounded-[var(--radius-base)] border border-surface-border bg-surface-card ${
+          className={`flex flex-col gap-6 rounded-[var(--radius-base)] border border-border-subtle bg-surface-card ${
             padding === 'loose'
               ? 'px-6 py-8 md:px-10 md:py-12'
               : 'px-6 py-8 md:px-8 md:py-10'
@@ -1151,7 +1151,7 @@ function LocaleSwitcher({
       <div
         role="tablist"
         aria-label="Idioma"
-        className="inline-flex items-center gap-1 p-1 rounded-full border border-surface-border bg-surface-card"
+        className="inline-flex items-center gap-1 p-1 rounded-full border border-border-subtle bg-surface-card"
       >
         {(['ca', 'en', 'es'] as const).map((l) => {
           const completeness = localeCompleteness(work, l)
@@ -1370,7 +1370,7 @@ function PreviewPanel({
       style={{ height: 'calc(100vh - 7rem)' }}
       aria-label="Preview del case study"
     >
-      <header className="flex items-center justify-between gap-3 px-4 py-2.5 border border-surface-border rounded-t-md bg-surface-card">
+      <header className="flex items-center justify-between gap-3 px-4 py-2.5 border border-border-subtle rounded-t-md bg-surface-card">
         <div className="flex flex-col">
           <span className="text-body-sm font-medium text-text-main">Preview · live</span>
           <span className="text-body-xs text-text-secondary">
@@ -1385,7 +1385,7 @@ function PreviewPanel({
               els media queries responen com a un dispositiu real i el frame
               manté l'aspect ratio. */}
           <ViewportSwitcher value={viewport} onChange={setViewport} />
-          <span aria-hidden className="mx-1 h-5 w-px bg-surface-border" />
+          <span aria-hidden className="mx-1 h-5 w-px bg-border-subtle" />
           <a
             href={`/works/${slug}?preview=draft`}
             target="_blank"
@@ -1411,7 +1411,7 @@ function PreviewPanel({
           centra el frame horitzontal+verticalment amb padding interior. */}
       <div
         ref={containerRef}
-        className="relative flex-1 border-x border-b border-surface-border rounded-b-md bg-surface-base/60 overflow-hidden flex items-center justify-center"
+        className="relative flex-1 border-x border-b border-border-subtle rounded-b-md bg-surface-base/60 overflow-hidden flex items-center justify-center"
         style={{ padding: `${PREVIEW_FRAME_PADDING}px` }}
       >
         {/* Device frame: recuadre interior amb l'aspect ratio del dispositiu.
@@ -1420,7 +1420,7 @@ function PreviewPanel({
             fins al primer measure (un sol frame de delay). */}
         {scale > 0 && (
           <div
-            className="relative bg-surface-base rounded-md shadow-md border border-surface-border overflow-hidden"
+            className="relative bg-surface-base rounded-md shadow-md border border-border-subtle overflow-hidden"
             style={{
               width: `${framedWidth}px`,
               height: `${framedHeight}px`,
@@ -1463,7 +1463,7 @@ function ViewportSwitcher({
     <div
       role="group"
       aria-label="Mida del viewport del preview"
-      className="inline-flex items-center gap-0.5 p-0.5 rounded-md bg-surface-base border border-surface-border"
+      className="inline-flex items-center gap-0.5 p-0.5 rounded-md bg-surface-base border border-border-subtle"
     >
       {items.map((it) => {
         const active = value === it.id
@@ -1582,7 +1582,7 @@ function Toc({
                   className={`w-full text-left flex items-center gap-2.5 px-3 py-3 border-l-2 text-body-sm text-text-secondary transition-colors ${
                     active
                       ? 'border-text-main font-normal'
-                      : 'border-surface-border font-light hover:border-text-secondary/60 hover:text-text-main'
+                      : 'border-border-subtle font-light hover:border-text-secondary/60 hover:text-text-main'
                   }`}
                 >
                   <span className="truncate">{it.label}</span>
@@ -1648,7 +1648,7 @@ function TocPills({
        seccions en el futur no trenqui el layout. */
     <nav
       aria-label="Seccions del treball"
-      className="xl:hidden sticky top-[57px] z-[15] -mx-6 md:-mx-10 bg-surface-base/90 backdrop-blur-md border-b border-surface-border"
+      className="xl:hidden sticky top-[57px] z-[15] -mx-6 md:-mx-10 bg-surface-base/90 backdrop-blur-md border-b border-border-subtle"
     >
       <ol className="flex items-center gap-1 px-6 md:px-10 py-2 overflow-x-auto">
         {items.map((it) => {
@@ -1662,7 +1662,7 @@ function TocPills({
                 aria-current={active ? 'page' : undefined}
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm whitespace-nowrap transition-colors ${
                   active
-                    ? 'bg-surface-card text-text-main font-normal shadow-sm border border-surface-border'
+                    ? 'bg-surface-card text-text-main font-normal shadow-sm border border-border-default'
                     : 'text-text-secondary font-light hover:bg-surface-card/60 hover:text-text-main'
                 }`}
               >
@@ -1707,7 +1707,7 @@ function StatusPill({
 }) {
   const baseClasses = isPublished
     ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-surface text-text-main text-body-xs font-medium'
-    : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-card border border-surface-border text-text-secondary text-body-xs font-medium'
+    : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-card border border-border-subtle text-text-secondary text-body-xs font-medium'
 
   const content = (
     <>
@@ -1792,7 +1792,7 @@ function Field({
         aria-invalid={Boolean(error) || undefined}
         {...props}
         className={`w-full max-w-[500px] bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-text-secondary/60 ${
-          error ? 'border-error focus:border-error focus:ring-error/20' : 'border-surface-border focus:border-text-main'
+          error ? 'border-error focus:border-error focus:ring-error/20' : 'border-border-default focus:border-text-main'
         }`}
       />
       {hint && !error && !warning && (
@@ -1836,7 +1836,7 @@ function ClientSelect({
         <span className="text-body-sm font-medium text-text-secondary">
           Client
         </span>
-        <div className="text-body-sm text-text-secondary leading-snug p-3 border border-dashed border-surface-border rounded-md bg-surface-base">
+        <div className="text-body-sm text-text-secondary leading-snug p-3 border border-dashed border-border-subtle rounded-md bg-surface-base">
           Encara no hi ha cap fitxa de client a la BD.{' '}
           <Link
             href="/admin/clients/new"
@@ -1871,7 +1871,7 @@ function ClientSelect({
           id={id}
           name="client_id"
           defaultValue={defaultValue}
-          className="w-full appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-surface-border rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+          className="w-full appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
         >
           <option value="">— Sense client vinculat —</option>
           {/* Mostrem només el nom de l'empresa (fallback al name del contacte
@@ -1924,7 +1924,7 @@ function PlainTextarea({
         required={required}
         aria-describedby={hintId}
         {...props}
-        className="w-full max-w-[500px] bg-transparent border border-surface-border rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
         <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">

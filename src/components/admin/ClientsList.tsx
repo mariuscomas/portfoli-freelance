@@ -158,7 +158,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cerca nom, empresa o email…"
-            className="pl-9 pr-3 py-2 w-full md:w-72 bg-transparent border border-surface-border rounded-md text-body-sm text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:border-text-main"
+            className="pl-9 pr-3 py-2 w-full md:w-72 bg-transparent border border-border-default rounded-md text-body-sm text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:border-text-main"
             aria-label="Cerca clients"
           />
         </div>
@@ -166,7 +166,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
 
       {/* ====== Estat buit ====== */}
       {filtered.length === 0 && (
-        <div className="py-12 text-center text-body-sm text-text-secondary border border-dashed border-surface-border rounded-md">
+        <div className="py-12 text-center text-body-sm text-text-secondary border border-dashed border-border-subtle rounded-md">
           {query || activeStatus !== 'all'
             ? 'No hi ha cap client que coincideixi amb els filtres actuals.'
             : 'Encara no tens cap client a la base de dades.'}
@@ -175,7 +175,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
 
       {/* ====== Taula ====== */}
       {filtered.length > 0 && (
-        <div className="overflow-x-auto border border-surface-border rounded-md">
+        <div className="overflow-x-auto border border-border-subtle rounded-md">
           <table className="w-full text-body-sm">
             <thead className="bg-surface-card text-text-secondary">
               <tr>
@@ -217,7 +217,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
                 />
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-border">
+            <tbody className="divide-y divide-border-subtle">
               {filtered.map((c) => (
                 <ClientRow key={c.id} client={c} />
               ))}
@@ -252,7 +252,7 @@ function FilterChip({
       className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm transition-colors border ${
         active
           ? 'bg-text-main text-text-main-inverse border-text-main'
-          : 'bg-surface-card text-text-secondary border-surface-border hover:text-text-main hover:border-text-main/40'
+          : 'bg-surface-card text-text-secondary border-border-default hover:text-text-main hover:border-text-main/40'
       }`}
     >
       {label}

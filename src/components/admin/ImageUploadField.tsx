@@ -549,7 +549,7 @@ export default function ImageUploadField({
           adequat per camps petits (Hero background, OG image, etc.). */}
       {hasValue && !isBusy && variant === 'overlay' && (
         <div
-          className="relative w-full overflow-hidden rounded-md bg-surface-base border border-surface-border"
+          className="relative w-full overflow-hidden rounded-md bg-surface-base border border-border-subtle"
           style={{ aspectRatio }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -615,7 +615,7 @@ export default function ImageUploadField({
           className={`relative flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed rounded-[var(--radius-base)] cursor-pointer transition-colors text-center ${
             isDragging
               ? 'border-text-main bg-text-main/5'
-              : 'border-surface-border bg-surface-card hover:border-text-secondary hover:bg-surface-base'
+              : 'border-border-subtle bg-surface-card hover:border-text-secondary hover:bg-surface-base'
           } ${isBusy ? 'pointer-events-none opacity-90' : ''}`}
         >
           {isCompressing ? (
@@ -631,7 +631,7 @@ export default function ImageUploadField({
             </>
           ) : (
             <>
-              <div className="w-12 h-12 rounded-full bg-surface-base border border-surface-border flex items-center justify-center text-text-secondary">
+              <div className="w-12 h-12 rounded-full bg-surface-base border border-border-subtle flex items-center justify-center text-text-secondary">
                 <CloudArrowUp size={22} weight="regular" />
               </div>
               <div className="flex flex-col gap-0.5">
@@ -790,7 +790,7 @@ function ThumbnailCardInfo({
           py-6 = 48px). A mobile, w-full + aspect-square dóna un
           square gran ocupant tota l'amplada. */}
       <div
-        className="relative w-full md:w-auto aspect-square md:aspect-auto md:shrink-0 overflow-hidden rounded-md bg-surface-base border border-surface-border"
+        className="relative w-full md:w-auto aspect-square md:aspect-auto md:shrink-0 overflow-hidden rounded-md bg-surface-base border border-border-subtle"
         style={
           desktopSize !== null
             ? { width: `${desktopSize}px`, height: `${desktopSize}px` }
@@ -824,7 +824,7 @@ function ThumbnailCardInfo({
           </span>
         </div>
 
-        <div className="h-px bg-surface-border" aria-hidden />
+        <div className="h-px bg-border-subtle" aria-hidden />
 
         {/* Alt Text */}
         <div className="flex flex-col">
@@ -841,7 +841,7 @@ function ThumbnailCardInfo({
           </span>
         </div>
 
-        <div className="h-px bg-surface-border" aria-hidden />
+        <div className="h-px bg-border-subtle" aria-hidden />
 
         {/* Botons d'acció — 4 icones alineades a l'esquerra. Així
             s'alineen amb les labels (File Name, Alt Text) i amb la
@@ -905,7 +905,7 @@ function ThumbnailIconButton({
       className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border bg-surface-base shadow-[0_4px_20px_0px_rgba(0,0,0,0.08)] transition-colors ${
         danger
           ? 'border-error/40 text-error hover:border-error hover:bg-error-surface'
-          : 'border-surface-border text-text-main hover:border-text-main hover:bg-surface-card'
+          : 'border-border-default text-text-main hover:border-text-main hover:bg-surface-card'
       }`}
     >
       {children}
@@ -983,9 +983,9 @@ function ImageManagementModal({
       />
 
       {/* Contingut del modal */}
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-card border border-surface-border rounded-[var(--radius-base)] shadow-xl flex flex-col">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-card border border-border-subtle rounded-[var(--radius-base)] shadow-xl flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-surface-border">
+        <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border-subtle">
           <h3 className="text-body-lg font-medium text-text-main">Gestionar imatge</h3>
           <button
             type="button"
@@ -1005,7 +1005,7 @@ function ImageManagementModal({
               capa semitransparent + spinner + missatge perquè quedi 100%
               clar que el sistema està treballant. */}
           <div
-            className="relative w-full overflow-hidden rounded-md bg-surface-base/60 border border-surface-border"
+            className="relative w-full overflow-hidden rounded-md bg-surface-base/60 border border-border-subtle"
             style={{ aspectRatio, maxHeight: '18rem' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1066,7 +1066,7 @@ function ImageManagementModal({
               type="button"
               onClick={onReplaceClick}
               disabled={isBusy}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-surface-border rounded-md text-body-md text-text-main hover:border-text-main hover:bg-surface-base transition-colors w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-surface-border disabled:hover:bg-transparent"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border-default rounded-md text-body-md text-text-main hover:border-text-main hover:bg-surface-base transition-colors w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-border-default disabled:hover:bg-transparent"
             >
               {isBusy ? (
                 <>
@@ -1097,7 +1097,7 @@ function ImageManagementModal({
               onChange={(e) => onAltChange(e.target.value)}
               placeholder="Ex: Pantalla principal de l'app PADLL amb el mapa de pistes"
               maxLength={200}
-              className="w-full bg-transparent border border-surface-border rounded-md px-3 py-2 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+              className="w-full bg-transparent border border-border-default rounded-md px-3 py-2 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
             />
             <p className="text-body-sm text-text-secondary/80 leading-snug">
               Descripció curta de la imatge per a screen readers i SEO. Si està
@@ -1106,7 +1106,7 @@ function ImageManagementModal({
           </div>
 
           {/* Acció: Esborrar (destructiva, separada visualment) */}
-          <div className="flex flex-col gap-1.5 pt-2 border-t border-surface-border">
+          <div className="flex flex-col gap-1.5 pt-2 border-t border-border-subtle">
             <span className="text-body-sm font-medium text-text-secondary">
               Zona perillosa
             </span>

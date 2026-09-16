@@ -77,7 +77,7 @@ export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 w-full max-w-4xl">
 
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-4 sticky top-0 -mx-4 px-4 py-3 bg-surface-base/90 backdrop-blur-md border-b border-surface-border z-10">
+      <div className="flex items-center justify-between gap-4 sticky top-0 -mx-4 px-4 py-3 bg-surface-base/90 backdrop-blur-md border-b border-border-subtle z-10">
         <Link
           href="/admin/serveis"
           className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-sm"
@@ -405,7 +405,7 @@ function MilestonesEditor({
       {items.map((m, i) => (
         <div
           key={i}
-          className="flex flex-col gap-4 rounded-md border border-surface-border p-4"
+          className="flex flex-col gap-4 rounded-md border border-border-subtle p-4"
         >
           <div className="flex items-center justify-between">
             <span className="text-body-sm font-medium text-text-secondary">
@@ -464,7 +464,7 @@ function MilestonesEditor({
         <button
           type="button"
           onClick={add}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-surface-border rounded-full text-body-sm text-text-main hover:border-text-main transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-border-default rounded-full text-body-sm text-text-main hover:border-text-main transition-colors"
         >
           <Plus size={16} weight="regular" />
           Afegir fita
@@ -503,7 +503,7 @@ function Card({
 }) {
   return (
     <fieldset
-      className={`flex flex-col gap-6 rounded-[var(--radius-base)] border border-surface-border bg-surface-card p-5 md:p-7 ${
+      className={`flex flex-col gap-6 rounded-[var(--radius-base)] border border-border-subtle bg-surface-card p-5 md:p-7 ${
         hidden ? 'hidden' : ''
       }`}
     >
@@ -525,7 +525,7 @@ function Card({
 
 function NarrativeGroup({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-5 pt-4 mt-2 border-t border-surface-border">
+    <div className="flex flex-col gap-5 pt-4 mt-2 border-t border-border-subtle">
       <div className="flex flex-col gap-1">
         <span className="text-label text-text-secondary">
           Contingut narratiu
@@ -591,7 +591,7 @@ function LocaleSwitcher({
       <div
         role="tablist"
         aria-label="Idioma"
-        className="inline-flex items-center gap-1 p-1 rounded-full border border-surface-border bg-surface-card"
+        className="inline-flex items-center gap-1 p-1 rounded-full border border-border-subtle bg-surface-card"
       >
         {(['ca', 'en', 'es'] as const).map((l) => (
           <button
@@ -662,7 +662,7 @@ function Field({
         aria-invalid={Boolean(error) || undefined}
         {...props}
         className={`w-full bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-text-secondary/60 ${
-          error ? 'border-error focus:border-error focus:ring-error/20' : 'border-surface-border focus:border-text-main'
+          error ? 'border-error focus:border-error focus:ring-error/20' : 'border-border-default focus:border-text-main'
         }`}
       />
       {hint && !error && (
@@ -696,7 +696,7 @@ function Textarea({
         id={id}
         aria-describedby={hintId}
         {...props}
-        className="w-full bg-transparent border border-surface-border rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
         <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug">

@@ -135,7 +135,7 @@ export default function ServicesList({ services }: ServicesListProps) {
                 role="button"
                 tabIndex={0}
                 aria-label={`Veure detalls del servei ${title}`}
-                className="group flex flex-col md:flex-row items-start md:items-stretch gap-12 lg:gap-24 justify-between py-20 md:py-48 border-t border-border-subtle last:border-b cursor-pointer transition-all duration-500 hover:bg-surface-border/5 focus-visible:outline-none focus-visible:bg-surface-border/10 relative"
+                className="group flex flex-col md:flex-row items-start md:items-stretch gap-12 lg:gap-24 justify-between py-20 md:py-48 border-t border-border-subtle last:border-b cursor-pointer transition-all duration-500 hover:bg-border-subtle/5 focus-visible:outline-none focus-visible:bg-border-subtle/10 relative"
                 data-slug={slug}
               >
                 {/* Columna Esquerra: Icona + Títol */}

@@ -92,7 +92,7 @@ export default function KebabMenu({ items, label = 'Més accions', size = 'md' }
         aria-expanded={open}
         aria-controls={open ? `${id}-menu` : undefined}
         title={label}
-        className={`${sizeClasses} inline-flex items-center justify-center rounded-full border border-surface-border text-text-main hover:border-text-main transition-colors ${
+        className={`${sizeClasses} inline-flex items-center justify-center rounded-full border border-border-default text-text-main hover:border-text-main transition-colors ${
           open ? 'border-text-main bg-surface-base' : ''
         }`}
       >
@@ -105,7 +105,7 @@ export default function KebabMenu({ items, label = 'Més accions', size = 'md' }
           id={`${id}-menu`}
           role="menu"
           aria-label={label}
-          className="absolute right-0 z-50 min-w-[220px] flex flex-col rounded-md border border-surface-border bg-surface-card shadow-lg py-1 overflow-hidden"
+          className="absolute right-0 z-50 min-w-[220px] flex flex-col rounded-md border border-border-subtle bg-surface-card shadow-lg py-1 overflow-hidden"
           style={{ top: 'calc(100% + 0.75rem)' }}
         >
           {items.map((item, i) => {
@@ -114,7 +114,7 @@ export default function KebabMenu({ items, label = 'Més accions', size = 'md' }
                 <div
                   key={`sep-${i}`}
                   role="separator"
-                  className="my-1 h-px bg-surface-border"
+                  className="my-1 h-px bg-border-subtle"
                 />
               )
             }

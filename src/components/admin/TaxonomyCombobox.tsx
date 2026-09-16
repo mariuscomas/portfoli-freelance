@@ -293,7 +293,7 @@ export default function TaxonomyCombobox({
           aria-haspopup="listbox"
           aria-expanded={open}
           className={`w-full appearance-none flex items-center gap-2.5 bg-surface-base border rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${
-            open ? 'border-text-main ring-2 ring-text-main/20' : 'border-surface-border'
+            open ? 'border-text-main ring-2 ring-text-main/20' : 'border-border-default'
           }`}
         >
           {selected ? (
@@ -318,10 +318,10 @@ export default function TaxonomyCombobox({
             ref={popoverRef}
             role="listbox"
             aria-label={label}
-            className="absolute z-50 mt-1.5 w-full min-w-[280px] flex flex-col rounded-md border border-surface-border bg-surface-card shadow-lg overflow-hidden"
+            className="absolute z-50 mt-1.5 w-full min-w-[280px] flex flex-col rounded-md border border-border-subtle bg-surface-card shadow-lg overflow-hidden"
           >
             {/* Cercador */}
-            <div className="px-3 py-2 border-b border-surface-border">
+            <div className="px-3 py-2 border-b border-border-subtle">
               <input
                 ref={searchInputRef}
                 type="text"
@@ -466,7 +466,7 @@ export default function TaxonomyCombobox({
                               onClick={() => void handlePickColor(opt, c.value)}
                               title={c.label}
                               aria-label={c.label}
-                              className="w-5 h-5 rounded-full border border-surface-border hover:scale-110 transition-transform"
+                              className="w-5 h-5 rounded-full border border-border-default hover:scale-110 transition-transform"
                               style={{ backgroundColor: c.value }}
                             />
                           ))}
@@ -491,7 +491,7 @@ export default function TaxonomyCombobox({
                   <button
                     type="button"
                     onClick={handleCreate}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-body-sm text-text-main hover:bg-surface-base transition-colors border-t border-surface-border"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-body-sm text-text-main hover:bg-surface-base transition-colors border-t border-border-subtle"
                   >
                     <Plus size={14} weight="bold" className="shrink-0 text-text-secondary" />
                     <span className="truncate">

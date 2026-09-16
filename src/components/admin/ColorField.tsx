@@ -68,11 +68,11 @@ export default function ColorField({
       {/* Wrapper: padding asimètric coincident amb el Figma (pl-2 pr-3.5
           py-1.5) — fa que el swatch quedi prop de la vora esquerra i el
           text hexa tingui aire respecte el dret. */}
-      <div className="flex items-center gap-2.5 bg-transparent border border-surface-border rounded-md pl-2 pr-3.5 py-1.5 transition-colors hover:border-text-secondary/60 focus-within:border-text-main focus-within:ring-2 focus-within:ring-text-main/20">
+      <div className="flex items-center gap-2.5 bg-transparent border border-border-subtle rounded-md pl-2 pr-3.5 py-1.5 transition-colors hover:border-text-secondary/60 focus-within:border-text-main focus-within:ring-2 focus-within:ring-text-main/20">
         {/* Swatch — clickable per obrir el color picker natiu.
             Mida 36×36 (w-9 h-9) i rounded-md per coincidir amb el Figma. */}
         <label
-          className="relative w-9 h-9 rounded-md shrink-0 cursor-pointer border border-surface-border overflow-hidden"
+          className="relative w-9 h-9 rounded-md shrink-0 cursor-pointer border border-border-subtle overflow-hidden"
           style={{ backgroundColor: currentValue || '#ffffff' }}
           aria-label="Triar color"
         >

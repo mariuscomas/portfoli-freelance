@@ -739,7 +739,7 @@ export function HeroSection() {
     <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-stretch">
 
       {/* ─── LEFT ─── */}
-      <div className="flex flex-col gap-6 w-full md:w-[347px] md:shrink-0 md:pr-6 md:border-r md:border-surface-border">
+      <div className="flex flex-col gap-6 w-full md:w-[347px] md:shrink-0 md:pr-6 md:border-r md:border-border-subtle">
         <ImageUploadField
           label="Background Image"
           labelVariant="heading"
@@ -775,7 +775,7 @@ export function HeroSection() {
           <div
             role="tablist"
             aria-label="Color del text"
-            className="inline-flex items-center gap-1 p-1 rounded-full border border-surface-border bg-surface-card shrink-0"
+            className="inline-flex items-center gap-1 p-1 rounded-full border border-border-subtle bg-surface-card shrink-0"
           >
             {(['light', 'dark'] as const).map((c) => (
               <button
@@ -797,7 +797,7 @@ export function HeroSection() {
         </div>
 
         {/* Divider abans del Card Head */}
-        <div className="h-px bg-surface-border" aria-hidden />
+        <div className="h-px bg-border-subtle" aria-hidden />
 
         {/* Card Head — Títol + Descripció agrupats amb gap-6 (24px), com
             al Figma "Card Head" wrapper. */}
@@ -819,7 +819,7 @@ export function HeroSection() {
         </div>
 
         {/* Divider abans del OverlaySlider */}
-        <div className="h-px bg-surface-border" aria-hidden />
+        <div className="h-px bg-border-subtle" aria-hidden />
 
         {/* Overlay — només té sentit quan hi ha imatge. Si no, el slider
             es renderitza disabled per donar visibilitat al control sense
@@ -924,7 +924,7 @@ export function BlocksSection({
        blanc independent (la columna externa NO té bg-surface-card). */
     <div className="flex flex-col gap-4">
         {state.blocks.length === 0 && (
-          <div className="flex flex-col gap-3 px-5 py-8 border border-dashed border-surface-border rounded-md bg-surface-base text-center">
+          <div className="flex flex-col gap-3 px-5 py-8 border border-dashed border-border-subtle rounded-md bg-surface-base text-center">
             <p className="text-body-md text-text-main">Encara no hi ha cap bloc</p>
             <p className="text-body-sm text-text-secondary max-w-prose mx-auto leading-relaxed">
               Cada bloc és una secció del case study. Patrons habituals: <em>Project Overview</em>{' '}
@@ -956,7 +956,7 @@ export function BlocksSection({
           return (
             <SortableItem key={block.id} id={block.id}>
               {({ listeners }) => (
-            <div className="border border-surface-border rounded-md bg-surface-card overflow-hidden">
+            <div className="border border-border-subtle rounded-md bg-surface-card overflow-hidden">
               {/* Header del bloc — Figma 11187:10557 (Block Head):
                   · px-[16px] py-[12px], gap-[12px] entre chevron/número/títol
                   · NO drag handle visible (drag delegat als listeners del row)
@@ -964,7 +964,7 @@ export function BlocksSection({
                   · 3 actions (up/down/delete) sense container border
                   · border-b només quan està expandit */}
               <div
-                className={`flex items-center justify-between gap-3 px-4 py-3 ${isOpen ? 'border-b border-surface-border' : ''}`}
+                className={`flex items-center justify-between gap-3 px-4 py-3 ${isOpen ? 'border-b border-border-subtle' : ''}`}
                 {...(isOpen ? {} : listeners)}
               >
                 <button
@@ -1085,7 +1085,7 @@ export function BlocksSection({
                   </div>
 
                   {/* Divider entre Article 1 i Article 2 — Figma 11187:11305 */}
-                  <div className="h-px bg-surface-border" aria-hidden />
+                  <div className="h-px bg-border-subtle" aria-hidden />
 
                   {/* ─── Article 2: Llista ─── */}
                   <ListEditor
@@ -1096,7 +1096,7 @@ export function BlocksSection({
                   />
 
                   {/* Divider entre Article 2 i Article 3 — Figma 11187:11446 */}
-                  <div className="h-px bg-surface-border" aria-hidden />
+                  <div className="h-px bg-border-subtle" aria-hidden />
 
                   {/* ─── Article 3: Media ─── */}
                   <MediaEditor
@@ -1216,7 +1216,7 @@ export function FinalMediaSection({
       }
     >
       {state.finalMedia.length === 0 && (
-        <div className="flex flex-col gap-2 px-5 py-6 border border-dashed border-surface-border rounded-md bg-surface-base text-center">
+        <div className="flex flex-col gap-2 px-5 py-6 border border-dashed border-border-subtle rounded-md bg-surface-base text-center">
           <p className="text-body-md text-text-main">Cap imatge final</p>
           <p className="text-body-sm text-text-secondary max-w-prose mx-auto leading-relaxed">
             Aquestes imatges es renderitzen al peu del case study, just abans del banner
@@ -1239,7 +1239,7 @@ export function FinalMediaSection({
           {state.finalMedia.map((m, i) => (
             <SortableItem key={m.id} id={m.id}>
               {({ listeners }) => (
-                <div className="flex flex-col gap-4 p-4 border border-surface-border rounded-md bg-surface-card">
+                <div className="flex flex-col gap-4 p-4 border border-border-subtle rounded-md bg-surface-card">
                   {/* Top bar: drag handle + index + delete (subtils) */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 text-text-secondary">
@@ -1354,7 +1354,7 @@ function FinalMediaGhost({ media }: { media: WorkMedia }) {
     <div className="flex items-center gap-3 p-3 border border-text-main rounded-md bg-surface-card shadow-2xl">
       <DotsSixVertical size={16} weight="bold" className="text-text-secondary shrink-0" />
       <div
-        className="w-12 h-12 rounded shrink-0 bg-cover bg-center bg-surface-base border border-surface-border"
+        className="w-12 h-12 rounded shrink-0 bg-cover bg-center bg-surface-base border border-border-subtle"
         style={media.url ? { backgroundImage: `url("${media.url}")` } : undefined}
         aria-hidden
       />
@@ -1461,7 +1461,7 @@ function ListEditor({
                 className={`px-3 py-1 rounded-full text-body-xs transition-colors ${
                   listType === t
                     ? 'bg-text-main text-text-main-inverse'
-                    : 'text-text-secondary hover:text-text-main border border-surface-border'
+                    : 'text-text-secondary hover:text-text-main border border-border-default'
                 }`}
               >
                 {t === 'none' ? 'Cap' : t === 'what-we-did' ? 'Què vam fer' : 'Característiques'}
@@ -1665,7 +1665,7 @@ function UnderlineInput({
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`h-7 bg-transparent border-b border-surface-border py-1 text-body-md text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors ${className}`}
+      className={`h-7 bg-transparent border-b border-border-default py-1 text-body-md text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors ${className}`}
     />
   )
 }
@@ -1700,7 +1700,7 @@ function OutlineSquareButton({
       className={`shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-md border bg-surface-card transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
         danger
           ? 'border-error text-error hover:bg-error/5'
-          : 'border-surface-border text-text-main hover:bg-surface-base'
+          : 'border-border-default text-text-main hover:bg-surface-base'
       }`}
     >
       {children}
@@ -1777,7 +1777,7 @@ function MediaEditor({
             MEDIA · {media.length} {media.length === 1 ? 'FITXER' : 'FITXERS'}
           </span>
 
-          <div className="h-8 w-px bg-surface-border" aria-hidden />
+          <div className="h-8 w-px bg-border-subtle" aria-hidden />
 
           {/* Mateix patró de <select> que el WorkForm: appearance-none +
               caret propi perquè quedi idèntic als inputs del form. */}
@@ -1786,7 +1786,7 @@ function MediaEditor({
               aria-label="Disposició del media"
               value={layout}
               onChange={(e) => onLayoutChange?.(e.target.value as WorkMediaLayout)}
-              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-surface-border rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
             >
               <option value="auto">Disposició: Auto</option>
               <option value="row">Disposició: Fila</option>
@@ -1836,7 +1836,7 @@ function MediaEditor({
           </div>
 
           {/* Divider vertical entre view toggle i "Afegir Imatge" */}
-          <div className="w-px h-6 bg-surface-border self-stretch" aria-hidden />
+          <div className="w-px h-6 bg-border-subtle self-stretch" aria-hidden />
 
           <button
             type="button"
@@ -1850,7 +1850,7 @@ function MediaEditor({
       </div>
 
       {media.length === 0 && (
-        <div className="px-4 py-6 border border-dashed border-surface-border rounded-md bg-surface-base/40 text-center">
+        <div className="px-4 py-6 border border-dashed border-border-subtle rounded-md bg-surface-base/40 text-center">
           <p className="text-body-sm text-text-secondary">
             Cap imatge encara. Les imatges es disposen al WorkMediaGrid segons quantes
             n&apos;hi hagi (1, 2, 3 o 4).
@@ -1943,7 +1943,7 @@ function MediaRowList({
     <div className="flex items-center gap-2.5">
       <DragHandle listeners={listeners} label="Reordenar imatge" />
 
-      <div className="flex-1 min-w-0 flex flex-col gap-2 p-3 border border-surface-border rounded-md bg-surface-card">
+      <div className="flex-1 min-w-0 flex flex-col gap-2 p-3 border border-border-subtle rounded-md bg-surface-card">
         <div className="flex items-center gap-6">
           {/* Thumbnail 80×80 amb fons surface-base — Figma 11176:904.
               En estat buit, el placeholder obre el picker directament. */}
@@ -1956,8 +1956,8 @@ function MediaRowList({
               title={hasUrl ? 'Gestionar imatge' : 'Pujar imatge'}
               className={`relative w-20 h-20 rounded-md overflow-hidden bg-surface-base block ${
                 hasUrl
-                  ? 'border border-surface-border'
-                  : 'border border-dashed border-surface-border hover:border-text-secondary transition-colors'
+                  ? 'border border-border-default'
+                  : 'border border-dashed border-border-subtle hover:border-text-secondary transition-colors'
               }`}
             >
               {hasUrl ? (
@@ -1995,7 +1995,7 @@ function MediaRowList({
           </button>
 
           {/* Divider vertical */}
-          <div className="w-px h-[60px] bg-surface-border self-center shrink-0" aria-hidden />
+          <div className="w-px h-[60px] bg-border-subtle self-center shrink-0" aria-hidden />
 
           {/* Alt Text — input editable inline */}
           <label className="flex flex-col items-start min-w-0 flex-1 gap-0.5">
@@ -2009,7 +2009,7 @@ function MediaRowList({
           </label>
 
           {/* Divider vertical */}
-          <div className="w-px h-[60px] bg-surface-border self-center shrink-0" aria-hidden />
+          <div className="w-px h-[60px] bg-border-subtle self-center shrink-0" aria-hidden />
 
           {/* 4 botons outline (editar, reemplaçar, obrir, eliminar).
               Cada un fa una acció diferent: el llapis obre el modal de
@@ -2101,7 +2101,7 @@ function MediaCardGrid({
   }
 
   return (
-    <div className="flex flex-col gap-3 p-3 border border-surface-border rounded-md bg-surface-card">
+    <div className="flex flex-col gap-3 p-3 border border-border-subtle rounded-md bg-surface-card">
       <div className="flex items-center justify-between">
         <DragHandle listeners={listeners} label="Reordenar imatge" />
         <div className="flex items-center gap-1.5">
@@ -2137,7 +2137,7 @@ function MediaCardGrid({
         type="button"
         onClick={openPrimary}
         disabled={busy}
-        className="relative block w-full rounded-md overflow-hidden border border-surface-border bg-surface-base"
+        className="relative block w-full rounded-md overflow-hidden border border-border-default bg-surface-base"
         style={{ aspectRatio: '16 / 10' }}
       >
         {hasUrl ? (
@@ -2159,7 +2159,7 @@ function MediaCardGrid({
         value={media.alt || ''}
         onChange={(e) => onChange('alt', e.target.value)}
         placeholder="Alt text"
-        className="w-full bg-transparent border-b border-surface-border py-1 text-body-sm text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors"
+        className="w-full bg-transparent border-b border-border-default py-1 text-body-sm text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors"
       />
       {uploadError && (
         <p role="alert" className="text-body-sm text-error">
@@ -2185,7 +2185,7 @@ function MediaCardGrid({
  * Inputs del WorkContentEditor (Hero + blocs) amb el mateix box-style que
  * els `Field`/`PlainTextarea` del WorkForm (Característiques, SEO, etc.).
  *
- * Estil: bg-surface-base + border-surface-border + rounded-md + focus ring
+ * Estil: bg-surface-base + border-border-subtle + rounded-md + focus ring
  * text-main/20. Així tots els camps del form admin tenen aspecte uniforme.
  */
 function Input({
@@ -2226,7 +2226,7 @@ function Input({
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         aria-required={required || undefined}
-        className={`w-full max-w-[500px] bg-transparent border border-surface-border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${inputClassName}`}
+        className={`w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${inputClassName}`}
       />
     </label>
   )
@@ -2249,7 +2249,7 @@ function Textarea({
         {...rest}
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full max-w-[500px] bg-transparent border border-surface-border rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
     </label>
   )

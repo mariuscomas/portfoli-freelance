@@ -179,7 +179,7 @@ export default function RichTextEditor({
 
       {/* Toolbar + editor en un sol "card" amb estil de input */}
       <div
-        className="flex flex-col bg-transparent border border-surface-border rounded-md overflow-hidden focus-within:border-text-main focus-within:ring-2 focus-within:ring-text-main/20 hover:border-text-secondary/60 transition-colors"
+        className="flex flex-col bg-transparent border border-border-subtle rounded-md overflow-hidden focus-within:border-text-main focus-within:ring-2 focus-within:ring-text-main/20 hover:border-text-secondary/60 transition-colors"
         style={minHeightStyle as React.CSSProperties}
       >
         <Toolbar editor={editor} />
@@ -211,12 +211,12 @@ function Toolbar({ editor }: { editor: Editor | null }) {
     // Render placeholder buit mentre el editor encara no està inicialitzat
     // (SSR + primera fase de hidratació)
     return (
-      <div className="h-9 border-b border-surface-border bg-surface-card/40 shrink-0" />
+      <div className="h-9 border-b border-border-subtle bg-surface-card/40 shrink-0" />
     )
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-surface-border bg-surface-card/60">
+    <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-border-subtle bg-surface-card/60">
       <ToolbarButton
         label="Negreta"
         shortcut="⌘B"
@@ -321,5 +321,5 @@ function ToolbarButton({
 }
 
 function ToolbarDivider() {
-  return <span className="w-px h-4 bg-surface-border mx-1" aria-hidden="true" />
+  return <span className="w-px h-4 bg-border-subtle mx-1" aria-hidden="true" />
 }

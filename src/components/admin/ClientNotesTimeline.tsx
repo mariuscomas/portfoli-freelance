@@ -91,7 +91,7 @@ export default function ClientNotesTimeline({
 
   return (
     <aside
-      className="flex flex-col gap-5 rounded-[var(--radius-base)] border border-surface-border bg-surface-card p-5"
+      className="flex flex-col gap-5 rounded-[var(--radius-base)] border border-border-subtle bg-surface-card p-5"
       aria-label="Timeline d'interaccions"
     >
       <header className="flex flex-col">
@@ -116,7 +116,7 @@ export default function ClientNotesTimeline({
           required
           onKeyDown={handleKeyDown}
           placeholder="Trucada amb el client el dilluns: m'envia el brief abans del divendres…"
-          className="w-full bg-transparent border border-surface-border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+          className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
         />
         {error && (
           <p className="text-body-sm text-error leading-snug">{error}</p>
@@ -142,12 +142,12 @@ export default function ClientNotesTimeline({
 
       {/* ====== Llistat ====== */}
       {notes.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-6 text-center text-text-secondary text-body-sm border-t border-surface-border">
+        <div className="flex flex-col items-center gap-2 py-6 text-center text-text-secondary text-body-sm border-t border-border-subtle">
           <NoteIcon size={20} weight="regular" className="text-text-secondary/40" />
           Encara no hi ha cap interacció registrada.
         </div>
       ) : (
-        <ol className="flex flex-col gap-4 border-t border-surface-border pt-5">
+        <ol className="flex flex-col gap-4 border-t border-border-subtle pt-5">
           {notes.map((n) => (
             <li key={n.id} className="flex flex-col gap-1 group">
               <div className="flex items-center justify-between gap-2">

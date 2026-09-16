@@ -114,7 +114,7 @@ export default function AdminShell({
             per major especificitat (atribut + classe). */}
       <aside
         data-collapsed={collapsed ? 'true' : 'false'}
-        className="w-full md:w-64 md:data-[collapsed=true]:w-16 md:min-h-[100dvh] flex md:flex-col flex-row md:justify-between justify-between items-stretch border-b md:border-b-0 md:border-r border-surface-border bg-surface-card transition-[width] duration-200"
+        className="w-full md:w-64 md:data-[collapsed=true]:w-16 md:min-h-[100dvh] flex md:flex-col flex-row md:justify-between justify-between items-stretch border-b md:border-b-0 md:border-r border-border-subtle bg-surface-card transition-[width] duration-200"
       >
 
         {/* Top: Logo + nav */}
@@ -159,7 +159,7 @@ export default function AdminShell({
         <div
           className={`hidden md:flex flex-col gap-1 ${
             collapsed ? 'md:px-2' : 'md:px-3'
-          } py-4 border-t border-surface-border`}
+          } py-4 border-t border-border-subtle`}
         >
           {/* Toggle collapse */}
           <button

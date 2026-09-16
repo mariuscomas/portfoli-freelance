@@ -174,7 +174,7 @@ export default function QuotesList({
                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-sm transition-colors ${
                   active
                     ? 'border-text-main bg-text-main text-text-main-inverse'
-                    : 'border-surface-border text-text-secondary hover:border-text-main'
+                    : 'border-border-default text-text-secondary hover:border-text-main'
                 }`}
               >
                 {s === 'all' ? 'Tots' : QUOTE_STATUS_META[s].label}
@@ -194,17 +194,17 @@ export default function QuotesList({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cerca per email, nom o producte"
-            className="w-full min-w-[240px] rounded-full border border-surface-border bg-surface-card py-2 pl-9 pr-4 text-body-sm text-text-main placeholder:text-text-secondary/60 focus:border-text-main focus:outline-none"
+            className="w-full min-w-[240px] rounded-full border border-border-default bg-surface-card py-2 pl-9 pr-4 text-body-sm text-text-main placeholder:text-text-secondary/60 focus:border-text-main focus:outline-none"
           />
         </label>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="rounded-card border border-surface-border bg-surface-card p-8 text-center text-body-sm text-text-secondary">
+        <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-sm text-text-secondary">
           Encara no hi ha configuracions{activeStatus !== 'all' ? ' amb aquest estat' : ''}.
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-surface-border rounded-card border border-surface-border bg-surface-card">
+        <ul className="flex flex-col divide-y divide-border-subtle rounded-card border border-border-subtle bg-surface-card">
           {filtered.map((q) => {
             const open = expandedId === q.id
             return (
@@ -221,7 +221,7 @@ export default function QuotesList({
                       className={`shrink-0 text-text-secondary transition-transform ${open ? '' : '-rotate-90'}`}
                       aria-hidden
                     />
-                    <span className="inline-flex shrink-0 rounded-full border border-surface-border px-3 py-1 text-caption uppercase text-text-secondary">
+                    <span className="inline-flex shrink-0 rounded-full border border-border-subtle px-3 py-1 text-caption uppercase text-text-secondary">
                       {PRODUCT_LABEL[q.product] ?? q.product}
                     </span>
                     <span className="flex min-w-0 flex-col">
@@ -257,7 +257,7 @@ export default function QuotesList({
                     type="button"
                     onClick={() => send(q)}
                     disabled={pending}
-                    className="rounded-full border border-surface-border px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
+                    className="rounded-full border border-border-default px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
                     title={q.sent_at ? 'Torna a enviar el mateix enllaç' : 'Envia la proposta i arrenca la validesa de 30 dies'}
                   >
                     {q.sent_at ? 'Reenvia' : 'Envia proposta'}
@@ -268,7 +268,7 @@ export default function QuotesList({
                     onChange={(e) => setStatus(q.id, e.target.value)}
                     disabled={pending}
                     aria-label="Estat"
-                    className="rounded-full border border-surface-border bg-surface-base px-3 py-1.5 text-body-sm text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
+                    className="rounded-full border border-border-default bg-surface-base px-3 py-1.5 text-body-sm text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
@@ -289,7 +289,7 @@ export default function QuotesList({
                 </div>
 
                 {askReason?.id === q.id && (
-                  <div className="flex flex-wrap items-center gap-2 border-t border-surface-border bg-surface-base/60 px-4 py-3 md:px-6">
+                  <div className="flex flex-wrap items-center gap-2 border-t border-border-subtle bg-surface-base/60 px-4 py-3 md:px-6">
                     <span className="text-body-sm text-text-secondary">
                       Per què? ({labelOf(askReason.status).toLowerCase()})
                     </span>
@@ -299,7 +299,7 @@ export default function QuotesList({
                         type="button"
                         disabled={pending}
                         onClick={() => confirmReason(q.id, askReason.status, r)}
-                        className="rounded-full border border-surface-border px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
+                        className="rounded-full border border-border-default px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
                       >
                         {QUOTE_OUTCOME_REASON_LABELS[r]}
                       </button>
@@ -315,7 +315,7 @@ export default function QuotesList({
                 )}
 
                 {open && (
-                  <div className="flex flex-col gap-4 border-t border-surface-border bg-surface-base/60 p-4 md:p-6">
+                  <div className="flex flex-col gap-4 border-t border-border-subtle bg-surface-base/60 p-4 md:p-6">
                     {q.sent_at && (
                       <div className="flex flex-col gap-1">
                         <span className="text-label text-text-secondary">Enllaç del client</span>
@@ -341,7 +341,7 @@ export default function QuotesList({
                       <DetailBlock title="Selecció" value={q.selection} />
                       <DetailBlock title="Càlcul (snapshot)" value={q.pricing} />
                     </div>
-                    <div className="flex flex-col gap-2 border-t border-surface-border pt-4">
+                    <div className="flex flex-col gap-2 border-t border-border-subtle pt-4">
                       <span className="text-label text-text-secondary">Client (CRM)</span>
                       <div className="flex flex-wrap items-center gap-3">
                         <select
@@ -349,7 +349,7 @@ export default function QuotesList({
                           onChange={(e) => linkClient(q.id, e.target.value)}
                           disabled={pending}
                           aria-label="Client vinculat"
-                          className="rounded-full border border-surface-border bg-surface-base px-3 py-1.5 text-body-sm text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
+                          className="rounded-full border border-border-default bg-surface-base px-3 py-1.5 text-body-sm text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
                         >
                           <option value="">— Sense client —</option>
                           {clients.map((c) => (
@@ -364,7 +364,7 @@ export default function QuotesList({
                             type="button"
                             onClick={() => createClient(q.id)}
                             disabled={pending}
-                            className="inline-flex items-center rounded-full border border-surface-border px-3 py-1.5 text-body-sm text-text-secondary transition-colors hover:border-text-main hover:text-text-main disabled:opacity-50"
+                            className="inline-flex items-center rounded-full border border-border-default px-3 py-1.5 text-body-sm text-text-secondary transition-colors hover:border-text-main hover:text-text-main disabled:opacity-50"
                           >
                             Crea client des d&apos;aquesta quote
                           </button>
@@ -390,7 +390,7 @@ function DetailBlock({ title, value }: { title: string; value: unknown }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="text-label text-text-secondary">{title}</span>
-      <pre className="overflow-x-auto rounded-base border border-surface-border bg-surface-card p-3 text-caption text-text-main">
+      <pre className="overflow-x-auto rounded-base border border-border-subtle bg-surface-card p-3 text-caption text-text-main">
         {JSON.stringify(value, null, 2)}
       </pre>
     </div>

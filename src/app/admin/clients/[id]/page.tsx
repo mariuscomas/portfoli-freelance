@@ -97,7 +97,7 @@ export default async function AdminClientEditPage({ params }: Props) {
             {/* ====== Projectes vinculats ====== */}
             <section
               aria-labelledby="works-linked-heading"
-              className="flex flex-col gap-4 rounded-[var(--radius-base)] border border-surface-border bg-surface-card p-5 md:p-7"
+              className="flex flex-col gap-4 rounded-[var(--radius-base)] border border-border-subtle bg-surface-card p-5 md:p-7"
             >
               <header className="flex items-end justify-between gap-4 flex-wrap">
                 <div className="flex flex-col">
@@ -133,7 +133,7 @@ export default async function AdminClientEditPage({ params }: Props) {
               )}
 
               {works && works.length > 0 && (
-                <ul className="flex flex-col divide-y divide-surface-border -my-2">
+                <ul className="flex flex-col divide-y divide-border-subtle -my-2">
                   {works.map((w) => {
                     const title = pickLocale(w.title)
                     const slug = pickLocale(w.slug)
@@ -144,7 +144,7 @@ export default async function AdminClientEditPage({ params }: Props) {
                           className="flex items-center gap-4 py-3 group"
                         >
                           {/* Thumbnail */}
-                          <div className="w-12 h-12 rounded-md bg-surface-base border border-surface-border overflow-hidden shrink-0 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-md bg-surface-base border border-border-subtle overflow-hidden shrink-0 flex items-center justify-center">
                             {w.main_image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img

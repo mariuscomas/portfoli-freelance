@@ -142,7 +142,7 @@ function ConfirmDialog({
       />
 
       {/* Modal card */}
-      <div className="relative max-w-md w-full bg-surface-card rounded-[var(--radius-base)] border border-surface-border shadow-2xl p-6 flex flex-col gap-4">
+      <div className="relative max-w-md w-full bg-surface-card rounded-[var(--radius-base)] border border-border-subtle shadow-2xl p-6 flex flex-col gap-4">
         {danger && (
           <div
             aria-hidden
@@ -173,7 +173,7 @@ function ConfirmDialog({
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center px-4 py-2 rounded-full border border-surface-border text-text-main hover:border-text-secondary text-body-sm transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-full border border-border-default text-text-main hover:border-text-secondary text-body-sm transition-colors"
           >
             {cancelLabel}
           </button>

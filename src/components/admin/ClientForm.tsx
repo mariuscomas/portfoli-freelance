@@ -104,7 +104,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-8">
       {/* ====== TOP BAR sticky ====== */}
-      <div className="sticky top-0 z-20 -mx-6 md:-mx-10 bg-surface-base/90 backdrop-blur-md border-b border-surface-border">
+      <div className="sticky top-0 z-20 -mx-6 md:-mx-10 bg-surface-base/90 backdrop-blur-md border-b border-border-subtle">
         <div className="flex items-center justify-between gap-4 mx-auto px-6 md:px-10 py-3 max-w-4xl">
           <Link
             href="/admin/clients"
@@ -190,7 +190,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm border transition-colors ${
                   active
                     ? 'bg-text-main text-text-main-inverse border-text-main'
-                    : 'bg-surface-card text-text-secondary border-surface-border hover:text-text-main hover:border-text-main/40'
+                    : 'bg-surface-card text-text-secondary border-border-default hover:text-text-main hover:border-text-main/40'
                 }`}
               >
                 {meta.label}
@@ -320,7 +320,7 @@ function Card({
   children: React.ReactNode
 }) {
   return (
-    <fieldset className="flex flex-col gap-5 rounded-[var(--radius-base)] border border-surface-border bg-surface-card p-5 md:p-7">
+    <fieldset className="flex flex-col gap-5 rounded-[var(--radius-base)] border border-border-subtle bg-surface-card p-5 md:p-7">
       <legend className="contents">
         <div className="flex flex-col">
           <span className="text-label text-text-secondary">
@@ -401,7 +401,7 @@ function Field({
           } py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-text-main/20 ${
             warning
               ? 'border-warning-main focus:border-warning-main focus:ring-warning-main/20'
-              : 'border-surface-border focus:border-text-main'
+              : 'border-border-default focus:border-text-main'
           }`}
         />
       </div>
@@ -441,7 +441,7 @@ function Textarea({
       <textarea
         id={id}
         {...props}
-        className="w-full bg-transparent border border-surface-border rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
         <p className="text-body-sm text-text-secondary/80 leading-snug">
@@ -475,7 +475,7 @@ function Select({
       <select
         id={id}
         {...props}
-        className="w-full bg-transparent border border-surface-border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

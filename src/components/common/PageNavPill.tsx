@@ -25,14 +25,14 @@ export default function PageNavPill({ items }: PageNavPillProps) {
         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
       </TransitionLink>
 
-      <nav className="flex items-center gap-2 p-1.5 bg-surface-border/30 rounded-full w-fit">
+      <nav className="flex items-center gap-2 p-1.5 bg-border-subtle/30 rounded-full w-fit">
         {items.map((item, index) => (
           <TransitionLink
             key={index}
             href={item.href}
             className={`px-6 py-2 rounded-full text-body-md transition-all duration-300 ${index === 0
               ? "bg-text-main text-surface-base font-medium"
-              : "hover:bg-surface-border/50 text-text-secondary"
+              : "hover:bg-border-subtle/50 text-text-secondary"
               }`}
           >
             {item.label}

@@ -37,7 +37,7 @@ export default function AboutIntro() {
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="w-full md:w-5/12 lg:w-6/12 group cursor-none-on-hover md:sticky md:top-0 md:h-[100svh] md:flex md:items-center"
         >
-          <div className="relative w-full overflow-hidden bg-surface-border">
+          <div className="relative w-full overflow-hidden bg-border-subtle">
             <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

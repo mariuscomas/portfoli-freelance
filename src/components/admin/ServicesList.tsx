@@ -116,7 +116,7 @@ export default function ServicesList({ services: initialServices }: { services: 
         items={services.map((s) => s.id)}
         strategy={verticalListSortingStrategy}
       >
-        <ul className="flex flex-col divide-y divide-surface-border">
+        <ul className="flex flex-col divide-y divide-border-subtle">
           {services.map((s) => (
             <SortableServiceItem key={s.id} service={s} />
           ))}

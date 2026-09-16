@@ -1656,7 +1656,7 @@ function StepProgress({ current, total }: { current: number; total: number }) {
         {Array.from({ length: total }).map((_, i) => (
           <span
             key={i}
-            className="relative h-1 w-6 overflow-hidden rounded-full bg-surface-border"
+            className="relative h-1 w-6 overflow-hidden rounded-full bg-border-subtle"
           >
             <motion.span
               className="absolute inset-0 origin-left rounded-full bg-primary-main"

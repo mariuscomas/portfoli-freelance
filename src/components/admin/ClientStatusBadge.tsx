@@ -13,8 +13,8 @@ const TONE_CLASSES: Record<
   (typeof CLIENT_STATUS_META)[ClientStatus]['tone'],
   string
 > = {
-  info: 'bg-surface-card border border-surface-border text-text-main',
-  neutral: 'bg-surface-base border border-surface-border text-text-secondary',
+  info: 'bg-surface-card border border-border-subtle text-text-main',
+  neutral: 'bg-surface-base border border-border-subtle text-text-secondary',
   warning: 'bg-warning-surface text-warning-main border border-warning-main/30',
   success: 'bg-accent-surface text-text-main border border-accent/30',
   error: 'bg-error-surface text-error border border-error/30',

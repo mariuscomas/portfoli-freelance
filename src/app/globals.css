@@ -48,30 +48,28 @@
   /* Figma: surface/base */
   --surface-card: #ffffff;
   /* Figma: surface/card */
-  --surface-border: #e5e7eb;
-  /* Figma: surface/border */
   --surface-image: #b3b3b3;
   /* Figma: surface/image (neutral/200) — plaqueta darrere d'imatges */
-  --surface-border-strong: #999999;
-  /* Figma: surface/border-strong — bordes (dashed) sobre surface/base on border no té prou contrast */
 
   /* --- COLOR / Border — rampa per promesa de contrast (Figma: border/*) ---
-     Els dos tokens de dalt són LLEGAT: --surface-border fa 1,11:1 sobre
-     surface/base i --surface-border-strong 2,54:1, o sigui que cap dels dos
-     arriba als 3:1 de la WCAG 1.4.11. Es migren un per un.
+     Font única de vores des del 2026-09-16: les velles --surface-border i
+     --surface-border-strong (Figma border/border i border/border-strong) es
+     van esborrar després de migrar-ne tots els usos, aquí i al Figma.
 
-     La rampa nova té tres graons definits per QUÈ PROMET cadascun, i cada
-     graó es comporta igual als dos temes. Tots surten de primitives que ja
-     existien a la rampa de neutrals — cap valor inventat.
+     La rampa té tres graons definits per QUÈ PROMET cadascun, i cada graó es
+     comporta igual als dos temes. Tots surten de primitives que ja existien
+     a la rampa de neutrals — cap valor inventat.
 
-       subtle   1,11 clar / 1,64 fosc  → cap promesa. Filet DECORATIU: només
-                per a separacions que l'aire ja fa i que ningú necessita
-                veure per entendre res.
+       subtle   1,11 clar / 1,64 fosc  → cap promesa. Filet DECORATIU:
+                separadors de secció, i la vora d'una card que ja es
+                delimita pel seu propi fons (card #fff sobre base #f2f2f2).
        default  3,08 clar / 3,23 fosc  → ≥3:1 contra surface/base I
                 surface/card als dos temes. El filet que FA UNA FEINA:
-                delimita, agrupa, marca la vora d'una card. Compleix 1.4.11.
-       strong   7,17 clar / 5,38 fosc  → ≥4,5:1. Èmfasi: inputs, error,
-                vores dashed, el que hagi de cridar. */
+                controls de formulari (input, textarea, select), botons
+                outline, i qualsevol vora que hagi de delimitar sense
+                l'ajuda d'un canvi de fons. Compleix WCAG 1.4.11.
+       strong   7,17 clar / 5,38 fosc  → ≥4,5:1. Èmfasi: vores dashed,
+                estats d'error, el que hagi de cridar. */
   --border-subtle: #e5e7eb;
   /* neutral/100 */
   --border-default: #8a8a8a;
@@ -153,13 +151,13 @@
   --outline-hover-font-color: var(--primary-main);
   --outline-focus-outline: var(--primary-main);
   /* NOU */
-  --outline-pressed-background: var(--surface-border);
+  --outline-pressed-background: var(--border-subtle);
   /* NOU */
   --outline-pressed-border: var(--primary-main);
   /* NOU */
   --outline-pressed-font-color: var(--primary-main);
   /* NOU */
-  --outline-disabled-border: var(--surface-border);
+  --outline-disabled-border: var(--border-subtle);
   /* NOU — abans #b2b2b2 */
   --outline-disabled-font-color: var(--text-disabled);
 
@@ -439,14 +437,6 @@
   --surface-card: #0a0a0a;
   --surface-image: #444749;
   /* Figma: surface/image mode Dark (neutral/700) — plaqueta discreta, 1,64:1 */
-  --surface-border: #737373;
-  /* Figma sync 2026-09-15: border/border Dark és #737373 (neutral/500), no #8a8a8a.
-     El codi anava un graó per sobre des de sempre. 3,23:1 sobre surface/base
-     — segueix per damunt de 3:1, o sigui que els inputs de l'admin compleixen. */
-  --surface-border-strong: #999999;
-  /* Figma sync 2026-09-15: border/border-strong en fosc era #ffffff (neutral/0,
-     15,33:1 sobre surface/base — un crit en un filet d'1px). Corregit AL FIGMA
-     cap a neutral/300, que és el que el codi ja feia. Aquí no calia tocar res. */
 
   /* Rampa de border (dark) — mateixos graons, primitives de l'altre extrem */
   --border-subtle: #444749;
@@ -495,8 +485,6 @@
   --color-text-disabled: var(--text-disabled);
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
-  --color-surface-border: var(--surface-border);
-  --color-surface-border-strong: var(--surface-border-strong);
   --color-surface-image: var(--surface-image);
   --color-surface-card-inverse: var(--surface-card-inverse);
   --color-border-subtle: var(--border-subtle);
@@ -573,11 +561,9 @@
   --color-border-default: var(--border-default);
   --color-border-strong: var(--border-strong);
 
-  /* Colors / Surface → bg-surface-base, bg-surface-card, border-surface-border, etc. */
+  /* Colors / Surface → bg-surface-base, bg-surface-card, bg-surface-image, etc. */
   --color-surface-base: var(--surface-base);
   --color-surface-card: var(--surface-card);
-  --color-surface-border: var(--surface-border);
-  --color-surface-border-strong: var(--surface-border-strong);
   --color-surface-image: var(--surface-image);
   --color-surface-card-inverse: var(--surface-card-inverse);
 
