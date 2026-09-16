@@ -63,7 +63,7 @@ const FOCUS_COPY: Record<AuditFocus, { name: string; description: string; tag: s
 
 // Procés específic de l'auditoria (no és el PROCESS_STEPS de web/landing).
 const AUDIT_PROCESS = [
-  { num: "01", title: "Accés", text: "Em dónes accés al producte o prototip i el context." },
+  { num: "01", title: "Accés", text: "Ens dónes accés al producte o prototip i el context." },
   { num: "02", title: "Revisió", text: "Revisió heurística de UI, UX i conversió." },
   { num: "03", title: "Informe", text: "Informe prioritzat amb quick wins i millores estructurals." },
   { num: "04", title: "Sessió", text: "Sessió de retorn de 90 min i roadmap accionable." },
@@ -71,7 +71,7 @@ const AUDIT_PROCESS = [
 
 const FAQ: { q: string; a: string }[] = [
   {
-    q: "Què necessites de mi?",
+    q: "Què necessiteu de mi?",
     a: "Només accés al producte o prototip i una mica de context sobre els objectius.",
   },
   {
@@ -148,7 +148,7 @@ function IncludesSection() {
           ))}
         </ul>
         <p className="mt-10 text-caption text-text-secondary">
-          Per auditar només necessito accés al teu producte o prototip.
+          Per auditar només necessitem accés al teu producte o prototip.
         </p>
       </Reveal>
     </section>
@@ -207,7 +207,7 @@ function SizesSection() {
               className="flex flex-col gap-2 border-b border-border-subtle py-6 md:flex-row md:items-center md:gap-8"
             >
               <span className="flex-1 text-body-lg text-text-main">{s.label}</span>
-              <span className="text-caption uppercase text-text-secondary md:w-56">{s.range}</span>
+              <span className="text-caption uppercase text-text-secondary md:w-72">{s.range}</span>
               <span className="text-body-lg text-text-main md:w-44 md:text-right">
                 {s.increment === 0 ? "inclosa" : `+${formatPrice(s.increment)}`}
               </span>
