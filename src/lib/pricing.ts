@@ -324,6 +324,12 @@ export interface ConfigExtraDef {
  * Catàleg d'extres. El preu de "pagina" és orientatiu (200): el real l'aplica
  * cada abast via `pageExtraPrice`.
  *
+ * `help` és el copy del toggletip, literal del frame "Tooltip — Còpia dels
+ * extres" del Figma (11556:9884). Sense `help` no es pinta cap `?`, i per això
+ * els vuit mòduls nous i els extres d'auditoria no en tenen: no hi ha copy
+ * validat. El de "pagina" interpola BASE_PAGES perquè segueixi el flag del
+ * repricing (5 avui, 3 amb el v2) en comptes de quedar-se desfasat.
+ *
  * `family` situa l'extra al pas del configurador; `v2Only` marca els vuit
  * mòduls del pla modular, que no s'ofereixen mentre PRICING_V2_ENABLED estigui
  * tancat (els seus preus són del model nou); `when` és la condició de
@@ -331,11 +337,11 @@ export interface ConfigExtraDef {
  * altres extres actius (la formació de CMS no es pot vendre sense el CMS).
  */
 export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
-  pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA", family: "amplia", when: ({ product }) => product === "web" },
-  idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA", family: "amplia", when: ({ has }) => has.has("dev") },
-  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, family: "capacitats", when: ({ has }) => has.has("dev") },
-  cms: { id: "cms", label: "Panell d'edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500, family: "capacitats", when: ({ product, has }) => product === "web" && has.has("dev") },
-  redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80, family: "rendiment", when: ({ has }) => has.has("ux") },
+  pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA", family: "amplia", when: ({ product }) => product === "web", help: `Qualsevol pàgina més enllà de les ${BASE_PAGES} de la Base (blog, portfolio, landing de campanya) amb disseny i maquetació responsive a mida.` },
+  idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA", family: "amplia", when: ({ has }) => has.has("dev"), help: "Publiquem el web en un idioma addicional, amb selector i maquetació adaptada. La traducció dels textos va a part." },
+  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, family: "capacitats", when: ({ has }) => has.has("dev"), help: "Un pas més enllà de les transicions de la Base: animacions d'entrada, efectes al cursor i seqüències que donen caràcter al web." },
+  cms: { id: "cms", label: "Panell d'edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500, family: "capacitats", when: ({ product, has }) => product === "web" && has.has("dev"), help: "Edita textos i imatges tu mateix des d'un panell senzill, sense tocar codi ni dependre de mi per a cada canvi." },
+  redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80, family: "rendiment", when: ({ has }) => has.has("ux"), help: "Escric els textos de cada pàgina a partir del teu brief: titulars, cos i crides a l'acció pensats per convertir. Preu per pàgina." },
 
   // ——— Mòduls del pla modular 2026 (35 €/h, marge 25%) ———
   blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, when: ({ product, has }) => product === "web" && has.has("dev") },
@@ -935,8 +941,6 @@ export const COLLAB_INTEGRATION = [
   { title: "Format", text: "Remot amb overlap horari complet (CET)." },
   { title: "Incorporació", text: "En 48 hores si cal. Sense període de prova." },
 ] as const;
-
-export const COLLAB_CLIENTS = ["North Studio", "Quantion", "Cupra", "Santalucía", "Alphanet"] as const;
 
 /** Enllaç de cita per a col·laboracions (estratègia §5). */
 export const COLLAB_CALENDAR_URL = "https://calendar.app.google/MRVip8R9GcYYNCEz6";
