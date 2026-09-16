@@ -11,10 +11,14 @@
  *
  * TANCAT per al llançament (16set26): els preus "des de" i les tarifes segueixen
  * visibles, però els CTA porten a contacte i trucada en comptes d'obrir el
- * configurador, que encara no s'ha validat en viu. Per tornar a obrir-lo, posar
- * això a `true` — no cal desfer res més.
+ * configurador, que encara no s'ha validat en viu.
+ *
+ * Es pot obrir NOMÉS EN LOCAL amb `NEXT_PUBLIC_CONFIGURATOR=1` al `.env.local`,
+ * per provar-lo sense tocar codi ni arriscar-se a commitar-lo obert. A producció
+ * la variable no hi és, així que el default mana i segueix tancat. Per obrir-lo
+ * de debò, definir la variable a l'entorn de Vercel o canviar el default aquí.
  */
-export const CONFIGURATOR_ENABLED = false;
+export const CONFIGURATOR_ENABLED = process.env.NEXT_PUBLIC_CONFIGURATOR === "1";
 
 /**
  * Preus del pla modular 2026 (600 · 990 · 1.990). TANCAT.

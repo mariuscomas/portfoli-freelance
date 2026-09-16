@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/Button";
+import { CLIENT_LOGOS } from "@/lib/clients";
 
 /* ------------------------------------------------------------
    Logotip de client.
@@ -25,15 +26,18 @@ const ClientLogo = ({ src, name, height }: { src: string; name: string; height: 
   </div>
 );
 
-// `h` = alçada normalitzada al Figma (slot 160×56, igualat per caixa alta)
-const clients = [
-  { src: "/logos/north.svg",      h: 30, name: "The North Studio", desc: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria. I sí, va ser tan divertit com sona." },
-  { src: "/logos/quantion.svg",   h: 34, name: "Quantion", desc: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples." },
-  { src: "/logos/cupra.svg",      h: 52, name: "Cupra", desc: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h." },
-  { src: "/logos/santalucia.svg", h: 32, name: "Santalucía Impulsa", desc: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA." },
-  { src: "/logos/alphanet.svg",   h: 18, name: "Alphanet Solutions", desc: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema." },
-  { src: "/logos/onabitz.svg",    h: 30, name: "Onabitz", desc: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall." },
-];
+// Els logos i la seva alçada normalitzada surten de lib/clients (font única,
+// compartida amb /colaboracio). Aquí només hi viu el relat de cada client.
+const DESCRIPCIONS: Record<string, string> = {
+  north: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria. I sí, va ser tan divertit com sona.",
+  quantion: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples.",
+  cupra: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h.",
+  santalucia: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA.",
+  alphanet: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema.",
+  onabitz: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall.",
+};
+
+const clients = CLIENT_LOGOS.map((c) => ({ ...c, desc: DESCRIPCIONS[c.id] }));
 
 export default function Clients() {
   const scrollRef = useRef<HTMLDivElement>(null);

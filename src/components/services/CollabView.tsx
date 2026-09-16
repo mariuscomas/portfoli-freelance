@@ -11,10 +11,10 @@ import {
   COLLAB_RATES,
   COLLAB_MODIFIERS,
   COLLAB_INTEGRATION,
-  COLLAB_CLIENTS,
   COLLAB_CALENDAR_URL,
 } from "@/lib/pricing";
 import { SITE_EMAIL } from "@/lib/site";
+import { COLLAB_CLIENT_LOGOS } from "@/lib/clients";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
 const CONTACT_EMAIL = SITE_EMAIL;
@@ -59,10 +59,14 @@ function ValueSection() {
           Disseny UX/UI de producte per a equips que necessiten múscul sènior sense passar per una
           contractació. Hi he treballat per a:
         </p>
-        <ul className="mt-10 flex flex-wrap items-center gap-x-12 gap-y-4">
-          {COLLAB_CLIENTS.map((c) => (
-            <li key={c} className="text-heading-h3 text-text-main">
-              {c}
+        {/* Prova social amb logotips (Figma). Igualats per alçada de caixa
+            alta, com a la home: fixem `height` i deixem l'amplada automàtica
+            perquè no es puguin deformar. A mòbil fan wrap. */}
+        <ul className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-6 sm:gap-x-12">
+          {COLLAB_CLIENT_LOGOS.map((c) => (
+            <li key={c.id} className="flex h-14 items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element -- SVG local de mida fixa; next/image no hi aporta res */}
+              <img src={c.src} alt={c.name} height={c.h} style={{ height: c.h, width: "auto" }} />
             </li>
           ))}
         </ul>
