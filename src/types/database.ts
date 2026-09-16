@@ -270,18 +270,22 @@ export type Database = {
       services: {
         Row: {
           content_about: Json | null
+          cta: Json | null
           content_deliverables: Json | null
           content_steps: Json | null
           content_why_us: Json | null
           created_at: string | null
           duration: Json | null
-          icon_name: string
+          icon_name: string | null
           id: string
           image_url: string | null
+          includes: Json | null
           is_published: boolean | null
           order_index: number | null
           payment_milestones: Json | null
+          price_label: Json | null
           price_starts_at: number | null
+          product_id: string
           revisions: Json | null
           short_description: Json | null
           slug: Json
@@ -290,18 +294,22 @@ export type Database = {
         }
         Insert: {
           content_about?: Json | null
+          cta?: Json | null
           content_deliverables?: Json | null
           content_steps?: Json | null
           content_why_us?: Json | null
           created_at?: string | null
           duration?: Json | null
-          icon_name: string
+          icon_name?: string | null
           id?: string
           image_url?: string | null
+          includes?: Json | null
           is_published?: boolean | null
           order_index?: number | null
           payment_milestones?: Json | null
+          price_label?: Json | null
           price_starts_at?: number | null
+          product_id: string
           revisions?: Json | null
           short_description?: Json | null
           slug: Json
@@ -310,18 +318,22 @@ export type Database = {
         }
         Update: {
           content_about?: Json | null
+          cta?: Json | null
           content_deliverables?: Json | null
           content_steps?: Json | null
           content_why_us?: Json | null
           created_at?: string | null
           duration?: Json | null
-          icon_name?: string
+          icon_name?: string | null
           id?: string
           image_url?: string | null
+          includes?: Json | null
           is_published?: boolean | null
           order_index?: number | null
           payment_milestones?: Json | null
+          price_label?: Json | null
           price_starts_at?: number | null
+          product_id?: string
           revisions?: Json | null
           short_description?: Json | null
           slug?: Json

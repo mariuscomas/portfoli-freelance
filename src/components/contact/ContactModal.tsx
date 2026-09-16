@@ -7,6 +7,7 @@ import { X, ArrowRight, ArrowUpRight, Check } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import { submitContact } from "@/app/contacte/actions";
 import { RESPONSE_SLA } from "@/lib/pricing";
+import { SITE_EMAIL } from "@/lib/site";
 
 /**
  * <ContactModal />
@@ -35,7 +36,7 @@ import { RESPONSE_SLA } from "@/lib/pricing";
  * role=alert, targets ≥44px i prefers-reduced-motion (cortina → fade).
  */
 
-const EMAIL = "hello@mariusfreelance.com";
+const EMAIL = SITE_EMAIL;
 const CALL_BOOKING_URL = "https://calendar.app.google/b4khxKQkiSNss4KR6";
 
 interface StepDef {

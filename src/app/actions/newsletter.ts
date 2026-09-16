@@ -3,6 +3,8 @@
 import { headers } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 import type { NewsletterSubscriberInsert } from "@/types/database"
+import { allowSubmission, RATE_LIMIT_MESSAGE } from "@/lib/rateLimit"
+import { isBot, validateNewsletter } from "@/lib/validation"
 
 /**
  * Server Action del form de newsletter del Footer.
@@ -20,20 +22,23 @@ interface SubscribeInput {
   website?: string
 }
 
-const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
-
 export async function subscribeNewsletter(
   input: SubscribeInput
 ): Promise<NewsletterResult> {
   const email = (input.email || "").trim().toLowerCase()
   const honeypot = (input.website || "").trim()
 
-  if (honeypot.length > 0) {
+  if (isBot(honeypot)) {
     return { status: "ok" }
   }
 
-  if (!EMAIL_REGEX.test(email) || email.length > 320) {
-    return { status: "error", message: "Si us plau, escriu un email vàlid." }
+  const invalid = validateNewsletter(email)
+  if (invalid) {
+    return { status: "error", message: invalid }
+  }
+
+  if (!(await allowSubmission("newsletter"))) {
+    return { status: "error", message: RATE_LIMIT_MESSAGE }
   }
 
   const supabase = await createClient()

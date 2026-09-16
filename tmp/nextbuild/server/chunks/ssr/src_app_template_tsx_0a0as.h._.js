@@ -1,3 +1,0 @@
-module.exports=[9475,a=>{"use strict";var b=a.i(87924),c=a.i(72131),d=a.i(10663);a.s(["default",0,function({children:a}){let{isTransitioning:e,hasStartedTransition:f}=(0,d.useTransition)(),[g,h]=(0,c.useState)(!e||!f);return(0,c.useEffect)(()=>{if(!e)if(f){let a=setTimeout(()=>{h(!0)},300);return()=>clearTimeout(a)}else h(!0)},[e,f]),(0,b.jsx)("div",{className:"w-full flex-grow flex flex-col min-h-[100dvh]",children:g?(0,b.jsx)(b.Fragment,{children:a}):null})}])}];
-
-//# sourceMappingURL=src_app_template_tsx_0a0as.h._.js.map

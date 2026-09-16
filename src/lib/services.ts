@@ -71,8 +71,9 @@ export function productsFrom(rows: unknown[] | null): Product[] {
 }
 
 /**
- * Un sol producte per a la seva pàgina de detall (spoke). Mateix fallback que
- * el hub: sense fila publicada, mana el catàleg de codi i la ruta segueix viva.
+ * Un sol producte per a la seva pàgina de detall (spoke). El fallback al
+ * catàleg de codi cobreix NOMÉS l'error de consulta: una fila despublicada la
+ * resol la pàgina amb notFound() abans d'arribar aquí.
  */
 export function productFrom(rows: unknown[] | null, id: ProductId): Product {
   const fromDb = (rows ?? [])

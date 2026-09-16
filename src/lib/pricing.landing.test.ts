@@ -6,12 +6,19 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { calcConfiguration, LANDING_BASE_PAGES, type Discipline } from "./pricing.ts";
+import {
+  calcConfiguration,
+  LANDING_BASE_PAGES,
+  PRICING_SETS,
+  type Discipline,
+} from "./pricing.ts";
+
+// Joc v1.4 explícit: veure la nota de pricing.roles.test.ts.
 
 const L = (
   disciplines: Discipline[],
   extra: Omit<Parameters<typeof calcConfiguration>[0], "disciplines" | "product"> = {},
-) => calcConfiguration({ disciplines, product: "landing", ...extra });
+) => calcConfiguration({ disciplines, product: "landing", ...extra }, PRICING_SETS.v1);
 
 test("bases de landing per disciplina i combinació", () => {
   assert.equal(L(["ux", "ui", "dev"]).baseTotal, 1440); // 240+240+240+480+240
@@ -58,9 +65,13 @@ test("Dev landing ofereix idioma i motion, no redacció", () => {
 });
 
 test("sense product, calcConfiguration segueix sent WEB (no trenca)", () => {
-  assert.equal(calcConfiguration({ disciplines: ["ux", "ui", "dev"] }).baseTotal, 2400);
   assert.equal(
-    calcConfiguration({ disciplines: ["ux", "ui", "dev"], product: "web" }).baseTotal,
+    calcConfiguration({ disciplines: ["ux", "ui", "dev"] }, PRICING_SETS.v1).baseTotal,
+    2400,
+  );
+  assert.equal(
+    calcConfiguration({ disciplines: ["ux", "ui", "dev"], product: "web" }, PRICING_SETS.v1)
+      .baseTotal,
     2400,
   );
 });

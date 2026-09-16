@@ -25,9 +25,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ["", 1, "monthly"],
       ["/works", 0.9, "monthly"],
       ["/serveis", 0.9, "monthly"],
-      ["/serveis/web", 0.8, "monthly"],
-      ["/serveis/landing", 0.8, "monthly"],
-      ["/serveis/auditoria", 0.8, "monthly"],
       ["/colaboracio", 0.9, "monthly"],
       ["/about", 0.7, "yearly"],
       ["/privacitat", 0.3, "yearly"],
@@ -50,6 +47,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select("slug, created_at")
     .eq("is_published", true);
 
+  // Els spokes de producte (/serveis/web · landing · auditoria) surten de la
+  // taula, no d'una llista fixa: un producte despublicat fa 404 a la seva
+  // ruta, i un 404 dins del sitemap és un error de rastreig.
+  const { data: services } = await supabase
+    .from("services")
+    .select("product_id, updated_at")
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  const serviceRoutes: MetadataRoute.Sitemap = (services || []).map((s) => ({
+    url: `${SITE.url}/serveis/${s.product_id}`,
+    lastModified: s.updated_at ? new Date(s.updated_at) : now,
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
   const workRoutes: MetadataRoute.Sitemap = (works || []).map((w) => ({
     url: `${SITE.url}/works/${t(w.slug)}`,
     lastModified: w.created_at ? new Date(w.created_at) : now,
@@ -57,5 +70,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...workRoutes];
+  return [...staticRoutes, ...serviceRoutes, ...workRoutes];
 }

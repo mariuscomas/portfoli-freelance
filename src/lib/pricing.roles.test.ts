@@ -11,7 +11,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  BASE_PAGES,
   DISCIPLINE_ORDER,
   DISCIPLINES,
   FULL_SCOPE_LABEL,
@@ -19,13 +18,23 @@ import {
   disciplineIncludeLine,
   calcConfiguration,
   formatEuro,
+  PRICING_SETS,
   type Discipline,
 } from "./pricing.ts";
+
+/**
+ * Aquests tests verifiquen el joc v1.4, que és el que hi ha a producció. El
+ * joc es passa EXPLÍCITAMENT: si depenguessin del joc actiu, la suite es
+ * trencaria el dia que s'engegui PRICING_V2_ENABLED, i el que volem saber
+ * aleshores és si el v2 calcula bé, no si el v1 ha deixat d'existir.
+ * Els preus del pla nou viuen a pricing.v2.test.ts.
+ */
+const BASE_PAGES = PRICING_SETS.v1.web.basePages;
 
 const q = (
   disciplines: Discipline[],
   extra: Omit<Parameters<typeof calcConfiguration>[0], "disciplines" | "product"> = {},
-) => calcConfiguration({ disciplines, ...extra });
+) => calcConfiguration({ disciplines, ...extra }, PRICING_SETS.v1);
 
 // ————————————————————————————————— Bases per disciplina i combinació
 test("una sola disciplina reprodueix el preu del paquet antic", () => {

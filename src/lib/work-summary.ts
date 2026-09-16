@@ -84,19 +84,18 @@ export type LocaleStatus = 'complete' | 'partial' | 'empty'
 export const WORK_I18N_FIELDS = ['title', 'slug', 'role', 'category', 'conclusion'] as const
 
 /**
- * Camps i18n d'un servei (més extens que el work — té camps narratius
- * propis com `content_about`, `content_steps`, etc.).
+ * Camps i18n d'un producte del catàleg. Són els que es publiquen a /serveis
+ * des del pas del contingut a Supabase (16set26): els camps narratius del
+ * model antic (`content_*`, `duration`, `revisions`) ja no es fan servir, i
+ * comptar-los deixava els badges d'idioma sempre en "partial".
+ *
+ * `includes` queda fora: és un array de translatables, no un translatable, i
+ * localeStatus no el sap llegir.
  */
 export const SERVICE_I18N_FIELDS = [
   'title',
-  'slug',
   'short_description',
-  'duration',
-  'revisions',
-  'content_about',
-  'content_steps',
-  'content_deliverables',
-  'content_why_us',
+  'cta',
 ] as const
 
 /**

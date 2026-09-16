@@ -16,9 +16,10 @@ import {
   PRODUCT_CALL_URL,
   type AuditFocus,
 } from "@/lib/pricing";
+import { SITE_EMAIL } from "@/lib/site";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
-const CONTACT_EMAIL = "mariuscr23@gmail.com";
+const CONTACT_EMAIL = SITE_EMAIL;
 
 const formatPrice = (n: number) =>
   `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
@@ -150,7 +151,7 @@ function FocusSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="02 · FOCUS" title="Tria on miro" />
+        <SectionHeader caption="02 · FOCUS" title="Tria on mirem" />
       </Reveal>
       <Reveal className="mt-8">
         <p className="max-w-2xl text-body-lg text-text-secondary">
@@ -267,7 +268,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
               rel="noopener noreferrer"
               className="underline underline-offset-4 hover:text-text-main"
             >
-              reserva 15 minuts
+              reserva 20 minuts
               <span className="sr-only"> (s’obre en una pestanya nova)</span>
             </a>{" "}
             i en parlem, sense compromís.

@@ -14,9 +14,10 @@ import {
   COLLAB_CLIENTS,
   COLLAB_CALENDAR_URL,
 } from "@/lib/pricing";
+import { SITE_EMAIL } from "@/lib/site";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
-const CONTACT_EMAIL = "mariuscr23@gmail.com";
+const CONTACT_EMAIL = SITE_EMAIL;
 
 function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
   const reduce = useReducedMotion();
@@ -136,9 +137,10 @@ function AvailabilitySection() {
             <span aria-hidden className="h-3 w-3 rounded-full bg-accent" />
             <span className="text-caption uppercase text-text-secondary">DISPONIBILITAT ACTUAL</span>
           </span>
-          {/* TODO: alimentar des de Supabase (taula availability) */}
+          {/* Sense xifra a posta: un recompte exacte caduca sol i ningú l'actualitza.
+              L'estat qualitatiu sempre és cert i es llegeix igual de bé. */}
           <p className="text-body-md text-text-main">
-            Obert a noves col·laboracions aquest trimestre: 2 slots.
+            Obert a noves col·laboracions aquest trimestre.
           </p>
         </div>
       </Reveal>

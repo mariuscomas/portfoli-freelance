@@ -6,7 +6,6 @@ import {
   Eye,
   EyeSlash,
   Pencil,
-  Copy,
   ClockCounterClockwise,
   DotsSixVertical,
 } from '@phosphor-icons/react'
@@ -27,7 +26,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { duplicateService, reorderServices } from '@/app/admin/serveis/actions'
+import { reorderServices } from '@/app/admin/serveis/actions'
 import {
   localeStatus,
   relativeTime,
@@ -39,25 +38,20 @@ import type { Translatable } from '@/types/database'
 /**
  * <ServicesList />
  *
- * Versió del llistat reordenable per a serveis. Mateix patró que WorksList
- * però amb menys columnes (els serveis són estructures més simples — no
- * tenen blocs ni final media). Comparteix els helpers genèrics de
+ * Llistat reordenable dels tres productes del catàleg. L'ordre és el de les
+ * cards de la tríada a /serveis. No hi ha crear, duplicar ni esborrar: els
+ * productes són fixos (product_id amb check constraint), perquè cada un té la
+ * seva ruta i els seus preus a codi. Comparteix els helpers genèrics de
  * lib/work-summary.
  */
 
 interface ServiceRow {
   id: string
+  product_id: string
   title: unknown
-  slug: unknown
-  icon_name: string | null
-  price_starts_at: number | null
   short_description: unknown
-  duration: unknown
-  revisions: unknown
-  content_about: unknown
-  content_steps: unknown
-  content_deliverables: unknown
-  content_why_us: unknown
+  cta: unknown
+  includes: unknown
   is_published: boolean | null
   order_index: number | null
   created_at: string
@@ -132,7 +126,7 @@ function SortableServiceItem({ service: s }: { service: ServiceRow }) {
   })
 
   const title = pickLocale(s.title)
-  const slug = pickLocale(s.slug)
+  const includesCount = Array.isArray(s.includes) ? s.includes.length : 0
   const localeStatuses: Record<'ca' | 'en' | 'es', LocaleStatus> = {
     ca: localeStatus(s as unknown as Record<string, unknown>, 'ca', SERVICE_I18N_FIELDS),
     en: localeStatus(s as unknown as Record<string, unknown>, 'en', SERVICE_I18N_FIELDS),
@@ -164,9 +158,8 @@ function SortableServiceItem({ service: s }: { service: ServiceRow }) {
           </span>
           <div className="flex items-center gap-3 text-body-sm text-text-secondary">
             <span className="truncate">
-              /serveis/{slug || '...'}
-              {s.icon_name && ` · ${s.icon_name}`}
-              {s.price_starts_at != null && ` · des de ${s.price_starts_at}€`}
+              /serveis/{s.product_id}
+              {includesCount > 0 && ` · ${includesCount} línies al "què inclou"`}
             </span>
             {s.updated_at && (
               <span
@@ -228,17 +221,6 @@ function SortableServiceItem({ service: s }: { service: ServiceRow }) {
         </div>
       </Link>
 
-      <form action={duplicateService}>
-        <input type="hidden" name="id" value={s.id} />
-        <button
-          type="submit"
-          title="Duplicar servei"
-          aria-label="Duplicar servei"
-          className="inline-flex items-center justify-center w-9 h-9 rounded-md text-text-secondary hover:text-text-main hover:bg-surface-base transition-colors"
-        >
-          <Copy size={16} weight="regular" />
-        </button>
-      </form>
     </li>
   )
 }

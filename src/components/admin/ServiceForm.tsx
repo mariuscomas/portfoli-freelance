@@ -2,17 +2,7 @@
 
 import { useId, useState, useTransition } from 'react'
 import Link from 'next/link'
-import {
-  Trash,
-  FloppyDisk,
-  ArrowLeft,
-  Warning,
-  Translate,
-  CircleNotch,
-  Plus,
-} from '@phosphor-icons/react'
-import ImageUploadField from './ImageUploadField'
-import { useConfirm } from './useConfirm'
+import { Trash, ArrowLeft, Plus, Translate, Warning } from '@phosphor-icons/react'
 import type { Service, Translatable } from '@/types/database'
 
 type Locale = 'ca' | 'en' | 'es'
@@ -25,19 +15,32 @@ function localeValue(field: unknown, locale: Locale): string {
   return ''
 }
 
-interface Props {
-  mode: 'create' | 'edit'
-  service?: Service
-  onSubmit: (formData: FormData) => Promise<void>
-  onDelete?: () => Promise<void>
+/** Els tres productes del catàleg. Coincideixen amb ProductId de pricing.ts. */
+const PRODUCT_LABEL: Record<string, string> = {
+  web: 'Web',
+  landing: 'Landing',
+  auditoria: 'Auditoria UI/UX',
 }
 
-export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props) {
+interface Props {
+  service: Service
+  onSubmit: (formData: FormData) => Promise<void>
+}
+
+/**
+ * Editor d'un dels tres productes del catàleg.
+ *
+ * No és un CRUD: els productes són fixos (`product_id` amb check constraint a
+ * web · landing · auditoria) perquè cada un té la seva ruta i els seus preus a
+ * codi. Aquí s'edita NOMÉS el copy; el preu surt de src/lib/pricing.ts.
+ */
+export default function ServiceForm({ service, onSubmit }: Props) {
   const [isPending, startTransition] = useTransition()
   const [activeLocale, setActiveLocale] = useState<Locale>('ca')
   const [error, setError] = useState<string | null>(null)
 
-  const isEdit = mode === 'edit'
+  const productId = service.product_id ?? ''
+  const productName = PRODUCT_LABEL[productId] ?? productId
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -46,27 +49,6 @@ export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props
     startTransition(async () => {
       try {
         await onSubmit(formData)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconegut')
-      }
-    })
-  }
-
-  const { confirm: confirmModal, dialog: confirmDialog } = useConfirm()
-
-  const handleDelete = async () => {
-    if (!onDelete) return
-    const ok = await confirmModal({
-      title: 'Eliminar servei',
-      message:
-        "El servei s'eliminarà del llistat /serveis i del modal de detall. L'acció no es pot desfer.",
-      confirmLabel: 'Eliminar',
-      danger: true,
-    })
-    if (!ok) return
-    startTransition(async () => {
-      try {
-        await onDelete()
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconegut')
       }
@@ -86,223 +68,124 @@ export default function ServiceForm({ mode, service, onSubmit, onDelete }: Props
           Tornar a serveis
         </Link>
 
-        <div className="flex items-center gap-2">
-          {isEdit && onDelete && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isPending}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-error/40 text-error rounded-full hover:bg-error hover:text-text-main-inverse hover:border-error transition-colors text-body-sm disabled:opacity-50"
-            >
-              <Trash size={16} weight="regular" />
-              Eliminar
-            </button>
-          )}
-          <PrimaryAction isPending={isPending} isEdit={isEdit} />
-        </div>
+        <PrimaryAction isPending={isPending} />
       </div>
 
       {/* Header */}
       <header className="flex flex-col gap-2">
         <span className="text-label text-text-secondary">
-          {isEdit ? 'Servei · Edició' : 'Servei · Nou'}
+          Producte · {productName}
         </span>
-        <h2 className="text-heading-h3 text-text-main">
-          {isEdit ? 'Detalls del servei' : 'Crea un servei nou'}
-        </h2>
+        <h2 className="text-heading-h3 text-text-main">Contingut del producte</h2>
         <p className="text-body-sm text-text-secondary max-w-prose">
-          {isEdit
-            ? 'Edita la informació del servei. Es propaga a /serveis i al modal de detall.'
-            : 'Comença amb les dades mínimes (CA). Després podràs afegir el contingut narratiu i traduccions.'}
+          El copy que surt a la card de /serveis i a la seva pàgina de detall. El
+          preu no s&apos;edita aquí: el calcula el catàleg de codi a partir dels
+          esglaons del pla de preus.
         </p>
       </header>
 
       {error && <ErrorBanner message={error} />}
 
-      {isEdit && <LocaleSwitcher active={activeLocale} onChange={setActiveLocale} />}
-
       {/* Metadades */}
       <Card
-        eyebrow="Metadades"
+        eyebrow="Producte"
         title="Identificació i visibilitat"
-        description="Icon de Phosphor, preu de referència i estat de publicació."
+        description="El producte i la seva ruta són fixos. Aquí decideixes si es veu i amb quina etiqueta de preu."
       >
         <Row>
           <Col span={6}>
-            <Field
-              label="Icon (Phosphor)"
-              hint="Nom exacte d'un icon de Phosphor — p. ex. DeviceMobile, Cube, Browsers."
-              type="text"
-              name="icon_name"
-              required
-              placeholder="DeviceMobile"
-              defaultValue={service?.icon_name || ''}
-            />
+            <ReadOnlyValue label="Producte" value={productName} hint={`product_id: ${productId}`} />
           </Col>
           <Col span={6}>
-            <Field
-              label="Preu des de (€)"
-              hint="Numèric, sense símbol. Es mostra com a 'des de X €'."
-              type="number"
-              name="price_starts_at"
-              step="1"
-              min="0"
-              placeholder="2500"
-              defaultValue={service?.price_starts_at?.toString() || ''}
+            <ReadOnlyValue
+              label="Ruta pública"
+              value={`/serveis/${productId}`}
+              hint="Ve del producte, no d'un slug editable."
             />
           </Col>
         </Row>
 
-        <ImageUploadField
-          label="Imatge representativa"
-          hint="Apareix a la card del llistat /serveis. Pots arrossegar un fitxer o enganxar una URL externa."
-          name="image_url"
-          folder="services"
-          defaultValue={service?.image_url || ''}
+        <Select
+          label="Etiqueta de preu"
+          hint="Va sobre la xifra a la card. Només en català: la web pública no té altres idiomes actius."
+          name="price_label_ca"
+          defaultValue={localeValue(service.price_label, 'ca') || 'DES DE'}
+          options={['DES DE', 'PREU TANCAT']}
         />
 
         <Checkbox
           label="Publicat"
-          description="Visible a /serveis. Desactiva per ocultar-lo sense esborrar."
+          description="Visible a /serveis. Si el desactives, el producte desapareix del hub, la seva pàgina fa 404 i surt del sitemap."
           name="is_published"
-          defaultChecked={service?.is_published ?? false}
+          defaultChecked={service.is_published ?? false}
         />
       </Card>
 
-      {/* Fites de pagament (sub-editor estructurat) */}
-      {isEdit && (
-        <Card
-          eyebrow="Preu · Fites de pagament"
-          title="Fites de pagament"
-          description="Defineix com es reparteix el pagament del servei. Si no n'hi ha cap, el modal mostra el 50/50 per defecte (Kickoff / Lliurament final). Els títols i notes segueixen l'idioma seleccionat a dalt."
-        >
-          <MilestonesEditor
-            defaultValue={service?.payment_milestones}
-            locale={activeLocale}
-          />
-        </Card>
-      )}
+      <LocaleSwitcher active={activeLocale} onChange={setActiveLocale} />
 
       {/* i18n cards */}
-      {(isEdit ? (['ca', 'en', 'es'] as const) : (['ca'] as const)).map((locale) => (
+      {(['ca', 'en', 'es'] as const).map((locale) => (
         <Card
           key={locale}
           eyebrow={`Contingut · ${locale.toUpperCase()}`}
-          title="Resum i detalls bàsics"
+          title="Nom, descripció i enllaç"
           description={
             locale === 'ca'
-              ? 'Camps obligatoris per a la versió en català (idioma per defecte).'
-              : 'Traducció opcional. Si està buit, es mostrarà la versió en català.'
+              ? 'Català: és el que es publica avui. El títol és obligatori.'
+              : 'Traducció opcional. Si està buida, es mostra la versió en català.'
           }
-          hidden={isEdit && activeLocale !== locale}
+          hidden={activeLocale !== locale}
         >
-          <Row>
-            <Col span={6}>
-              <Field
-                label="Títol"
-                type="text"
-                name={`title_${locale}`}
-                required={locale === 'ca'}
-                defaultValue={localeValue(service?.title, locale)}
-              />
-            </Col>
-            <Col span={6}>
-              <Field
-                label="Slug (URL)"
-                hint="Identificador a /serveis."
-                type="text"
-                name={`slug_${locale}`}
-                required={locale === 'ca'}
-                placeholder="mobile-app-design"
-                defaultValue={localeValue(service?.slug, locale)}
-              />
-            </Col>
-          </Row>
+          <Field
+            label="Nom del producte"
+            hint="Titular de la card i del hero de la pàgina de detall."
+            type="text"
+            name={`title_${locale}`}
+            required={locale === 'ca'}
+            placeholder="Web"
+            defaultValue={localeValue(service.title, locale)}
+          />
 
           <Textarea
             label="Descripció curta"
-            hint="Apareix a la card del llistat i com a intro al modal."
+            hint="Dues línies sota l'abast, a la card."
             name={`short_description_${locale}`}
             rows={3}
-            defaultValue={localeValue(service?.short_description, locale)}
+            defaultValue={localeValue(service.short_description, locale)}
           />
 
-          <Row>
-            <Col span={6}>
-              <Field
-                label="Durada"
-                type="text"
-                name={`duration_${locale}`}
-                placeholder="4–6 setmanes"
-                defaultValue={localeValue(service?.duration, locale)}
-              />
-            </Col>
-            <Col span={6}>
-              <Field
-                label="Revisions incloses"
-                type="text"
-                name={`revisions_${locale}`}
-                placeholder="2 rondes"
-                defaultValue={localeValue(service?.revisions, locale)}
-              />
-            </Col>
-          </Row>
-
-          {isEdit && (
-            <NarrativeGroup>
-              <Textarea
-                label="Sobre aquest servei"
-                hint="Què és, per qui i quin valor aporta."
-                name={`content_about_${locale}`}
-                rows={5}
-                placeholder="Explica de què tracta aquest servei i quin valor aporta..."
-                defaultValue={localeValue(service?.content_about, locale)}
-              />
-              <Textarea
-                label="El nostre pla, pas a pas"
-                hint="Procés del servei: descobriment, disseny, validació, lliurament."
-                name={`content_steps_${locale}`}
-                rows={6}
-                placeholder="Descripció del procés (descobriment, disseny, validació, lliurament...)."
-                defaultValue={localeValue(service?.content_steps, locale)}
-              />
-              <Textarea
-                label="Principals lliuraments"
-                hint="Què s'emporta el client al final."
-                name={`content_deliverables_${locale}`}
-                rows={5}
-                placeholder="Figma file, design system, prototip..."
-                defaultValue={localeValue(service?.content_deliverables, locale)}
-              />
-              <Textarea
-                label="Per què triar aquesta oferta"
-                hint="Diferenciadors, beneficis tangibles, garanties."
-                name={`content_why_us_${locale}`}
-                rows={5}
-                placeholder="Què et fa diferent d'altres oferents..."
-                defaultValue={localeValue(service?.content_why_us, locale)}
-              />
-            </NarrativeGroup>
-          )}
+          <Field
+            label="Text de l'enllaç"
+            hint="El CTA de la card, p. ex. 'Mira el detall'."
+            type="text"
+            name={`cta_${locale}`}
+            placeholder="Mira el detall"
+            defaultValue={localeValue(service.cta, locale)}
+          />
         </Card>
       ))}
 
-      <div className="flex items-center justify-end gap-3 pt-2">
-        <PrimaryAction isPending={isPending} isEdit={isEdit} />
-      </div>
+      {/* Què inclou */}
+      <Card
+        eyebrow="Contingut · Què inclou"
+        title="Tot el que entra a la base"
+        description="Les línies de la llista, en ordre. Es mostren a la card i a la pàgina de detall de web i landing. L'auditoria té la seva llista detallada a codi. Els camps segueixen l'idioma seleccionat a dalt, però es desen tots tres."
+      >
+        <IncludesEditor defaultValue={service.includes} locale={activeLocale} />
+      </Card>
 
-      {/* Modal de confirmació (delete service). */}
-      {confirmDialog}
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <PrimaryAction isPending={isPending} />
+      </div>
     </form>
   )
 }
 
 /* ------------------------------------------------------------------ */
-/*  Milestones sub-editor                                              */
+/*  Includes sub-editor                                                */
 /* ------------------------------------------------------------------ */
 
 type I18nDraft = { ca: string; en: string; es: string }
-type MilestoneDraft = { percent: string; title: I18nDraft; meta: I18nDraft }
 
 const emptyI18n = (): I18nDraft => ({ ca: '', en: '', es: '' })
 
@@ -319,16 +202,9 @@ function toI18nDraft(field: unknown): I18nDraft {
   return emptyI18n()
 }
 
-function parseInitialMilestones(value: unknown): MilestoneDraft[] {
+function parseInitialIncludes(value: unknown): I18nDraft[] {
   if (!Array.isArray(value)) return []
-  return value.map((m) => {
-    const obj = (m ?? {}) as Record<string, unknown>
-    return {
-      percent: typeof obj.percent === 'number' ? String(obj.percent) : '',
-      title: toI18nDraft(obj.title),
-      meta: toI18nDraft(obj.meta),
-    }
-  })
+  return value.map(toI18nDraft)
 }
 
 function pickI18n(v: I18nDraft): Record<string, string> | null {
@@ -339,150 +215,112 @@ function pickI18n(v: I18nDraft): Record<string, string> | null {
   return Object.keys(o).length ? o : null
 }
 
-function hasAnyContent(m: MilestoneDraft): boolean {
-  return (
-    m.percent.trim() !== '' ||
-    Boolean(m.title.ca || m.title.en || m.title.es) ||
-    Boolean(m.meta.ca || m.meta.en || m.meta.es)
-  )
-}
-
 /**
- * Editor estructurat de fites de pagament. Manté els 3 idiomes en estat i
- * serialitza tot l'array a un únic <input hidden name="payment_milestones">
- * en JSON, que el server action parseja. Els camps de text mostren l'idioma
- * actiu (`locale`) però es desen tots tres.
+ * Editor de la llista "què inclou". Manté els 3 idiomes en estat i serialitza
+ * l'array sencer a un únic <input hidden name="includes"> en JSON, que el
+ * server action parseja. Mateix patró que tenia l'editor de fites de pagament.
+ *
+ * La forma desada és [{ca,en,es}, ...]: `flattenI18n` la deixa en string[] al
+ * costat públic.
  */
-function MilestonesEditor({
+function IncludesEditor({
   defaultValue,
   locale,
 }: {
   defaultValue: unknown
   locale: Locale
 }) {
-  const [items, setItems] = useState<MilestoneDraft[]>(() =>
-    parseInitialMilestones(defaultValue),
-  )
+  const [items, setItems] = useState<I18nDraft[]>(() => parseInitialIncludes(defaultValue))
 
-  const setPercent = (i: number, val: string) =>
-    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, percent: val } : it)))
-  const setField = (i: number, field: 'title' | 'meta', val: string) =>
-    setItems((prev) =>
-      prev.map((it, idx) =>
-        idx === i ? { ...it, [field]: { ...it[field], [locale]: val } } : it,
-      ),
-    )
-  const add = () =>
-    setItems((prev) => [...prev, { percent: '', title: emptyI18n(), meta: emptyI18n() }])
-  const remove = (i: number) =>
-    setItems((prev) => prev.filter((_, idx) => idx !== i))
+  const setLine = (i: number, val: string) =>
+    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, [locale]: val } : it)))
+  const add = () => setItems((prev) => [...prev, emptyI18n()])
+  const remove = (i: number) => setItems((prev) => prev.filter((_, idx) => idx !== i))
+  const move = (i: number, dir: -1 | 1) =>
+    setItems((prev) => {
+      const next = [...prev]
+      const target = i + dir
+      if (target < 0 || target >= next.length) return prev
+      ;[next[i], next[target]] = [next[target], next[i]]
+      return next
+    })
 
   const serialized = JSON.stringify(
-    items.filter(hasAnyContent).map((m) => ({
-      percent: m.percent.trim() === '' ? null : Number(m.percent),
-      title: pickI18n(m.title),
-      meta: pickI18n(m.meta),
-    })),
-  )
-
-  const total = items.reduce(
-    (sum, m) => sum + (m.percent.trim() === '' ? 0 : Number(m.percent) || 0),
-    0,
+    items.map(pickI18n).filter((o): o is Record<string, string> => o !== null),
   )
 
   return (
-    <div className="flex flex-col gap-4">
-      <input type="hidden" name="payment_milestones" value={serialized} />
+    <div className="flex flex-col gap-3">
+      <input type="hidden" name="includes" value={serialized} />
 
       {items.length === 0 && (
         <p className="text-body-sm text-text-secondary leading-snug">
-          Sense fites personalitzades. El modal mostrarà el 50/50 per defecte
-          (Kickoff a la signatura · Lliurament final al handoff) mentre el servei
-          tingui preu.
+          Sense línies. Mentre la llista estigui buida, la web mostra la del
+          catàleg de codi.
         </p>
       )}
 
-      {items.map((m, i) => (
-        <div
-          key={i}
-          className="flex flex-col gap-4 rounded-md border border-border-subtle p-4"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-body-sm font-medium text-text-secondary">
-              Fita {i + 1}
-            </span>
+      {items.map((item, i) => (
+        <div key={i} className="flex items-start gap-3">
+          <span className="w-8 shrink-0 pt-3 text-caption uppercase tabular-nums text-text-secondary">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+
+          <div className="flex-1">
+            <Field
+              label={`Línia ${i + 1} (${locale.toUpperCase()})`}
+              type="text"
+              placeholder="5 pàgines: inici, qui som, serveis, contacte i legals"
+              value={item[locale]}
+              onChange={(e) => setLine(i, e.target.value)}
+            />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1 pt-3">
+            <button
+              type="button"
+              onClick={() => move(i, -1)}
+              disabled={i === 0}
+              aria-label={`Puja la línia ${i + 1}`}
+              className="px-2 py-1 text-body-sm text-text-secondary hover:text-text-main transition-colors disabled:opacity-30"
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              onClick={() => move(i, 1)}
+              disabled={i === items.length - 1}
+              aria-label={`Baixa la línia ${i + 1}`}
+              className="px-2 py-1 text-body-sm text-text-secondary hover:text-text-main transition-colors disabled:opacity-30"
+            >
+              ↓
+            </button>
             <button
               type="button"
               onClick={() => remove(i)}
-              className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary hover:text-error transition-colors"
+              aria-label={`Treu la línia ${i + 1}`}
+              className="px-2 py-1 text-text-secondary hover:text-error transition-colors"
             >
               <Trash size={14} weight="regular" />
-              Treure
             </button>
           </div>
-
-          <Row>
-            <Col span={3}>
-              <Field
-                label="% del total"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
-                placeholder="50"
-                value={m.percent}
-                onChange={(e) => setPercent(i, e.target.value)}
-              />
-            </Col>
-          </Row>
-
-          <Row>
-            <Col span={6}>
-              <Field
-                label={`Títol (${locale.toUpperCase()})`}
-                type="text"
-                placeholder="Kickoff"
-                value={m.title[locale]}
-                onChange={(e) => setField(i, 'title', e.target.value)}
-              />
-            </Col>
-            <Col span={6}>
-              <Field
-                label={`Nota (${locale.toUpperCase()})`}
-                hint="Text secundari, p. ex. 'A la signatura'."
-                type="text"
-                placeholder="A la signatura"
-                value={m.meta[locale]}
-                onChange={(e) => setField(i, 'meta', e.target.value)}
-              />
-            </Col>
-          </Row>
         </div>
       ))}
 
-      <div className="flex items-center justify-between gap-4">
+      <div>
         <button
           type="button"
           onClick={add}
           className="inline-flex items-center gap-2 px-4 py-2 border border-border-default rounded-full text-body-sm text-text-main hover:border-text-main transition-colors"
         >
           <Plus size={16} weight="regular" />
-          Afegir fita
+          Afegir línia
         </button>
-
-        {items.length > 0 && (
-          <span
-            className={`text-body-sm tabular-nums ${
-              total === 100 ? 'text-text-secondary' : 'text-error'
-            }`}
-          >
-            Total: {total}%{total !== 100 ? ' (hauria de sumar 100%)' : ''}
-          </span>
-        )}
       </div>
     </div>
   )
 }
+
 
 /* ------------------------------------------------------------------ */
 /*  Layout primitives                                                  */
@@ -523,22 +361,6 @@ function Card({
   )
 }
 
-function NarrativeGroup({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-5 pt-4 mt-2 border-t border-border-subtle">
-      <div className="flex flex-col gap-1">
-        <span className="text-label text-text-secondary">
-          Contingut narratiu
-        </span>
-        <p className="text-body-sm text-text-secondary max-w-prose">
-          Aquests textos es renderitzen com a paràgrafs dins del modal del servei.
-        </p>
-      </div>
-      {children}
-    </div>
-  )
-}
-
 function Row({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6">{children}</div>
 }
@@ -558,20 +380,69 @@ function Col({ span = 12, children }: { span?: 3 | 4 | 6 | 8 | 12; children: Rea
 /*  Action / banner primitives                                         */
 /* ------------------------------------------------------------------ */
 
-function PrimaryAction({ isPending, isEdit }: { isPending: boolean; isEdit: boolean }) {
+function PrimaryAction({ isPending }: { isPending: boolean }) {
   return (
     <button
       type="submit"
       disabled={isPending}
-      className="inline-flex items-center gap-2 px-5 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 whitespace-nowrap"
     >
-      {isPending ? (
-        <CircleNotch size={16} weight="regular" className="animate-spin" />
-      ) : (
-        <FloppyDisk size={16} weight="regular" />
-      )}
-      {isPending ? 'Desant…' : isEdit ? 'Desar canvis' : 'Crear servei'}
+      {isPending ? 'Desant…' : 'Desa els canvis'}
     </button>
+  )
+}
+
+/** Valor que no s'edita: el producte i la seva ruta els fixa el codi. */
+function ReadOnlyValue({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: string
+  hint?: string
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-body-sm font-medium text-text-main">{label}</span>
+      <span className="rounded-md border border-border-subtle bg-surface-card/40 px-3 py-2.5 text-body-md text-text-secondary">
+        {value || '—'}
+      </span>
+      {hint && <span className="text-caption text-text-secondary">{hint}</span>}
+    </div>
+  )
+}
+
+function Select({
+  label,
+  hint,
+  options,
+  ...props
+}: {
+  label: string
+  hint?: string
+  options: readonly string[]
+} & React.SelectHTMLAttributes<HTMLSelectElement>) {
+  const autoId = useId()
+  const id = props.id ?? autoId
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={id} className="text-body-sm font-medium text-text-main">
+        {label}
+      </label>
+      <select
+        {...props}
+        id={id}
+        className="rounded-md border border-border-default bg-surface-base px-3 py-2.5 text-body-md text-text-main focus:border-text-main focus:outline-none"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+      {hint && <span className="text-caption text-text-secondary">{hint}</span>}
+    </div>
   )
 }
 

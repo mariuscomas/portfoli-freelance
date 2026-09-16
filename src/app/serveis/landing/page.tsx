@@ -1,4 +1,5 @@
 import LandingSpokeView from "@/components/services/LandingSpokeView";
+import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { SERVICE_COLUMNS, productFrom } from "@/lib/services";
 import { buildMetadata } from "@/lib/seo";
@@ -18,11 +19,15 @@ export const metadata = buildMetadata({
 export default async function LandingSpokePage() {
   const supabase = await createClient();
 
-  const { data: rows } = await supabase
+  const { data: rows, error } = await supabase
     .from("services")
     .select(SERVICE_COLUMNS)
     .eq("product_id", "landing")
     .eq("is_published", true);
+
+  // Despublicat a l'admin vol dir que la pàgina desapareix. Un error de
+  // consulta, en canvi, NO ha de tombar la ruta: allà caiem al catàleg de codi.
+  if (!error && (rows ?? []).length === 0) notFound();
 
   const product = productFrom(rows, "landing");
 

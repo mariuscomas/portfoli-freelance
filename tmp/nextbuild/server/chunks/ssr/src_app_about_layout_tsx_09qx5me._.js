@@ -1,3 +1,0 @@
-module.exports=[65955,a=>{"use strict";var b=a.i(7997);let c=(0,a.i(57082).buildMetadata)({title:"Sobre Mi",description:"Senior Product Designer amb més de 10 anys d'experiència construint solucions digitals per a corporacions i startups.",path:"/about"});a.s(["default",0,function({children:a}){return(0,b.jsx)(b.Fragment,{children:a})},"metadata",0,c])},69807,a=>{a.n(a.i(65955))}];
-
-//# sourceMappingURL=src_app_about_layout_tsx_09qx5me._.js.map

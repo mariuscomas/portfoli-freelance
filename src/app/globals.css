@@ -113,7 +113,8 @@
 
   /* --- COLOR / Discipline chips (Brand · categories del configurador) ---
      Superfícies pastel que identifiquen cada disciplina al chip de "Tipus de
-     projecte". A Figma estaven com a hex crus (sense variable): tokenitzat aquí.
+     projecte". Sincronitzades amb les variables `discipline/<nom>/surface` de la
+     col·lecció `colors` del Figma (modes Light i Dark).
      El text i el check del chip usen text/main. */
   --discipline-ux-surface: #b6d7e0;
   /* Blau clar — Disseny UX */

@@ -89,23 +89,22 @@ function LinkArrow({ children, className = "" }: { children: React.ReactNode; cl
 /**
  * Preu "des de" d'un producte per a l'abast triat als chips. Font única:
  * pricing.ts — web/landing componen Immersió + disciplines + tancament
- * (`calcConfiguration`), i l'auditoria es dimensiona pel NOMBRE de focus.
- * Els números del frame de Figma són mock d'un model anterior: manen aquests.
+ * (`calcConfiguration`), i l'auditoria es dimensiona pel NOMBRE de focus
+ * (1→600 · 2→900 · 3→1.100).
+ *
+ * Els tres chips governen les TRES cards amb la mateixa lògica: disciplines a
+ * web i landing, focus a l'auditoria. Un intent de desacoblar-la (commit
+ * aabbfa7, preu fix a 600 €) va quedar revertit el 16set26: la tríada existeix
+ * perquè els tres preus responen la mateixa pregunta, i amb una card que no
+ * escolta el control deixen de ser comparables.
+ * Veure docs/punts-de-partida-chips-abast-2026-09-16.md §2.
  */
 function priceFor(product: Product, disciplines: Discipline[]): number {
   if (product.id === "auditoria") {
-    // L'auditoria NO reacciona als chips: els chips són disciplines de projecte
-    // i l'auditoria es dimensiona per focus i mida de producte. Passar-li
-    // disciplines.length feia que amb els tres chips (l'estat per defecte)
-    // mostrés 1.100 € en comptes del seu preu d'entrada.
-    return AUDIT_BASE_BY_COUNT[1];
+    return AUDIT_BASE_BY_COUNT[disciplines.length] ?? product.price;
   }
   return calcConfiguration({ product: product.id, disciplines }).baseTotal;
 }
-
-/** Abast que es mostra a la card: l'auditoria no es mesura per disciplines. */
-const scopeFor = (product: Product, disciplines: Discipline[]): string =>
-  product.id === "auditoria" ? "Segons la mida del producte" : scopeLabel(disciplines);
 
 function ProductCard({
   product,
@@ -133,7 +132,7 @@ function ProductCard({
         </div>
         <div className="flex flex-col gap-3">
           <span className="text-caption uppercase text-text-secondary">
-            {scopeFor(product, disciplines)}
+            {scopeLabel(disciplines)}
           </span>
           <p className="text-body-sm text-text-secondary">{product.description}</p>
         </div>

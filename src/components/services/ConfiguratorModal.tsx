@@ -535,7 +535,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
           </label>
 
           <div className="min-h-0 flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-6 md:px-12">
-            <div className="grid w-full grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
+            <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
               {/* RESUM persistent — no es desmunta mai; només se n'anima la posició.
                   Del pas 1 al 2 llisca de la dreta (col 3) a l'esquerra (col 1), lent,
                   empenyent cap a fora les columnes de config. */}
@@ -848,7 +848,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
               /* ——— DESKTOP · una pantalla, 3 columnes ——— */
               <>
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12">
-                  <div className="grid w-full grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
+                  <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
                     <TipusBaseSection
                       quote={quote}
                       disciplines={disciplines}
@@ -1091,7 +1091,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
               /* ——— DESKTOP · una pantalla, 3 columnes ——— */
               <>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12">
-              <div className="grid w-full grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
+              <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
                 {/* COLUMNA A — Base de l'auditoria */}
                 <section
                   aria-label="Base inclosa"
@@ -1974,7 +1974,7 @@ function LeadForm({
         /* ——— DESKTOP · 3 columnes: dades · projecte · resum ——— */
         <>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12">
-        <div className="grid w-full grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
+        <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
           {/* COLUMNA A — Les dades */}
           <section
             aria-label="Les dades"

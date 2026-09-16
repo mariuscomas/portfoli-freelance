@@ -1,4 +1,5 @@
 import { buildMetadata } from "@/lib/seo";
+import { SITE_EMAIL } from "@/lib/site";
 
 export const metadata = buildMetadata({
   title: "Política de privacitat",
@@ -17,7 +18,7 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
   {
     title: "01 · Qui tracta les teves dades",
     body: [
-      "Màrius Comas Rosa, dissenyador de producte digital, treballant com a autònom des de l'Empordà. Per a qualsevol cosa relacionada amb aquesta política: hello@mariusfreelance.com",
+      `Màrius Comas Rosa, dissenyador de producte digital, treballant com a autònom des de l'Empordà. Per a qualsevol cosa relacionada amb aquesta política: ${SITE_EMAIL}`,
     ],
   },
   {
@@ -54,7 +55,7 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
   {
     title: "06 · Els teus drets",
     body: [
-      "Pots demanar accés a les teves dades, rectificar-les, suprimir-les, oposar-te al tractament, limitar-lo o emportar-te-les. N'hi ha prou amb un correu a hello@mariusfreelance.com. Si creus que alguna cosa no s'ha fet bé, pots reclamar a l'Agència Espanyola de Protecció de Dades.",
+      `Pots demanar accés a les teves dades, rectificar-les, suprimir-les, oposar-te al tractament, limitar-lo o emportar-te-les. N'hi ha prou amb un correu a ${SITE_EMAIL}. Si creus que alguna cosa no s'ha fet bé, pots reclamar a l'Agència Espanyola de Protecció de Dades.`,
     ],
   },
   {

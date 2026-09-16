@@ -5,6 +5,8 @@ import type { Json, QuoteInsert } from "@/types/database";
 import { PRICING_VERSION } from "@/lib/pricing";
 import { notifyNewQuote } from "@/lib/notifyQuote";
 import { notifyQuoteReceived } from "@/lib/notifyProposal";
+import { allowSubmission, RATE_LIMIT_MESSAGE } from "@/lib/rateLimit";
+import { isBot, validateQuote } from "@/lib/validation";
 
 /**
  * Server Action dels configuradors (web/landing/auditoria/col·laboració).
@@ -48,7 +50,6 @@ interface SubmitQuoteInput {
   source?: string | null;
 }
 
-const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const PRODUCTS: QuoteProduct[] = ["web", "landing", "auditoria", "collaboracio"];
 
 export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult> {
@@ -59,19 +60,15 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
   const source = (input.source || "").trim();
 
   // Honeypot omplert → simulem èxit sense desar.
-  if (honeypot.length > 0) return { status: "ok", ref: null };
+  if (isBot(honeypot)) return { status: "ok", ref: null };
 
-  if (!EMAIL_REGEX.test(email)) {
-    return { status: "error", message: "Si us plau, escriu un email vàlid." };
+  const invalid = validateQuote({ email, name, message, product: input.product, products: PRODUCTS });
+  if (invalid) {
+    return { status: "error", message: invalid };
   }
-  if (!PRODUCTS.includes(input.product)) {
-    return { status: "error", message: "Producte no vàlid." };
-  }
-  if (name.length > 200) {
-    return { status: "error", message: "El nom és massa llarg." };
-  }
-  if (message.length > 8000) {
-    return { status: "error", message: "El resum és massa llarg." };
+
+  if (!(await allowSubmission("quote"))) {
+    return { status: "error", message: RATE_LIMIT_MESSAGE };
   }
 
   const supabase = await createClient();

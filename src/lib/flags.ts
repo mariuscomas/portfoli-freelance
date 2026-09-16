@@ -15,3 +15,12 @@
  * això a `true` — no cal desfer res més.
  */
 export const CONFIGURATOR_ENABLED = false;
+
+/**
+ * Preus del pla modular 2026 (600 · 990 · 1.990). TANCAT.
+ *
+ * Definit a lib/pricing.ts (la font de veritat de preus, que ha de poder
+ * córrer sense bundler als tests) i reexportat aquí perquè els flags de
+ * llançament es consultin sempre des del mateix lloc.
+ */
+export { PRICING_V2_ENABLED } from "./pricing";

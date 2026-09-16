@@ -1,3 +1,0 @@
-module.exports=[12951,a=>{"use strict";var b=a.i(87924),c=a.i(72131),d=a.i(50944),e=a.i(12061);a.s(["default",0,function(){let a=(0,d.useRouter)(),{open:f}=(0,e.useContactModal)(),g=(0,c.useRef)(!1);return(0,c.useEffect)(()=>{g.current||(g.current=!0,f(),a.replace("/"))},[f,a]),(0,b.jsx)("main",{className:"min-h-[100dvh] bg-surface-base","aria-hidden":"true"})}])}];
-
-//# sourceMappingURL=src_app_contacte_page_tsx_0p~_.ll._.js.map

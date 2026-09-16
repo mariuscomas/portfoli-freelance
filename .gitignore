@@ -42,3 +42,6 @@ next-env.d.ts
 
 # documentació interna (no va al repo)
 docs/
+
+# artefactes de build i scratch local (tmp/nextbuild va acabar al repo per error)
+/tmp/

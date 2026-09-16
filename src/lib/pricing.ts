@@ -14,12 +14,28 @@
 // total divergeixin (l'origen de tots els bugs de QA dels wireframes).
 // ═══════════════════════════════════════════════════════════════════════════
 
+/**
+ * Preus del pla modular 2026 (600 · 990 · 1.990) — TANCAT.
+ *
+ * Viu aquí, i no a lib/flags.ts, perquè pricing.ts és la font de veritat de
+ * preus i no pot dependre de l'àlies "@/": els tests corren amb el runner de
+ * node, sense bundler que el resolgui. `lib/flags.ts` el reexporta perquè
+ * seguir tenint un sol lloc on consultar els flags de llançament.
+ *
+ * Les xifres estan implementades i verificades (PRICING_V2 + pricing.v2.test),
+ * però NO es publiquen fins que es compleixin les tres condicions del pla:
+ * starter operatiu, hores reals mesurades i escandall industrialitzat. Amb les
+ * hores d'avui la landing a 990 € dona un marge del -4%, i el reposicionament
+ * es fa de cop. Veure docs/pla-preus-modular-2026-09-16.md.
+ */
+export const PRICING_V2_ENABLED = false;
+
 /** Versió del model de preus. S'annexa a cada quote desada (snapshot) per
  *  saber quin model va calcular un pressupost històric. Puja-la a cada repricing. */
-export const PRICING_VERSION = "v1.4";
+export const PRICING_VERSION = PRICING_V2_ENABLED ? "v2.0" : "v1.4";
 
 /** Pàgines incloses a la base d'una WEB, per a qualsevol rol. */
-export const BASE_PAGES = 5;
+export const BASE_PAGES = PRICING_V2_ENABLED ? 3 : 5;
 /** Pàgines incloses a la base d'una LANDING (una sola pàgina llarga). */
 export const LANDING_BASE_PAGES = 1;
 
@@ -77,7 +93,10 @@ export const FULL_SCOPE_LABEL = "De principi a fi";
 interface ProductPricing {
   basePages: number;
   immersio: number;
-  tancament: number;
+  /** Tancament amb Dev: "Posada en producció". */
+  produccio: number;
+  /** Tancament sense Dev: "Lliurament i traspàs". Al model v1 valien igual. */
+  lliurament: number;
   disciplinePrice: Record<Discipline, number>;
   pagesInclude: string;
   restIncludes: string[];
@@ -86,11 +105,16 @@ interface ProductPricing {
   pageExtra: (has: Set<Discipline>) => number;
 }
 
-const PRICING: Record<ConfigProduct, ProductPricing> = {
+/**
+ * Joc de preus v1.4 (vigent). Web 2.400 · Landing 1.440 · Auditoria 600.
+ * El tancament val igual amb Dev i sense: és el model d'abans del repricing.
+ */
+const PRICING_V1: Record<ConfigProduct, ProductPricing> = {
   web: {
     basePages: 5,
     immersio: 240,
-    tancament: 240,
+    produccio: 240,
+    lliurament: 240,
     disciplinePrice: { ux: 480, ui: 480, dev: 960 },
     pagesInclude: "5 pàgines: inici, qui som, serveis, contacte i legals",
     restIncludes: ["Responsive (Mobile First)", "1 idioma"],
@@ -104,7 +128,8 @@ const PRICING: Record<ConfigProduct, ProductPricing> = {
   landing: {
     basePages: 1,
     immersio: 240,
-    tancament: 240,
+    produccio: 240,
+    lliurament: 240,
     disciplinePrice: { ux: 240, ui: 240, dev: 480 },
     pagesInclude: "1 pàgina llarga orientada a convertir",
     restIncludes: ["Narrativa de conversió per seccions", "1 idioma"],
@@ -112,6 +137,62 @@ const PRICING: Record<ConfigProduct, ProductPricing> = {
     pageExtra: () => 0,
   },
 };
+
+/**
+ * Joc de preus v2.0 — pla modular 2026, DECIDIT i NO publicat.
+ * Web 1.990 · Landing 990 · Auditoria 600 (intacta).
+ *
+ * Les fases fixes pesen més i les disciplines baixen, perquè els encàrrecs
+ * d'una sola disciplina aguantin el marge (Web UX sol donava un 12%). Per això
+ * el tancament es parteix: amb Dev es paga la posada en producció sencera.
+ *
+ * Parcials que han de sortir (docs/pla-preus-modular-2026-09-16.md):
+ *   web     → UX/UI sol 950 · UX+UI 1.370 · Dev sol 1.150 · +Dev 1.570 · tot 1.990
+ *   landing → UX/UI sol 570 · UX+UI 745 · Dev sol 640 · +Dev 815 · tot 990
+ */
+const PRICING_V2: Record<ConfigProduct, ProductPricing> = {
+  web: {
+    basePages: 3,
+    immersio: 340,
+    produccio: 240,
+    lliurament: 190,
+    disciplinePrice: { ux: 420, ui: 420, dev: 570 },
+    // La base baixa de 5 a 3 pàgines: "qui som" i "legals" surten del compte
+    // i passen a mòdul (200 €/pàgina). Validat per Marius el 16set26.
+    // ⚑ Les legals segueixen sent obligatòries per RGPD: el copy del
+    // reposicionament ha de dir que hi van incloses sense comptar com a
+    // pàgina de disseny.
+    pagesInclude: "3 pàgines: inici, serveis i contacte",
+    restIncludes: ["Responsive (Mobile First)", "1 idioma"],
+    devIncludes: [
+      "Transicions lleugeres",
+      "Formulari de contacte",
+      "QA, producció i acompanyament al llançament",
+    ],
+    // Sense canvis respecte del v1: el projecte complet ja cobra la pàgina
+    // extra a 200, que és el preu del mòdul al pla nou.
+    pageExtra: (h) => (h.has("dev") ? (h.has("ux") || h.has("ui") ? 200 : 100) : 50),
+  },
+  landing: {
+    basePages: 1,
+    immersio: 240,
+    produccio: 190,
+    lliurament: 155,
+    disciplinePrice: { ux: 175, ui: 175, dev: 210 },
+    pagesInclude: "1 pàgina llarga orientada a convertir",
+    restIncludes: ["Narrativa de conversió per seccions", "1 idioma"],
+    devIncludes: ["Formulari o CTA principal", "QA, publicació i mesura bàsica"],
+    pageExtra: () => 0,
+  },
+};
+
+/** Jocs exposats per als tests: el v2 es verifica abans de publicar-se. */
+export const PRICING_SETS = { v1: PRICING_V1, v2: PRICING_V2 } as const;
+
+/** Joc actiu. El commuta PRICING_V2_ENABLED, no cap altra cosa. */
+export const ACTIVE_PRICING = PRICING_V2_ENABLED ? PRICING_V2 : PRICING_V1;
+
+const PRICING = ACTIVE_PRICING;
 
 /** Preus base de la WEB exposats per a les pàgines spoke (mateix objecte que
  *  consumeix el configurador). Els preus "des de" per disciplina es componen com
@@ -234,9 +315,12 @@ const toInt = (n: number | undefined) => Math.max(0, Math.floor(n ?? 0));
  * sola reprodueix el paquet antic i les combinacions no dupliquen fases.
  * Ignora qualsevol extra que l'abast no ofereixi.
  */
-export function calcConfiguration(selection: ConfigSelection): ConfigQuote {
+export function calcConfiguration(
+  selection: ConfigSelection,
+  pricing: Record<ConfigProduct, ProductPricing> = ACTIVE_PRICING,
+): ConfigQuote {
   const product = selection.product ?? "web";
-  const P = PRICING[product];
+  const P = pricing[product];
   const picked = DISCIPLINE_ORDER.filter((d) => selection.disciplines?.includes(d));
   const chosen = picked.length ? picked : [...DISCIPLINE_ORDER];
   const has = new Set(chosen);
@@ -244,7 +328,10 @@ export function calcConfiguration(selection: ConfigSelection): ConfigQuote {
   const phaseDefs = [
     { label: "Immersió", amount: P.immersio },
     ...chosen.map((d) => ({ label: DISCIPLINES[d].phaseLabel, amount: P.disciplinePrice[d] })),
-    { label: has.has("dev") ? "Posada en producció" : "Lliurament i traspàs", amount: P.tancament },
+    {
+      label: has.has("dev") ? "Posada en producció" : "Lliurament i traspàs",
+      amount: has.has("dev") ? P.produccio : P.lliurament,
+    },
   ];
   const phases: QuoteLine[] = phaseDefs.map((p, i) => ({
     id: `phase-${i}`,
@@ -472,8 +559,13 @@ export function calcAudit(selection: AuditSelection): AuditQuote {
 
 // ————————————————————————————————— Línia B · Productes end-to-end
 
-export const BASE_WEB = 2400;
-export const BASE_LANDING = 1440;
+/** Total "de principi a fi" del joc actiu. Derivat, mai escrit a mà: així el
+ *  "des de" del hub i dels spokes segueix el flag sense tocar res més. */
+const fullScopeTotal = (product: ConfigProduct) =>
+  calcConfiguration({ product, disciplines: [...DISCIPLINE_ORDER] }).baseTotal;
+
+export const BASE_WEB = fullScopeTotal("web");
+export const BASE_LANDING = fullScopeTotal("landing");
 export const PRICE_AUDIT = 900;
 
 export type ProductId = "web" | "landing" | "auditoria";

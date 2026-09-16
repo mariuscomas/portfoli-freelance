@@ -8,6 +8,7 @@ import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
 import SpokeHero from "@/components/services/SpokeHero";
 import {
+  calcConfiguration,
   EXTRAS,
   RECURRENTS,
   PROCESS_STEPS,
@@ -15,13 +16,13 @@ import {
   PRODUCT_CALL_URL,
   DISCIPLINE_ORDER,
   DISCIPLINES,
-  PRICING_LANDING,
   type Discipline,
   type Product,
 } from "@/lib/pricing";
+import { SITE_EMAIL } from "@/lib/site";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
-const CONTACT_EMAIL = "mariuscr23@gmail.com";
+const CONTACT_EMAIL = SITE_EMAIL;
 
 const formatPrice = (n: number) =>
   `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
@@ -29,9 +30,11 @@ const formatPrice = (n: number) =>
 const appliesLabel = (appliesTo: string[]) =>
   appliesTo.map((p) => (p === "web" ? "WEB" : p.toUpperCase())).join(" · ");
 
-/** Preu "des de" d'una disciplina solta: Immersió + disciplina + tancament. */
+/** Preu "des de" d'una disciplina solta. Ho resol calcConfiguration: el
+ *  tancament val diferent amb Dev (posada en producció) i sense (lliurament),
+ *  i sumar-ho a mà aquí tornaria a divergir del configurador. */
 const disciplinePriceFrom = (d: Discipline) =>
-  PRICING_LANDING.immersio + PRICING_LANDING.disciplinePrice[d] + PRICING_LANDING.tancament;
+  calcConfiguration({ product: "landing", disciplines: [d] }).baseTotal;
 
 const LANDING_EXTRAS = EXTRAS.filter((e) => e.appliesTo.includes("landing"));
 
@@ -135,7 +138,7 @@ function FocusSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="02 · ABAST" title="Tria fins on arribo" />
+        <SectionHeader caption="02 · ABAST" title="Tria fins on arribem" />
       </Reveal>
       <Reveal className="mt-8">
         <p className="max-w-2xl text-body-lg text-text-secondary">
@@ -233,7 +236,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
               rel="noopener noreferrer"
               className="underline underline-offset-4 hover:text-text-main"
             >
-              reserva 15 minuts
+              reserva 20 minuts
               <span className="sr-only"> (s’obre en una pestanya nova)</span>
             </a>{" "}
             i en parlem, sense compromís.
@@ -250,7 +253,7 @@ function ProcessSection() {
   return (
     <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <SectionHeader caption="04 · COM TREBALLO" title="De la idea a producció" />
+        <SectionHeader caption="04 · COM TREBALLEM" title="De la idea a producció" />
       </Reveal>
       <Reveal className="mt-14">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">

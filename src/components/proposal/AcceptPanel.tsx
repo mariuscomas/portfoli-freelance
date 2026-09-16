@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import { acceptProposal } from "@/app/proposta/[token]/actions";
 import { PRODUCT_CALL_URL } from "@/lib/pricing";
+import { SITE_EMAIL } from "@/lib/site";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
 
@@ -47,7 +48,7 @@ export default function AcceptPanel({
         <span className="text-caption uppercase text-text-secondary">04 · Què pots fer</span>
         <h2 className="mt-6 text-display-h3 text-text-main">Te&apos;n faig una d&apos;actualitzada</h2>
         <div className="mt-10">
-          <Button as="a" href={`mailto:mariuscr23@gmail.com?subject=Proposta caducada`}>
+          <Button as="a" href={`mailto:${SITE_EMAIL}?subject=Proposta caducada`}>
             Demana&apos;n una d&apos;actualitzada
           </Button>
         </div>

@@ -4,6 +4,8 @@ import { headers } from "next/headers"
 import { createClient } from "@/utils/supabase/server"
 import type { ContactSubmissionInsert } from "@/types/database"
 import { notifyNewContact } from "@/lib/notifyLead"
+import { isBot, validateContact } from "@/lib/validation"
+import { allowSubmission, RATE_LIMIT_MESSAGE } from "@/lib/rateLimit"
 
 /**
  * Server Action invocada des del form de /contacte.
@@ -30,8 +32,6 @@ interface SubmitInput {
   website?: string
 }
 
-const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
-
 export async function submitContact(input: SubmitInput): Promise<ContactResult> {
   const email = (input.email || "").trim()
   const name = (input.name || "").trim()
@@ -39,23 +39,21 @@ export async function submitContact(input: SubmitInput): Promise<ContactResult> 
   const honeypot = (input.website || "").trim()
 
   // Honeypot ompert → simulem èxit per no donar info als bots, però no desem
-  if (honeypot.length > 0) {
+  if (isBot(honeypot)) {
     return { status: "ok" }
   }
 
-  // Validacions bàsiques. La RLS de Postgres també les fa, però aquí
-  // donem un missatge més útil a l'usuari.
-  if (!EMAIL_REGEX.test(email)) {
-    return { status: "error", message: "Si us plau, escriu un email vàlid." }
+  // Validacions bàsiques (lib/validation.ts, compartides i testejades). La RLS
+  // de Postgres també les fa, però aquí donem un missatge més útil a l'usuari.
+  const invalid = validateContact({ email, name, message })
+  if (invalid) {
+    return { status: "error", message: invalid }
   }
-  if (message.length < 5) {
-    return { status: "error", message: "El missatge ha de tenir almenys 5 caràcters." }
-  }
-  if (message.length > 5000) {
-    return { status: "error", message: "El missatge és massa llarg (màx 5000 caràcters)." }
-  }
-  if (name.length > 200) {
-    return { status: "error", message: "El nom és massa llarg." }
+
+  // Rate limit per IP. Va després de validar: un enviament mal format no
+  // consumeix quota de qui simplement s'ha equivocat escrivint l'email.
+  if (!(await allowSubmission("contacte"))) {
+    return { status: "error", message: RATE_LIMIT_MESSAGE }
   }
 
   const supabase = await createClient()
