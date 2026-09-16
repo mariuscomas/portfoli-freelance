@@ -143,7 +143,12 @@ export default function QuotesList({
     const when = q.sent_at ? 'Ja s\'ha enviat abans. Tornar a enviar el mateix enllaç?' : ''
     if (!confirm(`Enviar la proposta a ${q.email}?\n${when}`)) return
     startTransition(async () => {
-      await sendProposal(q.id)
+      try {
+        const res = await sendProposal(q.id)
+        if (res && !res.mailed) alert(res.warning)
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'No s\'ha pogut enviar la proposta.')
+      }
       router.refresh()
     })
   }

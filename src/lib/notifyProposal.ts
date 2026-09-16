@@ -3,13 +3,14 @@
  *
  * OPT-IN: sense RESEND_API_KEY no fa res i no peta. Cap d'aquestes funcions pot
  * tombar l'operació que les crida — un email que falla no ha de desfer una
- * acceptació ja registrada a la base de dades.
+ * acceptació ja registrada a la base de dades. Ara bé, totes retornen un
+ * MailResult: qui les crida ha de poder dir si el correu ha sortit o no.
  *
  * Env: RESEND_API_KEY · NOTIFY_EMAIL (per defecte mariuscr23@gmail.com) ·
  *      RESEND_FROM (remitent verificat) · NEXT_PUBLIC_SITE_URL
  */
 
-const API = "https://api.resend.com/emails";
+import { sendMail, type MailResult } from "./mail";
 
 function config() {
   const key = process.env.RESEND_API_KEY;
@@ -22,28 +23,16 @@ function config() {
   };
 }
 
-async function send(payload: Record<string, unknown>, key: string) {
-  try {
-    await fetch(API, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    // silenci volgut: l'avís és secundari respecte de l'operació que el crida
-  }
-}
-
 /** Acusament de rebuda al client, en enviar una configuració. */
 export async function notifyQuoteReceived(input: {
   to: string;
   name: string | null;
   product: string;
-}) {
+}): Promise<MailResult> {
   const c = config();
-  if (!c) return;
+  if (!c) return { ok: false, skipped: true };
   const hi = input.name ? `Hola, ${input.name}` : "Hola";
-  await send(
+  return sendMail(
     {
       from: c.from,
       to: input.to,
@@ -72,12 +61,12 @@ export async function notifyProposalSent(input: {
   token: string;
   totalLabel: string;
   expiresLabel: string;
-}) {
+}): Promise<MailResult> {
   const c = config();
-  if (!c) return;
+  if (!c) return { ok: false, skipped: true };
   const hi = input.name ? `Hola, ${input.name}` : "Hola";
   const url = `${c.site}/proposta/${input.token}`;
-  await send(
+  return sendMail(
     {
       from: c.from,
       to: input.to,
@@ -100,10 +89,10 @@ export async function notifyProposalSent(input: {
 }
 
 /** Avís a Màrius quan un client accepta. */
-export async function notifyProposalAccepted(input: { token: string; signer: string }) {
+export async function notifyProposalAccepted(input: { token: string; signer: string }): Promise<MailResult> {
   const c = config();
-  if (!c) return;
-  await send(
+  if (!c) return { ok: false, skipped: true };
+  return sendMail(
     {
       from: c.from,
       to: c.to,

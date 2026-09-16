@@ -168,7 +168,7 @@ export async function sendProposal(id: string) {
 
   await supabase.from('quote_events').insert({ quote_id: id, type: 'sent' })
 
-  await notifyProposalSent({
+  const mail = await notifyProposalSent({
     to: quote.email,
     name: quote.name,
     token: quote.token,
@@ -181,4 +181,19 @@ export async function sendProposal(id: string) {
   })
 
   revalidatePath('/admin/quotes')
+
+  // La proposta ja consta com a enviada (sent_at i l'event són a la BD), però
+  // si el correu no ha sortit cal dir-ho: si no, l'única pista seria el silenci
+  // del client. No llancem — desfer l'enviament seria pitjor que avisar-ne.
+  if (mail.ok) return { mailed: true as const }
+
+  const motiu = mail.skipped
+    ? "no hi ha RESEND_API_KEY configurada en aquest entorn"
+    : (mail.error ?? 'error desconegut')
+  return {
+    mailed: false as const,
+    warning:
+      `La proposta consta com a enviada, però el correu NO ha sortit: ${motiu}. ` +
+      `Passa-li l'enllaç tu mateix o arregla-ho i prem «Reenvia».`,
+  }
 }
