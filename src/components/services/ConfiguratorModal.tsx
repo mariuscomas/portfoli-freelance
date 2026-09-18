@@ -82,7 +82,7 @@ import { EVENTS, trackEvent } from "@/lib/analytics";
 
 const TIMING_OPTIONS = ["Aquest mes", "1–3 mesos", "Encara ho estic mirant"];
 const CLIENT_TYPE_OPTIONS = ["Empresa / marca", "Agència / estudi", "Particular"];
-/** Canals d'atribució de "Com ens has conegut?" — es desen a quotes.source. */
+/** Canals d'atribució de "Com m'has conegut?" — es desen a quotes.source. */
 const SOURCE_OPTIONS = ["Google", "LinkedIn", "Behance / Dribbble", "Recomanació", "Malt", "Altres"];
 
 /** Validació d'email al client (pre-check d'UX; el servidor és la font de veritat). */
@@ -422,7 +422,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
     phase === "config"
       ? "Pas 1 de 2 · Tipus de projecte i extres"
       : phase === "form"
-        ? `${configurable ? "Pas 2 de 2 · " : ""}Explica'ns el teu projecte. Et responem en menys de ${RESPONSE_SLA}.`
+        ? `${configurable ? "Pas 2 de 2 · " : ""}Explica'm el teu projecte. Et responc en menys de ${RESPONSE_SLA}.`
         : null;
 
   // ————— Submit del layout unificat (web/landing desktop) —————
@@ -753,7 +753,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         disabled={submitting}
                       />
                       <SelectField
-                        label="Com ens has conegut?"
+                        label="Com m'has conegut?"
                         name="source"
                         options={SOURCE_OPTIONS}
                         placeholder="Selecciona una opció"
@@ -1931,7 +1931,7 @@ function LeadForm({
                 disabled={submitting}
               />
               <SelectField
-                label="Com ens has conegut?"
+                label="Com m'has conegut?"
                 name="source"
                 options={SOURCE_OPTIONS}
                 placeholder="Selecciona una opció"
@@ -2019,7 +2019,7 @@ function LeadForm({
               disabled={submitting}
             />
             <SelectField
-              label="Com ens has conegut?"
+              label="Com m'has conegut?"
               name="source"
               options={SOURCE_OPTIONS}
               placeholder="Selecciona una opció"

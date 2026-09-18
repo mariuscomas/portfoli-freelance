@@ -206,14 +206,14 @@ export default function ConfirmationSpotlight({
             Sol·licitud enviada.
           </h1>
           <p className="cspot__lead reveal">
-            T&apos;hem enviat una còpia a {email}
+            T&apos;he enviat una còpia a {email}
             <br />
             {reference ? (
               <>
                 <span className="ref">Ref. #{reference}</span> ·{" "}
               </>
             ) : null}
-            Responem en {RESPONSE_SLA}
+            Responc en {RESPONSE_SLA}
             <br />
             amb un primer abast i una proposta concreta.
           </p>

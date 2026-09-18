@@ -213,7 +213,7 @@ export default function ProposalView({
       )}
 
       {/* Condicions */}
-      <Section caption="02 · Condicions" title="Com ho fem">
+      <Section caption="02 · Condicions" title="Com ho faig">
         <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-10">
           {CONDITIONS.map((c) => (
             <li key={c} className="border-t border-border-subtle pt-5 text-body-sm text-text-main">

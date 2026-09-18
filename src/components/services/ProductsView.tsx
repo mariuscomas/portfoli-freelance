@@ -244,7 +244,7 @@ function ProcessSection() {
   return (
     <section className={`dark ${SECTION_PX} bg-surface-base py-24 lg:pb-40`}>
       <Reveal>
-        <SectionHeader caption="EL PROCÉS" title="Com treballem" />
+        <SectionHeader caption="EL PROCÉS" title="Com treballo" />
       </Reveal>
       <Reveal className="mt-16">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -312,7 +312,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
             <h2 className="text-display-h3 text-text-main">
               {CONFIGURATOR_ENABLED
                 ? "No saps per on començar? Configura el teu projecte en dos minuts."
-                : "Explica'ns el projecte i et tornem una proposta amb el preu tancat."}
+                : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
             </h2>
 
             <div className="flex flex-col gap-8">

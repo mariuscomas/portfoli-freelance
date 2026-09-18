@@ -33,7 +33,7 @@ const CARDS: FunnelCard[] = [
   {
     eyebrow: "PER A EMPRESES I MARQUES",
     title: "Tens un projecte?",
-    body: "De l'estratègia al llançament: dissenyem i construïm la teva web de principi a fi, amb preus tancats i sense sorpreses.",
+    body: "De l'estratègia al llançament: dissenyo i construeixo la teva web de principi a fi, amb preus tancats i sense sorpreses.",
     href: "/serveis",
     cta: "Explora els serveis",
   },

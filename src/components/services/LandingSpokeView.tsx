@@ -213,7 +213,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
         <h2 className="max-w-3xl text-display-h3 text-text-main">
           {CONFIGURATOR_ENABLED
             ? "Configura la teva landing en dos minuts i rep el pressupost al moment."
-            : "Explica'ns el projecte i et tornem una proposta amb el preu tancat."}
+            : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
         </h2>
         <div className="mt-10 flex flex-col gap-4">
           <Button
