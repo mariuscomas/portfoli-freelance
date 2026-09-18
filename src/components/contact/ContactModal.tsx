@@ -375,7 +375,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
               </span>
               <h3 className="text-heading-h2 text-text-main">Missatge enviat.</h3>
               <p className="text-body-lg text-text-secondary leading-relaxed">
-                T&apos;he rebut, {values.name.trim().split(" ")[0]}. Responc en menys de{" "}
+                T&apos;hem rebut, {values.name.trim().split(" ")[0]}. Responem en menys de{" "}
                 {RESPONSE_SLA} a {values.email.trim()}.
               </p>
               <Button variant="solid" shape="pill" size="xl" onClick={onClose} className="mt-2">

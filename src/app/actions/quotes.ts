@@ -47,7 +47,7 @@ interface SubmitQuoteInput {
   totalEur?: number | null;
   /** Tarifa "des de" (col·laboració, "38 €/h"). NULL a projectes. */
   rateLabel?: string | null;
-  /** Canal d'atribució declarat ("Com m'has conegut?"). NULL si no s'omple. */
+  /** Canal d'atribució declarat ("Com ens has conegut?"). NULL si no s'omple. */
   source?: string | null;
   /**
    * Desglossament llegible de la configuració (fases, extres i total), tal com

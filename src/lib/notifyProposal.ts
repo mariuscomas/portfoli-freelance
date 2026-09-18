@@ -41,8 +41,8 @@ export async function notifyQuoteReceived(input: {
   if (!c) return { ok: false, skipped: true };
   const hi = input.name ? `Hola, ${input.name}` : "Hola";
   const subject = input.ref
-    ? `He rebut la teva configuració (ref. ${input.ref})`
-    : "He rebut la teva configuració";
+    ? `Hem rebut la teva configuració (ref. ${input.ref})`
+    : "Hem rebut la teva configuració";
   return sendMail(
     {
       from: c.from,
@@ -52,12 +52,12 @@ export async function notifyQuoteReceived(input: {
       text: [
         `${hi},`,
         "",
-        "He rebut el que has configurat i ja hi estic mirant.",
+        "Hem rebut el que has configurat i ja hi estem mirant.",
         ...(input.breakdown
           ? ["", "Aquesta és la teva configuració:", "", input.breakdown, "", "El total és orientatiu: el tanquem junts a la proposta."]
           : []),
         "",
-        `Et responc en un màxim de ${RESPONSE_SLA} amb una proposta tancada o, si veig que hi ha una manera millor d'encarar-ho, amb una alternativa.`,
+        `Et responem en un màxim de ${RESPONSE_SLA} amb una proposta tancada o, si veig que hi ha una manera millor d'encarar-ho, amb una alternativa.`,
         "",
         "Si mentrestant vols afegir res, respon aquest correu.",
         "",
@@ -93,7 +93,7 @@ export async function notifyProposalSent(input: {
         "",
         `El preu està tancat i és vàlid fins al ${input.expiresLabel}.`,
         "",
-        "Pots acceptar-la des de la mateixa pàgina. Si hi ha res que no et quadra, digue-m'ho i en parlem.",
+        "Pots acceptar-la des de la mateixa pàgina. Si hi ha res que no et quadra, ens ho dius i en parlem.",
         "",
         "Màrius",
       ].join("\n"),

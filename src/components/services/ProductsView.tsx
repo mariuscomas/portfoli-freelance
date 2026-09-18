@@ -312,7 +312,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
             <h2 className="text-display-h3 text-text-main">
               {CONFIGURATOR_ENABLED
                 ? "No saps per on començar? Configura el teu projecte en dos minuts."
-                : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
+                : "Explica'ns el projecte i et tornem una proposta amb el preu tancat."}
             </h2>
 
             <div className="flex flex-col gap-8">
