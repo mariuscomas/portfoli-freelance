@@ -28,7 +28,7 @@
  * hores d'avui la landing a 990 € dona un marge del -4%, i el reposicionament
  * es fa de cop. Veure docs/pla-preus-modular-2026-09-16.md.
  */
-export const PRICING_V2_ENABLED = false;
+export const PRICING_V2_ENABLED = true;
 
 /** Versió del model de preus. S'annexa a cada quote desada (snapshot) per
  *  saber quin model va calcular un pressupost històric. Puja-la a cada repricing. */
