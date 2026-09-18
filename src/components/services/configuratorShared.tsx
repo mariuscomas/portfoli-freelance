@@ -196,7 +196,7 @@ function CurtainShell({
           >
             <X size={28} weight="regular" />
           </button>
-          <h2 id="configurator-title" className="text-display-h5 normal-case text-text-main">
+          <h2 id="configurator-title" className="text-display-h5 text-text-main">
             {title}
           </h2>
         </div>

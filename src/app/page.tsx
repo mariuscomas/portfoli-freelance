@@ -44,13 +44,23 @@ export default async function Home() {
       {/* Hero amb camp reactiu. Substitueix l'escena cercle→franja de vídeo
           (ShowcaseVideo, retirat) mentre el showreel no està produït. */}
       <Hero introPending={playIntro} />
-      <SplitFunnel />
-      <ServicesTeaser products={products} />
+      {/* Cortina d'obertura del tall: CollabBreak puja 100svh per sota (-mt).
+          SplitFunnel i Serveis fan de cortina junts (z-10, fons opac) perquè
+          si Serveis fa menys d'una pantalla el tall no tapi el Split. */}
+      <div className="relative z-10 flex flex-col bg-surface-base">
+        <SplitFunnel />
+        <ServicesTeaser products={products} />
+      </div>
       <CollabBreak />
-      <CollabTeaser />
-      <WorksTeaser />
-      <AboutTeaser />
-      <Clients />
+      {/* Cortina de tancament del tall: la resta de la home puja per sobre
+          de l'escenari fixat de CollabBreak (-mt 100svh, z-10, fons opac).
+          Amb reduced-motion no hi ha solapament. */}
+      <div className="relative z-10 -mt-[100svh] flex flex-col bg-surface-base motion-reduce:mt-0">
+        <CollabTeaser />
+        <WorksTeaser />
+        <AboutTeaser />
+        <Clients />
+      </div>
     </main>
   );
 }

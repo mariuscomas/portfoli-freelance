@@ -340,8 +340,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
     >
       {/* === HEADER: pregunta marc + tancar === */}
       <header className="flex shrink-0 items-center justify-between gap-6 py-6">
-        {/* normal-case: text-display-h5 aplica uppercase per defecte, aquí no el volem */}
-        <h2 id="contact-modal-title" className="text-display-h5 normal-case text-text-main">
+        <h2 id="contact-modal-title" className="text-display-h5 text-text-main">
           Tens un projecte concret al cap?
         </h2>
         <button

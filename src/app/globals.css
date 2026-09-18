@@ -707,14 +707,16 @@
   }
 
   .text-display-h4 {
-    @apply font-heading font-semibold uppercase;
+    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
+    @apply font-heading font-semibold;
     font-size: var(--display-h4-font-size);
     line-height: var(--display-h4-line-height);
     letter-spacing: var(--display-h4-letter-spacing);
   }
 
   .text-display-h5 {
-    @apply font-heading font-semibold uppercase;
+    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
+    @apply font-heading font-semibold;
     font-size: var(--display-h5-font-size);
     line-height: var(--display-h5-line-height);
     letter-spacing: var(--display-h5-letter-spacing);

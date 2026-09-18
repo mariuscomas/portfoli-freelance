@@ -59,7 +59,10 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
     <section
       id="serveis"
       aria-labelledby="serveis-titol"
-      className="w-full border-t border-border-default"
+      // La cortina sobre el tall (CollabBreak) és l'embolcall de page.tsx
+      // (SplitFunnel + Serveis, z-10 i fons opac). Mai z negatiu al tall.
+      // border-b: la vora inferior és el final visible de la cortina.
+      className="w-full border-y border-border-default"
     >
       <header className="flex items-baseline gap-12 px-section-x-xl pt-section-y-lg pb-section-y-sm">
         <h2 id="serveis-titol" className="text-display-h3 flex-1 text-text-main">
@@ -68,7 +71,7 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
         <CardLink href="/serveis">Explora els serveis</CardLink>
       </header>
 
-      <div className="flex flex-col border-t border-border-default divide-y divide-border-default lg:flex-row lg:divide-x lg:divide-y-0">
+      <div className="flex flex-col border-t border-dashed border-border-default divide-y divide-dashed divide-border-default lg:flex-row lg:divide-x lg:divide-y-0">
         {products.map((product) => (
           <article
             key={product.id}
@@ -102,8 +105,9 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
           Desktop: un sol missatge a 2/3 (etiqueta, títol i paràgraf) i els CTA
           al terç d'Auditoria, alineats amb el seu enllaç. Padding vertical 64,
           per sota dels 96 de les cards: la fila és secundària. Tablet: text i
-          CTA en fila sense filet. Mòbil: apilat. */}
-      <div className="flex flex-col gap-6 border-t border-border-strong px-section-x-xl py-section-y-sm md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:divide-border-default">
+          CTA en fila sense filet. Mòbil: apilat.
+          Filets interns dashed, vores de secció sòlides (regla 18set26). */}
+      <div className="flex flex-col gap-6 border-t border-dashed border-border-strong px-section-x-xl py-section-y-sm md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:divide-dashed lg:divide-border-default">
         <div className="flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-section-x-xl lg:py-16">
           <p className="text-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
           <h3 className="text-heading-h3 text-text-main">Una altra cosa al cap?</h3>

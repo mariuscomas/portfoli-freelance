@@ -577,7 +577,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
               afegeix mòduls i el total puja. Sota lg les columnes s'apilen i
               torna a manar un sol scroll. */}
           <div className="min-h-0 flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-6 md:px-12 lg:overflow-y-hidden">
-            <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12 lg:py-0">
+            <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_580px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-0">
               {/* RESUM persistent — no es desmunta mai; només se n'anima la posició.
                   Del pas 1 al 2 llisca de la dreta (col 3) a l'esquerra (col 1), lent,
                   empenyent cap a fora les columnes de config. */}
@@ -589,7 +589,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 // faci un salt de ~48px quan es canvia el costat del divisor
                 // durant el lliscament (layout="position" no anima el padding).
                 // Només flipem el border (línia divisòria) segons la fase.
-                className={`flex flex-col gap-6 lg:row-start-1 lg:border-border-subtle lg:px-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10 ${
+                className={`flex flex-col gap-6 lg:row-start-1 lg:border-border-subtle lg:px-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0 ${
                   phase === "config"
                     ? "lg:col-start-3 lg:border-l"
                     : "lg:col-start-1 lg:border-r"
@@ -598,7 +598,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 {quote && (
                   <>
                     <div className="flex flex-col">
-                      <h3 className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h2 text-text-main">
+                      <h3 className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h2 lg:pt-15 text-text-main">
                         3. Resum
                       </h3>
                       <SummaryGroup
@@ -654,14 +654,14 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     // creuin sincronitzades (posicions mirall). Ease-in-out en lloc
                     // d'expo-out per treure la cua/frenada llarga del final.
                     transition={{ duration: reduce ? 0 : 0.8, ease: [0.65, 0, 0.35, 1] }}
-                    className="flex flex-col gap-10 lg:col-start-1 lg:col-end-3 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:gap-12"
+                    className="flex flex-col gap-10 lg:col-start-1 lg:col-end-3 lg:row-start-1 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-subgrid lg:grid-rows-[minmax(0,1fr)] lg:gap-12"
                   >
                     <TipusBaseSection
                       quote={quote}
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
                       stepIndex={1}
-                      className="lg:border-r lg:border-border-subtle lg:pr-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
+                      className="lg:border-r lg:border-border-subtle lg:pr-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0"
                     />
                     <ExtresSection
                       quote={quote}
@@ -669,7 +669,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       values={extraVals}
                       onChange={setExtra}
                       stepIndex={2}
-                      className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
+                      className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pr-6 lg:pb-10 lg:[&>*]:shrink-0"
                     />
                   </motion.div>
                 ) : (
@@ -680,7 +680,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     exit={{ x: reduce ? 0 : "100%", opacity: 0 }}
                     // Mateixa corba compartida que el bloc config (creuament sincronitzat).
                     transition={{ duration: reduce ? 0 : 0.8, ease: [0.65, 0, 0.35, 1] }}
-                    className="flex flex-col gap-10 lg:col-start-2 lg:col-end-4 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:gap-12"
+                    className="flex flex-col gap-10 lg:col-start-2 lg:col-end-4 lg:row-start-1 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-subgrid lg:grid-rows-[minmax(0,1fr)] lg:gap-12"
                   >
                     <section
                       aria-label="El brief"
@@ -880,26 +880,26 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     vista mentre el client afegeix mòduls. Sota lg torna a ser
                     un sol scroll: les columnes s'apilen i no hi ha res a fixar. */}
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:overflow-hidden">
-                  <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12 lg:py-0">
+                  <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_580px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-12 lg:py-0">
                     <TipusBaseSection
                       quote={quote}
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
-                      className="lg:border-r lg:border-border-subtle lg:pr-6"
+                      className="lg:border-r lg:border-border-subtle lg:pr-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0"
                     />
                     <ExtresSection
                       quote={quote}
                       product={configProduct!}
                       values={extraVals}
                       onChange={setExtra}
-                      className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
+                      className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pr-6 lg:pb-10 lg:[&>*]:shrink-0"
                     />
                     <ResumSection
                       quote={quote}
                       total={total}
                       baseOpen={false}
                       showTotal
-                      className="lg:border-l lg:border-border-subtle lg:pl-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
+                      className="lg:border-l lg:border-border-subtle lg:pl-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0"
                     />
                   </div>
                 </div>
@@ -1395,7 +1395,7 @@ function TipusBaseSection({
           // Sticky amb FONS OPAC: sense bg el contingut es veuria per sota
           // mentre passa. El pare no pot tenir overflow-hidden o el sticky
           // deixa d'enganxar-se.
-          className="sticky top-0 z-10 bg-surface-base text-heading-h2 text-text-main focus:outline-none lg:-mt-10 lg:pt-10"
+          className="sticky top-0 z-10 bg-surface-base text-heading-h2 text-text-main focus:outline-none lg:pt-10"
           data-autofocus
           tabIndex={-1}
         >
@@ -1464,7 +1464,7 @@ function ExtraReveal({ reduce, children }: { reduce: boolean | null; children: R
       animate={{ opacity: 1, height: "auto" }}
       exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
       transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
-      className="overflow-hidden"
+      className="shrink-0 overflow-hidden"
     >
       {children}
     </motion.div>
@@ -1553,7 +1553,7 @@ function ExtresSection({
   return (
     <section aria-label="Extres" className={`flex flex-col ${className ?? ""}`}>
       <h3
-        className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h2 text-text-main focus:outline-none"
+        className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h2 lg:pt-15 text-text-main focus:outline-none"
         data-autofocus
         tabIndex={-1}
       >
