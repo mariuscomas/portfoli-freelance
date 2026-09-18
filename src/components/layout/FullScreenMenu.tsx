@@ -86,12 +86,12 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
           animate={{ clipPath: "circle(150% at 95% 5%)" }}
           exit={{ clipPath: "circle(0% at 95% 5%)" }}
           transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          className="fixed inset-0 z-[100] w-full h-[100dvh] bg-[#1a1a1a] text-[#e5e5e5] flex flex-col overflow-hidden"
+          className="dark fixed inset-0 z-[100] w-full h-[100dvh] bg-surface-base text-text-main flex flex-col overflow-hidden"
         >
           {/* Top Bar - Align with Header.tsx padding and style */}
           <div className="fixed top-0 w-full flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 md:py-8 z-[110] bg-transparent pointer-events-none">
             {/* DS-exception: wordmark del logo, mida pròpia de marca */}
-            <TransitionLink href="/" onClick={onClose} className="text-3xl font-bold tracking-tighter text-white pointer-events-auto h-8 lg:h-12 flex items-center">
+            <TransitionLink href="/" onClick={onClose} className="text-3xl font-bold tracking-tighter text-text-main pointer-events-auto h-8 lg:h-12 flex items-center">
               M<span className="text-text-secondary">!</span>
             </TransitionLink>
             <button
@@ -122,7 +122,7 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
                     <div className="flex justify-between items-center">
                       {/* DS-exception: mides art-directed del menú full-screen (36/60px) */}
                       <span className={`text-4xl md:text-6xl font-heading font-bold uppercase tracking-tighter transition-all group-hover:translate-x-2 duration-300 ${
-                        isActive ? "text-[var(--link-color)]" : "text-[#e5e5e5] group-hover:text-[var(--link-color)]"
+                        isActive ? "text-[var(--link-color)]" : "text-text-main group-hover:text-[var(--link-color)]"
                       }`}>
                         {link.label}
                       </span>
@@ -149,7 +149,7 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
                           type="button"
                           onClick={handleContactClick}
                           style={{ "--link-color": link.color } as React.CSSProperties}
-                          className={`block w-full py-6 border-b border-[#333] group transition-opacity text-left ${
+                          className={`block w-full py-6 border-b border-border-subtle group transition-opacity text-left ${
                             isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
                           }`}
                         >
@@ -160,7 +160,7 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
                           href={link.href}
                           onClick={onClose}
                           style={{ "--link-color": link.color } as React.CSSProperties}
-                          className={`block w-full py-6 border-b border-[#333] group transition-opacity ${
+                          className={`block w-full py-6 border-b border-border-subtle group transition-opacity ${
                             isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
                           }`}
                         >

@@ -1786,7 +1786,7 @@ function MediaEditor({
               aria-label="Disposició del media"
               value={layout}
               onChange={(e) => onLayoutChange?.(e.target.value as WorkMediaLayout)}
-              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
             >
               <option value="auto">Disposició: Auto</option>
               <option value="row">Disposició: Fila</option>
@@ -1957,7 +1957,7 @@ function MediaRowList({
               className={`relative w-20 h-20 rounded-md overflow-hidden bg-surface-base block ${
                 hasUrl
                   ? 'border border-border-default'
-                  : 'border border-dashed border-border-subtle hover:border-text-secondary transition-colors'
+                  : 'border border-dashed border-border-subtle hover:border-border-default transition-colors'
               }`}
             >
               {hasUrl ? (
@@ -2226,7 +2226,7 @@ function Input({
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         aria-required={required || undefined}
-        className={`w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${inputClassName}`}
+        className={`w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${inputClassName}`}
       />
     </label>
   )
@@ -2249,7 +2249,7 @@ function Textarea({
         {...rest}
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
     </label>
   )

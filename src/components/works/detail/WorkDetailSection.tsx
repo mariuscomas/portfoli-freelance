@@ -82,7 +82,7 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
               {text.listDetails.map((item, index) => {
                 const href = item.href?.trim() || detailHref(item.value);
                 return (
-                  <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-t border-text-main/10">
+                  <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-t border-border-subtle">
                     <span className="text-text-secondary text-body-md w-full sm:w-1/2">{item.label}</span>
                     {href ? (
                       <a

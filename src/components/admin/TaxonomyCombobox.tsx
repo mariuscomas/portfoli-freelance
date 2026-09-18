@@ -292,7 +292,7 @@ export default function TaxonomyCombobox({
           onClick={() => setOpen((p) => !p)}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className={`w-full appearance-none flex items-center gap-2.5 bg-surface-base border rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${
+          className={`w-full appearance-none flex items-center gap-2.5 bg-surface-base border rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${
             open ? 'border-text-main ring-2 ring-text-main/20' : 'border-border-default'
           }`}
         >

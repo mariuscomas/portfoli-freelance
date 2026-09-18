@@ -41,7 +41,7 @@ export default function LanguageSelector({
   }
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-text-main/10 hover:border-text-main/30 transition-colors cursor-pointer group">
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-border-subtle hover:border-border-default transition-colors cursor-pointer group">
       <div className="w-2.5 h-2.5 bg-text-main rounded-[2px]" />
       <span className="font-sans text-[15px] font-medium text-text-main">CA</span>
       <svg

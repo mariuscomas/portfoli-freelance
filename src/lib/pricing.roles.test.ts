@@ -117,16 +117,16 @@ test("el preu de pàgina extra depèn de l'abast", () => {
 });
 
 // ————————————————————————————————— Disponibilitat d'extres
-test("UI sol no ofereix Motion/CMS/Idiomes/Redacció", () => {
-  const c = q(["ui"], { motion: true, cms: true, languages: 3, redaccio: true });
+test("UI sol no ofereix Motion/CMS/Idiomes, però sí Redacció", () => {
+  const c = q(["ui"], { motion: true, cms: true, languages: 3 });
   assert.equal(c.total, 960);
   assert.equal(c.extras.length, 0);
-  assert.deepEqual(c.availableExtras, ["pagina"]);
+  assert.deepEqual(c.availableExtras, ["pagina", "redaccio"]);
 });
 
-test("UX ofereix Redacció; Dev ofereix Idiomes/Motion/CMS", () => {
+test("la Redacció surt SEMPRE; Dev afegeix Idiomes/Motion/CMS", () => {
   assert.deepEqual(q(["ux"]).availableExtras, ["pagina", "redaccio"]);
-  assert.deepEqual(q(["dev"]).availableExtras, ["pagina", "idioma", "motion", "cms"]);
+  assert.deepEqual(q(["dev"]).availableExtras, ["pagina", "idioma", "motion", "cms", "redaccio"]);
   assert.deepEqual(q(["ux", "ui", "dev"]).availableExtras, [
     "pagina",
     "idioma",

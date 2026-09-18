@@ -53,7 +53,6 @@ test("cada mòdul cobra el preu del pla", () => {
     ["seo", 300],
     ["accessibilitat", 350],
     ["analitica", 250],
-    ["blog", 400],
     ["areaPrivada", 500],
     ["migracio", 150],
     ["integracio", 250],
@@ -63,6 +62,18 @@ test("cada mòdul cobra el preu del pla", () => {
     assert.equal(linia(q, id)?.amount, preu, `${id} hauria de cobrar ${preu}`);
     assert.equal(q.extrasTotal, preu);
   }
+});
+
+test("el blog DEMANA el CMS: sol no s'ofereix, amb CMS cobra 400", () => {
+  // Un blog sense panell d'edició vol dir que cada entrada nova te l'han de
+  // demanar a tu, i el copy promet que els continguts els publica el client.
+  const sol = v2(web({ blog: true }));
+  assert.ok(!sol.availableExtras.includes("blog"));
+  assert.equal(sol.extrasTotal, 0);
+
+  const ambCms = v2({ ...web({ blog: true }), cms: true });
+  assert.ok(ambCms.availableExtras.includes("blog"));
+  assert.equal(linia(ambCms, "blog")?.amount, 400);
 });
 
 test("les integracions són per unitat", () => {

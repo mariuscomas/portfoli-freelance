@@ -93,13 +93,13 @@ export default function WorksGallery({ projects }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="flex flex-col w-full border-t border-text-main/10 px-6 md:px-12 lg:px-24"
+            className="flex flex-col w-full border-t border-border-subtle px-6 md:px-12 lg:px-24"
           >
             {projects.map((project) => (
               <Link
                 href={`/works/${project.slug}`}
                 key={project.id}
-                className="group flex flex-row items-center justify-between py-8 lg:py-12 border-b border-text-main/10 hover:px-6 transition-all duration-300 ease-out relative overflow-hidden"
+                className="group flex flex-row items-center justify-between py-8 lg:py-12 border-b border-border-subtle hover:px-6 transition-all duration-300 ease-out relative overflow-hidden"
               >
                 {/* Background hover subtle effect */}
                 <div className="absolute inset-0 bg-text-main/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />

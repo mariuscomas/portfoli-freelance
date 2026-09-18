@@ -2,6 +2,9 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { ArrowRight } from "@phosphor-icons/react";
+import TransitionLink from "@/components/common/TransitionLink";
+import { LinkUnderline } from "@/components/ui/LinkUnderline";
 
 export default function AboutTeaser() {
   return (
@@ -76,12 +79,21 @@ export default function AboutTeaser() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <a
-              href="/about"
-              className="inline-block text-body-md font-medium text-text-main hover:text-text-secondary pb-1 border-b border-text-main hover:border-text-secondary transition-colors"
-            >
-              Descobreix més sobre mi
-            </a>
+            {/* Figma: Buttons / Custom / Link (12127:62472). Navega → ArrowRight. */}
+            <TransitionLink href="/about" className="group w-fit">
+              <LinkUnderline
+                as="span"
+                icon={
+                  <ArrowRight
+                    size={20}
+                    className="shrink-0 transition-transform group-hover:translate-x-1"
+                    aria-hidden
+                  />
+                }
+              >
+                Descobreix més sobre mi
+              </LinkUnderline>
+            </TransitionLink>
           </motion.div>
         </div>
       </div>

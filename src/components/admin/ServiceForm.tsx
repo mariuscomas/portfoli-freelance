@@ -532,7 +532,7 @@ function Field({
         aria-describedby={[hintId, errId].filter(Boolean).join(' ') || undefined}
         aria-invalid={Boolean(error) || undefined}
         {...props}
-        className={`w-full bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-text-secondary/60 ${
+        className={`w-full bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-border-strong ${
           error ? 'border-error focus:border-error focus:ring-error/20' : 'border-border-default focus:border-text-main'
         }`}
       />
@@ -567,7 +567,7 @@ function Textarea({
         id={id}
         aria-describedby={hintId}
         {...props}
-        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
         <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug">

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { LinkUnderline } from "@/components/ui/LinkUnderline";
 import { ArrowClockwise, ArrowRight } from "@phosphor-icons/react";
 
 /**
@@ -62,12 +63,20 @@ export default function GlobalError({
               Tornar a provar
             </button>
 
-            <Link
-              href="/"
-              className="group inline-flex items-center gap-3 text-text-secondary hover:text-accent transition-colors duration-300 text-body-lg font-medium w-fit pb-2 border-b border-text-secondary/40 hover:border-accent"
-            >
-              Tornar a la home
-              <ArrowRight size={20} weight="regular" className="group-hover:translate-x-1 transition-transform" />
+            <Link href="/" className="group w-fit">
+              <LinkUnderline
+                as="span"
+                icon={
+                  <ArrowRight
+                    size={20}
+                    weight="regular"
+                    className="shrink-0 transition-transform group-hover:translate-x-1"
+                    aria-hidden
+                  />
+                }
+              >
+                Tornar a la home
+              </LinkUnderline>
             </Link>
           </div>
         </div>

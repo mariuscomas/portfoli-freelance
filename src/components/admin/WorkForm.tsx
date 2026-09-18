@@ -1582,7 +1582,7 @@ function Toc({
                   className={`w-full text-left flex items-center gap-2.5 px-3 py-3 border-l-2 text-body-sm text-text-secondary transition-colors ${
                     active
                       ? 'border-text-main font-normal'
-                      : 'border-border-subtle font-light hover:border-text-secondary/60 hover:text-text-main'
+                      : 'border-border-subtle font-light hover:border-border-default hover:text-text-main'
                   }`}
                 >
                   <span className="truncate">{it.label}</span>
@@ -1791,7 +1791,7 @@ function Field({
         aria-describedby={[hintId, errId].filter(Boolean).join(' ') || undefined}
         aria-invalid={Boolean(error) || undefined}
         {...props}
-        className={`w-full max-w-[500px] bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-text-secondary/60 ${
+        className={`w-full max-w-[500px] bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-border-strong ${
           error ? 'border-error focus:border-error focus:ring-error/20' : 'border-border-default focus:border-text-main'
         }`}
       />
@@ -1871,7 +1871,7 @@ function ClientSelect({
           id={id}
           name="client_id"
           defaultValue={defaultValue}
-          className="w-full appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+          className="w-full appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
         >
           <option value="">— Sense client vinculat —</option>
           {/* Mostrem només el nom de l'empresa (fallback al name del contacte
@@ -1924,7 +1924,7 @@ function PlainTextarea({
         required={required}
         aria-describedby={hintId}
         {...props}
-        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
         <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">

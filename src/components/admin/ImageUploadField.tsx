@@ -615,7 +615,7 @@ export default function ImageUploadField({
           className={`relative flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed rounded-[var(--radius-base)] cursor-pointer transition-colors text-center ${
             isDragging
               ? 'border-text-main bg-text-main/5'
-              : 'border-border-subtle bg-surface-card hover:border-text-secondary hover:bg-surface-base'
+              : 'border-border-default bg-surface-card hover:border-border-strong hover:bg-surface-base'
           } ${isBusy ? 'pointer-events-none opacity-90' : ''}`}
         >
           {isCompressing ? (
@@ -1097,7 +1097,7 @@ function ImageManagementModal({
               onChange={(e) => onAltChange(e.target.value)}
               placeholder="Ex: Pantalla principal de l'app PADLL amb el mapa de pistes"
               maxLength={200}
-              className="w-full bg-transparent border border-border-default rounded-md px-3 py-2 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+              className="w-full bg-transparent border border-border-default rounded-md px-3 py-2 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
             />
             <p className="text-body-sm text-text-secondary/80 leading-snug">
               Descripció curta de la imatge per a screen readers i SEO. Si està

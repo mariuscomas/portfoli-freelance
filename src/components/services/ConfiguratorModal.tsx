@@ -31,8 +31,9 @@ import {
   PRODUCT_CALL_URL,
   calcConfiguration,
   CONFIG_EXTRAS,
-  BASE_PAGES,
-  LANDING_BASE_PAGES,
+  EXTRA_FAMILIES,
+  PACKS,
+  extraPricing,
   calcAudit,
   AUDIT_FOCUSES,
   AUDIT_SIZES,
@@ -43,6 +44,7 @@ import {
   type ProductId,
   type Discipline,
   type ConfigProduct,
+  type ConfigExtraId,
   type ConfigQuote,
   type AuditFocus,
   type AuditSize,
@@ -169,11 +171,17 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
           : prev.filter((x) => x !== d)
         : [...prev, d],
     );
-  const [pages, setPages] = useState(0);
-  const [languages, setLanguages] = useState(0);
-  const [motionOn, setMotionOn] = useState(false);
-  const [cms, setCms] = useState(false);
-  const [redaccio, setRedaccio] = useState(false);
+  /**
+   * UN sol estat per a TOTS els mòduls: `{ pagina: 2, seo: 1, ... }`. Els
+   * booleans hi viuen com a 0/1. Abans hi havia un useState per extra i la
+   * pantalla els pintava un per un, així que els vuit mòduls del pla modular
+   * es van quedar sense interfície. Amb un mapa, afegir un mòdul torna a ser
+   * només tocar el catàleg de `pricing.ts`.
+   */
+  const [extraVals, setExtraVals] = useState<Partial<Record<ConfigExtraId, number>>>({});
+  const setExtra = (id: ConfigExtraId, value: number) =>
+    setExtraVals((prev) => ({ ...prev, [id]: value }));
+  const n = (id: ConfigExtraId) => extraVals[id] ?? 0;
   // Auditoria (calcAudit): focus multi-selecció + talla + extres
   const [focuses, setFocuses] = useState<AuditFocus[]>(["ux", "ui", "dev"]);
   const [auditSize, setAuditSize] = useState<AuditSize>("s");
@@ -248,10 +256,24 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
 
   // ————— Càlcul (font de veritat: pricing.ts) —————
 
+  // Els cinc extres del v1 conserven el seu camp propi a ConfigSelection (per
+  // no trencar el model ni els tests); la resta viatgen pel canal `modules`.
   const quote = configProduct
-    ? calcConfiguration({ product: configProduct, disciplines, pages, languages, motion: motionOn, cms, redaccio })
+    ? calcConfiguration({
+        product: configProduct,
+        disciplines,
+        pages: n("pagina"),
+        languages: n("idioma"),
+        motion: n("motion") > 0,
+        cms: n("cms") > 0,
+        redaccio: n("redaccio") > 0,
+        modules: Object.fromEntries(
+          (Object.keys(extraVals) as ConfigExtraId[])
+            .filter((id) => !V1_EXTRA_IDS.includes(id))
+            .map((id) => [id, extraVals[id]]),
+        ),
+      })
     : null;
-  const basePages = configProduct === "landing" ? LANDING_BASE_PAGES : BASE_PAGES;
 
   const auditQuote = isAudit
     ? calcAudit({
@@ -318,7 +340,19 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
         size: auditSize,
         extras: Object.keys(auditExtrasOn).filter((k) => auditExtrasOn[k]),
       }
-    : { disciplines, pages, languages, motion: motionOn, cms, redaccio };
+    : {
+        disciplines,
+        pages: n("pagina"),
+        languages: n("idioma"),
+        motion: n("motion") > 0,
+        cms: n("cms") > 0,
+        redaccio: n("redaccio") > 0,
+        modules: Object.fromEntries(
+          (Object.keys(extraVals) as ConfigExtraId[])
+            .filter((id) => !V1_EXTRA_IDS.includes(id))
+            .map((id) => [id, extraVals[id]]),
+        ),
+      };
   const quotePricing = (
     auditQuote
       ? {
@@ -624,17 +658,9 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     />
                     <ExtresSection
                       quote={quote}
-                      basePages={basePages}
-                      pages={pages}
-                      setPages={setPages}
-                      languages={languages}
-                      setLanguages={setLanguages}
-                      motionOn={motionOn}
-                      setMotionOn={setMotionOn}
-                      cms={cms}
-                      setCms={setCms}
-                      redaccio={redaccio}
-                      setRedaccio={setRedaccio}
+                      product={configProduct!}
+                      values={extraVals}
+                      onChange={setExtra}
                       stepIndex={2}
                     />
                   </motion.div>
@@ -823,18 +849,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     )}
                     {mobileStep === 1 && (
                       <ExtresSection
-                        quote={quote}
-                        basePages={basePages}
-                        pages={pages}
-                        setPages={setPages}
-                        languages={languages}
-                        setLanguages={setLanguages}
-                        motionOn={motionOn}
-                        setMotionOn={setMotionOn}
-                        cms={cms}
-                        setCms={setCms}
-                        redaccio={redaccio}
-                        setRedaccio={setRedaccio}
+                      quote={quote}
+                      product={configProduct!}
+                      values={extraVals}
+                      onChange={setExtra}
                       />
                     )}
                     {mobileStep === 2 && (
@@ -858,17 +876,9 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     />
                     <ExtresSection
                       quote={quote}
-                      basePages={basePages}
-                      pages={pages}
-                      setPages={setPages}
-                      languages={languages}
-                      setLanguages={setLanguages}
-                      motionOn={motionOn}
-                      setMotionOn={setMotionOn}
-                      cms={cms}
-                      setCms={setCms}
-                      redaccio={redaccio}
-                      setRedaccio={setRedaccio}
+                      product={configProduct!}
+                      values={extraVals}
+                      onChange={setExtra}
                     />
                     <ResumSection
                       quote={quote}
@@ -1444,44 +1454,122 @@ function ExtraReveal({ reduce, children }: { reduce: boolean | null; children: R
   );
 }
 
+/** Els cinc extres que ConfigSelection conserva amb camp propi. */
+const V1_EXTRA_IDS: ConfigExtraId[] = ["pagina", "idioma", "motion", "cms", "redaccio"];
+
+/**
+ * Pas d'extres: pinta els mòduls DES DEL CATÀLEG, agrupats per família.
+ *
+ * Abans els cinc extres del v1 estaven escrits a mà, un per un, i per això
+ * els vuit mòduls del pla modular 2026 van quedar sense pantalla tot i ser al
+ * model de preus. Ara la font és `quote.availableExtras` i el `control` de
+ * cada definició decideix si surt Stepper o Switch, així que afegir un mòdul
+ * és només tocar `CONFIG_EXTRAS`.
+ *
+ * Els packs s'anuncien al final de la seva família quan TOTS els seus mòduls
+ * hi pertanyen (cas del Pack Rendiment). El Pack Contingut creua tres famílies
+ * (CMS, blog, migració i formació), així que va al final de la llista.
+ * Un pack només s'anuncia si tots els seus mòduls són disponibles ara mateix:
+ * si no, prometria un descompte sobre coses que no es veuen.
+ */
 function ExtresSection({
   quote,
-  basePages,
-  pages,
-  setPages,
-  languages,
-  setLanguages,
-  motionOn,
-  setMotionOn,
-  cms,
-  setCms,
-  redaccio,
-  setRedaccio,
+  product,
+  values,
+  onChange,
   stepIndex,
   className,
 }: {
   quote: ConfigQuote;
-  basePages: number;
-  pages: number;
-  setPages: (n: number) => void;
-  languages: number;
-  setLanguages: (n: number) => void;
-  motionOn: boolean;
-  setMotionOn: (b: boolean) => void;
-  cms: boolean;
-  setCms: (b: boolean) => void;
-  redaccio: boolean;
-  setRedaccio: (b: boolean) => void;
+  product: ConfigProduct;
+  values: Partial<Record<ConfigExtraId, number>>;
+  onChange: (id: ConfigExtraId, value: number) => void;
   stepIndex?: number;
   className?: string;
 }) {
   const reduce = useReducedMotion();
-  const hasCounters =
-    quote.availableExtras.includes("pagina") || quote.availableExtras.includes("idioma");
-  const hasToggles =
-    quote.availableExtras.includes("motion") ||
-    quote.availableExtras.includes("cms") ||
-    quote.availableExtras.includes("redaccio");
+  const disponibles = quote.availableExtras;
+
+  /** Caption de la fila: el preu, tal com el cobrarà el desglòs. */
+  const caption = (id: ConfigExtraId) => {
+    const def = CONFIG_EXTRAS[id];
+    const { price, basis } = extraPricing(id, product);
+    // "pagina" cobra el preu de l'abast triat, no el del catàleg.
+    if (id === "pagina") return `+${quote.pageExtraPrice} €/${def.unitLabel}`;
+    if (basis === "perUnit") return `+${price} €/${def.unitLabel}`;
+    if (basis === "perPage") {
+      return (values[id] ?? 0) > 0
+        ? `+${price * quote.totalPages} € (${quote.totalPages} pàg. × ${price} €)`
+        : `+${price} €/PÀGINA`;
+    }
+    return `+${price} €`;
+  };
+
+  const packNote = (pack: (typeof PACKS)[number]) => {
+    const suma = pack.modules.reduce((acc, id) => acc + extraPricing(id, product).price, 0);
+    const amb = suma - Math.round((suma * pack.discountPct) / 100);
+    return (
+      <p
+        key={`pack-${pack.id}`}
+        className="pt-4 text-caption-sm text-text-secondary"
+      >
+        {pack.label} · els {pack.modules.length} junts: {suma} € → {amb} € (−{pack.discountPct}%)
+      </p>
+    );
+  };
+
+  // Un pack només s'anuncia si tots els seus mòduls són oferibles ara.
+  const packVisible = (pack: (typeof PACKS)[number]) =>
+    pack.modules.every((id) => disponibles.includes(id));
+
+  const fills: ReactNode[] = [];
+  for (const familia of EXTRA_FAMILIES) {
+    const ids = disponibles.filter((id) => CONFIG_EXTRAS[id].family === familia.id);
+    if (ids.length === 0) continue;
+
+    fills.push(
+      <p key={`grp-${familia.id}`} className="pb-2 pt-6 text-caption-sm text-text-secondary">
+        {familia.label}:
+      </p>,
+    );
+
+    for (const id of ids) {
+      const def = CONFIG_EXTRAS[id];
+      fills.push(
+        <ExtraReveal key={id} reduce={reduce}>
+          <ConfigRow label={def.label} caption={caption(id)} help={def.help}>
+            {def.control === "counter" ? (
+              <Stepper
+                label={def.label}
+                value={values[id] ?? 0}
+                onChange={(v) => onChange(id, v)}
+              />
+            ) : (
+              <Switch
+                label={def.label}
+                checked={(values[id] ?? 0) > 0}
+                onChange={(b) => onChange(id, b ? 1 : 0)}
+              />
+            )}
+          </ConfigRow>
+        </ExtraReveal>,
+      );
+    }
+
+    for (const pack of PACKS) {
+      const propis = pack.modules.every((id) => CONFIG_EXTRAS[id].family === familia.id);
+      if (propis && packVisible(pack)) fills.push(packNote(pack));
+    }
+  }
+
+  // Packs que creuen famílies: al final de tot.
+  for (const pack of PACKS) {
+    const creua = !pack.modules.every(
+      (id) => CONFIG_EXTRAS[id].family === CONFIG_EXTRAS[pack.modules[0]].family,
+    );
+    if (creua && packVisible(pack)) fills.push(packNote(pack));
+  }
+
   return (
     <section aria-label="Extres" className={`flex flex-col ${className ?? ""}`}>
       <h3
@@ -1491,81 +1579,7 @@ function ExtresSection({
       >
         {stepIndex != null && `${stepIndex}. `}Extres
       </h3>
-      <AnimatePresence initial={false}>
-        {hasCounters && (
-          <p key="grp-counters" className="pb-2 pt-6 text-caption-sm text-text-secondary">
-            Amplia el projecte:
-          </p>
-        )}
-        {quote.availableExtras.includes("pagina") && (
-          <ExtraReveal key="pagina" reduce={reduce}>
-            <ConfigRow
-              label={CONFIG_EXTRAS.pagina.label}
-              caption={`+${quote.pageExtraPrice} €/PÀGINA`}
-              help={CONFIG_EXTRAS.pagina.help}
-            >
-              <Stepper label={CONFIG_EXTRAS.pagina.label} value={pages} onChange={setPages} />
-            </ConfigRow>
-          </ExtraReveal>
-        )}
-        {quote.availableExtras.includes("idioma") && (
-          <ExtraReveal key="idioma" reduce={reduce}>
-            <ConfigRow
-              label={CONFIG_EXTRAS.idioma.label}
-              caption={`+${CONFIG_EXTRAS.idioma.price} €/IDIOMA`}
-              help={CONFIG_EXTRAS.idioma.help}
-            >
-              <Stepper
-                label={CONFIG_EXTRAS.idioma.label}
-                value={languages}
-                onChange={setLanguages}
-              />
-            </ConfigRow>
-          </ExtraReveal>
-        )}
-        {hasToggles && (
-          <p key="grp-toggles" className="pb-2 pt-8 text-caption-sm text-text-secondary">
-            Suma capacitats:
-          </p>
-        )}
-        {quote.availableExtras.includes("motion") && (
-          <ExtraReveal key="motion" reduce={reduce}>
-            <ConfigRow
-              label={CONFIG_EXTRAS.motion.label}
-              caption={`+${CONFIG_EXTRAS.motion.price} €`}
-              help={CONFIG_EXTRAS.motion.help}
-            >
-              <Switch label={CONFIG_EXTRAS.motion.label} checked={motionOn} onChange={setMotionOn} />
-            </ConfigRow>
-          </ExtraReveal>
-        )}
-        {quote.availableExtras.includes("cms") && (
-          <ExtraReveal key="cms" reduce={reduce}>
-            <ConfigRow
-              label={CONFIG_EXTRAS.cms.label}
-              caption={`+${CONFIG_EXTRAS.cms.price} €`}
-              help={CONFIG_EXTRAS.cms.help}
-            >
-              <Switch label={CONFIG_EXTRAS.cms.label} checked={cms} onChange={setCms} />
-            </ConfigRow>
-          </ExtraReveal>
-        )}
-        {quote.availableExtras.includes("redaccio") && (
-          <ExtraReveal key="redaccio" reduce={reduce}>
-            <ConfigRow
-              label={CONFIG_EXTRAS.redaccio.label}
-              caption={
-                redaccio
-                  ? `+${CONFIG_EXTRAS.redaccio.price * (basePages + pages)} € (${basePages + pages} pàg. × ${CONFIG_EXTRAS.redaccio.price} €)`
-                  : `+${CONFIG_EXTRAS.redaccio.price} €/PÀGINA`
-              }
-              help={CONFIG_EXTRAS.redaccio.help}
-            >
-              <Switch label={CONFIG_EXTRAS.redaccio.label} checked={redaccio} onChange={setRedaccio} />
-            </ConfigRow>
-          </ExtraReveal>
-        )}
-      </AnimatePresence>
+      <AnimatePresence initial={false}>{fills}</AnimatePresence>
     </section>
   );
 }

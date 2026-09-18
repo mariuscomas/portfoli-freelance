@@ -703,7 +703,7 @@ export function Field({
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className="w-full border-b border-text-secondary/40 bg-transparent py-3 font-sans text-body-lg text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 aria-[invalid=true]:border-error"
+        className="w-full border-b border-border-default bg-transparent py-3 font-sans text-body-lg text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 aria-[invalid=true]:border-error"
       />
       {error && (
         <span id={errorId} role="alert" className="text-body-sm text-error">
@@ -744,7 +744,7 @@ export function SelectField({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           disabled={disabled}
-          className={`w-full appearance-none border-b border-text-secondary/40 bg-transparent py-3 pr-8 font-sans text-body-lg transition-colors focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 ${
+          className={`w-full appearance-none border-b border-border-default bg-transparent py-3 pr-8 font-sans text-body-lg transition-colors focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 ${
             value ? "text-text-main" : "text-text-secondary/40"
           }`}
         >

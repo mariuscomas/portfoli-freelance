@@ -69,7 +69,12 @@
                 outline, i qualsevol vora que hagi de delimitar sense
                 l'ajuda d'un canvi de fons. Compleix WCAG 1.4.11.
        strong   7,17 clar / 5,38 fosc  → ≥4,5:1. Èmfasi: vores dashed,
-                estats d'error, el que hagi de cridar. */
+                estats d'error, el que hagi de cridar.
+
+     Hover (decidit 2026-09-18): la vora puja UN graó — default → strong
+     (camps, botons outline), subtle → default (vores decoratives
+     interactives). El focus va a text-main, per sobre de tota la rampa.
+     Cap hover amb opacitats de text (text-secondary/60, text-main/30…). */
   --border-subtle: #e5e7eb;
   /* neutral/100 */
   --border-default: #8a8a8a;

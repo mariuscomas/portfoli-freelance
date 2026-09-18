@@ -121,7 +121,7 @@ export default function WorksFilterBar({ clients, roles, categories, years }: Pr
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Cerca treballs…"
           aria-label="Cerca treballs"
-          className="w-full bg-surface-card border border-border-default rounded-full pl-9 pr-3 py-2 text-body-sm text-text-main placeholder:text-text-secondary/60 transition-colors hover:border-text-secondary/60 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+          className="w-full bg-surface-card border border-border-default rounded-full pl-9 pr-3 py-2 text-body-sm text-text-main placeholder:text-text-secondary/60 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
         />
       </div>
 
@@ -251,7 +251,7 @@ function FilterChip({
         className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm border transition-colors ${
           active
             ? 'border-text-main bg-text-main text-text-main-inverse'
-            : 'border-border-default bg-surface-card text-text-main hover:border-text-secondary/60'
+            : 'border-border-default bg-surface-card text-text-main hover:border-border-strong'
         }`}
       >
         <span className="opacity-80">{label}</span>

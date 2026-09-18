@@ -173,7 +173,7 @@ function ConfirmDialog({
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center px-4 py-2 rounded-full border border-border-default text-text-main hover:border-text-secondary text-body-sm transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-full border border-border-default text-text-main hover:border-border-strong text-body-sm transition-colors"
           >
             {cancelLabel}
           </button>

@@ -179,7 +179,7 @@ export default function RichTextEditor({
 
       {/* Toolbar + editor en un sol "card" amb estil de input */}
       <div
-        className="flex flex-col bg-transparent border border-border-subtle rounded-md overflow-hidden focus-within:border-text-main focus-within:ring-2 focus-within:ring-text-main/20 hover:border-text-secondary/60 transition-colors"
+        className="flex flex-col bg-transparent border border-border-default rounded-md overflow-hidden focus-within:border-text-main focus-within:ring-2 focus-within:ring-text-main/20 hover:border-border-strong transition-colors"
         style={minHeightStyle as React.CSSProperties}
       >
         <Toolbar editor={editor} />

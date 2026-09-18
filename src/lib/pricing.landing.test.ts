@@ -41,27 +41,29 @@ test("la landing no té pàgines extra ni CMS", () => {
   assert.ok(!L(["ux", "ui", "dev"]).availableExtras.includes("cms"));
 });
 
-test("redacció a la landing = 80 € (1 pàgina base, no 5)", () => {
+test("redacció a la landing: preu TANCAT de 240 €, no per pàgina", () => {
+  // Una landing és UNA pàgina llarga de vuit o deu seccions: per pàgina
+  // sortiria a 80 € i és més feina de redacció que una web de tres pàgines.
   const c = L(["ux", "ui", "dev"], { redaccio: true });
-  assert.equal(c.extras.find((e) => e.id === "redaccio")?.amount, 80);
-  assert.equal(c.total, 1520);
+  assert.equal(c.extras.find((e) => e.id === "redaccio")?.amount, 240);
   assert.equal(LANDING_BASE_PAGES, 1);
 });
 
-test("UI landing no ofereix cap extra", () => {
-  const c = L(["ui"], { motion: true, redaccio: true, languages: 3 });
+test("UI landing només ofereix redacció", () => {
+  // La redacció ja no demana UX: és un lliurable independent de les
+  // disciplines i qui compra només disseny també la pot voler.
+  const c = L(["ui"], { motion: true, languages: 3 });
   assert.equal(c.extras.length, 0);
-  assert.equal(c.total, 720);
-  assert.deepEqual(c.availableExtras, []);
+  assert.deepEqual(c.availableExtras, ["redaccio"]);
 });
 
-test("Dev landing ofereix idioma i motion, no redacció", () => {
+test("Dev landing ofereix idioma, motion i TAMBÉ redacció", () => {
   const c = L(["dev"], { languages: 2, motion: true, redaccio: true });
   assert.deepEqual(
     c.extras.map((e) => e.id),
-    ["idioma", "motion"],
+    ["idioma", "motion", "redaccio"],
   );
-  assert.equal(c.extrasTotal, 150 * 2 + 400);
+  assert.equal(c.extrasTotal, 150 * 2 + 400 + 240);
 });
 
 test("sense product, calcConfiguration segueix sent WEB (no trenca)", () => {

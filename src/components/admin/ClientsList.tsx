@@ -252,7 +252,7 @@ function FilterChip({
       className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm transition-colors border ${
         active
           ? 'bg-text-main text-text-main-inverse border-text-main'
-          : 'bg-surface-card text-text-secondary border-border-default hover:text-text-main hover:border-text-main/40'
+          : 'bg-surface-card text-text-secondary border-border-default hover:text-text-main hover:border-border-strong'
       }`}
     >
       {label}

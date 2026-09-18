@@ -1,4 +1,6 @@
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import TransitionLink from "../common/TransitionLink";
+import { LinkUnderline } from "@/components/ui/LinkUnderline";
 import WorksTeaserInteractive from "./WorksTeaserInteractive";
 import { createClient } from "@/utils/supabase/server";
 import { t } from "@/lib/i18n";
@@ -54,7 +56,7 @@ export default async function WorksTeaser() {
   return (
     <section
       id="treballs"
-      className="w-full scroll-mt-24 py-section-y-lg relative overflow-hidden"
+      className="w-full scroll-mt-24 border-t border-border-default py-section-y-lg relative overflow-hidden"
     >
       <div className="w-full">
         {/* Header amb títol + link "Veure tots els projectes" */}
@@ -63,11 +65,20 @@ export default async function WorksTeaser() {
             Treballs
           </h2>
 
-          <TransitionLink
-            href="/works"
-            className="text-body-md hidden md:block text-text-secondary hover:text-accent transition-colors duration-300 pb-4 border-b border-text-secondary/30 hover:border-accent"
-          >
-            Veure tots els projectes →
+          {/* Figma: Buttons / Custom / Link (12127:62480). Navega → ArrowRight. */}
+          <TransitionLink href="/works" className="group hidden w-fit md:block">
+            <LinkUnderline
+              as="span"
+              icon={
+                <ArrowRight
+                  size={20}
+                  className="shrink-0 transition-transform group-hover:translate-x-1"
+                  aria-hidden
+                />
+              }
+            >
+              Descobreix tots els treballs
+            </LinkUnderline>
           </TransitionLink>
         </div>
 
