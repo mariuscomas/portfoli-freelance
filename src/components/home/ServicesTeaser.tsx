@@ -71,7 +71,7 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
         <CardLink href="/serveis">Explora els serveis</CardLink>
       </header>
 
-      <div className="flex flex-col border-t border-dashed border-border-default divide-y divide-dashed divide-border-default lg:flex-row lg:divide-x lg:divide-y-0">
+      <div className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default lg:flex-row lg:divide-x lg:divide-y-0 lg:dash-divide-v-border-default">
         {products.map((product) => (
           <article
             key={product.id}
@@ -107,7 +107,7 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
           per sota dels 96 de les cards: la fila és secundària. Tablet: text i
           CTA en fila sense filet. Mòbil: apilat.
           Filets interns dashed, vores de secció sòlides (regla 18set26). */}
-      <div className="flex flex-col gap-6 border-t border-dashed border-border-strong px-section-x-xl py-section-y-sm md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:divide-dashed lg:divide-border-default">
+      <div className="flex flex-col gap-6 border-t dash-h-border-strong px-section-x-xl py-section-y-sm md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:dash-divide-v-border-default">
         <div className="flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-section-x-xl lg:py-16">
           <p className="text-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
           <h3 className="text-heading-h3 text-text-main">Una altra cosa al cap?</h3>

@@ -209,7 +209,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                     </Accordion>
                   )}
                 </div>
-                <div className="border-t border-dashed border-border-subtle pt-6">
+                <div className="border-t dash-h-border-subtle pt-6">
                   <p className="text-caption uppercase text-text-secondary">{CONDITIONS}</p>
                 </div>
               </aside>
@@ -448,7 +448,7 @@ function CollabForm({
                 <span className="text-heading-h2 text-text-main tabular-nums">des de {rateLabel}</span>
               </div>
             </div>
-            <div className="border-t border-dashed border-border-subtle pt-6">
+            <div className="border-t dash-h-border-subtle pt-6">
               <p className="text-caption uppercase text-text-secondary">{CONDITIONS}</p>
             </div>
           </aside>

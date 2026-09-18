@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import type { Json, QuoteInsert } from "@/types/database";
 import { PRICING_VERSION } from "@/lib/pricing";
+import type { MailResult } from "@/lib/mail";
 import { notifyNewQuote } from "@/lib/notifyQuote";
 import { notifyQuoteReceived } from "@/lib/notifyProposal";
 import { allowSubmission, RATE_LIMIT_MESSAGE } from "@/lib/rateLimit";
@@ -109,7 +110,7 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
 
   // Acusament de rebuda al client: sense això, qui envia una configuració es
   // queda 48 h sense cap senyal que hagi arribat enlloc.
-  await notifyQuoteReceived({
+  const acusament = await notifyQuoteReceived({
     to: email,
     name: name || null,
     product: input.product,
@@ -118,7 +119,7 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
   });
 
   // Notificació per email (opt-in via RESEND_API_KEY). No bloqueja el resultat.
-  await notifyNewQuote({
+  const avisIntern = await notifyNewQuote({
     product: input.product,
     email,
     name: name || null,
@@ -127,5 +128,20 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
     rateLabel: input.rateLabel ?? null,
   });
 
+  // Els dos correus no poden tombar l'enviament, però tampoc poden desaparèixer
+  // sense rastre: `skipped` (sense RESEND_API_KEY al procés) no deixava cap
+  // línia enlloc i vam estar dies sense saber que no en sortia cap.
+  logMail("acusament al client", acusament);
+  logMail("avís intern", avisIntern);
+
   return { status: "ok", ref: refFromId(id) };
+}
+
+function logMail(what: string, r: MailResult) {
+  if (r.ok) return;
+  if (r.skipped) {
+    console.warn(`[quote] ${what}: no enviat, falta RESEND_API_KEY a l'entorn del procés`);
+    return;
+  }
+  console.error(`[quote] ${what}: no enviat`, r.status ?? "", r.error ?? "");
 }

@@ -887,6 +887,46 @@
   }
 }
 /* ============================================================
+   FILETS DASHED — patró del DS: guió 5 px, espai 10 px, gruix 1
+   (Figma, Ajustes de trazo: Discontinuo, Guion 5, Espacio 10, Interior).
+   `border-dashed` no deixa triar el patró: cada navegador el pinta amb
+   guions de ~3 px enganxats. Aquí el filet és un border-image amb un
+   degradat repetit, de manera que ocupa el mateix gruix que la vora i el
+   layout no es mou. El color va a la utilitat (border-color s'ignora):
+     dash-h-{color}          vores horitzontals (border-t / border-b)
+     dash-v-{color}          vores verticals (border-l / border-r)
+     dash-divide-h-{color}   fills amb divide-y
+     dash-divide-v-{color}   fills amb divide-x
+   {color} és qualsevol token --color-*, p. ex. dash-h-border-default.
+   No serveix per a caixes amb border-radius (border-image el trenca):
+   les zones de drop de l'admin es queden amb border-dashed.
+   Regla d'ús: filet dins d'una secció, dashed; entre seccions, sòlid.
+   ============================================================ */
+@utility dash-h-* {
+  --dash-color: --value(--color-*);
+  border-image: repeating-linear-gradient(to right, var(--dash-color) 0 5px, transparent 5px 15px) 1 0;
+}
+
+@utility dash-v-* {
+  --dash-color: --value(--color-*);
+  border-image: repeating-linear-gradient(to bottom, var(--dash-color) 0 5px, transparent 5px 15px) 0 1;
+}
+
+@utility dash-divide-h-* {
+  & > :not(:last-child) {
+    --dash-color: --value(--color-*);
+    border-image: repeating-linear-gradient(to right, var(--dash-color) 0 5px, transparent 5px 15px) 1 0;
+  }
+}
+
+@utility dash-divide-v-* {
+  & > :not(:last-child) {
+    --dash-color: --value(--color-*);
+    border-image: repeating-linear-gradient(to bottom, var(--dash-color) 0 5px, transparent 5px 15px) 0 1;
+  }
+}
+
+/* ============================================================
    HERO — Lockup interactiu (efecte de cursor)
    Veure: src/components/home/HeroTitle.tsx
    Mode fosc: degradat de marca revelat a través de les lletres

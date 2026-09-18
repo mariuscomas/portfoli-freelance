@@ -200,7 +200,7 @@ function TriadaSection({
           catàleg no cobreix es pressuposta per trucada. */}
       <Reveal>
         <div
-          className={`${SECTION_PX} flex flex-col gap-8 border-b border-dashed border-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
+          className={`${SECTION_PX} flex flex-col gap-8 border-b dash-h-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
         >
           <div className="flex flex-1 flex-col gap-3">
             <span className="text-caption uppercase text-text-secondary">APPS, BRANDING I MÉS</span>

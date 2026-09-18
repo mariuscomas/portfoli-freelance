@@ -385,6 +385,11 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
     });
 
   /** Resum llegible de la configuració, annexat al missatge del formulari. */
+  /** Import d'una línia d'extra amb signe. Els packs tenen import negatiu i
+   *  amb un "+" fix sortia "+-90 €" al correu que rep el client. */
+  const signedEuro = (n: number) =>
+    n < 0 ? `\u2212${formatEuro(Math.abs(n))}` : `+${formatEuro(n)}`;
+
   const buildSummary = () => {
     if (auditQuote) {
       const lines = [
@@ -393,7 +398,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
         `· Abast: ${auditQuote.size.label}${
           auditQuote.sizeIncrement ? ` (+${formatEuro(auditQuote.sizeIncrement)})` : " (inclòs)"
         }`,
-        ...auditQuote.extras.map((e) => `· ${e.label}: +${formatEuro(e.amount)}`),
+        ...auditQuote.extras.map((e) => `· ${e.label}: ${signedEuro(e.amount)}`),
         `Total orientatiu: ${formatEuro(auditQuote.total)}`,
       ];
       return lines.join("\n");
@@ -405,7 +410,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
       `Configuració: ${product.name} · ${quote.scopeLabel}`,
       ...quote.phases.map((p, i) => `· Fase ${i + 1} · ${p.label}: ${formatEuro(p.amount)}`),
       `· Total base: ${formatEuro(quote.baseTotal)}`,
-      ...quote.extras.map((e) => `· ${e.label}: +${formatEuro(e.amount)}`),
+      ...quote.extras.map((e) => `· ${e.label}: ${signedEuro(e.amount)}`),
       `Total orientatiu: ${formatEuro(quote.total)}`,
     ];
     return lines.join("\n");
@@ -630,7 +635,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         </span>
                       </div>
                     </div>
-                    <div className="border-t border-dashed border-border-subtle pt-6">
+                    <div className="border-t dash-h-border-subtle pt-6">
                       <p className="text-caption uppercase text-text-secondary">
                         No inclòs al total:{" "}
                         {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
@@ -1099,7 +1104,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                             lines={auditQuote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
                           />
                         )}
-                        <div className="mt-8 border-t border-dashed border-border-subtle pt-6">
+                        <div className="mt-8 border-t dash-h-border-subtle pt-6">
                           <p className="text-caption uppercase text-text-secondary">
                             No inclòs al total:{" "}
                             {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
@@ -1248,7 +1253,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       </span>
                     </div>
                   </div>
-                  <div className="border-t border-dashed border-border-subtle pt-2">
+                  <div className="border-t dash-h-border-subtle pt-2">
                     <Accordion title="Lliurables" level="h4" defaultOpen={false}>
                       {AUDIT_DELIVERABLES.map((d) => (
                         <p
@@ -1626,7 +1631,7 @@ function ResumSection({
           </div>
         )}
       </div>
-      <div className="border-t border-dashed border-border-subtle pt-6">
+      <div className="border-t dash-h-border-subtle pt-6">
         <p className="text-caption uppercase text-text-secondary">
           No inclòs al total: {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
         </p>
@@ -2100,7 +2105,7 @@ function LeadForm({
                 </span>
               </div>
             </div>
-            <div className="border-t border-dashed border-border-subtle pt-6">
+            <div className="border-t dash-h-border-subtle pt-6">
               <p className="text-caption uppercase text-text-secondary">
                 No inclòs al total:{" "}
                 {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
