@@ -42,6 +42,18 @@ const FOCUS_COUNT_PRICING = `1 focus ${formatPrice(AUDIT_BASE_BY_COUNT[1])}, 2 f
   AUDIT_BASE_BY_COUNT[2],
 )}, 3 focus ${formatPrice(AUDIT_BASE_BY_COUNT[3])}`;
 
+/**
+ * La 01 enumera LLIURABLES. L'última línia d'AUDIT_BASE_INCLUDES ("Val per si
+ * sola: … es descompta íntegra") és una condició comercial, no una cosa que
+ * t'enduguis, i a l'spoke el descompte ja el diuen el hero, la nota dels extres
+ * i la FAQ sencera: quatre cops. Es treu d'aquesta llista i NOMÉS d'aquí.
+ *
+ * L'array es queda intacte perquè el ConfiguratorModal també el consumeix, i
+ * allà és l'ÚNICA menció del descompte de tot el modal, just on es decideix.
+ * Decidit el 16set26.
+ */
+const SPOKE_INCLUDES = AUDIT_BASE_INCLUDES.filter((item) => !item.startsWith("Val per si sola"));
+
 // Descripcions editorials del focus (contingut de la pàgina, no del càlcul).
 const FOCUS_COPY: Record<AuditFocus, { name: string; description: string; tag: string }> = {
   ux: {
@@ -76,7 +88,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Puc triar només un focus?",
-    a: "Sí. Tries un focus, dos o els tres; el preu s'ajusta (600 / 900 / 1.100 €).",
+    a: "Sí. Tries un focus, dos o els tres, i el preu s'ajusta segons quants en triïs.",
   },
   {
     q: "Com és el descompte?",
@@ -135,7 +147,7 @@ function IncludesSection() {
       </Reveal>
       <Reveal className="mt-14">
         <ul>
-          {AUDIT_BASE_INCLUDES.map((item, i) => (
+          {SPOKE_INCLUDES.map((item, i) => (
             <li
               key={item}
               className="flex items-baseline gap-6 border-t border-border-subtle py-5 md:gap-10"
