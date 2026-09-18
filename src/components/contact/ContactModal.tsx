@@ -18,7 +18,7 @@ import { EVENTS, trackEvent } from "@/lib/analytics";
  * d'un camp per pas:
  *
  *   1. Nom               → "Com et dius?"
- *   2. Correu electrònic → "Dona'm un correu on donar-te resposta"
+ *   2. Correu electrònic → "Quin és el teu correu?"
  *   3. Missatge          → "Què tens al cap?"  (textarea, envia)
  *   ✓  Confirmació       → "Missatge enviat."
  *
@@ -61,7 +61,7 @@ const STEPS: StepDef[] = [
   {
     key: "email",
     label: "Correu electrònic",
-    question: "Dona'm un correu on donar-te resposta",
+    question: "Quin és el teu correu?",
     type: "email",
     autoComplete: "email",
     inputMode: "email",
