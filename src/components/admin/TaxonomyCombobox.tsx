@@ -476,7 +476,7 @@ export default function TaxonomyCombobox({
                             onClick={() => void handlePickColor(opt, null)}
                             title="Sense color"
                             aria-label="Sense color"
-                            className="w-5 h-5 rounded-full border border-dashed border-text-secondary hover:scale-110 transition-transform"
+                            className="w-5 h-5 rounded-full border border-dashed border-border-default hover:scale-110 transition-transform"
                           />
                         </div>
                       </div>
@@ -520,7 +520,7 @@ function ColorDot({ color }: { color: string | null }) {
     return (
       <span
         aria-hidden
-        className="inline-block w-3 h-3 rounded-full border border-text-secondary/40 shrink-0"
+        className="inline-block w-3 h-3 rounded-full border border-border-default shrink-0"
       />
     )
   }

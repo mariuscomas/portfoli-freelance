@@ -592,7 +592,7 @@ export function RadioList({
             <span
               aria-hidden="true"
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                active ? "border-primary-main" : "border-text-secondary/60"
+                active ? "border-primary-main" : "border-border-default"
               }`}
             >
               {active && <span className="h-2 w-2 rounded-full bg-primary-main" />}

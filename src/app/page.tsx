@@ -5,6 +5,7 @@ import IntroLoader from "@/components/common/IntroLoader";
 import Hero from "@/components/home/Hero";
 import SplitFunnel from "@/components/home/SplitFunnel";
 import ServicesTeaser from "@/components/home/ServicesTeaser";
+import CollabBreak from "@/components/home/CollabBreak";
 import CollabTeaser from "@/components/home/CollabTeaser";
 import WorksTeaser from "@/components/home/WorksTeaser";
 import Clients from "@/components/home/Clients";
@@ -45,6 +46,7 @@ export default async function Home() {
       <Hero introPending={playIntro} />
       <SplitFunnel />
       <ServicesTeaser products={products} />
+      <CollabBreak />
       <CollabTeaser />
       <WorksTeaser />
       <AboutTeaser />

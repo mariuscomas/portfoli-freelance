@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import TransitionLink from "../common/TransitionLink";
+import { ArrowRight } from "@phosphor-icons/react";
 import WorksGrid from "../works/WorksGrid";
 import type { Project } from "@/types";
 
@@ -37,7 +37,12 @@ export default function WorksTeaserInteractive({ projects }: { projects: Project
 
   return (
     <>
-      <WorksGrid projects={projects} onProjectHover={setHoveredProject} />
+      {/* Figma 12089:34432 · padding x-MD, gap vertical gap-MD, horitzontal gap-SM */}
+      <WorksGrid
+        projects={projects}
+        onProjectHover={setHoveredProject}
+        spacingClassName="px-section-x-md gap-y-section-gap-md gap-x-section-gap-sm"
+      />
 
       {/* Custom cursor amb fletxa, fixat a la pantalla */}
       <motion.div
@@ -51,9 +56,7 @@ export default function WorksTeaserInteractive({ projects }: { projects: Project
         className="fixed top-0 left-0 w-[120px] h-[120px] bg-white text-black rounded-full pointer-events-none z-[100] shadow-[0px_4px_30px_rgba(0,0,0,0.1)] hidden md:flex items-center justify-center transform-gpu"
         aria-hidden="true"
       >
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-        </svg>
+        <ArrowRight size={40} aria-hidden />
       </motion.div>
     </>
   );

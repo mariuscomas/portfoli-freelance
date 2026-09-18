@@ -56,12 +56,12 @@ export default async function WorksTeaser() {
   return (
     <section
       id="treballs"
-      className="w-full scroll-mt-24 border-t border-border-default py-section-y-lg relative overflow-hidden"
+      className="w-full scroll-mt-24 border-t border-border-default pb-section-y-lg relative overflow-hidden"
     >
       <div className="w-full">
-        {/* Header amb títol + link "Veure tots els projectes" */}
-        <div className="flex justify-between items-end mb-16 md:mb-24 px-4 md:px-[3vw] lg:px-[4vw]">
-          <h2 className="font-heading text-heading-h1 uppercase text-text-main leading-none m-0">
+        {/* Header: títol + link "Més treballs" (Figma 12111:42123) */}
+        <header className="flex items-baseline gap-12 px-section-x-xl pt-section-y-lg pb-section-y-sm">
+          <h2 className="text-display-h3 flex-1 text-text-main m-0">
             Treballs
           </h2>
 
@@ -77,10 +77,10 @@ export default async function WorksTeaser() {
                 />
               }
             >
-              Descobreix tots els treballs
+              Més treballs
             </LinkUnderline>
           </TransitionLink>
-        </div>
+        </header>
 
         {/* Grid interactiu + custom cursor */}
         <WorksTeaserInteractive projects={projects} />

@@ -313,7 +313,7 @@ function FilterChip({
                       <span
                         aria-hidden
                         className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${
-                          opt.color ? '' : 'border border-text-secondary/40'
+                          opt.color ? '' : 'border border-border-default'
                         }`}
                         style={opt.color ? { backgroundColor: opt.color } : undefined}
                       />

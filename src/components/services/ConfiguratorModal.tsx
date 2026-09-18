@@ -31,9 +31,11 @@ import {
   PRODUCT_CALL_URL,
   calcConfiguration,
   CONFIG_EXTRAS,
-  EXTRA_FAMILIES,
   PACKS,
-  extraPricing,
+  groupExtras,
+  crossFamilyPacks,
+  packAmounts,
+  extraCaption,
   calcAudit,
   AUDIT_FOCUSES,
   AUDIT_SIZES,
@@ -569,8 +571,13 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
             <input type="text" name="website" tabIndex={-1} autoComplete="off" />
           </label>
 
-          <div className="min-h-0 flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-6 md:px-12">
-            <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
+          {/* SCROLL PER COLUMNA a partir de lg. Amb dotze mòduls, un sol scroll
+              per a tot estirava la pàgina i se'n duia el Resum fora de
+              pantalla, que és el que ha de quedar a la vista mentre el client
+              afegeix mòduls i el total puja. Sota lg les columnes s'apilen i
+              torna a manar un sol scroll. */}
+          <div className="min-h-0 flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-6 md:px-12 lg:overflow-y-hidden">
+            <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12 lg:py-0">
               {/* RESUM persistent — no es desmunta mai; només se n'anima la posició.
                   Del pas 1 al 2 llisca de la dreta (col 3) a l'esquerra (col 1), lent,
                   empenyent cap a fora les columnes de config. */}
@@ -582,7 +589,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 // faci un salt de ~48px quan es canvia el costat del divisor
                 // durant el lliscament (layout="position" no anima el padding).
                 // Només flipem el border (línia divisòria) segons la fase.
-                className={`flex flex-col gap-6 lg:row-start-1 lg:border-border-subtle lg:px-6 ${
+                className={`flex flex-col gap-6 lg:row-start-1 lg:border-border-subtle lg:px-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10 ${
                   phase === "config"
                     ? "lg:col-start-3 lg:border-l"
                     : "lg:col-start-1 lg:border-r"
@@ -591,7 +598,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                 {quote && (
                   <>
                     <div className="flex flex-col">
-                      <h3 className="border-b border-border-subtle py-5 text-heading-h2 text-text-main">
+                      <h3 className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h2 text-text-main">
                         3. Resum
                       </h3>
                       <SummaryGroup
@@ -654,7 +661,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
                       stepIndex={1}
-                      className="lg:border-r lg:border-border-subtle lg:pr-6"
+                      className="lg:border-r lg:border-border-subtle lg:pr-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
                     />
                     <ExtresSection
                       quote={quote}
@@ -662,6 +669,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       values={extraVals}
                       onChange={setExtra}
                       stepIndex={2}
+                      className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
                     />
                   </motion.div>
                 ) : (
@@ -866,8 +874,13 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
             ) : (
               /* ——— DESKTOP · una pantalla, 3 columnes ——— */
               <>
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12">
-                  <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
+                {/* SCROLL PER COLUMNA a partir de lg. Amb dotze mòduls, un sol
+                    scroll per a tot estirava la pàgina i se'n duia el Resum
+                    fora de pantalla, que és justament el que ha de quedar a la
+                    vista mentre el client afegeix mòduls. Sota lg torna a ser
+                    un sol scroll: les columnes s'apilen i no hi ha res a fixar. */}
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:overflow-hidden">
+                  <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12 lg:py-0">
                     <TipusBaseSection
                       quote={quote}
                       disciplines={disciplines}
@@ -879,13 +892,14 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       product={configProduct!}
                       values={extraVals}
                       onChange={setExtra}
+                      className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
                     />
                     <ResumSection
                       quote={quote}
                       total={total}
                       baseOpen={false}
                       showTotal
-                      className="lg:border-l lg:border-border-subtle lg:pl-6"
+                      className="lg:border-l lg:border-border-subtle lg:pl-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:py-10"
                     />
                   </div>
                 </div>
@@ -1032,7 +1046,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     {mobileStep === 2 && (
                       <div className="flex flex-col">
                         <h3
-                          className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
+                          className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h3 text-text-main focus:outline-none"
                           data-autofocus
                           tabIndex={-1}
                         >
@@ -1378,7 +1392,10 @@ function TipusBaseSection({
     <section aria-label="Abast i base inclosa" className={`flex flex-col gap-10 ${className ?? ""}`}>
       <div className="flex flex-col gap-6">
         <h3
-          className="text-heading-h2 text-text-main focus:outline-none"
+          // Sticky amb FONS OPAC: sense bg el contingut es veuria per sota
+          // mentre passa. El pare no pot tenir overflow-hidden o el sticky
+          // deixa d'enganxar-se.
+          className="sticky top-0 z-10 bg-surface-base text-heading-h2 text-text-main focus:outline-none lg:-mt-10 lg:pt-10"
           data-autofocus
           tabIndex={-1}
         >
@@ -1466,11 +1483,8 @@ const V1_EXTRA_IDS: ConfigExtraId[] = ["pagina", "idioma", "motion", "cms", "red
  * cada definició decideix si surt Stepper o Switch, així que afegir un mòdul
  * és només tocar `CONFIG_EXTRAS`.
  *
- * Els packs s'anuncien al final de la seva família quan TOTS els seus mòduls
- * hi pertanyen (cas del Pack Rendiment). El Pack Contingut creua tres famílies
- * (CMS, blog, migració i formació), així que va al final de la llista.
- * Un pack només s'anuncia si tots els seus mòduls són disponibles ara mateix:
- * si no, prometria un descompte sobre coses que no es veuen.
+ * Les regles de disposició (famílies, col·locació dels packs, caption de
+ * preu) viuen a `pricing.ts` i tenen tests propis: aquí només es recorren.
  */
 function ExtresSection({
   quote,
@@ -1488,66 +1502,40 @@ function ExtresSection({
   className?: string;
 }) {
   const reduce = useReducedMotion();
-  const disponibles = quote.availableExtras;
-
-  /** Caption de la fila: el preu, tal com el cobrarà el desglòs. */
-  const caption = (id: ConfigExtraId) => {
-    const def = CONFIG_EXTRAS[id];
-    const { price, basis } = extraPricing(id, product);
-    // "pagina" cobra el preu de l'abast triat, no el del catàleg.
-    if (id === "pagina") return `+${quote.pageExtraPrice} €/${def.unitLabel}`;
-    if (basis === "perUnit") return `+${price} €/${def.unitLabel}`;
-    if (basis === "perPage") {
-      return (values[id] ?? 0) > 0
-        ? `+${price * quote.totalPages} € (${quote.totalPages} pàg. × ${price} €)`
-        : `+${price} €/PÀGINA`;
-    }
-    return `+${price} €`;
-  };
 
   const packNote = (pack: (typeof PACKS)[number]) => {
-    const suma = pack.modules.reduce((acc, id) => acc + extraPricing(id, product).price, 0);
-    const amb = suma - Math.round((suma * pack.discountPct) / 100);
+    const { suma, amb } = packAmounts(pack, product);
     return (
-      <p
-        key={`pack-${pack.id}`}
-        className="pt-4 text-caption-sm text-text-secondary"
-      >
+      <p key={`pack-${pack.id}`} className="pt-4 text-caption-sm text-text-secondary">
         {pack.label} · els {pack.modules.length} junts: {suma} € → {amb} € (−{pack.discountPct}%)
       </p>
     );
   };
 
-  // Un pack només s'anuncia si tots els seus mòduls són oferibles ara.
-  const packVisible = (pack: (typeof PACKS)[number]) =>
-    pack.modules.every((id) => disponibles.includes(id));
-
   const fills: ReactNode[] = [];
-  for (const familia of EXTRA_FAMILIES) {
-    const ids = disponibles.filter((id) => CONFIG_EXTRAS[id].family === familia.id);
-    if (ids.length === 0) continue;
-
+  for (const grup of groupExtras(quote.availableExtras)) {
     fills.push(
-      <p key={`grp-${familia.id}`} className="pb-2 pt-6 text-caption-sm text-text-secondary">
-        {familia.label}:
+      <p key={`grp-${grup.id}`} className="pb-2 pt-6 text-caption-sm text-text-secondary">
+        {grup.label}:
       </p>,
     );
 
-    for (const id of ids) {
+    for (const id of grup.ids) {
       const def = CONFIG_EXTRAS[id];
+      const value = values[id] ?? 0;
       fills.push(
         <ExtraReveal key={id} reduce={reduce}>
-          <ConfigRow label={def.label} caption={caption(id)} help={def.help}>
+          <ConfigRow
+            label={def.label}
+            caption={extraCaption(id, product, quote, value)}
+            help={def.help}
+          >
             {def.control === "counter" ? (
-              <Stepper
-                label={def.label}
-                value={values[id] ?? 0}
-                onChange={(v) => onChange(id, v)}
-              />
+              <Stepper label={def.label} value={value} onChange={(v) => onChange(id, v)} />
             ) : (
               <Switch
                 label={def.label}
-                checked={(values[id] ?? 0) > 0}
+                checked={value > 0}
                 onChange={(b) => onChange(id, b ? 1 : 0)}
               />
             )}
@@ -1556,24 +1544,16 @@ function ExtresSection({
       );
     }
 
-    for (const pack of PACKS) {
-      const propis = pack.modules.every((id) => CONFIG_EXTRAS[id].family === familia.id);
-      if (propis && packVisible(pack)) fills.push(packNote(pack));
-    }
+    for (const pack of grup.packs) fills.push(packNote(pack));
   }
 
-  // Packs que creuen famílies: al final de tot.
-  for (const pack of PACKS) {
-    const creua = !pack.modules.every(
-      (id) => CONFIG_EXTRAS[id].family === CONFIG_EXTRAS[pack.modules[0]].family,
-    );
-    if (creua && packVisible(pack)) fills.push(packNote(pack));
-  }
+  // Els packs que creuen famílies (el Pack Contingut) van al final de tot.
+  for (const pack of crossFamilyPacks(quote.availableExtras)) fills.push(packNote(pack));
 
   return (
     <section aria-label="Extres" className={`flex flex-col ${className ?? ""}`}>
       <h3
-        className="border-b border-border-subtle py-5 text-heading-h2 text-text-main focus:outline-none"
+        className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-heading-h2 text-text-main focus:outline-none"
         data-autofocus
         tabIndex={-1}
       >

@@ -8,7 +8,7 @@ import { PRODUCT_CALL_URL, type Product, type ProductId } from "@/lib/pricing";
  * Secció · Serveis de la home.
  *
  * Figma: "Section · Serveis"
- *   Desktop 1728 → 12089:34976 · Tablet 834 → 12091:35587 · Mobile 402 → 12094:38320
+ *   Desktop 1728 → 12136:13830 · Tablet 834 → 12091:35587 · Mobile 402 → 12094:38320
  *
  * És el bloc que resol el C2 de l'auditoria: fins ara la portada no deia ni
  * què es ven ni què costa. Les dades són les MATEIXES que /serveis — contingut
@@ -96,22 +96,24 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
         ))}
       </div>
 
-      {/* Porta de sortida per al que no encaixa a la tríada. La vora superior
-          és `border-strong`: separa un bloc de naturalesa diferent, no una card
-          més de la mateixa fila. */}
-      <div className="flex flex-col gap-12 border-t border-border-strong px-section-x-xl py-section-y-md lg:flex-row lg:gap-24">
-        <div className="flex flex-col gap-8 lg:w-[576px] lg:shrink-0">
-          <p className="text-eyebrow text-text-secondary">APPS, BRANDING I MÉS</p>
-          <div className="flex flex-col gap-4">
-            <h3 className="text-heading-h3 text-text-main">Una altra cosa al cap?</h3>
-            <p className="text-body-sm max-w-[384px] text-text-secondary">
-              El que no encaixa en aquests punts de partida el pressupostem junts
-              després d&apos;una trucada.
-            </p>
-          </div>
+      {/* Porta de sortida per al que no encaixa a la tríada (Figma "Row — A mida",
+          desktop 12136:13866). La vora superior és `border-strong`: separa un
+          bloc de naturalesa diferent, no una card més de la mateixa fila.
+          Desktop: un sol missatge a 2/3 (etiqueta, títol i paràgraf) i els CTA
+          al terç d'Auditoria, alineats amb el seu enllaç. Padding vertical 64,
+          per sota dels 96 de les cards: la fila és secundària. Tablet: text i
+          CTA en fila sense filet. Mòbil: apilat. */}
+      <div className="flex flex-col gap-6 border-t border-border-strong px-section-x-xl py-section-y-sm md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:divide-border-default">
+        <div className="flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-section-x-xl lg:py-16">
+          <p className="text-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
+          <h3 className="text-heading-h3 text-text-main">Una altra cosa al cap?</h3>
+          <p className="text-body-sm max-w-[384px] text-text-secondary">
+            El que no encaixa en aquests punts de partida el pressupostem junts
+            després d&apos;una trucada.
+          </p>
         </div>
 
-        <div className="flex flex-col gap-6 lg:justify-end lg:pb-12">
+        <div className="flex flex-col gap-6 lg:w-1/3 lg:gap-4 lg:px-section-x-xl lg:py-16">
           <LinkUnderline
             as="a"
             href={PRODUCT_CALL_URL}

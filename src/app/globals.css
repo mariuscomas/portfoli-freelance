@@ -387,6 +387,12 @@
   /* 24 a tots els modes */
   --section-x-xl: 2rem;
   /* 32 → Tablet 48, Desktop 96 */
+  --section-x-md: 1.5rem;
+  /* 24 a tots els modes */
+  --section-gap-md: 2rem;
+  /* 32 → Desktop 48 */
+  --section-gap-sm: 1rem;
+  /* 16 → Tablet 24 */
 
   /* ALÇADA DEL HEADER FIX (Header.tsx: py-6 + clúster h-10 / md:h-12).
      88 a mòbil i 96 de md amunt — la mateixa que la barra inferior del hero.
@@ -413,6 +419,8 @@
     /* Mode Tablet de la rampa `spaces` (només x-XL hi canvia) */
     --section-x-xl: 3rem;
     /* 48 */
+    --section-gap-sm: 1.5rem;
+    /* 24 */
 
     --header-h: 6rem;
     /* 96 = 24*2 + 48 — igual que la Navbar Bottom del hero */
@@ -431,6 +439,8 @@
     /* 96 */
     --section-x-xl: 6rem;
     /* 96 */
+    --section-gap-md: 3rem;
+    /* 48 */
 
   }
 }
@@ -536,6 +546,9 @@
   --spacing-section-y-sm: var(--section-y-sm);
   --spacing-section-y-xs: var(--section-y-xs);
   --spacing-section-x-xl: var(--section-x-xl);
+  --spacing-section-x-md: var(--section-x-md);
+  --spacing-section-gap-md: var(--section-gap-md);
+  --spacing-section-gap-sm: var(--section-gap-sm);
 
   /* Colors / Brand → bg-primary-main */
   --color-primary-main: var(--primary-main);
