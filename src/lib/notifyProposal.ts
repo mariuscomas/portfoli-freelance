@@ -12,12 +12,15 @@
 
 import { sendMail, type MailResult } from "./mail";
 import { RESPONSE_SLA } from "@/lib/pricing";
+import { SITE_EMAIL } from "@/lib/site";
 
 function config() {
   const key = process.env.RESEND_API_KEY;
   if (!key) return null;
   return {
     key,
+    // Destinatari INTERN dels avisos. No és cara pública: per això el
+    // `reply_to` de les cartes que rep el client és `SITE_EMAIL` i no aquest.
     to: process.env.NOTIFY_EMAIL || "mariuscr23@gmail.com",
     from: process.env.RESEND_FROM || "Màrius Freelance <onboarding@resend.dev>",
     site: process.env.NEXT_PUBLIC_SITE_URL || "https://mariusfreelance.com",
@@ -44,7 +47,7 @@ export async function notifyQuoteReceived(input: {
     {
       from: c.from,
       to: input.to,
-      reply_to: c.to,
+      reply_to: SITE_EMAIL,
       subject,
       text: [
         `${hi},`,
@@ -81,7 +84,7 @@ export async function notifyProposalSent(input: {
     {
       from: c.from,
       to: input.to,
-      reply_to: c.to,
+      reply_to: SITE_EMAIL,
       subject: `La teva proposta · ${input.totalLabel}`,
       text: [
         `${hi},`,
