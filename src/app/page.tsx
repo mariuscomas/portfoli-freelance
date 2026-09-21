@@ -3,7 +3,6 @@ import { createClient } from "@/utils/supabase/server";
 import { SERVICE_COLUMNS, productsFrom } from "@/lib/services";
 import IntroLoader from "@/components/common/IntroLoader";
 import Hero from "@/components/home/Hero";
-import SplitFunnel from "@/components/home/SplitFunnel";
 import ServicesTeaser from "@/components/home/ServicesTeaser";
 import CollabBreak from "@/components/home/CollabBreak";
 import CollabTeaser from "@/components/home/CollabTeaser";
@@ -45,10 +44,12 @@ export default async function Home() {
           (ShowcaseVideo, retirat) mentre el showreel no està produït. */}
       <Hero introPending={playIntro} />
       {/* Cortina d'obertura del tall: CollabBreak puja 100svh per sota (-mt).
-          SplitFunnel i Serveis fan de cortina junts (z-10, fons opac) perquè
-          si Serveis fa menys d'una pantalla el tall no tapi el Split. */}
+          Serveis fa de cortina (z-10, fons opac). L'embolcall es queda tot i
+          ser un sol fill: si mai hi torna una secció abans de Serveis, puja
+          amb ella i el tall no la tapa. El Split (doble funnel) es va treure
+          el 21set26: la drecera per a agències és al hero i el tall canvia
+          d'interlocutor. */}
       <div className="relative z-10 flex flex-col bg-surface-base">
-        <SplitFunnel />
         <ServicesTeaser products={products} />
       </div>
       <CollabBreak />
