@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
+import { List } from "@phosphor-icons/react";
 import TransitionLink from "@/components/common/TransitionLink";
-import Logo from "@/components/common/Logo";
 import LogoSmall from "@/components/common/LogoSmall";
 import { useScrollHide } from "@/hooks/useScrollHide";
 import { useMediaQuery, BELOW_LG_QUERY } from "@/hooks/useMediaQuery";
@@ -18,14 +18,20 @@ import Button from "@/components/ui/Button";
   ----------
   Dos estats estil Motto:
 
-   - EXPANDIT (scrollY ≤ 100): [ MARIUS wordmark ]   Treballs · Serveis · Sobre Mi   [ Comencem? ]
-   - COMPACTE (scrollY > 100): [ M ]                                       [ Comencem? ] [ Menu ]
+   - EXPANDIT (scrollY ≤ 100): [ M. ]   Treballs · Serveis · Col·laboració · Qui soc   [ Comencem? ]
+   - COMPACTE (scrollY > 100): [ M. ]                                       [ Comencem? ] [ Menú ]
+
+  22set26 — alineat amb el mestre Figma Navbar (12188:54178):
+  - Logo: només la M. (el wordmark ja no hi és, tampoc a l'expandit);
+    glif de 32 a mòbil i 20 de md amunt.
+  - Marge lateral = page-margin (px-page), el mateix que la graella.
+  - Mòbil: el Menú és un botó rodó de 48 amb la icona List (Phosphor);
+    de md amunt segueix la pastilla «Menú».
+  - «Comencem?» Body/S - Medium a tauleta i Body/M - Medium a desktop.
 
   Decisions tècniques per màxima fluïdesa:
   - TOT sempre muntat. No AnimatePresence (evita mount/unmount jank).
   - Animacions només d'opacity + transform (GPU). Cap animació de width.
-  - Logos absolute-stacked amb wrapper d'amplada fixa → crossfade sense
-    salts de layout.
   - Histeresi al threshold (enter 100 / exit 50) → si l'usuari scrolla
     a la vora dels 100px, no flickeja entre estats.
   - Mobile: sempre compacte (no hi caben links inline).
@@ -71,9 +77,6 @@ const ANIM_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 // El layout shift Comencem ↔ Menu va més lent per donar més presència
 // al desplaçament físic (és l'efecte més visible del scroll-to-compact).
 const LAYOUT_SHIFT_DURATION = 0.5;
-// La crossfade Logo ↔ LogoSmall també va més lenta (com a Motto): no
-// és un mer aparèixer/desaparèixer, sinó un morph subtil amb scale.
-const LOGO_TRANSITION_DURATION = 0.5;
 // Entrada/sortida del header sencer per direcció d'scroll. Asimètric
 // (15set26): la sortida va lenta perquè marxar sigui un gest suau i no una
 // desaparició seca; el retorn va al doble de ràpid, coherent amb la
@@ -206,49 +209,17 @@ export default function Header({
       }}
       onFocusCapture={() => setHasFocusWithin(true)}
       onBlurCapture={() => setHasFocusWithin(false)}
-      className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 pointer-events-none"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-page py-6 pointer-events-none"
     >
       {/*
-        Esquerra: Logo amb crossfade absolute-stacked.
-        El wrapper té amplada fixa de 100px (suficient per al wordmark sencer)
-        perquè el layout no salti al canviar entre Logo full i LogoSmall.
-        Mobile: només LogoSmall, no es transicionará.
+        Esquerra: la M. sola a tots els breakpoints (Figma: 2025 / Logo Reduit;
+        el wordmark queda amagat també a l'expandit, 22set26). El glif ocupa
+        20 de la caixa 20×24 del SVG de LogoSmall: h-6 dona el glif de 20 de
+        md amunt i h-[38.4px] el de 32 a mòbil.
       */}
       <div className={`${pe} flex items-center ${logoColor} transition-colors duration-300`}>
         <TransitionLink href="/" aria-label="Inici" className="hover:opacity-80 transition-opacity">
-          {/* Desktop (md+) — crossfade entre Logo i LogoSmall.
-              Scale subtil (0.85 → 1) afegeix sensació de morph: el logo
-              que entra "creix" cap a la seva posició mentre el que surt
-              "encongeix" i es desvaneix. Combinat amb 500ms de durada,
-              se sent més fluid que un crossfade pur d'opacity. */}
-          <div className="hidden md:block relative w-[100px] h-7">
-            <motion.span
-              animate={{
-                opacity: isCompact ? 0 : 1,
-                scale: isCompact ? 0.85 : 1,
-              }}
-              transition={{ duration: LOGO_TRANSITION_DURATION, ease: ANIM_EASE }}
-              className="absolute inset-0 flex items-center will-change-[opacity,transform]"
-              aria-hidden={isCompact}
-            >
-              <Logo className="h-6 w-auto" />
-            </motion.span>
-            <motion.span
-              animate={{
-                opacity: isCompact ? 1 : 0,
-                scale: isCompact ? 1 : 0.85,
-              }}
-              transition={{ duration: LOGO_TRANSITION_DURATION, ease: ANIM_EASE }}
-              className="absolute inset-0 flex items-center will-change-[opacity,transform]"
-              aria-hidden={!isCompact}
-            >
-              <LogoSmall className="h-6 w-auto" />
-            </motion.span>
-          </div>
-          {/* Mobile (< md) — només LogoSmall */}
-          <div className="block md:hidden">
-            <LogoSmall className="h-6 w-auto" />
-          </div>
+          <LogoSmall className="!h-[38.4px] md:!h-6 w-auto" />
         </TransitionLink>
       </div>
 
@@ -267,7 +238,7 @@ export default function Header({
         style={{ pointerEvents: isCompact || !isVisible ? "none" : "auto" }}
         aria-label="Navegació principal"
         aria-hidden={isCompact}
-        className="hidden lg:flex items-center gap-10 will-change-[opacity,transform]"
+        className="hidden lg:flex items-center gap-12 will-change-[opacity,transform]"
       >
         {inlineNavLinks.map((link) => {
           const isActive =
@@ -277,7 +248,7 @@ export default function Header({
               key={link.href}
               href={link.href}
               aria-current={isActive ? "page" : undefined}
-              className={`group relative font-sans text-[16px] lg:text-[18px] font-medium pb-[2px] overflow-hidden transition-colors duration-300 ${c.link}`}
+              className={`group relative text-body-m-medium pb-[2px] overflow-hidden transition-colors duration-300 ${c.link}`}
             >
               {link.label}
               {/*
@@ -308,7 +279,7 @@ export default function Header({
         immediatament i el `layout` del Comencem? animi el desplaçament en
         paral·lel amb el fade del Menu.
       */}
-      <div className={`flex items-center gap-6 lg:gap-8 ${pe} h-10 md:h-12`}>
+      <div className={`flex items-center gap-10 ${pe} h-10 md:h-12`}>
         <motion.div
           layout
           transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
@@ -318,7 +289,7 @@ export default function Header({
           <button
             type="button"
             onClick={openContactModal}
-            className={`group relative hidden md:inline-block font-sans text-[14px] lg:text-[20px] font-medium pb-[2px] overflow-hidden whitespace-nowrap transition-colors duration-300 cursor-pointer ${c.link}`}
+            className={`group relative hidden md:inline-block text-body-s-medium lg:text-body-m-medium pb-[2px] overflow-hidden whitespace-nowrap transition-colors duration-300 cursor-pointer ${c.link}`}
           >
             Comencem?
             <span className={`absolute left-0 bottom-0 w-full h-[1.5px] origin-right transition-transform duration-300 ease-out group-hover:scale-x-0 ${c.underline}`} />
@@ -342,17 +313,42 @@ export default function Header({
               style={{ transformOrigin: "right center" }}
               /*
                 Botó del DS (Figma: Buttons / Solid / Large amb modes MD + Pill).
-                Abans era una pastilla dibuixada a mà: l'únic botó del site que no
-                sortia del sistema. El color el sobreescriu `c.button` amb `!`
-                perquè el contrast depèn del hero que hi ha a sota, no del tema.
+                El color el sobreescriu `c.button` amb `!` perquè el contrast
+                depèn del hero que hi ha a sota, no del tema.
                 Text visible "Menú": WCAG 2.5.3 demana que el nom accessible
                 ("Obrir Menú") contingui el text visible.
+                Només de md amunt: a mòbil hi va el botó rodó de sota.
               */
-              className={`hover:scale-105 will-change-[opacity,transform] ${c.button}`}
+              className={`max-md:hidden hover:scale-105 will-change-[opacity,transform] ${c.button}`}
               aria-label="Obrir Menú"
             >
               Menú
             </Button>
+          )}
+          {showMenuButton && (
+            <Button
+              key="menu-btn-mobile"
+              variant="solid"
+              shape="pill"
+              size="icon"
+              layout
+              onClick={onMenuClick}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
+              style={{ transformOrigin: "right center" }}
+              /*
+                Mòbil (22set26). Figma: Buttons / Outline / Square / Neutral a
+                48×48, radi Pill, icona List 32. Els 48 sobresurten 4 px per
+                dalt i per baix del clúster h-10: el header es queda a 88 com
+                al Figma i --header-h no canvia. Color: el mateix `c.button`
+                que la pastilla, perquè segueixi el contrast del hero.
+              */
+              className={`md:hidden !size-12 hover:scale-105 will-change-[opacity,transform] ${c.button}`}
+              aria-label="Obrir Menú"
+              iconLeft={<List size={32} weight="regular" />}
+            />
           )}
         </AnimatePresence>
       </div>
