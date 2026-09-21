@@ -158,7 +158,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cerca nom, empresa o email…"
-            className="pl-9 pr-3 py-2 w-full md:w-72 bg-transparent border border-border-default rounded-md text-body-sm text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:border-text-main"
+            className="pl-9 pr-3 py-2 w-full md:w-72 bg-transparent border border-border-default rounded-md text-body-xs-light md:text-body-s-light text-text-main placeholder:text-text-secondary/60 focus:outline-none focus:border-text-main"
             aria-label="Cerca clients"
           />
         </div>
@@ -166,7 +166,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
 
       {/* ====== Estat buit ====== */}
       {filtered.length === 0 && (
-        <div className="py-12 text-center text-body-sm text-text-secondary border border-dashed border-border-subtle rounded-md">
+        <div className="py-12 text-center text-body-xs-light md:text-body-s-light text-text-secondary border border-dashed border-border-subtle rounded-md">
           {query || activeStatus !== 'all'
             ? 'No hi ha cap client que coincideixi amb els filtres actuals.'
             : 'Encara no tens cap client a la base de dades.'}
@@ -176,7 +176,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
       {/* ====== Taula ====== */}
       {filtered.length > 0 && (
         <div className="overflow-x-auto border border-border-subtle rounded-md">
-          <table className="w-full text-body-sm">
+          <table className="w-full text-body-xs-light md:text-body-s-light">
             <thead className="bg-surface-card text-text-secondary">
               <tr>
                 <SortableHeader
@@ -187,7 +187,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
                   onSort={handleSort}
                   className="text-left pl-4"
                 />
-                <th className="text-left px-3 py-2.5 font-medium uppercase tracking-wider text-body-xs">
+                <th className="text-left px-3 py-2.5 font-medium uppercase tracking-wider text-body-2xs md:text-body-xs">
                   Contacte
                 </th>
                 <SortableHeader
@@ -197,7 +197,7 @@ export default function ClientsList({ clients }: { clients: ClientRow[] }) {
                   dir={sortDir}
                   onSort={handleSort}
                 />
-                <th className="text-left px-3 py-2.5 font-medium uppercase tracking-wider text-body-xs">
+                <th className="text-left px-3 py-2.5 font-medium uppercase tracking-wider text-body-2xs md:text-body-xs">
                   Origen
                 </th>
                 <SortableHeader
@@ -249,7 +249,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm transition-colors border ${
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-xs-light md:text-body-s-light transition-colors border ${
         active
           ? 'bg-text-main text-text-main-inverse border-text-main'
           : 'bg-surface-card text-text-secondary border-border-default hover:text-text-main hover:border-border-strong'
@@ -257,7 +257,7 @@ function FilterChip({
     >
       {label}
       <span
-        className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-body-xs rounded-full ${
+        className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-body-2xs md:text-body-xs rounded-full ${
           active
             ? 'bg-text-main-inverse/15 text-text-main-inverse'
             : 'bg-surface-base text-text-secondary'
@@ -290,7 +290,7 @@ function SortableHeader({
       <button
         type="button"
         onClick={() => onSort(sortKey)}
-        className={`inline-flex items-center gap-1 font-medium uppercase tracking-wider text-body-xs transition-colors ${
+        className={`inline-flex items-center gap-1 font-medium uppercase tracking-wider text-body-2xs md:text-body-xs transition-colors ${
           isActive ? 'text-text-main' : 'text-text-secondary hover:text-text-main'
         }`}
       >
@@ -323,7 +323,7 @@ function ClientRow({ client: c }: { client: ClientRow }) {
             {c.name}
           </span>
           {c.company && (
-            <span className="inline-flex items-center gap-1 text-text-secondary text-body-xs mt-0.5">
+            <span className="inline-flex items-center gap-1 text-text-secondary text-body-2xs md:text-body-xs mt-0.5">
               <Buildings size={11} weight="regular" />
               {c.company}
             </span>
@@ -338,7 +338,7 @@ function ClientRow({ client: c }: { client: ClientRow }) {
             <a
               href={`mailto:${c.email}`}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 hover:text-text-main transition-colors text-body-xs truncate max-w-[200px]"
+              className="inline-flex items-center gap-1.5 hover:text-text-main transition-colors text-body-2xs md:text-body-xs truncate max-w-[200px]"
               title={c.email}
             >
               <EnvelopeSimple size={11} weight="regular" />
@@ -349,14 +349,14 @@ function ClientRow({ client: c }: { client: ClientRow }) {
             <a
               href={`tel:${c.phone}`}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 hover:text-text-main transition-colors text-body-xs"
+              className="inline-flex items-center gap-1.5 hover:text-text-main transition-colors text-body-2xs md:text-body-xs"
             >
               <Phone size={11} weight="regular" />
               {c.phone}
             </a>
           )}
           {!c.email && !c.phone && (
-            <span className="text-body-xs text-text-secondary/50">—</span>
+            <span className="text-body-2xs md:text-body-xs text-text-secondary/50">—</span>
           )}
         </div>
       </td>
@@ -367,7 +367,7 @@ function ClientRow({ client: c }: { client: ClientRow }) {
       </td>
 
       {/* Origen */}
-      <td className="px-3 py-3 align-top text-text-secondary text-body-xs">
+      <td className="px-3 py-3 align-top text-text-secondary text-body-2xs md:text-body-xs">
         {c.source ? (
           c.source
         ) : (
@@ -378,17 +378,17 @@ function ClientRow({ client: c }: { client: ClientRow }) {
       {/* Projectes */}
       <td className="px-3 py-3 align-top">
         {c.works_count > 0 ? (
-          <span className="inline-flex items-center gap-1.5 text-text-main text-body-xs">
+          <span className="inline-flex items-center gap-1.5 text-text-main text-body-2xs md:text-body-xs">
             <Briefcase size={11} weight="regular" />
             {c.works_count}
           </span>
         ) : (
-          <span className="text-text-secondary/50 text-body-xs">—</span>
+          <span className="text-text-secondary/50 text-body-2xs md:text-body-xs">—</span>
         )}
       </td>
 
       {/* Actualitzat */}
-      <td className="px-3 pr-4 py-3 align-top text-text-secondary text-body-xs whitespace-nowrap">
+      <td className="px-3 pr-4 py-3 align-top text-text-secondary text-body-2xs md:text-body-xs whitespace-nowrap">
         <span className="inline-flex items-center gap-1">
           <ClockCounterClockwise size={11} weight="regular" />
           {updated}

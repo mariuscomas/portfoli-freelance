@@ -68,8 +68,8 @@ export default function CookieBanner() {
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-4 rounded-card border border-border-subtle bg-surface-card p-5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.08)] md:flex-row md:items-center md:gap-8 md:p-6">
         <div className="flex flex-col gap-1.5">
-          <p className="text-body-md font-medium text-text-main">Cookies d&apos;analítica</p>
-          <p className="text-body-sm text-text-secondary leading-relaxed">
+          <p className="text-body-s md:text-body-m lg:text-body-l font-medium text-text-main">Cookies d&apos;analítica</p>
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary leading-relaxed">
             Serveixen per saber quines pàgines es llegeixen i on s&apos;abandona el
             configurador. Res de publicitat ni de perfils. El detall és a la{" "}
             <Link href="/privacitat" className="underline underline-offset-4 hover:text-text-main">
@@ -83,14 +83,14 @@ export default function CookieBanner() {
           <button
             type="button"
             onClick={() => decide("denied")}
-            className="flex-1 rounded-card border border-border-default px-5 py-3 text-body-sm text-text-main transition-colors hover:border-text-main md:flex-none"
+            className="flex-1 rounded-card border border-border-default px-5 py-3 text-body-xs-light md:text-body-s-light text-text-main transition-colors hover:border-text-main md:flex-none"
           >
             Només l&apos;essencial
           </button>
           <button
             type="button"
             onClick={() => decide("granted")}
-            className="flex-1 rounded-card bg-text-main px-5 py-3 text-body-sm text-text-main-inverse transition-opacity hover:opacity-90 md:flex-none"
+            className="flex-1 rounded-card bg-text-main px-5 py-3 text-body-xs-light md:text-body-s-light text-text-main-inverse transition-opacity hover:opacity-90 md:flex-none"
           >
             Accepto l&apos;analítica
           </button>

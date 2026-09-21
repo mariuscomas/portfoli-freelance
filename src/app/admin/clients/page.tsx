@@ -59,10 +59,10 @@ export default async function AdminClientsPage() {
             <span className="text-label text-text-secondary">
               Dashboard · Clients
             </span>
-            <h1 className="text-heading-h1 text-text-main">
+            <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
               CRM de clients i leads
             </h1>
-            <p className="text-body-sm text-text-secondary max-w-prose">
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
               Guarda fitxes dels clients potencials i actius, fes seguiment de
               l&apos;estat al pipeline i vincula projectes (Treballs) a cada client.
             </p>
@@ -70,7 +70,7 @@ export default async function AdminClientsPage() {
 
           <Link
             href="/admin/clients/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-s md:text-body-m lg:text-body-l hover:bg-accent hover:text-text-main transition-colors whitespace-nowrap"
           >
             <Plus size={18} weight="bold" />
             Nou client
@@ -79,19 +79,19 @@ export default async function AdminClientsPage() {
 
         {error && (
           <div className="mb-8 p-4 border border-error rounded-md bg-error-surface text-error">
-            <p className="text-body-sm">{error.message}</p>
+            <p className="text-body-xs-light md:text-body-s-light">{error.message}</p>
           </div>
         )}
 
         {!error && enriched.length === 0 && (
           <div className="flex flex-col items-start gap-6 py-16">
-            <p className="text-body-lg text-text-secondary max-w-md">
+            <p className="text-body-l lg:text-body-xl text-text-secondary max-w-md">
               Encara no tens cap client. Comença afegint la primera fitxa per
               guardar leads i contactes.
             </p>
             <Link
               href="/admin/clients/new"
-              className="inline-flex items-center gap-2 text-text-main hover:text-accent transition-colors text-body-md font-medium border-b border-text-main hover:border-accent pb-1"
+              className="inline-flex items-center gap-2 text-text-main hover:text-accent transition-colors text-body-s md:text-body-m lg:text-body-l font-medium border-b border-text-main hover:border-accent pb-1"
             >
               <Plus size={18} weight="bold" />
               Crea el primer client

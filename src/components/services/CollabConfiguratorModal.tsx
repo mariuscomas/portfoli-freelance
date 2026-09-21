@@ -124,13 +124,13 @@ function CollabContent({ onClose }: { onClose: () => void }) {
               >
                 <div className="border-b border-border-subtle py-5">
                   <h3
-                    className="text-heading-h3 text-text-main focus:outline-none"
+                    className="text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
                     data-autofocus
                     tabIndex={-1}
                   >
                     Com treballo
                   </h3>
-                  <p className="text-heading-h4 font-normal text-text-main">(Base, sempre inclòs)</p>
+                  <p className="text-body-s font-normal text-text-main">(Base, sempre inclòs)</p>
                 </div>
                 {[
                   "Extensió del teu equip, com un membre més",
@@ -141,7 +141,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                 ].map((item) => (
                   <p
                     key={item}
-                    className="border-b border-border-subtle py-3 text-body-sm text-text-main"
+                    className="border-b border-border-subtle py-3 text-body-xs-light md:text-body-s-light text-text-main"
                   >
                     {item}
                   </p>
@@ -161,13 +161,13 @@ function CollabContent({ onClose }: { onClose: () => void }) {
 
                 <Accordion title="Intensitat i urgència" level="h3" defaultOpen>
                   <div className="flex items-center gap-6 border-b border-border-subtle py-4">
-                    <span className="flex-1 text-body-md text-text-main">
+                    <span className="flex-1 text-body-s md:text-body-m lg:text-body-l text-text-main">
                       Dedicació parcial (&lt;20 h/setmana)
                     </span>
                     <Switch label="Dedicació parcial" checked={partial} onChange={setPartial} />
                   </div>
                   <div className="flex items-center gap-6 border-b border-border-subtle py-4">
-                    <span className="flex-1 text-body-md text-text-main">Ho necessites en &lt;48 h?</span>
+                    <span className="flex-1 text-body-s md:text-body-m lg:text-body-l text-text-main">Ho necessites en &lt;48 h?</span>
                     <Switch label="Urgència" checked={urgent} onChange={setUrgent} />
                   </div>
                 </Accordion>
@@ -179,17 +179,17 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                 className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
               >
                 <div className="flex flex-col">
-                  <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
+                  <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
                     Resum
                   </h3>
                   <div className="flex items-center gap-6 py-5">
-                    <span className="flex-1 text-heading-h3 text-text-main">Tarifa resultant:</span>
-                    <span className="text-heading-h2 text-text-main tabular-nums" aria-live="polite">
+                    <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Tarifa resultant:</span>
+                    <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums" aria-live="polite">
                       des de {rateLabel}
                     </span>
                   </div>
                   <div className="flex items-center gap-6 border-b border-border-subtle py-3">
-                    <span className="flex-1 text-heading-h4 text-text-main">Segons modalitat</span>
+                    <span className="flex-1 text-body-s text-text-main">Segons modalitat</span>
                     <span className="shrink-0 text-caption text-text-secondary tabular-nums">
                       {quote.equivalent
                         ? `~${formatEuro(quote.equivalent)}/${quote.equivalentUnit}`
@@ -201,7 +201,7 @@ function CollabContent({ onClose }: { onClose: () => void }) {
                       {quote.modifiers.map((m) => (
                         <p
                           key={m}
-                          className="border-b border-border-subtle py-3 text-body-sm text-text-secondary"
+                          className="border-b border-border-subtle py-3 text-body-xs-light md:text-body-s-light text-text-secondary"
                         >
                           {m}
                         </p>
@@ -377,7 +377,7 @@ function CollabForm({
             className="flex flex-col gap-8 lg:border-r lg:border-border-subtle lg:pr-6"
           >
             <h3
-              className="border-b border-border-subtle py-5 text-heading-h3 text-text-main focus:outline-none"
+              className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
               data-autofocus
               tabIndex={-1}
             >
@@ -399,7 +399,7 @@ function CollabForm({
 
           {/* COLUMNA B — El teu encàrrec */}
           <section aria-label="El teu encàrrec" className="flex flex-col gap-6">
-            <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
+            <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
               El teu encàrrec
             </h3>
             <ChipGroup
@@ -424,11 +424,11 @@ function CollabForm({
                 maxLength={5000}
                 placeholder="Què necessiteu? Perfil, stack, ritme de treball…"
                 disabled={submitting}
-                className="w-full resize-y rounded-md border border-border-default bg-surface-card p-4 font-sans text-body-md text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
+                className="w-full resize-y rounded-md border border-border-default bg-surface-card p-4 font-sans text-body-s md:text-body-m lg:text-body-l text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
               />
             </label>
             {error && (
-              <p id={errorId} role="alert" className="text-body-md text-error">
+              <p id={errorId} role="alert" className="text-body-s md:text-body-m lg:text-body-l text-error">
                 {error}
               </p>
             )}
@@ -440,12 +440,12 @@ function CollabForm({
             className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
           >
             <div className="flex flex-col">
-              <h3 className="border-b border-border-subtle py-5 text-heading-h3 text-text-main">
+              <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
                 Resum
               </h3>
               <div className="flex items-center gap-6 py-5">
-                <span className="flex-1 text-heading-h3 text-text-main">Tarifa resultant:</span>
-                <span className="text-heading-h2 text-text-main tabular-nums">des de {rateLabel}</span>
+                <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Tarifa resultant:</span>
+                <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums">des de {rateLabel}</span>
               </div>
             </div>
             <div className="border-t dash-h-border-subtle pt-6">
@@ -465,7 +465,7 @@ function CollabForm({
               type="button"
               onClick={onBack}
               disabled={submitting}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-base px-2 text-body-sm text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-base px-2 text-body-xs-light md:text-body-s-light text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50"
             >
               <ArrowLeft size={16} weight="regular" aria-hidden="true" />
               Tornar
@@ -509,10 +509,10 @@ function CollabConfirmation({ onClose }: { onClose: () => void }) {
           <Check size={32} weight="bold" />
         </span>
         <div className="flex flex-col gap-3">
-          <h3 className="text-heading-h2 text-text-main focus:outline-none" tabIndex={-1} data-autofocus>
+          <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main focus:outline-none" tabIndex={-1} data-autofocus>
             Rebut.
           </h3>
-          <p className="max-w-prose text-body-md text-text-secondary">
+          <p className="max-w-prose text-body-s md:text-body-m lg:text-body-l text-text-secondary">
             He rebut el teu encàrrec. Et responc en menys de {RESPONSE_SLA} amb disponibilitat i
             una tarifa tancada.
           </p>
@@ -529,7 +529,7 @@ function CollabConfirmation({ onClose }: { onClose: () => void }) {
       <TransitionLink
         href="/works"
         onClick={onClose}
-        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-base text-body-md text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-base text-body-s md:text-body-m lg:text-body-l text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
       >
         Mentrestant, fes una ullada als treballs recents
         <ArrowUpRight size={16} weight="regular" aria-hidden="true" />
@@ -552,25 +552,25 @@ function CollabStep({
   return (
     <div className="flex items-start gap-4">
       <span
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border-subtle text-body-sm text-text-main tabular-nums"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border-subtle text-body-xs-light md:text-body-s-light text-text-main tabular-nums"
         aria-hidden="true"
       >
         {index}
       </span>
       <div className="flex flex-col gap-0.5">
-        <span className="text-body-md text-text-main">{title}</span>
+        <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">{title}</span>
         {href ? (
           <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-fit text-body-sm text-text-secondary underline underline-offset-4 transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+            className="w-fit text-body-xs-light md:text-body-s-light text-text-secondary underline underline-offset-4 transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
           >
             {detail}
             <span className="sr-only"> (s&apos;obre en una pestanya nova)</span>
           </a>
         ) : (
-          <span className="text-body-sm text-text-secondary">{detail}</span>
+          <span className="text-body-xs-light md:text-body-s-light text-text-secondary">{detail}</span>
         )}
       </div>
     </div>

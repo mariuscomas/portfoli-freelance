@@ -15,10 +15,10 @@ export default async function AdminClientNewPage() {
           <span className="text-label text-text-secondary">
             Dashboard · Nou client
           </span>
-          <h1 className="text-heading-h1 text-text-main">
+          <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
             Crea un client nou
           </h1>
-          <p className="text-body-md text-text-secondary max-w-prose">
+          <p className="text-body-s md:text-body-m lg:text-body-l text-text-secondary max-w-prose">
             Només cal el nom per crear la fitxa. Després pots afegir contacte,
             origen, notes i vincular projectes des de la pàgina de detall.
           </p>

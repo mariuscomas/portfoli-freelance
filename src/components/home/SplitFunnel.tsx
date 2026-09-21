@@ -56,13 +56,13 @@ export default function SplitFunnel() {
         {CARDS.map((card) => (
           <div
             key={card.href}
-            className="flex flex-1 flex-col gap-8 px-section-x-xl py-section-y-md lg:gap-12"
+            className="flex flex-1 flex-col gap-8 px-page py-section-s lg:py-section-m lg:gap-12"
           >
             <div className="flex flex-col gap-8">
-              <p className="text-eyebrow text-text-secondary">{card.eyebrow}</p>
+              <p className="text-caption-eyebrow text-text-secondary">{card.eyebrow}</p>
               <div className="flex flex-col gap-4">
-                <h2 className="text-display-h4 text-text-main">{card.title}</h2>
-                <p className="text-body-md max-w-[580px] text-text-secondary">
+                <h2 className="text-body-l-semibold md:text-display-2xs lg:text-display-m text-text-main">{card.title}</h2>
+                <p className="text-body-s md:text-body-m lg:text-body-l max-w-[580px] text-text-secondary">
                   {card.body}
                 </p>
               </div>

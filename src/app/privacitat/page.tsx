@@ -72,17 +72,17 @@ export default function PrivacitatPage() {
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-14">
         <header className="flex flex-col gap-4">
           <span className="text-label text-text-secondary">Legal · Privacitat</span>
-          <h1 className="text-display-h4 text-text-main">Política de privacitat</h1>
-          <p className="text-body-sm text-text-secondary">
+          <h1 className="text-body-l-semibold md:text-display-2xs lg:text-display-m text-text-main">Política de privacitat</h1>
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             Actualitzada el 16 de setembre de 2026
           </p>
         </header>
 
         {SECTIONS.map((section) => (
           <section key={section.title} className="flex flex-col gap-3">
-            <h2 className="text-body-lg font-medium text-text-main">{section.title}</h2>
+            <h2 className="text-body-l lg:text-body-xl font-medium text-text-main">{section.title}</h2>
             {section.body.map((line) => (
-              <p key={line} className="text-body-md text-text-secondary leading-relaxed">
+              <p key={line} className="text-body-s md:text-body-m lg:text-body-l text-text-secondary leading-relaxed">
                 {line}
               </p>
             ))}

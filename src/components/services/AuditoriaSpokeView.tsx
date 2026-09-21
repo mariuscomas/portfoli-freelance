@@ -123,7 +123,7 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
   return (
     <div className="flex flex-col gap-4">
       <span className="text-caption uppercase text-text-secondary">{caption}</span>
-      <h2 className="text-heading-h1 text-text-main">{title}</h2>
+      <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">{title}</h2>
     </div>
   );
 }
@@ -139,7 +139,7 @@ function IncludesSection() {
       <Reveal className="mt-8">
         <div className="flex flex-col gap-1.5">
           <span className="text-caption uppercase text-text-secondary">DES DE</span>
-          <span className="text-display-h5 text-text-main">{formatPrice(FULL_PRICE)}</span>
+          <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">{formatPrice(FULL_PRICE)}</span>
           <span className="text-caption text-text-secondary">
             Tots tres focus. Un de sol, {formatPrice(MIN_PRICE)}.
           </span>
@@ -155,7 +155,7 @@ function IncludesSection() {
               <span className="text-caption uppercase tabular-nums text-text-secondary">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="flex-1 text-body-lg text-text-main">{item}</span>
+              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{item}</span>
             </li>
           ))}
         </ul>
@@ -176,7 +176,7 @@ function FocusSection() {
         <SectionHeader caption="02 · FOCUS" title="Tria on mirem" />
       </Reveal>
       <Reveal className="mt-8">
-        <p className="max-w-2xl text-body-lg text-text-secondary">
+        <p className="max-w-2xl text-body-l lg:text-body-xl text-text-secondary">
           Un focus, dos o els tres. El preu s&apos;ajusta segons quants en triïs: {FOCUS_COUNT_PRICING}.
         </p>
       </Reveal>
@@ -188,8 +188,8 @@ function FocusSection() {
               className="flex flex-col gap-4 rounded-card border border-border-subtle bg-surface-card p-8 lg:p-10"
             >
               <span className="text-caption uppercase text-text-secondary">{f.id.toUpperCase()}</span>
-              <h3 className="text-heading-h3 text-text-main">{FOCUS_COPY[f.id].name}</h3>
-              <p className="text-body-sm text-text-secondary">{FOCUS_COPY[f.id].description}</p>
+              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{FOCUS_COPY[f.id].name}</h3>
+              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{FOCUS_COPY[f.id].description}</p>
               <div className="mt-auto pt-4">
                 <span className="text-caption uppercase text-text-secondary">
                   {FOCUS_COPY[f.id].tag}
@@ -218,9 +218,9 @@ function SizesSection() {
               key={s.id}
               className="flex flex-col gap-2 border-b border-border-subtle py-6 md:flex-row md:items-center md:gap-8"
             >
-              <span className="flex-1 text-body-lg text-text-main">{s.label}</span>
+              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{s.label}</span>
               <span className="text-caption uppercase text-text-secondary md:w-72">{s.range}</span>
-              <span className="text-body-lg text-text-main md:w-44 md:text-right">
+              <span className="text-body-l lg:text-body-xl text-text-main md:w-44 md:text-right">
                 {s.increment === 0 ? "inclosa" : `+${formatPrice(s.increment)}`}
               </span>
             </li>
@@ -246,8 +246,8 @@ function ExtrasSection() {
               key={extra.id}
               className="flex flex-col gap-2 border-b border-border-subtle py-6 md:flex-row md:items-center md:gap-8"
             >
-              <span className="flex-1 text-body-lg text-text-main">{extra.label}</span>
-              <span className="text-body-lg text-text-main md:w-44 md:text-right">
+              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{extra.label}</span>
+              <span className="text-body-l lg:text-body-xl text-text-main md:w-44 md:text-right">
                 {`+${formatPrice(extra.price)}`}
               </span>
             </li>
@@ -268,7 +268,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
   return (
     <section className={`dark ${SECTION_PX} py-24 bg-surface-base`}>
       <Reveal>
-        <h2 className="max-w-3xl text-display-h3 text-text-main">
+        <h2 className="max-w-3xl text-display-xs md:text-display-s lg:text-display-l text-text-main">
           {CONFIGURATOR_ENABLED
             ? "Configura la teva auditoria en dos minuts i rep el pressupost al moment."
             : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
@@ -282,7 +282,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
           >
             {CONFIGURATOR_ENABLED ? "Demana la teva auditoria" : "Demana pressupost"}
           </Button>
-          <p className="text-body-sm text-text-secondary">
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             O{" "}
             <a
               href={PRODUCT_CALL_URL}
@@ -314,8 +314,8 @@ function ProcessSection() {
           {AUDIT_PROCESS.map((step) => (
             <div key={step.num} className="flex flex-col gap-3 border-t border-border-subtle pt-6">
               <span className="text-caption text-text-secondary">{step.num}</span>
-              <h3 className="text-heading-h3 text-text-main">{step.title}</h3>
-              <p className="text-body-sm text-text-secondary">{step.text}</p>
+              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{step.title}</h3>
+              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{step.text}</p>
             </div>
           ))}
         </div>
@@ -339,8 +339,8 @@ function FaqSection() {
               key={q}
               className="flex flex-col gap-3 border-t border-border-subtle py-6 md:flex-row md:gap-12"
             >
-              <dt className="text-body-lg text-text-main md:w-2/5">{q}</dt>
-              <dd className="flex-1 text-body-lg text-text-secondary">{a}</dd>
+              <dt className="text-body-l lg:text-body-xl text-text-main md:w-2/5">{q}</dt>
+              <dd className="flex-1 text-body-l lg:text-body-xl text-text-secondary">{a}</dd>
             </div>
           ))}
         </dl>
@@ -355,7 +355,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
   return (
     <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
-        <h2 className="max-w-3xl text-display-h3 text-text-main">Comencem amb una auditoria?</h2>
+        <h2 className="max-w-3xl text-display-xs md:text-display-s lg:text-display-l text-text-main">Comencem amb una auditoria?</h2>
         <div className="mt-10 flex flex-col gap-4">
           <Button
             variant="solid"
@@ -365,7 +365,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
           >
             {CONFIGURATOR_ENABLED ? "Demana la teva auditoria" : "Demana pressupost"}
           </Button>
-          <p className="text-body-sm text-text-secondary">
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             O escriu-me directament:{" "}
             <a
               href={`mailto:${CONTACT_EMAIL}`}

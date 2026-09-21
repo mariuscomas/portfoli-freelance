@@ -41,7 +41,7 @@ export default function WorksTeaserInteractive({ projects }: { projects: Project
       <WorksGrid
         projects={projects}
         onProjectHover={setHoveredProject}
-        spacingClassName="px-section-x-md gap-y-section-gap-md gap-x-section-gap-sm"
+        spacingClassName="px-6 gap-y-8 lg:gap-y-12 gap-x-4 md:gap-x-6"
       />
 
       {/* Custom cursor amb fletxa, fixat a la pantalla */}

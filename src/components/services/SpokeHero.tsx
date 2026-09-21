@@ -80,11 +80,11 @@ export default function SpokeHero({
           {eyebrow}
         </motion.span>
 
-        <motion.h1 {...rise(0.06)} className="text-display-h2 text-text-main text-balance">
+        <motion.h1 {...rise(0.06)} className="text-display-m md:text-display-xl lg:text-display-2xl text-text-main text-balance">
           {headline}
         </motion.h1>
 
-        <motion.p {...rise(0.12)} className="max-w-5xl text-body-xl font-medium text-text-secondary">
+        <motion.p {...rise(0.12)} className="max-w-5xl text-body-m-light md:text-body-xl-light lg:text-body-2xl-light font-medium text-text-secondary">
           {subhead}
         </motion.p>
 
@@ -100,7 +100,7 @@ export default function SpokeHero({
         >
           <div className="flex flex-col gap-1.5">
             <span className="text-caption uppercase text-text-secondary">{priceLabel}</span>
-            <span className="text-display-h5 text-text-main">{price}</span>
+            <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">{price}</span>
             <span className="text-caption uppercase text-text-secondary">{scopeNote}</span>
           </div>
 

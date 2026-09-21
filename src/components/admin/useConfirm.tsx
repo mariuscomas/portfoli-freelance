@@ -155,7 +155,7 @@ function ConfirmDialog({
         {title && (
           <h2
             id="confirm-dialog-title"
-            className="text-body-xl font-medium text-text-main"
+            className="text-body-m-light md:text-body-xl-light lg:text-body-2xl-light font-medium text-text-main"
           >
             {title}
           </h2>
@@ -163,7 +163,7 @@ function ConfirmDialog({
 
         <p
           id="confirm-dialog-message"
-          className="text-body-md text-text-secondary leading-relaxed"
+          className="text-body-s md:text-body-m lg:text-body-l text-text-secondary leading-relaxed"
         >
           {message}
         </p>
@@ -173,14 +173,14 @@ function ConfirmDialog({
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center px-4 py-2 rounded-full border border-border-default text-text-main hover:border-border-strong text-body-sm transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-full border border-border-default text-text-main hover:border-border-strong text-body-xs-light md:text-body-s-light transition-colors"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className={`inline-flex items-center px-4 py-2 rounded-full text-body-sm font-medium transition-colors ${
+            className={`inline-flex items-center px-4 py-2 rounded-full text-body-xs-light md:text-body-s-light font-medium transition-colors ${
               danger
                 ? 'bg-error text-text-main-inverse hover:opacity-90'
                 : 'bg-text-main text-text-main-inverse hover:opacity-90'

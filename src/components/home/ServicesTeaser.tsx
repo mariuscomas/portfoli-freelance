@@ -64,8 +64,8 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
       // border-b: la vora inferior és el final visible de la cortina.
       className="w-full border-y border-border-default"
     >
-      <header className="flex items-baseline gap-12 px-section-x-xl pt-section-y-lg pb-section-y-sm">
-        <h2 id="serveis-titol" className="text-display-h3 flex-1 text-text-main">
+      <header className="flex items-baseline gap-12 px-page pt-section-m lg:pt-section-xl pb-section-xs">
+        <h2 id="serveis-titol" className="text-display-xs md:text-display-s lg:text-display-l flex-1 text-text-main">
           Serveis
         </h2>
         <CardLink href="/serveis">Explora els serveis</CardLink>
@@ -75,18 +75,18 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
         {products.map((product) => (
           <article
             key={product.id}
-            className="flex flex-1 flex-col gap-8 px-section-x-xl py-section-y-md lg:p-section-x-xl"
+            className="flex flex-1 flex-col gap-8 px-page py-section-s lg:py-section-m lg:p-page"
           >
             <div className="flex flex-1 flex-col gap-3">
-              <h3 className="text-heading-h3 text-text-main">{product.name}</h3>
-              <p className="text-body-sm text-text-secondary">{product.description}</p>
+              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{product.name}</h3>
+              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{product.description}</p>
             </div>
 
             <div className="flex items-center justify-between gap-6">
               {/* El preu mana sobre el nom: decisió del 15set26, mestre "Card — Web". */}
               <p className="flex flex-col gap-1">
                 <span className="text-caption text-text-secondary">{product.priceLabel}</span>
-                <span className="text-display-h5 text-text-main">{formatPrice(product.price)}</span>
+                <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">{formatPrice(product.price)}</span>
               </p>
               {/* Sempre "Mira el detall": aquest enllaç NAVEGA a l'spoke en
                   tots dos estats del flag, i una etiqueta ha de dir el que
@@ -107,17 +107,17 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
           per sota dels 96 de les cards: la fila és secundària. Tablet: text i
           CTA en fila sense filet. Mòbil: apilat.
           Filets interns dashed, vores de secció sòlides (regla 18set26). */}
-      <div className="flex flex-col gap-6 border-t dash-h-border-strong px-section-x-xl py-section-y-sm md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:dash-divide-v-border-default">
-        <div className="flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-section-x-xl lg:py-16">
-          <p className="text-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
-          <h3 className="text-heading-h3 text-text-main">Una altra cosa al cap?</h3>
-          <p className="text-body-sm max-w-[384px] text-text-secondary">
+      <div className="flex flex-col gap-6 border-t dash-h-border-strong px-page py-section-xs md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:dash-divide-v-border-default">
+        <div className="flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-page lg:py-16">
+          <p className="text-caption-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
+          <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">Una altra cosa al cap?</h3>
+          <p className="text-body-xs-light md:text-body-s-light max-w-[384px] text-text-secondary">
             El que no encaixa en aquests punts de partida el pressupostem junts
             després d&apos;una trucada.
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 lg:w-1/3 lg:gap-4 lg:px-section-x-xl lg:py-16">
+        <div className="flex flex-col gap-6 lg:w-1/3 lg:gap-4 lg:px-page lg:py-16">
           <LinkUnderline
             as="a"
             href={PRODUCT_CALL_URL}

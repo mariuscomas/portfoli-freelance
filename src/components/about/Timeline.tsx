@@ -170,11 +170,11 @@ export default function Timeline() {
                       : "md:order-2 md:items-end md:text-right"
                   }`}
                 >
-                  {/* text-display-h1 ja porta font-heading/semibold del DS
+                  {/* text-display-l md:text-display-2xl lg:text-display-3xl ja porta font-heading/semibold del DS
                       (sentence case per defecte, com al Figma) */}
                   <motion.p
                     variants={yearVariants(!textLeft)}
-                    className="text-display-h1 text-text-main"
+                    className="text-display-l md:text-display-2xl lg:text-display-3xl text-text-main"
                   >
                     {item.year}
                   </motion.p>
@@ -185,10 +185,10 @@ export default function Timeline() {
                     <HandArrow mirrored={!textLeft} />
                   </div>
 
-                  <motion.h3 variants={textVariants} className="text-heading-h3 text-text-main mt-6 md:mt-0">
+                  <motion.h3 variants={textVariants} className="text-display-2xs-medium lg:text-display-xs-medium text-text-main mt-6 md:mt-0">
                     {item.title}
                   </motion.h3>
-                  <motion.p variants={textVariants} className="text-body-xl text-text-secondary mt-4 md:mt-6 max-w-[36rem]">
+                  <motion.p variants={textVariants} className="text-body-m-light md:text-body-xl-light lg:text-body-2xl-light text-text-secondary mt-4 md:mt-6 max-w-[36rem]">
                     {item.description}
                   </motion.p>
                 </div>

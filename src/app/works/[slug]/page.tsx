@@ -202,7 +202,7 @@ export default async function ProjectDetailsPage({
 function PreviewBanner({ isPublished, workId }: { isPublished: boolean; workId: string }) {
   return (
     <div className="sticky top-0 z-50 w-full bg-text-main text-text-main-inverse">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-2 flex items-center justify-between gap-4 text-body-sm">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-2 flex items-center justify-between gap-4 text-body-xs-light md:text-body-s-light">
         <span className="font-medium tracking-wide">
           Preview · {isPublished ? "treball publicat" : "esborrany sense publicar"}
         </span>

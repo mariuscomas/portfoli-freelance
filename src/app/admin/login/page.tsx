@@ -49,8 +49,8 @@ function LoginForm() {
     <div className="flex flex-col gap-8 max-w-md w-full">
       <div className="flex flex-col gap-4">
         <span className="text-label text-text-secondary">Admin · Accés</span>
-        <h1 className="text-display-h4 text-text-main">Entra al dashboard</h1>
-        <p className="text-body-lg text-text-secondary leading-relaxed">
+        <h1 className="text-body-l-semibold md:text-display-2xs lg:text-display-m text-text-main">Entra al dashboard</h1>
+        <p className="text-body-l lg:text-body-xl text-text-secondary leading-relaxed">
           Accedeix amb el compte de Google autoritzat.
         </p>
       </div>
@@ -59,19 +59,19 @@ function LoginForm() {
         type="button"
         onClick={handleSignIn}
         disabled={state === 'redirecting'}
-        className="inline-flex w-fit items-center gap-3 rounded-card bg-text-main px-8 py-5 font-sans text-body-md text-text-main-inverse transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="inline-flex w-fit items-center gap-3 rounded-card bg-text-main px-8 py-5 font-sans text-body-s md:text-body-m lg:text-body-l text-text-main-inverse transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         <GoogleLogo size={24} weight="regular" aria-hidden="true" />
         {state === 'redirecting' ? 'Obrint Google…' : 'Entra amb Google'}
       </button>
 
       {errorMessage && (
-        <p role="alert" className="text-body-sm text-error">
+        <p role="alert" className="text-body-xs-light md:text-body-s-light text-error">
           {errorMessage}
         </p>
       )}
 
-      <p className="text-body-xs text-text-secondary/70 leading-relaxed">
+      <p className="text-body-2xs md:text-body-xs text-text-secondary/70 leading-relaxed">
         Només el compte autoritzat pot entrar.
       </p>
     </div>

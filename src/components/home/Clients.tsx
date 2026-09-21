@@ -101,7 +101,7 @@ export default function Clients() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="m-0 font-heading text-heading-h1 leading-none text-text-main"
+            className="m-0 font-heading text-display-s-medium md:text-display-m-medium lg:text-display-l-medium leading-none text-text-main"
           >
             Clients
           </motion.h2>
@@ -146,7 +146,7 @@ export default function Clients() {
               className="flex w-[300px] shrink-0 flex-col items-start"
             >
               <ClientLogo src={client.src} name={client.name} height={client.h} />
-              <p className="text-body-md leading-relaxed text-text-secondary">
+              <p className="text-body-s md:text-body-m lg:text-body-l leading-relaxed text-text-secondary">
                 {client.desc}
               </p>
             </div>

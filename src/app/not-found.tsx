@@ -109,7 +109,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={fadeIn}
-          className="font-heading text-body-lg text-text-main"
+          className="font-heading text-body-l lg:text-body-xl text-text-main"
         >
           404
         </motion.span>
@@ -140,7 +140,7 @@ export default function NotFound() {
           className="mt-6"
         >
           <Link href="/" className="group inline-flex items-center gap-3 text-text-main">
-            <span className="text-body-lg underline underline-offset-[6px] decoration-text-main/80 group-hover:decoration-accent group-hover:text-accent transition-colors">
+            <span className="text-body-l lg:text-body-xl underline underline-offset-[6px] decoration-text-main/80 group-hover:decoration-accent group-hover:text-accent transition-colors">
               Tornar a la home
             </span>
             <span className="inline-flex items-center justify-center size-10 rounded-[10px] bg-primary-main text-text-main-inverse transition-transform duration-300 group-hover:translate-x-1">

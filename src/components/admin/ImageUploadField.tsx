@@ -158,7 +158,7 @@ interface Props {
    * Estil de la label:
    *  - `caps` (default): mida petita, uppercase, tracking ampliat — coincideix
    *    amb la resta de labels del form (TÍTOL, ROL, ANY, etc.).
-   *  - `heading`: text-body-md amb font light i sense uppercase — pensat per
+   *  - `heading`: text-body-s md:text-body-m lg:text-body-l amb font light i sense uppercase — pensat per
    *    a camps "destacats" com el thumbnail del work, on visualment fa de
    *    petit títol de la columna en lloc d'un simple field label.
    */
@@ -516,8 +516,8 @@ export default function ImageUploadField({
           htmlFor={id}
           className={
             labelVariant === 'heading'
-              ? 'inline-flex items-center gap-1 text-body-md font-light text-text-secondary'
-              : 'inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary'
+              ? 'inline-flex items-center gap-1 text-body-s md:text-body-m lg:text-body-l font-light text-text-secondary'
+              : 'inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary'
           }
         >
           {label}
@@ -621,13 +621,13 @@ export default function ImageUploadField({
           {isCompressing ? (
             <>
               <CircleNotch size={28} weight="regular" className="animate-spin text-text-main" />
-              <span className="text-body-md text-text-main">Optimitzant imatge…</span>
-              <span className="text-body-sm text-text-secondary">Convertint a WebP i reduint la mida</span>
+              <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">Optimitzant imatge…</span>
+              <span className="text-body-xs-light md:text-body-s-light text-text-secondary">Convertint a WebP i reduint la mida</span>
             </>
           ) : isUploading ? (
             <>
               <CircleNotch size={28} weight="regular" className="animate-spin text-text-main" />
-              <span className="text-body-md text-text-main">Pujant imatge…</span>
+              <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">Pujant imatge…</span>
             </>
           ) : (
             <>
@@ -635,10 +635,10 @@ export default function ImageUploadField({
                 <CloudArrowUp size={22} weight="regular" />
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-body-md text-text-main">
+                <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">
                   Arrossega una imatge o <span className="underline underline-offset-4">tria un fitxer</span>
                 </span>
-                <span className="text-body-sm text-text-secondary">
+                <span className="text-body-xs-light md:text-body-s-light text-text-secondary">
                   JPG, PNG, WebP, AVIF, GIF o SVG · s&apos;optimitzen a WebP automàticament
                 </span>
               </div>
@@ -649,7 +649,7 @@ export default function ImageUploadField({
 
       {/* ---- Error ---- */}
       {error && !headless && (
-        <p role="alert" className="inline-flex items-start gap-2 text-body-sm text-error">
+        <p role="alert" className="inline-flex items-start gap-2 text-body-xs-light md:text-body-s-light text-error">
           <Warning size={16} weight="fill" className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </p>
@@ -657,7 +657,7 @@ export default function ImageUploadField({
 
       {/* ---- Feedback de la compressió ---- */}
       {lastCompression && status === 'idle' && !error && !headless && (
-        <p className="inline-flex items-center gap-1.5 text-body-sm text-accent">
+        <p className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-accent">
           <span aria-hidden>✓</span>
           <span>
             Optimitzat de {formatBytes(lastCompression.before)} a {formatBytes(lastCompression.after)}{' '}
@@ -670,7 +670,7 @@ export default function ImageUploadField({
 
       {/* ---- Hint ---- */}
       {hint && !error && !lastCompression && !headless && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug">{hint}</p>
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">{hint}</p>
       )}
 
       {/* ---- Modal de gestió ---- */}
@@ -813,11 +813,11 @@ function ThumbnailCardInfo({
       <div ref={rightColRef} className="flex-1 flex flex-col gap-4 min-w-0 md:py-6">
         {/* File Name */}
         <div className="flex flex-col">
-          <span className="text-body-sm text-text-secondary leading-tight">
+          <span className="text-body-xs-light md:text-body-s-light text-text-secondary leading-tight">
             File Name
           </span>
           <span
-            className="text-body-md font-light text-text-main truncate"
+            className="text-body-s md:text-body-m lg:text-body-l font-light text-text-main truncate"
             title={filename}
           >
             {filename}
@@ -828,11 +828,11 @@ function ThumbnailCardInfo({
 
         {/* Alt Text */}
         <div className="flex flex-col">
-          <span className="text-body-sm text-text-secondary leading-tight">
+          <span className="text-body-xs-light md:text-body-s-light text-text-secondary leading-tight">
             Alt Text
           </span>
           <span
-            className={`text-body-md font-light truncate ${
+            className={`text-body-s md:text-body-m lg:text-body-l font-light truncate ${
               imageAlt ? 'text-text-main' : 'text-text-secondary/60 italic'
             }`}
             title={imageAlt || 'Sense alt text'}
@@ -986,7 +986,7 @@ function ImageManagementModal({
       <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-card border border-border-subtle rounded-[var(--radius-base)] shadow-xl flex flex-col">
         {/* Header */}
         <header className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border-subtle">
-          <h3 className="text-body-lg font-medium text-text-main">Gestionar imatge</h3>
+          <h3 className="text-body-l lg:text-body-xl font-medium text-text-main">Gestionar imatge</h3>
           <button
             type="button"
             onClick={onClose}
@@ -1025,10 +1025,10 @@ function ImageManagementModal({
                   weight="regular"
                   className="animate-spin text-text-main"
                 />
-                <span className="text-body-md text-text-main">
+                <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">
                   {isCompressing ? 'Optimitzant imatge…' : 'Pujant imatge…'}
                 </span>
-                <span className="text-body-sm text-text-secondary">
+                <span className="text-body-xs-light md:text-body-s-light text-text-secondary">
                   {isCompressing
                     ? 'Redueix la mida sense pèrdua visible'
                     : 'Un moment, gairebé hi som'}
@@ -1040,13 +1040,13 @@ function ImageManagementModal({
           {/* Feedback de pujada — error o resum de compressió, dins el modal
               per estar a la vista mentre l'usuari gestiona la imatge. */}
           {error && (
-            <p role="alert" className="inline-flex items-start gap-2 text-body-sm text-error -mt-2">
+            <p role="alert" className="inline-flex items-start gap-2 text-body-xs-light md:text-body-s-light text-error -mt-2">
               <Warning size={16} weight="fill" className="mt-0.5 shrink-0" />
               <span>{error}</span>
             </p>
           )}
           {lastCompression && !isBusy && !error && (
-            <p className="inline-flex items-center gap-1.5 text-body-sm text-accent -mt-2">
+            <p className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-accent -mt-2">
               <span aria-hidden>✓</span>
               <span>
                 Optimitzat de {formatBytes(lastCompression.before)} a {formatBytes(lastCompression.after)}{' '}
@@ -1059,14 +1059,14 @@ function ImageManagementModal({
 
           {/* Acció: Reemplaçar fitxer */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-body-sm font-medium text-text-secondary">
+            <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
               Fitxer
             </span>
             <button
               type="button"
               onClick={onReplaceClick}
               disabled={isBusy}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border-default rounded-md text-body-md text-text-main hover:border-text-main hover:bg-surface-base transition-colors w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-border-default disabled:hover:bg-transparent"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border-default rounded-md text-body-s md:text-body-m lg:text-body-l text-text-main hover:border-text-main hover:bg-surface-base transition-colors w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-border-default disabled:hover:bg-transparent"
             >
               {isBusy ? (
                 <>
@@ -1086,7 +1086,7 @@ function ImageManagementModal({
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="img-modal-alt"
-              className="text-body-sm font-medium text-text-secondary"
+              className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
             >
               Alt text
             </label>
@@ -1097,9 +1097,9 @@ function ImageManagementModal({
               onChange={(e) => onAltChange(e.target.value)}
               placeholder="Ex: Pantalla principal de l'app PADLL amb el mapa de pistes"
               maxLength={200}
-              className="w-full bg-transparent border border-border-default rounded-md px-3 py-2 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+              className="w-full bg-transparent border border-border-default rounded-md px-3 py-2 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
             />
-            <p className="text-body-sm text-text-secondary/80 leading-snug">
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
               Descripció curta de la imatge per a screen readers i SEO. Si està
               buit, els lectors de pantalla usaran el títol del treball.
             </p>
@@ -1107,19 +1107,19 @@ function ImageManagementModal({
 
           {/* Acció: Esborrar (destructiva, separada visualment) */}
           <div className="flex flex-col gap-1.5 pt-2 border-t border-border-subtle">
-            <span className="text-body-sm font-medium text-text-secondary">
+            <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
               Zona perillosa
             </span>
             <button
               type="button"
               onClick={onDelete}
               disabled={isBusy}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-error/30 text-error rounded-md text-body-md hover:bg-error-surface hover:border-error transition-colors w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-error/30"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-error/30 text-error rounded-md text-body-s md:text-body-m lg:text-body-l hover:bg-error-surface hover:border-error transition-colors w-fit disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:border-error/30"
             >
               <Trash size={16} weight="regular" />
               Esborrar imatge
             </button>
-            <p className="text-body-sm text-text-secondary/80 leading-snug">
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
               Elimina la imatge i l&apos;alt text del treball. Pots tornar a pujar-ne una de nova.
             </p>
           </div>

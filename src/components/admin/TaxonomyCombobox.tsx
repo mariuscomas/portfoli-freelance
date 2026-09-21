@@ -274,7 +274,7 @@ export default function TaxonomyCombobox({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={`${id}-trigger`}
-        className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary"
+        className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         {label}
         {required && <span className="text-error">*</span>}
@@ -292,7 +292,7 @@ export default function TaxonomyCombobox({
           onClick={() => setOpen((p) => !p)}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className={`w-full appearance-none flex items-center gap-2.5 bg-surface-base border rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${
+          className={`w-full appearance-none flex items-center gap-2.5 bg-surface-base border rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${
             open ? 'border-text-main ring-2 ring-text-main/20' : 'border-border-default'
           }`}
         >
@@ -334,7 +334,7 @@ export default function TaxonomyCombobox({
                     void handleCreate()
                   }
                 }}
-                className="w-full bg-transparent text-body-sm text-text-main placeholder:text-text-secondary/60 focus:outline-none"
+                className="w-full bg-transparent text-body-xs-light md:text-body-s-light text-text-main placeholder:text-text-secondary/60 focus:outline-none"
               />
             </div>
 
@@ -347,7 +347,7 @@ export default function TaxonomyCombobox({
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-body-sm text-text-secondary hover:bg-surface-base transition-colors"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-body-xs-light md:text-body-s-light text-text-secondary hover:bg-surface-base transition-colors"
                   >
                     <X size={14} weight="regular" className="shrink-0" />
                     <span className="italic">Sense valor</span>
@@ -356,7 +356,7 @@ export default function TaxonomyCombobox({
               )}
 
               {filtered.length === 0 && !canCreate && (
-                <li className="px-3 py-3 text-body-sm text-text-secondary text-center italic">
+                <li className="px-3 py-3 text-body-xs-light md:text-body-s-light text-text-secondary text-center italic">
                   No hi ha resultats
                 </li>
               )}
@@ -382,7 +382,7 @@ export default function TaxonomyCombobox({
                           className="flex items-center gap-2.5 flex-1 min-w-0 text-left"
                         >
                           <ColorDot color={opt.color} />
-                          <span className="truncate text-body-sm text-text-main">
+                          <span className="truncate text-body-xs-light md:text-body-s-light text-text-main">
                             {labelOf(opt)}
                           </span>
                           {isSelected && (
@@ -437,7 +437,7 @@ export default function TaxonomyCombobox({
                             }
                           }}
                           onBlur={commitEdit}
-                          className="flex-1 min-w-0 bg-transparent text-body-sm text-text-main focus:outline-none border-b border-text-main"
+                          className="flex-1 min-w-0 bg-transparent text-body-xs-light md:text-body-s-light text-text-main focus:outline-none border-b border-text-main"
                         />
                       </div>
                     )}
@@ -491,7 +491,7 @@ export default function TaxonomyCombobox({
                   <button
                     type="button"
                     onClick={handleCreate}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-body-sm text-text-main hover:bg-surface-base transition-colors border-t border-border-subtle"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-body-xs-light md:text-body-s-light text-text-main hover:bg-surface-base transition-colors border-t border-border-subtle"
                   >
                     <Plus size={14} weight="bold" className="shrink-0 text-text-secondary" />
                     <span className="truncate">
@@ -506,7 +506,7 @@ export default function TaxonomyCombobox({
       </div>
 
       {hint && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug max-w-prose">
           {hint}
         </p>
       )}

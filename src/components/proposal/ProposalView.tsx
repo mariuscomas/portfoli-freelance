@@ -54,7 +54,7 @@ function Section({
     <section className={`border-t border-border-subtle py-16 md:py-24 ${SECTION_PX}`}>
       <div className="flex flex-col gap-6">
         <span className="text-caption uppercase text-text-secondary">{caption}</span>
-        <h2 className="text-heading-h1 text-text-main">{title}</h2>
+        <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">{title}</h2>
       </div>
       <div className="mt-12">{children}</div>
     </section>
@@ -65,8 +65,8 @@ function MoneyRow({ label, amount, dim }: { label: string; amount: string; dim?:
   const tone = dim ? "text-text-secondary" : "text-text-main";
   return (
     <li className="flex items-center justify-between gap-6 border-b border-border-subtle py-5">
-      <span className={`text-body-md ${tone}`}>{label}</span>
-      <span className={`text-body-md tabular-nums ${tone}`}>{amount}</span>
+      <span className={`text-body-s md:text-body-m lg:text-body-l ${tone}`}>{label}</span>
+      <span className={`text-body-s md:text-body-m lg:text-body-l tabular-nums ${tone}`}>{amount}</span>
     </li>
   );
 }
@@ -103,7 +103,7 @@ export default function ProposalView({
           role="status"
         >
           <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full bg-error" />
-          <p className="text-body-md text-error">
+          <p className="text-body-s md:text-body-m lg:text-body-l text-error">
             Aquesta proposta va caducar el {fmtDate(p.expires_at)}. Els preus que hi veus són els
             d&apos;aleshores.
           </p>
@@ -112,7 +112,7 @@ export default function ProposalView({
 
       {closed && !p.is_expired && (
         <div className={`border-b border-border-subtle py-6 ${SECTION_PX}`} role="status">
-          <p className="text-body-md text-text-main">
+          <p className="text-body-s md:text-body-m lg:text-body-l text-text-main">
             Aquesta proposta ja està acceptada. Et confirmo dates i t&apos;envio la factura del 50%.
           </p>
         </div>
@@ -123,10 +123,10 @@ export default function ProposalView({
         <span className="text-caption uppercase text-text-secondary">
           Proposta per a {p.name || "tu"}
         </span>
-        <h1 className="mt-6 max-w-5xl text-display-h2 text-text-main">
+        <h1 className="mt-6 max-w-5xl text-display-m md:text-display-xl lg:text-display-2xl text-text-main">
           {PRODUCT_TITLE[p.product]}
         </h1>
-        <p className="mt-8 max-w-2xl text-body-xl text-text-secondary">
+        <p className="mt-8 max-w-2xl text-body-m-light md:text-body-xl-light lg:text-body-2xl-light text-text-secondary">
           Aquesta és la proposta que surt de la configuració que vas enviar. El preu està tancat: el
           que llegeixes aquí és el que costa.
         </p>
@@ -149,13 +149,13 @@ export default function ProposalView({
                 {item.k}
                 {item.k === "VÀLIDA FINS" && p.is_expired ? " · caducada" : ""}
               </dt>
-              <dd className={`text-body-md ${item.tone || "text-text-main"}`}>{item.v}</dd>
+              <dd className={`text-body-s md:text-body-m lg:text-body-l ${item.tone || "text-text-main"}`}>{item.v}</dd>
             </div>
           ))}
           <div className="flex flex-col gap-3 border-t border-border-subtle pt-5">
             <dt className="text-caption uppercase text-text-secondary">Total</dt>
             <dd
-              className={`text-display-h4 ${p.is_expired ? "text-text-secondary" : "text-text-main"}`}
+              className={`text-body-l-semibold md:text-display-2xs lg:text-display-m ${p.is_expired ? "text-text-secondary" : "text-text-main"}`}
             >
               {totalLabel}
             </dd>
@@ -202,8 +202,8 @@ export default function ProposalView({
           )}
 
           <div className="flex items-center justify-between gap-6 border-b border-border-subtle py-7">
-            <span className="text-body-lg text-text-main">Total del projecte</span>
-            <span className="text-display-h5 text-text-main tabular-nums">{totalLabel}</span>
+            <span className="text-body-l lg:text-body-xl text-text-main">Total del projecte</span>
+            <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main tabular-nums">{totalLabel}</span>
           </div>
           <p className="mt-6 text-caption uppercase text-text-secondary">
             Imports sense IVA. Continguts (textos, logo i imatges) a càrrec teu si no contractes la
@@ -216,7 +216,7 @@ export default function ProposalView({
       <Section caption="02 · Condicions" title="Com ho faig">
         <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-10">
           {CONDITIONS.map((c) => (
-            <li key={c} className="border-t border-border-subtle pt-5 text-body-sm text-text-main">
+            <li key={c} className="border-t border-border-subtle pt-5 text-body-xs-light md:text-body-s-light text-text-main">
               {c}
             </li>
           ))}

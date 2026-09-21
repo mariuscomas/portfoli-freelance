@@ -694,7 +694,7 @@ export function BlocksToolbar() {
         <button
           type="button"
           onClick={allBlocksOpen ? collapseAll : expandAll}
-          className="inline-flex items-center gap-1.5 px-3 h-8 text-body-sm text-text-main hover:bg-surface-base rounded-full transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 h-8 text-body-xs-light md:text-body-s-light text-text-main hover:bg-surface-base rounded-full transition-colors"
           title={
             allBlocksOpen
               ? 'Col·lapsa tots els blocs'
@@ -708,7 +708,7 @@ export function BlocksToolbar() {
       <button
         type="button"
         onClick={() => dispatch({ type: 'ADD_BLOCK' })}
-        className="inline-flex items-center gap-1.5 px-4 h-8 border border-text-main rounded-full text-body-sm hover:bg-text-main hover:text-text-main-inverse transition-colors"
+        className="inline-flex items-center gap-1.5 px-4 h-8 border border-text-main rounded-full text-body-xs-light md:text-body-s-light hover:bg-text-main hover:text-text-main-inverse transition-colors"
       >
         <Plus size={14} weight="bold" />
         Afegir Bloc
@@ -765,10 +765,10 @@ export function HeroSection() {
         {/* Color del Text toggle — Pills LIGHT/DARK al cantó dret, label + descripció a l'esquerra */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span className="text-body-sm font-medium text-text-secondary">
+            <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
               Color del text
             </span>
-            <span className="text-body-sm text-text-secondary/80 leading-snug">
+            <span className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
               Light per a fons foscos / imatges; Dark si el fons és clar.
             </span>
           </div>
@@ -784,7 +784,7 @@ export function HeroSection() {
                 role="tab"
                 aria-selected={state.hero.textColor === c}
                 onClick={() => dispatch({ type: 'SET_HERO_TEXT_COLOR', value: c })}
-                className={`px-3 py-1 rounded-full text-body-xs uppercase tracking-wider transition-colors ${
+                className={`px-3 py-1 rounded-full text-body-2xs md:text-body-xs uppercase tracking-wider transition-colors ${
                   state.hero.textColor === c
                     ? 'bg-text-main text-text-main-inverse'
                     : 'text-text-secondary hover:text-text-main'
@@ -925,8 +925,8 @@ export function BlocksSection({
     <div className="flex flex-col gap-4">
         {state.blocks.length === 0 && (
           <div className="flex flex-col gap-3 px-5 py-8 border border-dashed border-border-subtle rounded-md bg-surface-base text-center">
-            <p className="text-body-md text-text-main">Encara no hi ha cap bloc</p>
-            <p className="text-body-sm text-text-secondary max-w-prose mx-auto leading-relaxed">
+            <p className="text-body-s md:text-body-m lg:text-body-l text-text-main">Encara no hi ha cap bloc</p>
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose mx-auto leading-relaxed">
               Cada bloc és una secció del case study. Patrons habituals: <em>Project Overview</em>{' '}
               (què és el projecte i context), <em>Procés</em> (com vas treballar),{' '}
               <em>Resultats</em> (què va canviar). Pots arrossegar-los per reordenar i col·lapsar-los
@@ -935,7 +935,7 @@ export function BlocksSection({
             <button
               type="button"
               onClick={() => dispatch({ type: 'ADD_BLOCK' })}
-              className="inline-flex items-center gap-2 px-4 py-2 mt-1 self-center border border-text-main rounded-full text-body-sm font-medium hover:bg-text-main hover:text-text-main-inverse transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 mt-1 self-center border border-text-main rounded-full text-body-xs-light md:text-body-s-light font-medium hover:bg-text-main hover:text-text-main-inverse transition-colors"
             >
               <Plus size={14} weight="bold" />
               Afegir el primer bloc
@@ -980,10 +980,10 @@ export function BlocksSection({
                   ) : (
                     <CaretRight size={16} weight="regular" className="text-text-secondary shrink-0" />
                   )}
-                  <span className="text-body-sm text-text-secondary tabular-nums shrink-0">
+                  <span className="text-body-xs-light md:text-body-s-light text-text-secondary tabular-nums shrink-0">
                     {block.textSection.number || String(idx + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-body-md text-text-main truncate">
+                  <span className="text-body-s md:text-body-m lg:text-body-l text-text-main truncate">
                     {block.textSection.title || block.textSection.heading || '(Sense títol)'}
                   </span>
                 </button>
@@ -1027,7 +1027,7 @@ export function BlocksSection({
               {isOpen && (
                 <div className="flex flex-col gap-12 px-6 py-8">
                   {issues.length > 0 && (
-                    <ul className="flex flex-col gap-1 px-3 py-2 rounded-md bg-warning-surface text-body-sm text-warning">
+                    <ul className="flex flex-col gap-1 px-3 py-2 rounded-md bg-warning-surface text-body-xs-light md:text-body-s-light text-warning">
                       {issues.map((msg, i) => (
                         <li key={i} className="inline-flex items-start gap-2">
                           <span aria-hidden>⚠</span>
@@ -1208,7 +1208,7 @@ export function FinalMediaSection({
         <button
           type="button"
           onClick={() => dispatch({ type: 'ADD_FINAL_MEDIA' })}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-text-main rounded-full text-body-sm font-medium hover:bg-text-main hover:text-text-main-inverse transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-text-main rounded-full text-body-xs-light md:text-body-s-light font-medium hover:bg-text-main hover:text-text-main-inverse transition-colors"
         >
           <Plus size={14} weight="bold" />
           Afegir imatge final
@@ -1217,8 +1217,8 @@ export function FinalMediaSection({
     >
       {state.finalMedia.length === 0 && (
         <div className="flex flex-col gap-2 px-5 py-6 border border-dashed border-border-subtle rounded-md bg-surface-base text-center">
-          <p className="text-body-md text-text-main">Cap imatge final</p>
-          <p className="text-body-sm text-text-secondary max-w-prose mx-auto leading-relaxed">
+          <p className="text-body-s md:text-body-m lg:text-body-l text-text-main">Cap imatge final</p>
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose mx-auto leading-relaxed">
             Aquestes imatges es renderitzen al peu del case study, just abans del banner
             <em> Next project</em>. Útil per a tancaments visuals, mockups en context, o
             fotografies del projecte ja a producció.
@@ -1244,7 +1244,7 @@ export function FinalMediaSection({
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 text-text-secondary">
                       <DragHandle listeners={listeners} label="Reordenar imatge final" />
-                      <span className="font-mono text-body-sm tabular-nums">
+                      <span className="font-mono text-body-xs-light md:text-body-s-light tabular-nums">
                         {String(i + 1).padStart(2, '0')}
                       </span>
                     </div>
@@ -1270,7 +1270,7 @@ export function FinalMediaSection({
                     onChange={(v) => dispatch({ type: 'SET_FINAL_MEDIA_FIELD', index: i, field: 'alt', value: v })}
                   />
                   {finalMediaWarnings[i] && (
-                    <p className="inline-flex items-start gap-2 text-body-sm text-warning -mt-2">
+                    <p className="inline-flex items-start gap-2 text-body-xs-light md:text-body-s-light text-warning -mt-2">
                       <Warning size={14} weight="fill" className="mt-0.5 shrink-0" />
                       <span>{finalMediaWarnings[i]}</span>
                     </p>
@@ -1334,10 +1334,10 @@ function BlockGhost({ block }: { block: WorkBlock }) {
     <div className="border border-text-main rounded-md bg-surface-card shadow-2xl">
       <div className="flex items-center gap-2 px-4 py-3">
         <DotsSixVertical size={16} weight="bold" className="text-text-secondary" />
-        <span className="font-mono text-body-sm text-text-secondary">
+        <span className="font-mono text-body-xs-light md:text-body-s-light text-text-secondary">
           {block.textSection.number || '··'}
         </span>
-        <span className="text-body-md text-text-main truncate">
+        <span className="text-body-s md:text-body-m lg:text-body-l text-text-main truncate">
           {block.textSection.title || block.textSection.heading || '(Sense títol)'}
         </span>
       </div>
@@ -1358,7 +1358,7 @@ function FinalMediaGhost({ media }: { media: WorkMedia }) {
         style={media.url ? { backgroundImage: `url("${media.url}")` } : undefined}
         aria-hidden
       />
-      <span className="text-body-sm text-text-main truncate">
+      <span className="text-body-xs-light md:text-body-s-light text-text-main truncate">
         {media.alt || filenameFromUrl(media.url) || '(Sense alt)'}
       </span>
     </div>
@@ -1451,14 +1451,14 @@ function ListEditor({
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-4">
-          <span className="text-body-sm font-medium text-text-secondary">LLISTA:</span>
+          <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">LLISTA:</span>
           <div className="flex items-center gap-2">
             {(['none', 'what-we-did', 'characteristics'] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => onChangeType(t)}
-                className={`px-3 py-1 rounded-full text-body-xs transition-colors ${
+                className={`px-3 py-1 rounded-full text-body-2xs md:text-body-xs transition-colors ${
                   listType === t
                     ? 'bg-text-main text-text-main-inverse'
                     : 'text-text-secondary hover:text-text-main border border-border-default'
@@ -1476,7 +1476,7 @@ function ListEditor({
           type="button"
           onClick={handleAddHeader}
           disabled={!canAddFromHeader}
-          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm text-text-main hover:bg-surface-base transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-xs-light md:text-body-s-light text-text-main hover:bg-surface-base transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
         >
           <Plus size={14} weight="bold" />
           Afegir
@@ -1564,7 +1564,7 @@ function ItemsList({ items, onChange }: { items: string[]; onChange: (next: stri
       <button
         type="button"
         onClick={() => onChange([...items, ''])}
-        className="inline-flex items-center gap-1.5 self-start h-8 px-2 rounded-full text-body-sm text-text-main hover:bg-surface-base transition-colors"
+        className="inline-flex items-center gap-1.5 self-start h-8 px-2 rounded-full text-body-xs-light md:text-body-s-light text-text-main hover:bg-surface-base transition-colors"
       >
         <Plus size={14} weight="bold" /> Afegir
       </button>
@@ -1633,7 +1633,7 @@ function DetailsList({
       <button
         type="button"
         onClick={() => onChange([...details, { label: '', value: '' }])}
-        className="inline-flex items-center gap-1.5 self-start h-8 px-2 rounded-full text-body-sm text-text-main hover:bg-surface-base transition-colors"
+        className="inline-flex items-center gap-1.5 self-start h-8 px-2 rounded-full text-body-xs-light md:text-body-s-light text-text-main hover:bg-surface-base transition-colors"
       >
         <Plus size={14} weight="bold" /> Afegir
       </button>
@@ -1665,7 +1665,7 @@ function UnderlineInput({
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`h-7 bg-transparent border-b border-border-default py-1 text-body-md text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors ${className}`}
+      className={`h-7 bg-transparent border-b border-border-default py-1 text-body-s md:text-body-m lg:text-body-l text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors ${className}`}
     />
   )
 }
@@ -1773,7 +1773,7 @@ function MediaEditor({
             disposició. El contingut del bloc va a l'esquerra; les accions
             d'editor (vista, afegir) a la dreta. */}
         <div className="flex items-center gap-4">
-          <span className="text-body-sm font-medium text-text-secondary">
+          <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
             MEDIA · {media.length} {media.length === 1 ? 'FITXER' : 'FITXERS'}
           </span>
 
@@ -1786,7 +1786,7 @@ function MediaEditor({
               aria-label="Disposició del media"
               value={layout}
               onChange={(e) => onLayoutChange?.(e.target.value as WorkMediaLayout)}
-              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+              className="appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md h-8 pl-3 pr-8 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
             >
               <option value="auto">Disposició: Auto</option>
               <option value="row">Disposició: Fila</option>
@@ -1841,7 +1841,7 @@ function MediaEditor({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-sm text-text-main hover:bg-surface-base transition-colors"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-body-xs-light md:text-body-s-light text-text-main hover:bg-surface-base transition-colors"
           >
             <Plus size={14} weight="bold" />
             Afegir Imatge
@@ -1851,7 +1851,7 @@ function MediaEditor({
 
       {media.length === 0 && (
         <div className="px-4 py-6 border border-dashed border-border-subtle rounded-md bg-surface-base/40 text-center">
-          <p className="text-body-sm text-text-secondary">
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             Cap imatge encara. Les imatges es disposen al WorkMediaGrid segons quantes
             n&apos;hi hagi (1, 2, 3 o 4).
           </p>
@@ -1989,7 +1989,7 @@ function MediaRowList({
             className="flex flex-col items-start min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
           >
             <span className="text-[14px] leading-4 tracking-[0.3px] text-text-secondary">File Name</span>
-            <span className="text-body-md text-text-main truncate w-full">
+            <span className="text-body-s md:text-body-m lg:text-body-l text-text-main truncate w-full">
               {filename || <span className="text-text-secondary/70 italic">Sense fitxer</span>}
             </span>
           </button>
@@ -2004,7 +2004,7 @@ function MediaRowList({
               value={media.alt || ''}
               onChange={(e) => onChange('alt', e.target.value)}
               placeholder="Descriu què es veu a la imatge"
-              className="w-full bg-transparent border-0 p-0 text-body-md text-text-main placeholder:text-text-secondary/50 focus:outline-none truncate"
+              className="w-full bg-transparent border-0 p-0 text-body-s md:text-body-m lg:text-body-l text-text-main placeholder:text-text-secondary/50 focus:outline-none truncate"
             />
           </label>
 
@@ -2045,7 +2045,7 @@ function MediaRowList({
         </div>
 
         {uploadError && (
-          <p role="alert" className="text-body-sm text-error">
+          <p role="alert" className="text-body-xs-light md:text-body-s-light text-error">
             {uploadError}
           </p>
         )}
@@ -2144,7 +2144,7 @@ function MediaCardGrid({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={media.url} alt={media.alt || ''} className="w-full h-full object-cover" />
         ) : (
-          <span className="flex flex-col items-center justify-center gap-1 w-full h-full text-text-secondary text-body-sm">
+          <span className="flex flex-col items-center justify-center gap-1 w-full h-full text-text-secondary text-body-xs-light md:text-body-s-light">
             <CloudArrowUp size={20} weight="regular" />
             Sense imatge
           </span>
@@ -2159,10 +2159,10 @@ function MediaCardGrid({
         value={media.alt || ''}
         onChange={(e) => onChange('alt', e.target.value)}
         placeholder="Alt text"
-        className="w-full bg-transparent border-b border-border-default py-1 text-body-sm text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors"
+        className="w-full bg-transparent border-b border-border-default py-1 text-body-xs-light md:text-body-s-light text-text-main placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main transition-colors"
       />
       {uploadError && (
-        <p role="alert" className="text-body-sm text-error">
+        <p role="alert" className="text-body-xs-light md:text-body-s-light text-error">
           {uploadError}
         </p>
       )}
@@ -2211,7 +2211,7 @@ function Input({
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>) {
   return (
     <label className={`flex flex-col gap-2 ${className}`}>
-      <span className={`inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary ${labelNoWrap ? 'whitespace-nowrap' : ''}`}>
+      <span className={`inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary ${labelNoWrap ? 'whitespace-nowrap' : ''}`}>
         {label}
         {required && <span className="text-error" aria-hidden>*</span>}
       </span>
@@ -2226,7 +2226,7 @@ function Input({
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         aria-required={required || undefined}
-        className={`w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${inputClassName}`}
+        className={`w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 ${inputClassName}`}
       />
     </label>
   )
@@ -2244,12 +2244,12 @@ function Textarea({
 } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'value' | 'onChange'>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-body-sm font-medium text-text-secondary">{label}</span>
+      <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">{label}</span>
       <textarea
         {...rest}
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
     </label>
   )
@@ -2275,10 +2275,10 @@ function OverlaySlider({
        · track HTML <input type="range"> amb accent-text-main */
     <div className={`flex flex-col gap-4 ${disabled ? 'opacity-50' : ''}`}>
       <div className="flex items-center justify-between gap-3">
-        <span className="text-body-sm font-medium text-text-secondary">
+        <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
           Overlay fosc
         </span>
-        <span className="text-body-sm text-text-main tabular-nums">
+        <span className="text-body-xs-light md:text-body-s-light text-text-main tabular-nums">
           {value}%
         </span>
       </div>
@@ -2294,7 +2294,7 @@ function OverlaySlider({
         aria-disabled={disabled}
         className="w-full accent-[var(--text-main)] cursor-pointer disabled:cursor-not-allowed"
       />
-      <p className="text-body-sm text-text-secondary/80 leading-snug">
+      <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
         {disabled
           ? 'Puja una imatge de fons per activar l\'overlay. S\'enfosqueix la imatge per millorar la legibilitat del títol.'
           : 'Enfosqueix la imatge per millorar la legibilitat del títol. 0% sense overlay, 80% molt fosc.'}

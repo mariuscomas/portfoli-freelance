@@ -108,7 +108,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
         <div className="flex items-center justify-between gap-4 mx-auto px-6 md:px-10 py-3 max-w-4xl">
           <Link
             href="/admin/clients"
-            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-sm"
+            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-xs-light md:text-body-s-light"
           >
             <ArrowLeft size={16} weight="regular" />
             Tornar a clients
@@ -120,7 +120,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
                 type="button"
                 onClick={handleDelete}
                 disabled={isPending}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-error/40 text-error rounded-full hover:bg-error hover:text-text-main-inverse hover:border-error transition-colors text-body-sm disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-error/40 text-error rounded-full hover:bg-error hover:text-text-main-inverse hover:border-error transition-colors text-body-xs-light md:text-body-s-light disabled:opacity-50"
               >
                 <Trash size={16} weight="regular" />
                 Eliminar
@@ -129,7 +129,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex items-center gap-2 px-5 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-s md:text-body-m lg:text-body-l hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50"
             >
               {isPending ? (
                 <CircleNotch size={16} weight="regular" className="animate-spin" />
@@ -145,7 +145,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
       {error && (
         <div
           role="alert"
-          className="flex items-start gap-3 p-4 border border-error/40 rounded-md bg-error-surface text-error text-body-sm"
+          className="flex items-start gap-3 p-4 border border-error/40 rounded-md bg-error-surface text-error text-body-xs-light md:text-body-s-light"
         >
           <Warning size={18} weight="fill" className="flex-shrink-0 mt-0.5" />
           <div className="flex flex-col gap-1">
@@ -163,10 +163,10 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
           </span>
           <ClientStatusBadge status={status} size="md" />
         </div>
-        <h2 className="text-heading-h3 text-text-main">
+        <h2 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">
           {isEdit ? client?.name || 'Editar client' : 'Nou client'}
         </h2>
-        <p className="text-body-sm text-text-secondary max-w-prose">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
           {isEdit
             ? 'Actualitza la informació de contacte, l\'estat al pipeline i les notes generals. Per afegir entrades al timeline d\'interaccions, fes-ho des de la columna lateral.'
             : 'Crea una fitxa nova. Només el nom és obligatori — la resta pots completar-la més tard.'}
@@ -187,7 +187,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
                 onClick={() => setStatus(s)}
                 aria-pressed={active}
                 title={meta.description}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm border transition-colors ${
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-xs-light md:text-body-s-light border transition-colors ${
                   active
                     ? 'bg-text-main text-text-main-inverse border-text-main'
                     : 'bg-surface-card text-text-secondary border-border-default hover:text-text-main hover:border-border-strong'
@@ -198,7 +198,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
             )
           })}
         </div>
-        <p className="text-body-xs text-text-secondary/80 mt-2 leading-snug">
+        <p className="text-body-2xs md:text-body-xs text-text-secondary/80 mt-2 leading-snug">
           {CLIENT_STATUS_META[status].description}
         </p>
       </Card>
@@ -327,7 +327,7 @@ function Card({
             {eyebrow}
           </span>
           {title && (
-            <h3 className="text-body-lg text-text-main mt-1">{title}</h3>
+            <h3 className="text-body-l lg:text-body-xl text-text-main mt-1">{title}</h3>
           )}
         </div>
       </legend>
@@ -381,7 +381,7 @@ function Field({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={id}
-        className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary"
+        className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         {label}
         {required && <span className="text-error">*</span>}
@@ -398,7 +398,7 @@ function Field({
           {...props}
           className={`w-full bg-transparent border rounded-md ${
             icon ? 'pl-9 pr-3.5' : 'px-3.5'
-          } py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:ring-2 focus:ring-text-main/20 ${
+          } py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:ring-2 focus:ring-text-main/20 ${
             warning
               ? 'border-warning-main focus:border-warning-main focus:ring-warning-main/20'
               : 'border-border-default focus:border-text-main'
@@ -406,13 +406,13 @@ function Field({
         />
       </div>
       {warning && (
-        <p className="inline-flex items-start gap-1.5 text-body-sm text-warning leading-snug">
+        <p className="inline-flex items-start gap-1.5 text-body-xs-light md:text-body-s-light text-warning leading-snug">
           <Warning size={14} weight="fill" className="mt-0.5 shrink-0" />
           <span>{warning}</span>
         </p>
       )}
       {hint && !warning && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
           {hint}
         </p>
       )}
@@ -434,17 +434,17 @@ function Textarea({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={id}
-        className="text-body-sm font-medium text-text-secondary"
+        className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         {label}
       </label>
       <textarea
         id={id}
         {...props}
-        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
           {hint}
         </p>
       )}
@@ -468,14 +468,14 @@ function Select({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={id}
-        className="text-body-sm font-medium text-text-secondary"
+        className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         {label}
       </label>
       <select
         id={id}
         {...props}
-        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -484,7 +484,7 @@ function Select({
         ))}
       </select>
       {hint && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
           {hint}
         </p>
       )}

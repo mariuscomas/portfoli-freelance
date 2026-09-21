@@ -73,7 +73,7 @@ const DISCIPLINES_SHORT = ["Product Design", "UI/UX", "Front-end"];
 function DisciplineRow({ items, className }: { items: string[]; className: string }) {
   return (
     <p
-      className={`flex-1 flex-wrap items-center justify-end gap-3 text-body-sm text-text-secondary ${className}`}
+      className={`flex-1 flex-wrap items-center justify-end gap-3 text-body-xs-light md:text-body-s-light text-text-secondary ${className}`}
     >
       {items.map((item, i) => (
         <Fragment key={item}>
@@ -145,7 +145,7 @@ export default function Hero({
             Nota tècnica: .text-body-* viuen a @layer components, i a Tailwind
             v4 les variants (md:) només s'apliquen a utilities. Per això
             l'override va en sentit invers (base = token, max-md = Figma) i no
-            amb md:text-body-xl, que no generaria res.
+            amb md:text-body-xl-light lg:text-body-2xl-light, que no generaria res.
 
             El paràgraf és clamp() i no 18px clavats: el Figma dibuixa a 402px,
             on la primera frase cap just en una línia; a 375px (iPhone SE/13
@@ -161,7 +161,7 @@ export default function Hero({
             Separacions: el Figma apila títol, paràgraf i link amb un gap únic
             de 48px (mt-12), no amb dos valors diferents.
           */}
-          <p className="mt-6 text-body-xl font-normal text-text-main max-md:text-[clamp(1rem,4.5vw,1.125rem)] max-md:leading-[27px] md:mt-12">
+          <p className="mt-6 text-body-m-light md:text-body-xl-light lg:text-body-2xl-light font-normal text-text-main max-md:text-[clamp(1rem,4.5vw,1.125rem)] max-md:leading-[27px] md:mt-12">
             Dissenyo i construeixo productes digitals.
             <br />
             Un sol interlocutor, de principi a fi.

@@ -98,10 +98,10 @@ export default function ClientNotesTimeline({
         <span className="text-label text-text-secondary">
           Timeline
         </span>
-        <h3 className="text-body-lg text-text-main mt-1">
+        <h3 className="text-body-l lg:text-body-xl text-text-main mt-1">
           Interaccions
         </h3>
-        <p className="text-body-sm text-text-secondary/80 mt-1 leading-snug">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 mt-1 leading-snug">
           Cada nota es guarda amb timestamp. Pots usar-ho com a historial de trucades, emails o reunions.
         </p>
       </header>
@@ -116,19 +116,19 @@ export default function ClientNotesTimeline({
           required
           onKeyDown={handleKeyDown}
           placeholder="Trucada amb el client el dilluns: m'envia el brief abans del divendres…"
-          className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-sm placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+          className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-xs-light md:text-body-s-light placeholder:text-text-secondary/50 focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
         />
         {error && (
-          <p className="text-body-sm text-error leading-snug">{error}</p>
+          <p className="text-body-xs-light md:text-body-s-light text-error leading-snug">{error}</p>
         )}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-body-xs text-text-secondary/70">
+          <span className="text-body-2xs md:text-body-xs text-text-secondary/70">
             Cmd/Ctrl + Enter per desar
           </span>
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-text-main text-text-main-inverse rounded-full text-body-sm font-medium hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-text-main text-text-main-inverse rounded-full text-body-xs-light md:text-body-s-light font-medium hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50"
           >
             {isPending && pendingDeleteId === null ? (
               <CircleNotch size={14} weight="regular" className="animate-spin" />
@@ -142,7 +142,7 @@ export default function ClientNotesTimeline({
 
       {/* ====== Llistat ====== */}
       {notes.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-6 text-center text-text-secondary text-body-sm border-t border-border-subtle">
+        <div className="flex flex-col items-center gap-2 py-6 text-center text-text-secondary text-body-xs-light md:text-body-s-light border-t border-border-subtle">
           <NoteIcon size={20} weight="regular" className="text-text-secondary/40" />
           Encara no hi ha cap interacció registrada.
         </div>
@@ -153,7 +153,7 @@ export default function ClientNotesTimeline({
               <div className="flex items-center justify-between gap-2">
                 <time
                   dateTime={n.created_at}
-                  className="text-body-xs text-text-secondary"
+                  className="text-body-2xs md:text-body-xs text-text-secondary"
                   title={new Date(n.created_at).toLocaleString('ca-ES')}
                 >
                   {formatDate(n.created_at)}
@@ -173,7 +173,7 @@ export default function ClientNotesTimeline({
                   )}
                 </button>
               </div>
-              <p className="text-body-sm text-text-main whitespace-pre-wrap leading-relaxed">
+              <p className="text-body-xs-light md:text-body-s-light text-text-main whitespace-pre-wrap leading-relaxed">
                 {n.body}
               </p>
             </li>

@@ -171,7 +171,7 @@ export default function RichTextEditor({
     <div className={`flex flex-col gap-2 ${className}`}>
       <label
         htmlFor={id}
-        className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary"
+        className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         {label}
         {required && <span className="text-error">*</span>}
@@ -194,7 +194,7 @@ export default function RichTextEditor({
       )}
 
       {hint && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug max-w-prose">
           {hint}
         </p>
       )}

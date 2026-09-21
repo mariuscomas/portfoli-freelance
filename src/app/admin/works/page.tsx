@@ -112,8 +112,8 @@ export default async function AdminWorksPage({
             <span className="text-label text-text-secondary">
               Dashboard · Treballs
             </span>
-            <h1 className="text-heading-h1 text-text-main">Els teus treballs</h1>
-            <p className="text-body-sm text-text-secondary max-w-prose">
+            <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">Els teus treballs</h1>
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
               L&apos;ordre d&apos;aquesta llista és el mateix que veuen els visitants a /works.
               Arrossega els treballs per reordenar-los manualment.
             </p>
@@ -121,7 +121,7 @@ export default async function AdminWorksPage({
 
           <Link
             href="/admin/works/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-s md:text-body-m lg:text-body-l hover:bg-accent hover:text-text-main transition-colors whitespace-nowrap"
           >
             <Plus size={18} weight="bold" />
             Nou treball
@@ -142,7 +142,7 @@ export default async function AdminWorksPage({
         {/* Errors */}
         {error && (
           <div className="mb-8 p-4 border border-error rounded-md bg-error-surface text-error">
-            <p className="text-body-sm">{error.message}</p>
+            <p className="text-body-xs-light md:text-body-s-light">{error.message}</p>
           </div>
         )}
 
@@ -151,18 +151,18 @@ export default async function AdminWorksPage({
         {!error && (!works || works.length === 0) && (
           <div className="flex flex-col items-start gap-6 py-16">
             {isFiltered ? (
-              <p className="text-body-lg text-text-secondary max-w-md">
+              <p className="text-body-l lg:text-body-xl text-text-secondary max-w-md">
                 Cap treball coincideix amb els filtres actuals. Prova d&apos;esborrar-los
                 per veure tots els treballs.
               </p>
             ) : (
               <>
-                <p className="text-body-lg text-text-secondary max-w-md">
+                <p className="text-body-l lg:text-body-xl text-text-secondary max-w-md">
                   Encara no tens cap treball publicat. Crea el primer per començar a omplir el portfolio.
                 </p>
                 <Link
                   href="/admin/works/new"
-                  className="inline-flex items-center gap-2 text-text-main hover:text-accent transition-colors text-body-md font-medium border-b border-text-main hover:border-accent pb-1"
+                  className="inline-flex items-center gap-2 text-text-main hover:text-accent transition-colors text-body-s md:text-body-m lg:text-body-l font-medium border-b border-text-main hover:border-accent pb-1"
                 >
                   <Plus size={18} weight="bold" />
                   Crea el primer treball

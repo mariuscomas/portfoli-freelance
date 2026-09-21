@@ -53,7 +53,7 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
   return (
     <div className="flex flex-col gap-6">
       <span className="text-caption uppercase text-text-secondary">{caption}</span>
-      <h2 className="text-heading-h1 text-text-main">{title}</h2>
+      <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">{title}</h2>
     </div>
   );
 }
@@ -111,13 +111,13 @@ function ProductCard({
       href={`/serveis/${product.id}`}
       className={`group flex flex-col gap-10 p-8 transition-colors hover:bg-surface-card/40 lg:p-12 ${className}`}
     >
-      <h3 className="text-heading-h2 text-text-main">{product.name}</h3>
+      <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">{product.name}</h3>
 
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">
           <span className="text-caption uppercase text-text-secondary">{product.priceLabel}</span>
           {/* aria-live: el preu reacciona als chips d'abast de la capçalera */}
-          <span className="text-heading-h2 text-text-main" aria-live="polite">
+          <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main" aria-live="polite">
             {formatPrice(priceFor(product, disciplines))}
           </span>
         </div>
@@ -125,7 +125,7 @@ function ProductCard({
           <span className="text-caption uppercase text-text-secondary">
             {scopeLabel(disciplines)}
           </span>
-          <p className="text-body-sm text-text-secondary">{product.description}</p>
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{product.description}</p>
         </div>
       </div>
 
@@ -204,8 +204,8 @@ function TriadaSection({
         >
           <div className="flex flex-1 flex-col gap-3">
             <span className="text-caption uppercase text-text-secondary">APPS, BRANDING I MÉS</span>
-            <h3 className="text-heading-h2 text-text-main">Una altra cosa al cap?</h3>
-            <p className="text-body-sm text-text-secondary">
+            <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">Una altra cosa al cap?</h3>
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
               El que no encaixa en aquests punts de partida el pressupostem junts després d’una
               trucada.
             </p>
@@ -251,8 +251,8 @@ function ProcessSection() {
           {PROCESS_STEPS.map((step) => (
             <div key={step.num} className="flex flex-col gap-4 border-t border-border-subtle pt-6">
               <span className="text-caption-sm text-text-secondary">{step.num}</span>
-              <h3 className="text-heading-h3 text-text-main">{step.title}</h3>
-              <p className="text-body-sm text-text-secondary">{step.text}</p>
+              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{step.title}</h3>
+              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{step.text}</p>
             </div>
           ))}
         </div>
@@ -287,8 +287,8 @@ function RecurrentsSection() {
               key={r.label}
               className="flex items-center justify-between gap-12 border-b border-border-subtle py-8"
             >
-              <dt className="text-body-lg text-text-main">{r.label}</dt>
-              <dd className="shrink-0 text-right text-body-lg text-text-secondary">{r.price}</dd>
+              <dt className="text-body-l lg:text-body-xl text-text-main">{r.label}</dt>
+              <dd className="shrink-0 text-right text-body-l lg:text-body-xl text-text-secondary">{r.price}</dd>
             </div>
           ))}
         </dl>
@@ -307,9 +307,9 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
       <Reveal>
         <div className="flex flex-col gap-16 lg:flex-row lg:items-start">
           <div className="flex flex-1 flex-col gap-16">
-            <p className="text-eyebrow text-text-secondary">05 · Comencem</p>
+            <p className="text-caption-eyebrow text-text-secondary">05 · Comencem</p>
 
-            <h2 className="text-display-h3 text-text-main">
+            <h2 className="text-display-xs md:text-display-s lg:text-display-l text-text-main">
               {CONFIGURATOR_ENABLED
                 ? "No saps per on començar? Configura el teu projecte en dos minuts."
                 : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
@@ -317,11 +317,11 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
 
             <div className="flex flex-col gap-8">
               <button type="button" onClick={() => onConfigure("web")} className="group self-start">
-                <LinkArrow className="text-eyebrow">
+                <LinkArrow className="text-caption-eyebrow">
                   {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
                 </LinkArrow>
               </button>
-              <p className="text-body-sm text-text-secondary">
+              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
                 Si ho prefereixes,{" "}
                 <a
                   href={PRODUCT_CALL_URL}
@@ -344,10 +344,10 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
             className="group flex flex-col gap-6 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-border-strong lg:w-[412px] lg:shrink-0"
           >
             <span className="flex flex-col gap-4 text-text-secondary">
-              <span className="text-eyebrow">Ets una agència o estudi?</span>
-              <span className="text-body-sm">Treballo integrat al teu equip, com un sènior més.</span>
+              <span className="text-caption-eyebrow">Ets una agència o estudi?</span>
+              <span className="text-body-xs-light md:text-body-s-light">Treballo integrat al teu equip, com un sènior més.</span>
             </span>
-            <LinkArrow className="text-eyebrow">Incorpora&apos;m al teu equip</LinkArrow>
+            <LinkArrow className="text-caption-eyebrow">Incorpora&apos;m al teu equip</LinkArrow>
           </TransitionLink>
         </div>
       </Reveal>

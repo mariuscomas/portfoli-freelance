@@ -27,9 +27,9 @@ export default function BridgeDoor({
       href={href}
       className="group flex w-full max-w-2xl flex-col gap-3 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-border-strong"
     >
-      <span className="text-eyebrow text-text-secondary">{eyebrow}</span>
-      <span className="text-body-sm text-text-secondary">{line}</span>
-      <span className="mt-1 inline-flex items-center gap-2 text-heading-h3 text-text-main underline underline-offset-8 decoration-1 group-hover:decoration-2">
+      <span className="text-caption-eyebrow text-text-secondary">{eyebrow}</span>
+      <span className="text-body-xs-light md:text-body-s-light text-text-secondary">{line}</span>
+      <span className="mt-1 inline-flex items-center gap-2 text-display-2xs-medium lg:text-display-xs-medium text-text-main underline underline-offset-8 decoration-1 group-hover:decoration-2">
         {cta}
         <ArrowRight
           size={22}
