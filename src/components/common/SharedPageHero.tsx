@@ -193,7 +193,7 @@ export default function SharedPageHero({
                 ease: "linear",
                 duration: 50,
               }}
-              className="text-[clamp(4rem,10vw,12.5rem)] font-heading font-semibold leading-none tracking-tight flex items-center gap-8 lg:gap-12 w-max px-6 md:px-12 lg:px-24 shrink-0 py-6 transform-gpu will-change-transform"
+              className="text-display-l md:text-display-2xl lg:text-display-3xl flex items-center gap-8 lg:gap-12 w-max px-6 md:px-12 lg:px-24 shrink-0 py-6 transform-gpu will-change-transform"
             >
               {/*
               Marquee (sync amb Figma): còpies del títol en caixa original
