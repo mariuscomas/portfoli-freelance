@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { ArrowUp, ArrowRight, CheckCircle, CircleNotch, LinkedinLogo, BehanceLogo, Globe } from "@phosphor-icons/react";
 import { subscribeNewsletter } from "@/app/actions/newsletter";
@@ -9,6 +9,7 @@ import LogoSmall from "@/components/common/LogoSmall";
 import { usePathname } from "next/navigation";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
+import RevealGroup from "@/components/common/RevealGroup";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
 import { CONSENT_CHANGE_EVENT } from "@/lib/analytics"
 
@@ -124,6 +125,13 @@ export default function Footer() {
   return <FooterContent />;
 }
 
+/** Titular del tancament, per línies (el salt només a partir de md). */
+const CLOSING_LINES = [
+  ["El", "següent", "projecte"],
+  ["comença", "amb", "una", "conversa."],
+];
+const CLOSING_WORDS = CLOSING_LINES.flat().length;
+
 function FooterContent() {
   // Cal aquí també: el reset del reveal es dispara en canviar de ruta entre
   // dues pàgines que SÍ que porten footer (llavors el component no es desmunta).
@@ -165,21 +173,32 @@ function FooterContent() {
     <>
       {/* CTA — part de la cortina (opac, z-[1]): s'aixeca amb el contingut i
           revela el footer fosc de sota. */}
-      <section className="relative z-[1] w-full border-t border-border-subtle bg-surface-base px-page py-section-m lg:py-section-xl flex flex-col items-start gap-8 md:gap-12">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-body-xl-light md:text-body-2xl-light lg:text-body-statement text-text-main"
-        >
-          El següent projecte<br className="hidden md:block" /> comença amb una conversa.
-        </motion.h2>
+      {/* Entrada (guió 21set26): el titular s'omple paraula per paraula
+          (20% → 100%, 60 ms per paraula, un cop, sense fixar) i el Link puja
+          després (G2). Surt a totes les pàgines amb footer. */}
+      <RevealGroup as="section" className="relative z-[1] w-full border-t border-border-subtle bg-surface-base px-page py-section-m lg:py-section-xl flex flex-col items-start gap-8 md:gap-12">
+        <h2 className="text-body-xl-light md:text-body-2xl-light lg:text-body-statement text-text-main">
+          {CLOSING_LINES.map((line, li) => (
+            <Fragment key={li}>
+              {li > 0 && <br className="hidden md:block" />}
+              {line.map((word, wi) => {
+                const i = CLOSING_LINES.slice(0, li).flat().length + wi;
+                return (
+                  <Fragment key={wi}>
+                    {i > 0 && " "}
+                    <span className="reveal-word" style={{ "--reveal-delay": `${i * 60}ms` } as React.CSSProperties}>
+                      {word}
+                    </span>
+                  </Fragment>
+                );
+              })}
+            </Fragment>
+          ))}
+        </h2>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-2 md:mt-6"
+        <div
+          className="reveal-up mt-2 md:mt-6"
+          style={{ "--reveal-delay": `${(CLOSING_WORDS - 1) * 60}ms` } as React.CSSProperties}
         >
           {/* Obre el modal de contacte (cortina) en lloc de navegar.
               Figma: instancia de "Buttons / Custom / Link" sense icona
@@ -187,8 +206,8 @@ function FooterContent() {
           <LinkUnderline onClick={openContactModal}>
             Reserva una trucada
           </LinkUnderline>
-        </motion.div>
-      </section>
+        </div>
+      </RevealGroup>
 
       {/* Sentinella: límit cortina↔footer (mesura el progrés del revelat). */}
       <div ref={sentinelRef} aria-hidden className="h-0 w-full" />
