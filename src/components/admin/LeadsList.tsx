@@ -95,7 +95,7 @@ export default function LeadsList({
             type="button"
             onClick={() => setTab(key)}
             aria-current={tab === key}
-            className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-body-sm transition-colors ${
+            className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-body-xs-light md:text-body-s-light transition-colors ${
               tab === key
                 ? 'bg-text-main text-text-main-inverse'
                 : 'text-text-secondary hover:text-text-main'
@@ -108,7 +108,7 @@ export default function LeadsList({
       </div>
 
       {error && (
-        <p role="alert" className="rounded-card border border-error/40 bg-error/5 p-4 text-body-sm text-error">
+        <p role="alert" className="rounded-card border border-error/40 bg-error/5 p-4 text-body-xs-light md:text-body-s-light text-error">
           {error}
         </p>
       )}
@@ -125,7 +125,7 @@ export default function LeadsList({
                     key={f}
                     type="button"
                     onClick={() => setFilter(f)}
-                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-sm transition-colors ${
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-xs-light md:text-body-s-light transition-colors ${
                       active
                         ? 'border-text-main bg-text-main text-text-main-inverse'
                         : 'border-border-default text-text-secondary hover:border-text-main'
@@ -148,13 +148,13 @@ export default function LeadsList({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Cerca per nom, correu o text"
-                className="w-full min-w-[240px] rounded-full border border-border-default bg-surface-card py-2 pl-9 pr-4 text-body-sm text-text-main placeholder:text-text-secondary/60 focus:border-text-main focus:outline-none"
+                className="w-full min-w-[240px] rounded-full border border-border-default bg-surface-card py-2 pl-9 pr-4 text-body-xs-light md:text-body-s-light text-text-main placeholder:text-text-secondary/60 focus:border-text-main focus:outline-none"
               />
             </label>
           </div>
 
           {filtered.length === 0 ? (
-            <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-sm text-text-secondary">
+            <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-xs-light md:text-body-s-light text-text-secondary">
               {messages.length === 0
                 ? 'Encara no ha escrit ningú.'
                 : 'Cap missatge amb aquest filtre.'}
@@ -189,10 +189,10 @@ export default function LeadsList({
                         {m.is_spam ? 'Spam' : CONTACT_STATUS_LABEL[status] ?? status}
                       </span>
                       <span className="flex min-w-0 shrink-0 flex-col md:w-56">
-                        <span className="truncate text-body-md text-text-main">{m.name || '—'}</span>
-                        <span className="truncate text-body-sm text-text-secondary">{m.email}</span>
+                        <span className="truncate text-body-s md:text-body-m lg:text-body-l text-text-main">{m.name || '—'}</span>
+                        <span className="truncate text-body-xs-light md:text-body-s-light text-text-secondary">{m.email}</span>
                       </span>
-                      <span className="hidden min-w-0 flex-1 truncate text-body-sm text-text-secondary md:block">
+                      <span className="hidden min-w-0 flex-1 truncate text-body-xs-light md:text-body-s-light text-text-secondary md:block">
                         {cleanMessage(m.message)}
                       </span>
                       <span className="ml-auto shrink-0 text-caption text-text-secondary">
@@ -203,7 +203,7 @@ export default function LeadsList({
                     {open && (
                       <div className="flex flex-col gap-5 border-t border-border-subtle bg-surface-base p-4 md:p-5">
                         <div className="rounded-card bg-surface-card p-4">
-                          <p className="whitespace-pre-wrap text-body-md text-text-main">
+                          <p className="whitespace-pre-wrap text-body-s md:text-body-m lg:text-body-l text-text-main">
                             {cleanMessage(m.message)}
                           </p>
                           <p className="mt-3 text-caption text-text-secondary">
@@ -214,7 +214,7 @@ export default function LeadsList({
                         <div className="flex flex-wrap items-center gap-2">
                           <a
                             href={`mailto:${m.email}?subject=${encodeURIComponent('Re: el teu missatge')}`}
-                            className="inline-flex items-center rounded-full bg-text-main px-4 py-2 text-body-sm text-text-main-inverse"
+                            className="inline-flex items-center rounded-full bg-text-main px-4 py-2 text-body-xs-light md:text-body-s-light text-text-main-inverse"
                           >
                             Respon per correu
                           </a>
@@ -222,7 +222,7 @@ export default function LeadsList({
                             <button
                               type="button"
                               onClick={() => run(() => updateContactStatus(m.id, 'replied'))}
-                              className="inline-flex items-center rounded-full border border-border-default px-4 py-2 text-body-sm text-text-main hover:border-text-main"
+                              className="inline-flex items-center rounded-full border border-border-default px-4 py-2 text-body-xs-light md:text-body-s-light text-text-main hover:border-text-main"
                             >
                               Marca com a respost
                             </button>
@@ -230,7 +230,7 @@ export default function LeadsList({
                           <button
                             type="button"
                             onClick={() => run(() => createClientFromContact(m.id))}
-                            className="inline-flex items-center rounded-full border border-border-default px-4 py-2 text-body-sm text-text-main hover:border-text-main"
+                            className="inline-flex items-center rounded-full border border-border-default px-4 py-2 text-body-xs-light md:text-body-s-light text-text-main hover:border-text-main"
                           >
                             Crea fitxa de client
                           </button>
@@ -238,7 +238,7 @@ export default function LeadsList({
                             <button
                               type="button"
                               onClick={() => run(() => updateContactStatus(m.id, 'archived'))}
-                              className="inline-flex items-center px-3 py-2 text-body-sm text-text-secondary hover:text-text-main"
+                              className="inline-flex items-center px-3 py-2 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main"
                             >
                               Arxiva
                             </button>
@@ -246,7 +246,7 @@ export default function LeadsList({
                           <button
                             type="button"
                             onClick={() => run(() => setContactSpam(m.id, !m.is_spam))}
-                            className="inline-flex items-center px-3 py-2 text-body-sm text-text-secondary hover:text-text-main"
+                            className="inline-flex items-center px-3 py-2 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main"
                           >
                             {m.is_spam ? 'No és spam' : 'Marca com a spam'}
                           </button>
@@ -260,14 +260,14 @@ export default function LeadsList({
           )}
         </>
       ) : subscribers.length === 0 ? (
-        <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-sm text-text-secondary">
+        <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-xs-light md:text-body-s-light text-text-secondary">
           Encara no hi ha subscriptors.
         </p>
       ) : (
         <ul className="flex flex-col divide-y divide-border-subtle rounded-card border border-border-subtle bg-surface-card">
           {subscribers.map((s) => (
             <li key={s.id} className="flex items-center gap-4 p-4 md:p-5">
-              <span className="min-w-0 flex-1 truncate text-body-md text-text-main">{s.email}</span>
+              <span className="min-w-0 flex-1 truncate text-body-s md:text-body-m lg:text-body-l text-text-main">{s.email}</span>
               <span className="shrink-0 text-caption text-text-secondary">{s.source}</span>
               <span className="shrink-0 text-caption text-text-secondary">
                 {dateFmt.format(new Date(s.created_at))}

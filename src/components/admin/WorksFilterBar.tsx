@@ -121,7 +121,7 @@ export default function WorksFilterBar({ clients, roles, categories, years }: Pr
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Cerca treballs…"
           aria-label="Cerca treballs"
-          className="w-full bg-surface-card border border-border-default rounded-full pl-9 pr-3 py-2 text-body-sm text-text-main placeholder:text-text-secondary/60 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+          className="w-full bg-surface-card border border-border-default rounded-full pl-9 pr-3 py-2 text-body-xs-light md:text-body-s-light text-text-main placeholder:text-text-secondary/60 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
         />
       </div>
 
@@ -167,7 +167,7 @@ export default function WorksFilterBar({ clients, roles, categories, years }: Pr
         <button
           type="button"
           onClick={clearAll}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-body-sm text-text-secondary hover:text-text-main transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main transition-colors"
           title="Esborra tots els filtres"
         >
           <X size={14} weight="regular" />
@@ -248,7 +248,7 @@ function FilterChip({
         onClick={() => setOpen((p) => !p)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm border transition-colors ${
+        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-xs-light md:text-body-s-light border transition-colors ${
           active
             ? 'border-text-main bg-text-main text-text-main-inverse'
             : 'border-border-default bg-surface-card text-text-main hover:border-border-strong'
@@ -305,7 +305,7 @@ function FilterChip({
                     }}
                     role="option"
                     aria-selected={isSelected}
-                    className={`w-full flex items-center gap-2 px-3 py-2 text-body-sm transition-colors hover:bg-surface-base ${
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-body-xs-light md:text-body-s-light transition-colors hover:bg-surface-base ${
                       isSelected ? 'bg-surface-base' : ''
                     }`}
                   >

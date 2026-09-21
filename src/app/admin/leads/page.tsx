@@ -33,15 +33,15 @@ export default async function AdminLeadsPage() {
       <div className="w-full max-w-6xl mx-auto px-6 md:px-10 py-10 md:py-16">
         <div className="flex flex-col gap-3 mb-12 md:mb-16">
           <span className="text-label text-text-secondary">Dashboard · Leads</span>
-          <h1 className="text-heading-h1 text-text-main">Missatges i subscripcions</h1>
-          <p className="text-body-sm text-text-secondary max-w-prose">
+          <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">Missatges i subscripcions</h1>
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
             El que arriba pel modal de contacte i per la newsletter del footer. Obre un
             missatge per veure&apos;l sencer, contestar-lo i moure&apos;l del camí.
           </p>
         </div>
 
         {error && (
-          <p className="mb-8 rounded-card border border-error/40 bg-error/5 p-4 text-body-sm text-error">
+          <p className="mb-8 rounded-card border border-error/40 bg-error/5 p-4 text-body-xs-light md:text-body-s-light text-error">
             No s&apos;han pogut carregar els leads: {error.message}
           </p>
         )}

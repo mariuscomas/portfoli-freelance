@@ -62,7 +62,7 @@ export default function ServiceForm({ service, onSubmit }: Props) {
       <div className="flex items-center justify-between gap-4 sticky top-0 -mx-4 px-4 py-3 bg-surface-base/90 backdrop-blur-md border-b border-border-subtle z-10">
         <Link
           href="/admin/serveis"
-          className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-sm"
+          className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-xs-light md:text-body-s-light"
         >
           <ArrowLeft size={16} weight="regular" />
           Tornar a serveis
@@ -76,8 +76,8 @@ export default function ServiceForm({ service, onSubmit }: Props) {
         <span className="text-label text-text-secondary">
           Producte · {productName}
         </span>
-        <h2 className="text-heading-h3 text-text-main">Contingut del producte</h2>
-        <p className="text-body-sm text-text-secondary max-w-prose">
+        <h2 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">Contingut del producte</h2>
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
           El copy que surt a la card de /serveis i a la seva pàgina de detall. El
           preu no s&apos;edita aquí: el calcula el catàleg de codi a partir dels
           esglaons del pla de preus.
@@ -254,7 +254,7 @@ function IncludesEditor({
       <input type="hidden" name="includes" value={serialized} />
 
       {items.length === 0 && (
-        <p className="text-body-sm text-text-secondary leading-snug">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary leading-snug">
           Sense línies. Mentre la llista estigui buida, la web mostra la del
           catàleg de codi.
         </p>
@@ -282,7 +282,7 @@ function IncludesEditor({
               onClick={() => move(i, -1)}
               disabled={i === 0}
               aria-label={`Puja la línia ${i + 1}`}
-              className="px-2 py-1 text-body-sm text-text-secondary hover:text-text-main transition-colors disabled:opacity-30"
+              className="px-2 py-1 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main transition-colors disabled:opacity-30"
             >
               ↑
             </button>
@@ -291,7 +291,7 @@ function IncludesEditor({
               onClick={() => move(i, 1)}
               disabled={i === items.length - 1}
               aria-label={`Baixa la línia ${i + 1}`}
-              className="px-2 py-1 text-body-sm text-text-secondary hover:text-text-main transition-colors disabled:opacity-30"
+              className="px-2 py-1 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main transition-colors disabled:opacity-30"
             >
               ↓
             </button>
@@ -311,7 +311,7 @@ function IncludesEditor({
         <button
           type="button"
           onClick={add}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-border-default rounded-full text-body-sm text-text-main hover:border-text-main transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-border-default rounded-full text-body-xs-light md:text-body-s-light text-text-main hover:border-text-main transition-colors"
         >
           <Plus size={16} weight="regular" />
           Afegir línia
@@ -350,9 +350,9 @@ function Card({
           <span className="text-label text-text-secondary">
             {eyebrow}
           </span>
-          {title && <h3 className="text-body-xl text-text-main">{title}</h3>}
+          {title && <h3 className="text-body-m-light md:text-body-xl-light lg:text-body-2xl-light text-text-main">{title}</h3>}
           {description && (
-            <p className="text-body-sm text-text-secondary max-w-prose">{description}</p>
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">{description}</p>
           )}
         </div>
       </legend>
@@ -385,7 +385,7 @@ function PrimaryAction({ isPending }: { isPending: boolean }) {
     <button
       type="submit"
       disabled={isPending}
-      className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 whitespace-nowrap"
+      className="inline-flex items-center gap-2 px-5 py-2.5 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-s md:text-body-m lg:text-body-l hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 whitespace-nowrap"
     >
       {isPending ? 'Desant…' : 'Desa els canvis'}
     </button>
@@ -404,8 +404,8 @@ function ReadOnlyValue({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-body-sm font-medium text-text-main">{label}</span>
-      <span className="rounded-md border border-border-subtle bg-surface-card/40 px-3 py-2.5 text-body-md text-text-secondary">
+      <span className="text-body-xs-light md:text-body-s-light font-medium text-text-main">{label}</span>
+      <span className="rounded-md border border-border-subtle bg-surface-card/40 px-3 py-2.5 text-body-s md:text-body-m lg:text-body-l text-text-secondary">
         {value || '—'}
       </span>
       {hint && <span className="text-caption text-text-secondary">{hint}</span>}
@@ -427,13 +427,13 @@ function Select({
   const id = props.id ?? autoId
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-body-sm font-medium text-text-main">
+      <label htmlFor={id} className="text-body-xs-light md:text-body-s-light font-medium text-text-main">
         {label}
       </label>
       <select
         {...props}
         id={id}
-        className="rounded-md border border-border-default bg-surface-base px-3 py-2.5 text-body-md text-text-main focus:border-text-main focus:outline-none"
+        className="rounded-md border border-border-default bg-surface-base px-3 py-2.5 text-body-s md:text-body-m lg:text-body-l text-text-main focus:border-text-main focus:outline-none"
       >
         {options.map((o) => (
           <option key={o} value={o}>
@@ -454,7 +454,7 @@ function LocaleSwitcher({
   onChange: (l: Locale) => void
 }) {
   return (
-    <div className="flex items-center gap-2 text-body-sm">
+    <div className="flex items-center gap-2 text-body-xs-light md:text-body-s-light">
       <span className="inline-flex items-center gap-2 text-text-secondary mr-1">
         <Translate size={16} weight="regular" />
         Idioma
@@ -471,7 +471,7 @@ function LocaleSwitcher({
             role="tab"
             aria-selected={active === l}
             onClick={() => onChange(l)}
-            className={`px-3 py-1 rounded-full uppercase tracking-wider text-body-sm transition-colors ${
+            className={`px-3 py-1 rounded-full uppercase tracking-wider text-body-xs-light md:text-body-s-light transition-colors ${
               active === l
                 ? 'bg-text-main text-text-main-inverse'
                 : 'text-text-secondary hover:text-text-main'
@@ -489,7 +489,7 @@ function ErrorBanner({ message }: { message: string }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-3 p-4 border border-error/40 rounded-[var(--radius-base)] bg-error-surface text-error text-body-sm"
+      className="flex items-start gap-3 p-4 border border-error/40 rounded-[var(--radius-base)] bg-error-surface text-error text-body-xs-light md:text-body-s-light"
     >
       <Warning size={18} weight="fill" className="flex-shrink-0 mt-0.5" />
       <div className="flex flex-col gap-1">
@@ -522,7 +522,7 @@ function Field({
   const errId = error ? `${id}-err` : undefined
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary">
+      <label htmlFor={id} className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
         {label}
         {required && <span className="text-error">*</span>}
       </label>
@@ -532,17 +532,17 @@ function Field({
         aria-describedby={[hintId, errId].filter(Boolean).join(' ') || undefined}
         aria-invalid={Boolean(error) || undefined}
         {...props}
-        className={`w-full bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-border-strong ${
+        className={`w-full bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-border-strong ${
           error ? 'border-error focus:border-error focus:ring-error/20' : 'border-border-default focus:border-text-main'
         }`}
       />
       {hint && !error && (
-        <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug">
+        <p id={hintId} className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errId} className="text-body-sm text-error leading-snug">
+        <p id={errId} className="text-body-xs-light md:text-body-s-light text-error leading-snug">
           {error}
         </p>
       )}
@@ -560,17 +560,17 @@ function Textarea({
   const hintId = hint ? `${id}-hint` : undefined
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-body-sm font-medium text-text-secondary">
+      <label htmlFor={id} className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
         {label}
       </label>
       <textarea
         id={id}
         aria-describedby={hintId}
         {...props}
-        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
-        <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug">
+        <p id={hintId} className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
           {hint}
         </p>
       )}
@@ -591,9 +591,9 @@ function Checkbox({
         className="w-4 h-4 mt-0.5 accent-[var(--accent-main)] cursor-pointer"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-body-md text-text-main group-hover:text-text-main">{label}</span>
+        <span className="text-body-s md:text-body-m lg:text-body-l text-text-main group-hover:text-text-main">{label}</span>
         {description && (
-          <span className="text-body-sm text-text-secondary leading-snug">{description}</span>
+          <span className="text-body-xs-light md:text-body-s-light text-text-secondary leading-snug">{description}</span>
         )}
       </span>
     </label>

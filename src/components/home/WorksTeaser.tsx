@@ -56,12 +56,12 @@ export default async function WorksTeaser() {
   return (
     <section
       id="treballs"
-      className="w-full scroll-mt-24 border-t border-border-default pb-section-y-lg relative overflow-hidden"
+      className="w-full scroll-mt-24 border-t border-border-default pb-section-m lg:pb-section-xl relative overflow-hidden"
     >
       <div className="w-full">
         {/* Header: títol + link "Més treballs" (Figma 12111:42123) */}
-        <header className="flex items-baseline gap-12 px-section-x-xl pt-section-y-lg pb-section-y-sm">
-          <h2 className="text-display-h3 flex-1 text-text-main m-0">
+        <header className="flex items-baseline gap-12 px-page pt-section-m lg:pt-section-xl pb-section-xs">
+          <h2 className="text-display-xs md:text-display-s lg:text-display-l flex-1 text-text-main m-0">
             Treballs
           </h2>
 

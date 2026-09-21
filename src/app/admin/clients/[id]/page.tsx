@@ -106,17 +106,17 @@ export default async function AdminClientEditPage({ params }: Props) {
                   </span>
                   <h3
                     id="works-linked-heading"
-                    className="text-body-lg text-text-main mt-1"
+                    className="text-body-l lg:text-body-xl text-text-main mt-1"
                   >
                     Treballs d&apos;aquest client
-                    <span className="ml-2 text-text-secondary text-body-sm font-normal">
+                    <span className="ml-2 text-text-secondary text-body-xs-light md:text-body-s-light font-normal">
                       ({works?.length ?? 0})
                     </span>
                   </h3>
                 </div>
                 <Link
                   href="/admin/works"
-                  className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary hover:text-text-main transition-colors"
+                  className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main transition-colors"
                   title="Per vincular un projecte nou, ves al treball i selecciona aquest client al formulari."
                 >
                   <Plus size={14} weight="bold" />
@@ -125,7 +125,7 @@ export default async function AdminClientEditPage({ params }: Props) {
               </header>
 
               {(!works || works.length === 0) && (
-                <p className="text-body-sm text-text-secondary py-4">
+                <p className="text-body-xs-light md:text-body-s-light text-text-secondary py-4">
                   Aquest client encara no té cap projecte vinculat. Pots
                   vincular-li treballs des de la pàgina d&apos;edició de
                   cada treball.
@@ -163,10 +163,10 @@ export default async function AdminClientEditPage({ params }: Props) {
 
                           {/* Info */}
                           <div className="flex flex-col min-w-0 flex-1">
-                            <span className="text-body-md text-text-main font-medium group-hover:text-accent transition-colors truncate">
+                            <span className="text-body-s md:text-body-m lg:text-body-l text-text-main font-medium group-hover:text-accent transition-colors truncate">
                               {title || '(Sense títol)'}
                             </span>
-                            <span className="text-body-xs text-text-secondary truncate">
+                            <span className="text-body-2xs md:text-body-xs text-text-secondary truncate">
                               /works/{slug || '...'}
                               {w.year && ` · ${w.year}`}
                             </span>
@@ -174,12 +174,12 @@ export default async function AdminClientEditPage({ params }: Props) {
 
                           {/* Estat */}
                           {w.is_published ? (
-                            <span className="inline-flex items-center gap-1.5 text-body-xs text-text-secondary shrink-0">
+                            <span className="inline-flex items-center gap-1.5 text-body-2xs md:text-body-xs text-text-secondary shrink-0">
                               <Eye size={12} weight="regular" />
                               Publicat
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 text-body-xs text-text-secondary/70 shrink-0">
+                            <span className="inline-flex items-center gap-1.5 text-body-2xs md:text-body-xs text-text-secondary/70 shrink-0">
                               <EyeSlash size={12} weight="regular" />
                               Esborrany
                             </span>

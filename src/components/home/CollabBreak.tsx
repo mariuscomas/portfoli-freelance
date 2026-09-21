@@ -93,14 +93,14 @@ export default function CollabBreak() {
   }, [reduceMotion]);
 
   const phrase =
-    "text-display-h2 col-start-1 row-start-1 text-balance text-center text-text-main will-change-transform";
+    "text-display-m md:text-display-xl lg:text-display-2xl col-start-1 row-start-1 text-balance text-center text-text-main will-change-transform";
 
   return (
     <div
       ref={trackRef}
       className="relative z-0 -mt-[100svh] h-[450svh] w-full bg-surface-base motion-reduce:mt-0 motion-reduce:h-auto"
     >
-      <div className="sticky top-0 grid h-svh place-content-center place-items-center overflow-hidden px-section-x-xl motion-reduce:static motion-reduce:h-auto motion-reduce:gap-6 motion-reduce:py-section-y-xl">
+      <div className="sticky top-0 grid h-svh place-content-center place-items-center overflow-hidden px-page motion-reduce:static motion-reduce:h-auto motion-reduce:gap-6 motion-reduce:py-section-xl motion-reduce:lg:py-section-2xl">
         <p ref={firstRef} className={phrase}>
           I si el projecte no s’acaba?
         </p>

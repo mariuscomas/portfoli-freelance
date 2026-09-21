@@ -115,8 +115,8 @@ const sizeClasses: Record<ButtonSize, string> = {
     "gap-[8px]",
   ].join(" "),
   xl: [
-    // Figma XL: h64 / padding 32 / font 20 (default)
-    "text-[length:var(--button-large-font-size)] leading-[var(--button-large-line-height)]",
+    // Figma XL: h64 / padding 32 / font 20 / line-height 28 (label/large XL)
+    "text-[20px] leading-[28px]",
     "h-[var(--button-xl-height)]",
     "px-[var(--button-xl-padding)]",
     "gap-[8px]",

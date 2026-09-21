@@ -45,10 +45,10 @@ export default function GlobalError({
           <span className="text-label text-error">
             Error · {error.digest || "Inesperat"}
           </span>
-          <h1 className="text-display-h4 text-text-main">
+          <h1 className="text-body-l-semibold md:text-display-2xs lg:text-display-m text-text-main">
             Alguna cosa no ha anat com tocava.
           </h1>
-          <p className="text-body-2xl text-text-secondary leading-relaxed">
+          <p className="text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-secondary leading-relaxed">
             Disculpa les molèsties. Pots provar de recarregar la pàgina o tornar a la home.
             Si el problema persisteix, escriu-me directament.
           </p>
@@ -57,7 +57,7 @@ export default function GlobalError({
             <button
               type="button"
               onClick={reset}
-              className="group inline-flex items-center gap-3 text-text-main hover:text-accent transition-colors duration-300 text-body-lg font-medium w-fit pb-2 border-b border-text-main hover:border-accent cursor-pointer"
+              className="group inline-flex items-center gap-3 text-text-main hover:text-accent transition-colors duration-300 text-body-l lg:text-body-xl font-medium w-fit pb-2 border-b border-text-main hover:border-accent cursor-pointer"
             >
               <ArrowClockwise size={20} weight="regular" className="group-hover:rotate-180 transition-transform duration-500" />
               Tornar a provar

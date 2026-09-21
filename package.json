@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --experimental-strip-types --test \"src/**/*.test.ts\"",
-    "email:test": "node --env-file=.env.local scripts/test-email.mjs"
+    "email:test": "node --env-file=.env.local scripts/test-email.mjs",
+    "check:type": "node scripts/check-type-ramp.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -59,10 +59,10 @@ export default function AboutIntro() {
           {/* Figma 11403:8882 — eyebrow Others/Caption + títol Display/H2 */}
           <div className="flex flex-col gap-6">
             <span className="text-caption text-text-secondary">Del disseny al codi</span>
-            <h2 className="text-display-h3 text-text-main">Dissenyo i llanço productes digitals end-to-end</h2>
+            <h2 className="text-display-xs md:text-display-s lg:text-display-l text-text-main">Dissenyo i llanço productes digitals end-to-end</h2>
           </div>
 
-          <div className="text-body-xl font-light text-text-secondary leading-relaxed space-y-6 max-w-prose">
+          <div className="text-body-m-light md:text-body-xl-light lg:text-body-2xl-light font-light text-text-secondary leading-relaxed space-y-6 max-w-prose">
             <p>
               Vinc del món de la programació i el desenvolupament web. No
               dissenyo sobre el paper: dissenyo interfícies sabent exactament

@@ -33,7 +33,7 @@ export default async function AdminServiceEditPage({ params }: Props) {
           <span className="text-label text-text-secondary">
             Dashboard · Edició
           </span>
-          <h1 className="text-heading-h1 text-text-main">
+          <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
             Editar producte
           </h1>
         </div>

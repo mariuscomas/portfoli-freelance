@@ -24,15 +24,15 @@ export default async function AdminQuotesPage() {
       <div className="w-full max-w-6xl mx-auto px-6 md:px-10 py-10 md:py-16">
         <div className="flex flex-col gap-3 mb-12 md:mb-16">
           <span className="text-label text-text-secondary">Dashboard · Pressupostos</span>
-          <h1 className="text-heading-h1 text-text-main">Configuracions rebudes</h1>
-          <p className="text-body-sm text-text-secondary max-w-prose">
+          <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">Configuracions rebudes</h1>
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
             Cada fila és una configuració enviada des d&apos;un configurador, amb el preu
             congelat en el moment. Filtra per estat, obre el detall i mou-la pel pipeline.
           </p>
         </div>
 
         {error && (
-          <p className="mb-8 rounded-card border border-error/40 bg-error/5 p-4 text-body-sm text-error">
+          <p className="mb-8 rounded-card border border-error/40 bg-error/5 p-4 text-body-xs-light md:text-body-s-light text-error">
             No s&apos;han pogut carregar els pressupostos: {error.message}
           </p>
         )}

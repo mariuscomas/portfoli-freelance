@@ -131,7 +131,7 @@ function AnimatedPlaceholder({ text, visible }: { text: string; visible: boolean
           aria-hidden="true"
           initial={false}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
-          className="pointer-events-none absolute inset-0 flex flex-wrap content-center items-center justify-center px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-secondary/50"
+          className="pointer-events-none absolute inset-0 flex flex-wrap content-center items-center justify-center px-3.5 py-2.5 text-center font-sans text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-secondary/50"
         >
           {words.map((word, w) => (
             <span
@@ -340,7 +340,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
     >
       {/* === HEADER: pregunta marc + tancar === */}
       <header className="flex shrink-0 items-center justify-between gap-6 py-6">
-        <h2 id="contact-modal-title" className="text-display-h5 text-text-main">
+        <h2 id="contact-modal-title" className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">
           Tens un projecte concret al cap?
         </h2>
         <button
@@ -373,8 +373,8 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
               >
                 <Check size={32} weight="bold" />
               </span>
-              <h3 className="text-heading-h2 text-text-main">Missatge enviat.</h3>
-              <p className="text-body-lg text-text-secondary leading-relaxed">
+              <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">Missatge enviat.</h3>
+              <p className="text-body-l lg:text-body-xl text-text-secondary leading-relaxed">
                 T&apos;he rebut, {values.name.trim().split(" ")[0]}. Responc en menys de{" "}
                 {RESPONSE_SLA} a {values.email.trim()}.
               </p>
@@ -452,7 +452,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                       onKeyDown={handleTextareaKeyDown}
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? "contact-step-error" : undefined}
-                      className="w-full resize-none overscroll-contain border-b border-border-default bg-transparent px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
+                      className="w-full resize-none overscroll-contain border-b border-border-default bg-transparent px-3.5 py-2.5 text-center font-sans text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
                     />
                   ) : (
                     <input
@@ -473,7 +473,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                       }}
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? "contact-step-error" : undefined}
-                      className="w-full border-b border-border-default bg-transparent px-3.5 py-2.5 text-center font-sans text-body-2xl text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
+                      className="w-full border-b border-border-default bg-transparent px-3.5 py-2.5 text-center font-sans text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-main transition-colors placeholder:text-transparent focus:border-text-main focus:outline-none disabled:opacity-50"
                     />
                   )}
 
@@ -487,7 +487,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                   <p
                     id="contact-step-error"
                     role="alert"
-                    className="mt-2 text-body-md text-error"
+                    className="mt-2 text-body-s md:text-body-m lg:text-body-l text-error"
                   >
                     {error}
                   </p>
@@ -520,7 +520,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
                       setError(null);
                       setStep((s) => s - 1);
                     }}
-                    className="inline-flex min-h-11 items-center justify-center rounded-base text-body-sm text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+                    className="inline-flex min-h-11 items-center justify-center rounded-base text-body-xs-light md:text-body-s-light text-text-secondary transition-colors hover:text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
                   >
                     ← Tornar
                   </button>
@@ -533,7 +533,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
 
       {/* === FOOTER: sortides alternatives (correu / trucada) === */}
       <footer className="flex shrink-0 flex-col gap-3 py-6 md:flex-row md:items-center md:justify-between md:gap-6">
-        <p className="text-heading-h4 text-text-main">
+        <p className="text-body-s text-text-main">
           Escriu-me un correu i et responc el mateix dia?{" "}
           <a
             href={`mailto:${EMAIL}`}
@@ -546,7 +546,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
           href={CALL_BOOKING_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex w-fit items-center gap-1.5 rounded-base text-heading-h4 text-text-main transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base md:text-right"
+          className="group inline-flex w-fit items-center gap-1.5 rounded-base text-body-s text-text-main transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base md:text-right"
         >
           Prefereixes parlar? Agafem 30 min sense compromís.
           <ArrowUpRight size={16} weight="regular" aria-hidden="true" />

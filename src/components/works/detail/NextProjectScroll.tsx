@@ -134,7 +134,7 @@ export default function NextProjectScroll({ nextProject }: Props) {
         {/* Top Content: Grid for layout (Text a l'esquerra, Progress bar a la dreta) */}
         <div className="flex flex-col md:flex-row justify-between items-center w-full px-6 md:px-12 lg:px-24 mb-16 md:mb-24">
           
-          <h2 className="text-body-xl text-text-main leading-snug w-full md:w-1/2">
+          <h2 className="text-body-m-light md:text-body-xl-light lg:text-body-2xl-light text-text-main leading-snug w-full md:w-1/2">
             Continua desplaçant-te per <br className="hidden md:block" /> veure el següent cas pràctic.
           </h2>
           
@@ -161,7 +161,7 @@ export default function NextProjectScroll({ nextProject }: Props) {
               ease: "linear",
               duration: 40,
             }}
-            className="text-display-h1 font-heading uppercase flex items-center gap-8 lg:gap-8 w-max px-6 md:px-12 lg:px-24 shrink-0 py-2 transform-gpu will-change-transform group-hover:text-text-secondary transition-colors"
+            className="text-display-l md:text-display-2xl lg:text-display-3xl font-heading uppercase flex items-center gap-8 lg:gap-8 w-max px-6 md:px-12 lg:px-24 shrink-0 py-2 transform-gpu will-change-transform group-hover:text-text-secondary transition-colors"
           >
             {/* Set 1 */}
             <span className="text-text-main">{nextProject.title}</span>

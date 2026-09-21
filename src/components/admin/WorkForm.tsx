@@ -486,7 +486,7 @@ export default function WorkForm({
       <div className="flex items-center justify-between gap-4 px-6 md:px-10 py-3">
         <Link
           href="/admin/works"
-          className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-sm"
+          className="inline-flex items-center gap-2 text-text-secondary hover:text-text-main transition-colors text-body-xs-light md:text-body-s-light"
         >
           <ArrowLeft size={16} weight="regular" />
           Tornar a treballs
@@ -515,7 +515,7 @@ export default function WorkForm({
             <button
               type="button"
               onClick={togglePreview}
-              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-body-sm ${
+              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full transition-colors text-body-xs-light md:text-body-s-light ${
                 previewOpen
                   ? 'bg-text-main border-text-main text-text-main-inverse'
                   : 'border-border-default text-text-main hover:border-text-main'
@@ -1017,7 +1017,7 @@ function Card({
       className={`flex flex-col gap-8 scroll-mt-20 ${hidden ? 'hidden' : ''}`}
     >
       <div className="flex items-center justify-between gap-4 px-1">
-        <h2 id={headingId} className="text-body-lg font-semibold text-text-main">{title}</h2>
+        <h2 id={headingId} className="text-body-l lg:text-body-xl font-semibold text-text-main">{title}</h2>
         {headerRight && <div className="shrink-0">{headerRight}</div>}
       </div>
       {bare ? (
@@ -1061,7 +1061,7 @@ function PrimaryAction({ isPending, isEdit }: { isPending: boolean; isEdit: bool
     <button
       type="submit"
       disabled={isPending}
-      className="inline-flex items-center gap-2 px-5 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-md hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-2 px-5 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-body-s md:text-body-m lg:text-body-l hover:bg-accent hover:text-text-main transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {isPending ? (
         <CircleNotch size={16} weight="regular" className="animate-spin" />
@@ -1143,7 +1143,7 @@ function LocaleSwitcher({
   }
 
   return (
-    <div className="flex items-center gap-3 text-body-sm flex-wrap">
+    <div className="flex items-center gap-3 text-body-xs-light md:text-body-s-light flex-wrap">
       <span className="inline-flex items-center gap-2 text-text-secondary">
         <Translate size={16} weight="regular" />
         Idioma
@@ -1162,7 +1162,7 @@ function LocaleSwitcher({
               role="tab"
               aria-selected={active === l}
               onClick={() => onChange(l)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full uppercase tracking-wider text-body-sm transition-colors ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full uppercase tracking-wider text-body-xs-light md:text-body-s-light transition-colors ${
                 active === l
                   ? 'bg-text-main text-text-main-inverse'
                   : 'text-text-secondary hover:text-text-main'
@@ -1187,7 +1187,7 @@ function LocaleSwitcher({
         <button
           type="button"
           onClick={copyFromCA}
-          className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary hover:text-text-main transition-colors underline underline-offset-4 decoration-text-secondary/40 hover:decoration-text-main"
+          className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main transition-colors underline underline-offset-4 decoration-text-secondary/40 hover:decoration-text-main"
           title="Copia els 6 camps de la versió CA als camps de l'idioma actiu"
         >
           ↪ Copiar de CA
@@ -1243,7 +1243,7 @@ function AutosaveIndicator({
 
   if (status === 'saving') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary">
+      <span className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-text-secondary">
         <CircleNotch size={14} weight="regular" className="animate-spin" />
         Desant…
       </span>
@@ -1251,7 +1251,7 @@ function AutosaveIndicator({
   }
   if (status === 'pending') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-warning">
+      <span className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-warning">
         <span aria-hidden className="inline-block w-2 h-2 rounded-full bg-warning" />
         Canvis sense desar
       </span>
@@ -1260,7 +1260,7 @@ function AutosaveIndicator({
   if (status === 'saved' && lastSavedAt) {
     const label = secondsAgo < 5 ? 'Desat ara mateix' : `Desat fa ${formatAgo(secondsAgo)}`
     return (
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-text-secondary">
+      <span className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-text-secondary">
         <CloudCheck size={14} weight="regular" className="text-accent" />
         {label}
       </span>
@@ -1268,7 +1268,7 @@ function AutosaveIndicator({
   }
   if (status === 'error') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-error">
+      <span className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-error">
         <Warning size={14} weight="fill" />
         Error en autosave
       </span>
@@ -1372,8 +1372,8 @@ function PreviewPanel({
     >
       <header className="flex items-center justify-between gap-3 px-4 py-2.5 border border-border-subtle rounded-t-md bg-surface-card">
         <div className="flex flex-col">
-          <span className="text-body-sm font-medium text-text-main">Preview · live</span>
-          <span className="text-body-xs text-text-secondary">
+          <span className="text-body-xs-light md:text-body-s-light font-medium text-text-main">Preview · live</span>
+          <span className="text-body-2xs md:text-body-xs text-text-secondary">
             {viewport === 'desktop' && `Desktop · 1440×900${scale < 1 ? ` · ${Math.round(scale * 100)}%` : ''}`}
             {viewport === 'tablet' && `Tablet · 768×1024${scale < 1 ? ` · ${Math.round(scale * 100)}%` : ''}`}
             {viewport === 'mobile' && `Mòbil · 375×812${scale < 1 ? ` · ${Math.round(scale * 100)}%` : ''}`}
@@ -1554,9 +1554,9 @@ function Toc({
 
   return (
     <aside className="hidden xl:block w-60 shrink-0 sticky top-24 self-start">
-      {/* Header "Seccions" — bold + text-body-sm, sense uppercase ni tracking
+      {/* Header "Seccions" — bold + text-body-xs-light md:text-body-s-light, sense uppercase ni tracking
           ampliat (Figma 11180:984). */}
-      <span className="block font-bold text-body-sm text-text-secondary mb-2">
+      <span className="block font-bold text-body-xs-light md:text-body-s-light text-text-secondary mb-2">
         Seccions
       </span>
       <nav aria-label="Navegació entre seccions del formulari">
@@ -1579,7 +1579,7 @@ function Toc({
                      · Font: Regular en active, Light en inactive
                      · Color text estable text-secondary (només canvia el
                        weight + el border) — l'active NO canvia de color. */
-                  className={`w-full text-left flex items-center gap-2.5 px-3 py-3 border-l-2 text-body-sm text-text-secondary transition-colors ${
+                  className={`w-full text-left flex items-center gap-2.5 px-3 py-3 border-l-2 text-body-xs-light md:text-body-s-light text-text-secondary transition-colors ${
                     active
                       ? 'border-text-main font-normal'
                       : 'border-border-subtle font-light hover:border-border-default hover:text-text-main'
@@ -1591,8 +1591,8 @@ function Toc({
                       /* Badge avisos (Figma I11180:989;11173:9860):
                          · w-6 h-6 (24×24), rounded-full
                          · bg-warning-surface, text-warning, font-bold
-                         · text-body-sm (14px), no body-xs (12px) */
-                      className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-warning-surface text-warning text-body-sm font-bold shrink-0"
+                         · text-body-xs-light md:text-body-s-light (14px), no body-xs (12px) */
+                      className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-warning-surface text-warning text-body-xs-light md:text-body-s-light font-bold shrink-0"
                       aria-label={`${count} ${count === 1 ? 'avís' : 'avisos'}`}
                       title={`${count} ${count === 1 ? 'avís' : 'avisos'}`}
                     >
@@ -1660,7 +1660,7 @@ function TocPills({
                 type="button"
                 onClick={() => handleClick(it.id)}
                 aria-current={active ? 'page' : undefined}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-sm whitespace-nowrap transition-colors ${
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-body-xs-light md:text-body-s-light whitespace-nowrap transition-colors ${
                   active
                     ? 'bg-surface-card text-text-main font-normal shadow-sm border border-border-default'
                     : 'text-text-secondary font-light hover:bg-surface-card/60 hover:text-text-main'
@@ -1669,7 +1669,7 @@ function TocPills({
                 <span>{it.label}</span>
                 {count > 0 && (
                   <span
-                    className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-warning-surface text-warning text-body-xs font-bold shrink-0"
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-warning-surface text-warning text-body-2xs md:text-body-xs font-bold shrink-0"
                     aria-label={`${count} ${count === 1 ? 'avís' : 'avisos'}`}
                     title={`${count} ${count === 1 ? 'avís' : 'avisos'}`}
                   >
@@ -1706,8 +1706,8 @@ function StatusPill({
   disabled?: boolean
 }) {
   const baseClasses = isPublished
-    ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-surface text-text-main text-body-xs font-medium'
-    : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-card border border-border-subtle text-text-secondary text-body-xs font-medium'
+    ? 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-surface text-text-main text-body-2xs md:text-body-xs font-medium'
+    : 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-card border border-border-subtle text-text-secondary text-body-2xs md:text-body-xs font-medium'
 
   const content = (
     <>
@@ -1745,7 +1745,7 @@ function ErrorBanner({ message }: { message: string }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-3 p-4 border border-error/40 rounded-[var(--radius-base)] bg-error-surface text-error text-body-sm"
+      className="flex items-start gap-3 p-4 border border-error/40 rounded-[var(--radius-base)] bg-error-surface text-error text-body-xs-light md:text-body-s-light"
     >
       <Warning size={18} weight="fill" className="flex-shrink-0 mt-0.5" />
       <div className="flex flex-col gap-1">
@@ -1781,7 +1781,7 @@ function Field({
   const errId = error ? `${id}-err` : undefined
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary">
+      <label htmlFor={id} className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
         {label}
         {required && <span className="text-error">*</span>}
       </label>
@@ -1791,23 +1791,23 @@ function Field({
         aria-describedby={[hintId, errId].filter(Boolean).join(' ') || undefined}
         aria-invalid={Boolean(error) || undefined}
         {...props}
-        className={`w-full max-w-[500px] bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-border-strong ${
+        className={`w-full max-w-[500px] bg-transparent border rounded-md px-3.5 py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors focus:outline-none focus:ring-2 focus:ring-text-main/20 hover:border-border-strong ${
           error ? 'border-error focus:border-error focus:ring-error/20' : 'border-border-default focus:border-text-main'
         }`}
       />
       {hint && !error && !warning && (
-        <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">
+        <p id={hintId} className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug max-w-prose">
           {hint}
         </p>
       )}
       {warning && !error && (
-        <p className="inline-flex items-start gap-1.5 text-body-sm text-warning leading-snug max-w-prose">
+        <p className="inline-flex items-start gap-1.5 text-body-xs-light md:text-body-s-light text-warning leading-snug max-w-prose">
           <Warning size={14} weight="fill" className="mt-0.5 shrink-0" />
           <span>{warning}</span>
         </p>
       )}
       {error && (
-        <p id={errId} className="text-body-sm text-error leading-snug max-w-prose">
+        <p id={errId} className="text-body-xs-light md:text-body-s-light text-error leading-snug max-w-prose">
           {error}
         </p>
       )}
@@ -1833,10 +1833,10 @@ function ClientSelect({
   if (clients.length === 0) {
     return (
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm font-medium text-text-secondary">
+        <span className="text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
           Client
         </span>
-        <div className="text-body-sm text-text-secondary leading-snug p-3 border border-dashed border-border-subtle rounded-md bg-surface-base">
+        <div className="text-body-xs-light md:text-body-s-light text-text-secondary leading-snug p-3 border border-dashed border-border-subtle rounded-md bg-surface-base">
           Encara no hi ha cap fitxa de client a la BD.{' '}
           <Link
             href="/admin/clients/new"
@@ -1857,7 +1857,7 @@ function ClientSelect({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={id}
-        className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary"
+        className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         Client
       </label>
@@ -1871,7 +1871,7 @@ function ClientSelect({
           id={id}
           name="client_id"
           defaultValue={defaultValue}
-          className="w-full appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-md transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
+          className="w-full appearance-none [-webkit-appearance:none] [-moz-appearance:none] bg-transparent border border-border-default rounded-md pl-3.5 pr-10 py-2.5 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20"
         >
           <option value="">— Sense client vinculat —</option>
           {/* Mostrem només el nom de l'empresa (fallback al name del contacte
@@ -1915,7 +1915,7 @@ function PlainTextarea({
   const hintId = hint ? `${id}-hint` : undefined
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary">
+      <label htmlFor={id} className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary">
         {label}
         {required && <span className="text-error">*</span>}
       </label>
@@ -1924,10 +1924,10 @@ function PlainTextarea({
         required={required}
         aria-describedby={hintId}
         {...props}
-        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-md placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
+        className="w-full max-w-[500px] bg-transparent border border-border-default rounded-md px-3.5 py-3 text-text-main font-sans text-body-s md:text-body-m lg:text-body-l placeholder:text-text-secondary/50 transition-colors hover:border-border-strong focus:outline-none focus:border-text-main focus:ring-2 focus:ring-text-main/20 resize-y leading-relaxed"
       />
       {hint && (
-        <p id={hintId} className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">
+        <p id={hintId} className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug max-w-prose">
           {hint}
         </p>
       )}
@@ -1948,9 +1948,9 @@ function Checkbox({
         className="w-4 h-4 mt-0.5 accent-[var(--accent-main)] cursor-pointer"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-body-md text-text-main group-hover:text-text-main">{label}</span>
+        <span className="text-body-s md:text-body-m lg:text-body-l text-text-main group-hover:text-text-main">{label}</span>
         {description && (
-          <span className="text-body-sm text-text-secondary leading-snug">{description}</span>
+          <span className="text-body-xs-light md:text-body-s-light text-text-secondary leading-snug">{description}</span>
         )}
       </span>
     </label>

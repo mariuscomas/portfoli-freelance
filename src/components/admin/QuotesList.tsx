@@ -171,7 +171,7 @@ export default function QuotesList({
                 key={s}
                 type="button"
                 onClick={() => setActiveStatus(s)}
-                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-sm transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-body-xs-light md:text-body-s-light transition-colors ${
                   active
                     ? 'border-text-main bg-text-main text-text-main-inverse'
                     : 'border-border-default text-text-secondary hover:border-text-main'
@@ -194,13 +194,13 @@ export default function QuotesList({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cerca per email, nom o producte"
-            className="w-full min-w-[240px] rounded-full border border-border-default bg-surface-card py-2 pl-9 pr-4 text-body-sm text-text-main placeholder:text-text-secondary/60 focus:border-text-main focus:outline-none"
+            className="w-full min-w-[240px] rounded-full border border-border-default bg-surface-card py-2 pl-9 pr-4 text-body-xs-light md:text-body-s-light text-text-main placeholder:text-text-secondary/60 focus:border-text-main focus:outline-none"
           />
         </label>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-sm text-text-secondary">
+        <p className="rounded-card border border-border-subtle bg-surface-card p-8 text-center text-body-xs-light md:text-body-s-light text-text-secondary">
           Encara no hi ha configuracions{activeStatus !== 'all' ? ' amb aquest estat' : ''}.
         </p>
       ) : (
@@ -225,14 +225,14 @@ export default function QuotesList({
                       {PRODUCT_LABEL[q.product] ?? q.product}
                     </span>
                     <span className="flex min-w-0 flex-col">
-                      <span className="truncate text-body-md text-text-main">{q.email ?? '—'}</span>
-                      {q.name && <span className="truncate text-body-sm text-text-secondary">{q.name}</span>}
+                      <span className="truncate text-body-s md:text-body-m lg:text-body-l text-text-main">{q.email ?? '—'}</span>
+                      {q.name && <span className="truncate text-body-xs-light md:text-body-s-light text-text-secondary">{q.name}</span>}
                     </span>
                   </button>
 
-                  <span className="text-body-md text-text-main tabular-nums">{amountOf(q)}</span>
+                  <span className="text-body-s md:text-body-m lg:text-body-l text-text-main tabular-nums">{amountOf(q)}</span>
                   <span className="hidden flex-col items-end gap-1 md:flex">
-                    <span className="text-body-sm text-text-secondary tabular-nums">
+                    <span className="text-body-xs-light md:text-body-s-light text-text-secondary tabular-nums">
                       {fmtDate(q.created_at)}
                     </span>
                     {q.outcome_reason && (
@@ -257,7 +257,7 @@ export default function QuotesList({
                     type="button"
                     onClick={() => send(q)}
                     disabled={pending}
-                    className="rounded-full border border-border-default px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
+                    className="rounded-full border border-border-default px-3 py-1.5 text-body-xs-light md:text-body-s-light text-text-main transition-colors hover:border-text-main disabled:opacity-50"
                     title={q.sent_at ? 'Torna a enviar el mateix enllaç' : 'Envia la proposta i arrenca la validesa de 30 dies'}
                   >
                     {q.sent_at ? 'Reenvia' : 'Envia proposta'}
@@ -268,7 +268,7 @@ export default function QuotesList({
                     onChange={(e) => setStatus(q.id, e.target.value)}
                     disabled={pending}
                     aria-label="Estat"
-                    className="rounded-full border border-border-default bg-surface-base px-3 py-1.5 text-body-sm text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
+                    className="rounded-full border border-border-default bg-surface-base px-3 py-1.5 text-body-xs-light md:text-body-s-light text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
@@ -290,7 +290,7 @@ export default function QuotesList({
 
                 {askReason?.id === q.id && (
                   <div className="flex flex-wrap items-center gap-2 border-t border-border-subtle bg-surface-base/60 px-4 py-3 md:px-6">
-                    <span className="text-body-sm text-text-secondary">
+                    <span className="text-body-xs-light md:text-body-s-light text-text-secondary">
                       Per què? ({labelOf(askReason.status).toLowerCase()})
                     </span>
                     {(QUOTE_REASONS_BY_STATUS[askReason.status] ?? []).map((r) => (
@@ -299,7 +299,7 @@ export default function QuotesList({
                         type="button"
                         disabled={pending}
                         onClick={() => confirmReason(q.id, askReason.status, r)}
-                        className="rounded-full border border-border-default px-3 py-1.5 text-body-sm text-text-main transition-colors hover:border-text-main disabled:opacity-50"
+                        className="rounded-full border border-border-default px-3 py-1.5 text-body-xs-light md:text-body-s-light text-text-main transition-colors hover:border-text-main disabled:opacity-50"
                       >
                         {QUOTE_OUTCOME_REASON_LABELS[r]}
                       </button>
@@ -307,7 +307,7 @@ export default function QuotesList({
                     <button
                       type="button"
                       onClick={() => setAskReason(null)}
-                      className="ml-auto text-body-sm text-text-secondary underline underline-offset-4 hover:text-text-main"
+                      className="ml-auto text-body-xs-light md:text-body-s-light text-text-secondary underline underline-offset-4 hover:text-text-main"
                     >
                       Cancel·la
                     </button>
@@ -323,7 +323,7 @@ export default function QuotesList({
                           href={`/proposta/${q.token}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="break-all text-body-sm text-text-main underline underline-offset-4"
+                          className="break-all text-body-xs-light md:text-body-s-light text-text-main underline underline-offset-4"
                         >
                           /proposta/{q.token}
                         </a>
@@ -332,7 +332,7 @@ export default function QuotesList({
                     {q.summary && (
                       <div className="flex flex-col gap-1">
                         <span className="text-label text-text-secondary">Resum</span>
-                        <pre className="whitespace-pre-wrap font-sans text-body-sm text-text-main">
+                        <pre className="whitespace-pre-wrap font-sans text-body-xs-light md:text-body-s-light text-text-main">
                           {q.summary}
                         </pre>
                       </div>
@@ -349,7 +349,7 @@ export default function QuotesList({
                           onChange={(e) => linkClient(q.id, e.target.value)}
                           disabled={pending}
                           aria-label="Client vinculat"
-                          className="rounded-full border border-border-default bg-surface-base px-3 py-1.5 text-body-sm text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
+                          className="rounded-full border border-border-default bg-surface-base px-3 py-1.5 text-body-xs-light md:text-body-s-light text-text-main focus:border-text-main focus:outline-none disabled:opacity-50"
                         >
                           <option value="">— Sense client —</option>
                           {clients.map((c) => (
@@ -364,7 +364,7 @@ export default function QuotesList({
                             type="button"
                             onClick={() => createClient(q.id)}
                             disabled={pending}
-                            className="inline-flex items-center rounded-full border border-border-default px-3 py-1.5 text-body-sm text-text-secondary transition-colors hover:border-text-main hover:text-text-main disabled:opacity-50"
+                            className="inline-flex items-center rounded-full border border-border-default px-3 py-1.5 text-body-xs-light md:text-body-s-light text-text-secondary transition-colors hover:border-text-main hover:text-text-main disabled:opacity-50"
                           >
                             Crea client des d&apos;aquesta quote
                           </button>

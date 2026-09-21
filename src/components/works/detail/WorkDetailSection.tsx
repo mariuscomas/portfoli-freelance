@@ -35,8 +35,8 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
         "ancla" mentre el lector progressa per la columna dreta.
       */}
       <div className={`${viewMode === "visual" ? "w-full md:w-5/12 flex flex-col gap-8 md:sticky md:top-32 md:self-start" : "w-full flex flex-col gap-6"}`}>
-        <span className="text-text-main text-body-md">{text.number}</span>
-        <h2 className="text-heading-h3 text-text-secondary max-w-[150px]">
+        <span className="text-text-main text-body-s md:text-body-m lg:text-body-l">{text.number}</span>
+        <h2 className="text-display-2xs-medium lg:text-display-xs-medium text-text-secondary max-w-[150px]">
           {text.title}
         </h2>
       </div>
@@ -44,13 +44,13 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
       {/* Columna Dreta (Heading, Descripció, i Llista) */}
       <div className={`${viewMode === "visual" ? "w-full md:w-7/12 flex flex-col" : "w-full flex flex-col"}`}>
         <div className="flex flex-col gap-8 w-full">
-          <h3 className={`font-medium tracking-tight text-text-main ${viewMode === "visual" ? "text-heading-h1" : "text-heading-h1"}`}>
+          <h3 className={`font-medium tracking-tight text-text-main ${viewMode === "visual" ? "text-display-s-medium md:text-display-m-medium lg:text-display-l-medium" : "text-display-s-medium md:text-display-m-medium lg:text-display-l-medium"}`}>
             {text.heading}
           </h3>
           {/*
-            text-body-lg (24/18/14 px segons viewport) + max-w-[640px] per
+            text-body-l lg:text-body-xl (24/18/14 px segons viewport) + max-w-[640px] per
             mantenir ~75ch de línia òptima a desktops amples. Substitueix
-            text-body-xl (32 px font-light) que feia el body massa emfàtic
+            text-body-m-light md:text-body-xl-light lg:text-body-2xl-light (32 px font-light) que feia el body massa emfàtic
             i poc llegible en blocs llargs — alineat amb Motto.
             leading-relaxed (1.625) sobreescriu el line-height del token
             (que era 1.33 — massa tancat per a body llarg) per donar
@@ -60,9 +60,9 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
               <strong>, <em>, <u>, <a>, <ul>/<ol>/<li>. Usem prose per
               estilitzar inline marks.
               prose-lg lg:prose-xl puja la tipografia del prose a 18-20px
-              (substitueix el text-body-lg que era anul·lat pel prose).
+              (substitueix el text-body-l lg:text-body-xl que era anul·lat pel prose).
               prose-p:leading-relaxed manté la respiració vertical.
-              Així el paràgraf i les llistes (text-body-md, 20px desktop)
+              Així el paràgraf i les llistes (text-body-s md:text-body-m lg:text-body-l, 20px desktop)
               queden alineats — sense salt de mida entre body i llistes. */}
           <div
             className={`prose prose-neutral prose-lg lg:prose-xl max-w-[640px] text-text-secondary
@@ -76,25 +76,25 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
 
         {text.listDetails && text.listDetails.length > 0 && (
           <div className="w-full pt-24">
-            {/* h4 baixa a text-body-lg font-medium per harmonitzar amb el body */}
-            <h4 className="font-medium text-text-main text-body-lg mb-6">Details</h4>
+            {/* h4 baixa a text-body-l lg:text-body-xl font-medium per harmonitzar amb el body */}
+            <h4 className="font-medium text-text-main text-body-l lg:text-body-xl mb-6">Details</h4>
             <div className="flex flex-col w-full max-w-[640px]">
               {text.listDetails.map((item, index) => {
                 const href = item.href?.trim() || detailHref(item.value);
                 return (
                   <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-t border-border-subtle">
-                    <span className="text-text-secondary text-body-md w-full sm:w-1/2">{item.label}</span>
+                    <span className="text-text-secondary text-body-s md:text-body-m lg:text-body-l w-full sm:w-1/2">{item.label}</span>
                     {href ? (
                       <a
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="link-external text-body-md sm:w-1/2 text-right"
+                        className="link-external text-body-s md:text-body-m lg:text-body-l sm:w-1/2 text-right"
                       >
                         {item.value}
                       </a>
                     ) : (
-                      <span className="text-text-main text-body-md sm:w-1/2 text-right">{item.value}</span>
+                      <span className="text-text-main text-body-s md:text-body-m lg:text-body-l sm:w-1/2 text-right">{item.value}</span>
                     )}
                   </div>
                 );
@@ -105,16 +105,16 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
 
         {text.listItems && text.listItems.length > 0 && text.listType === "what-we-did" && (
           <div className="w-full pt-16">
-            {/* h4 baixa a text-body-lg font-medium per harmonitzar amb el body */}
-            <h4 className="font-medium text-text-main text-body-lg mb-6">(El que vam fer)</h4>
+            {/* h4 baixa a text-body-l lg:text-body-xl font-medium per harmonitzar amb el body */}
+            <h4 className="font-medium text-text-main text-body-l lg:text-body-xl mb-6">(El que vam fer)</h4>
             {/*
-              text-body-lg + leading-relaxed (mateix tractament que el body
+              text-body-l lg:text-body-xl + leading-relaxed (mateix tractament que el body
               paragraph). gap-5 (20px) entre items perquè cada bullet pugui
               respirar sense apropar-se a la línia anterior. max-w-[640px]
               perquè una línia llarga no estiri tot el bloc.
               marker:text-text-secondary perquè el bullet hereti color secundari.
             */}
-            <ul className="flex flex-col gap-5 list-disc list-outside pl-6 text-text-secondary text-body-md leading-normal max-w-[640px] marker:text-text-secondary">
+            <ul className="flex flex-col gap-5 list-disc list-outside pl-6 text-text-secondary text-body-s md:text-body-m lg:text-body-l leading-normal max-w-[640px] marker:text-text-secondary">
               {text.listItems.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}

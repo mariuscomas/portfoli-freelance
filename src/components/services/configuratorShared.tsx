@@ -61,7 +61,7 @@ export function AnimatedTotal({ value }: { value: number }) {
 
 /** Classe compartida per als chips de selecció. */
 export const chipClass = (active: boolean) =>
-  `inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-body-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
+  `inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-body-xs-light md:text-body-s-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
     active
       ? "border-primary-main bg-primary-main text-text-main-inverse"
       : "border-border-default bg-surface-card text-text-secondary hover:border-text-main hover:text-text-main"
@@ -196,7 +196,7 @@ function CurtainShell({
           >
             <X size={28} weight="regular" />
           </button>
-          <h2 id="configurator-title" className="text-display-h5 text-text-main">
+          <h2 id="configurator-title" className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">
             {title}
           </h2>
         </div>
@@ -260,7 +260,7 @@ function HelpBubble({ text, anchor }: { text: string; anchor: DOMRect }) {
         transform: below ? undefined : "translateY(-100%)",
       }}
     >
-      <div className="relative rounded-xl border border-border-subtle bg-surface-card px-4 py-3 text-body-xs text-text-main shadow-soft">
+      <div className="relative rounded-xl border border-border-subtle bg-surface-card px-4 py-3 text-body-2xs md:text-body-xs text-text-main shadow-soft">
         {text}
         <span
           aria-hidden="true"
@@ -373,7 +373,7 @@ export function ConfigRow({
   const info = (
     <>
       <span className="flex items-center gap-1">
-        <span className="text-body-md text-text-main">{label}</span>
+        <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">{label}</span>
         {help && !isMobile ? <HelpToggle label={label} text={help} /> : null}
         {help && isMobile ? (
           <Question size={16} weight="light" aria-hidden="true" className="shrink-0 text-text-secondary" />
@@ -416,7 +416,7 @@ export function ConfigRow({
               transition={{ duration: reduce ? 0 : 0.25, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden"
             >
-              <p className="pt-3 text-body-xs text-text-secondary">{help}</p>
+              <p className="pt-3 text-body-2xs md:text-body-xs text-text-secondary">{help}</p>
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -426,7 +426,7 @@ export function ConfigRow({
 }
 
 const STEP_BTN =
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border-subtle text-body-md text-text-main transition-colors hover:border-text-main disabled:opacity-30 disabled:hover:border-border-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base";
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border-subtle text-body-s md:text-body-m lg:text-body-l text-text-main transition-colors hover:border-text-main disabled:opacity-30 disabled:hover:border-border-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base";
 
 export function Stepper({
   label,
@@ -452,7 +452,7 @@ export function Stepper({
       >
         −
       </button>
-      <span aria-live="polite" className="w-7 text-center text-body-sm text-text-main tabular-nums">
+      <span aria-live="polite" className="w-7 text-center text-body-xs-light md:text-body-s-light text-text-main tabular-nums">
         {value}
       </span>
       <button
@@ -520,7 +520,7 @@ export function Accordion({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const reduce = useReducedMotion();
-  const headClass = level === "h3" ? "text-heading-h3" : "text-heading-h4";
+  const headClass = level === "h3" ? "text-display-2xs-medium lg:text-display-xs-medium" : "text-body-s";
   return (
     <div className="flex flex-col">
       <button
@@ -597,9 +597,9 @@ export function RadioList({
             >
               {active && <span className="h-2 w-2 rounded-full bg-primary-main" />}
             </span>
-            <span className="flex-1 text-body-sm text-text-main">{o.label}</span>
+            <span className="flex-1 text-body-xs-light md:text-body-s-light text-text-main">{o.label}</span>
             {o.detail && (
-              <span className="hidden text-body-sm text-text-secondary sm:block">{o.detail}</span>
+              <span className="hidden text-body-xs-light md:text-body-s-light text-text-secondary sm:block">{o.detail}</span>
             )}
             {o.meta && (
               <span className="shrink-0 text-caption text-text-secondary tabular-nums">{o.meta}</span>
@@ -633,7 +633,7 @@ export function SummaryGroup({
         className="flex items-center gap-6 border-b border-border-subtle py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
       >
         <span className="flex flex-1 items-center gap-2">
-          <span className="text-heading-h4 text-text-main">{title}</span>
+          <span className="text-body-s text-text-main">{title}</span>
           <CaretDown
             size={16}
             weight="regular"
@@ -661,7 +661,7 @@ export function SummaryGroup({
                   key={l.label}
                   className="flex items-center gap-6 border-b border-border-subtle py-3"
                 >
-                  <span className="flex-1 text-body-sm text-text-secondary">{l.label}</span>
+                  <span className="flex-1 text-body-xs-light md:text-body-s-light text-text-secondary">{l.label}</span>
                   <span className="text-caption text-text-secondary tabular-nums">
                     {formatEuro(l.amount)}
                   </span>
@@ -703,10 +703,10 @@ export function Field({
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className="w-full border-b border-border-default bg-transparent py-3 font-sans text-body-lg text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 aria-[invalid=true]:border-error"
+        className="w-full border-b border-border-default bg-transparent py-3 font-sans text-body-l lg:text-body-xl text-text-main transition-colors placeholder:text-text-secondary/40 focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 aria-[invalid=true]:border-error"
       />
       {error && (
-        <span id={errorId} role="alert" className="text-body-sm text-error">
+        <span id={errorId} role="alert" className="text-body-xs-light md:text-body-s-light text-error">
           {error}
         </span>
       )}
@@ -744,7 +744,7 @@ export function SelectField({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           disabled={disabled}
-          className={`w-full appearance-none border-b border-border-default bg-transparent py-3 pr-8 font-sans text-body-lg transition-colors focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 ${
+          className={`w-full appearance-none border-b border-border-default bg-transparent py-3 pr-8 font-sans text-body-l lg:text-body-xl transition-colors focus:border-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:opacity-50 ${
             value ? "text-text-main" : "text-text-secondary/40"
           }`}
         >
@@ -818,7 +818,7 @@ export function ChipGroup({
               disabled={disabled}
               onClick={() => onSelect(opt)}
               onKeyDown={(e) => handleKeyDown(e, idx)}
-              className={`inline-flex min-h-11 items-center rounded-full border px-4 text-body-sm transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
+              className={`inline-flex min-h-11 items-center rounded-full border px-4 text-body-xs-light md:text-body-s-light transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
                 active
                   ? "border-primary-main bg-primary-main text-text-main-inverse"
                   : "border-border-default bg-surface-card text-text-secondary hover:border-text-main hover:text-text-main"
@@ -913,7 +913,7 @@ function DisciplineChip({
         onToggle(discipline);
       }}
       style={active ? { borderColor: DISCIPLINE_VAR[discipline] } : undefined}
-      className={`relative inline-flex min-h-11 items-center gap-1 rounded-full border bg-surface-card text-body-sm transition-[color,background-color,border-color,padding] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
+      className={`relative inline-flex min-h-11 items-center gap-1 rounded-full border bg-surface-card text-body-xs-light md:text-body-s-light transition-[color,background-color,border-color,padding] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base ${
         active
           ? // seleccionat: badge a l'esquerra → padding esquerre reduït (Figma:
             // pl 12 / gap 4 / pr 16) per compensar el marge òptic del cercle

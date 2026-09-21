@@ -31,8 +31,8 @@ export default function ClientStatusBadge({
   const meta = CLIENT_STATUS_META[status]
   const sizing =
     size === 'sm'
-      ? 'px-2 py-0.5 text-body-xs'
-      : 'px-2.5 py-1 text-body-sm'
+      ? 'px-2 py-0.5 text-body-2xs md:text-body-xs'
+      : 'px-2.5 py-1 text-body-xs-light md:text-body-s-light'
 
   return (
     <span

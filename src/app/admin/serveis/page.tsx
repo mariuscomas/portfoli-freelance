@@ -23,10 +23,10 @@ export default async function AdminServicesPage() {
           <span className="text-label text-text-secondary">
             Dashboard · Serveis
           </span>
-          <h1 className="text-heading-h1 text-text-main">
+          <h1 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
             Els teus productes
           </h1>
-          <p className="text-body-sm text-text-secondary max-w-prose">
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
             Web, landing i auditoria. L&apos;ordre d&apos;aquesta llista és el de les
             cards a /serveis: arrossega&apos;ls per reordenar-los. Aquí s&apos;edita el
             copy; el preu surt del catàleg de codi.
@@ -35,13 +35,13 @@ export default async function AdminServicesPage() {
 
         {error && (
           <div className="mb-8 p-4 border border-error rounded-md bg-error-surface text-error">
-            <p className="text-body-sm">{error.message}</p>
+            <p className="text-body-xs-light md:text-body-s-light">{error.message}</p>
           </div>
         )}
 
         {!error && (!services || services.length === 0) && (
           <div className="flex flex-col items-start gap-6 py-16">
-            <p className="text-body-lg text-text-secondary max-w-md">
+            <p className="text-body-l lg:text-body-xl text-text-secondary max-w-md">
               No hi ha cap producte a la taula. Mentre estigui buida, /serveis
               mostra el catàleg de codi. Els productes es creen per migració,
               no des d&apos;aquí.

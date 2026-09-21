@@ -233,7 +233,7 @@ export default function SharedPageHero({
               (Grtsk) — amb tracking 0 ja es veu tight. Aplicant ~-0.025em
               emulem aquest aspecte sense canviar typeface.
             */
-            className={`flex flex-wrap font-medium text-body-2xl tracking-tight max-w-[90%] ${descriptionClassName}`}
+            className={`flex flex-wrap font-medium text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light tracking-tight max-w-[90%] ${descriptionClassName}`}
           >
             {description.split(" ").map((word, index) => (
               <span key={index} className="overflow-hidden inline-flex mr-[0.25em] pb-1">

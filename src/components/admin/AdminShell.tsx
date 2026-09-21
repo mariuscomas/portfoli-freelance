@@ -141,7 +141,7 @@ export default function AdminShell({
                   href={href}
                   className={`flex items-center gap-3 ${
                     collapsed ? 'md:px-2 md:justify-center' : 'md:px-3'
-                  } md:py-2.5 px-4 py-3 rounded-none md:rounded-md text-body-md transition-colors ${
+                  } md:py-2.5 px-4 py-3 rounded-none md:rounded-md text-body-s md:text-body-m lg:text-body-l transition-colors ${
                     isActive
                       ? 'text-text-main bg-surface-base'
                       : 'text-text-secondary hover:text-text-main hover:bg-surface-base'
@@ -168,7 +168,7 @@ export default function AdminShell({
             onClick={() => setCollapsed((c) => !c)}
             className={`flex items-center gap-3 ${
               collapsed ? 'md:px-2 md:justify-center' : 'md:px-3'
-            } py-2.5 rounded-md text-body-md text-text-secondary hover:text-text-main hover:bg-surface-base transition-colors w-full text-left`}
+            } py-2.5 rounded-md text-body-s md:text-body-m lg:text-body-l text-text-secondary hover:text-text-main hover:bg-surface-base transition-colors w-full text-left`}
             title={collapsed ? 'Expandir sidebar' : 'Col·lapsar sidebar'}
             aria-label={collapsed ? 'Expandir sidebar' : 'Col·lapsar sidebar'}
           >
@@ -184,7 +184,7 @@ export default function AdminShell({
 
           {/* Email (només expandit) */}
           {!collapsed && user.email && (
-            <span className="px-3 mt-2 text-body-xs text-text-secondary truncate" title={user.email}>
+            <span className="px-3 mt-2 text-body-2xs md:text-body-xs text-text-secondary truncate" title={user.email}>
               {user.email}
             </span>
           )}
@@ -194,7 +194,7 @@ export default function AdminShell({
             onClick={handleSignOut}
             className={`flex items-center gap-3 ${
               collapsed ? 'md:px-2 md:justify-center' : 'md:px-3'
-            } py-2.5 rounded-md text-body-md text-text-secondary hover:text-text-main hover:bg-surface-base transition-colors w-full text-left`}
+            } py-2.5 rounded-md text-body-s md:text-body-m lg:text-body-l text-text-secondary hover:text-text-main hover:bg-surface-base transition-colors w-full text-left`}
             title="Tancar sessió"
             aria-label="Tancar sessió"
           >

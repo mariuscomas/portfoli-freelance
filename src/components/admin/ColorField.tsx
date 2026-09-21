@@ -61,7 +61,7 @@ export default function ColorField({
     <div className="flex flex-col gap-2">
       <label
         htmlFor={id}
-        className="inline-flex items-center gap-1 text-body-sm font-medium text-text-secondary"
+        className="inline-flex items-center gap-1 text-body-xs-light md:text-body-s-light font-medium text-text-secondary"
       >
         {label}
       </label>
@@ -90,7 +90,7 @@ export default function ColorField({
           value={currentValue}
           onChange={(e) => setValue(e.target.value)}
           placeholder="#000000"
-          className="flex-1 min-w-0 bg-transparent text-text-main font-sans text-body-md focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent text-text-main font-sans text-body-s md:text-body-m lg:text-body-l focus:outline-none"
         />
         {/* Hidden input per FormData (mode uncontrolled). Manté `name` per
             al submit; el valor sempre coincideix amb currentValue. */}
@@ -99,7 +99,7 @@ export default function ColorField({
         )}
       </div>
       {hint && (
-        <p className="text-body-sm text-text-secondary/80 leading-snug max-w-prose">
+        <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug max-w-prose">
           {hint}
         </p>
       )}

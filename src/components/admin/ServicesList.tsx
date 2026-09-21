@@ -153,10 +153,10 @@ function SortableServiceItem({ service: s }: { service: ServiceRow }) {
         className="flex items-center justify-between gap-6 py-5 flex-1 min-w-0"
       >
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-body-lg text-text-main font-medium truncate">
+          <span className="text-body-l lg:text-body-xl text-text-main font-medium truncate">
             {title || '(Sense títol)'}
           </span>
-          <div className="flex items-center gap-3 text-body-sm text-text-secondary">
+          <div className="flex items-center gap-3 text-body-xs-light md:text-body-s-light text-text-secondary">
             <span className="truncate">
               /serveis/{s.product_id}
               {includesCount > 0 && ` · ${includesCount} línies al "què inclou"`}
@@ -179,7 +179,7 @@ function SortableServiceItem({ service: s }: { service: ServiceRow }) {
             {(['ca', 'en', 'es'] as const).map((l) => (
               <span
                 key={l}
-                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-body-xs uppercase tracking-wider ${
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-body-2xs md:text-body-xs uppercase tracking-wider ${
                   localeStatuses[l] === 'complete'
                     ? 'text-accent'
                     : localeStatuses[l] === 'partial'
@@ -203,12 +203,12 @@ function SortableServiceItem({ service: s }: { service: ServiceRow }) {
           </div>
 
           {s.is_published ? (
-            <span className="inline-flex items-center gap-1.5 text-body-xs text-text-secondary">
+            <span className="inline-flex items-center gap-1.5 text-body-2xs md:text-body-xs text-text-secondary">
               <Eye size={14} weight="regular" />
               Publicat
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-body-xs text-text-secondary opacity-70">
+            <span className="inline-flex items-center gap-1.5 text-body-2xs md:text-body-xs text-text-secondary opacity-70">
               <EyeSlash size={14} weight="regular" />
               Esborrany
             </span>

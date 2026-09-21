@@ -165,12 +165,12 @@ function FooterContent() {
     <>
       {/* CTA — part de la cortina (opac, z-[1]): s'aixeca amb el contingut i
           revela el footer fosc de sota. */}
-      <section className="relative z-[1] w-full border-t border-border-subtle bg-surface-base px-section-x-xl py-section-y-lg flex flex-col items-start gap-8 md:gap-12">
+      <section className="relative z-[1] w-full border-t border-border-subtle bg-surface-base px-page py-section-m lg:py-section-xl flex flex-col items-start gap-8 md:gap-12">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-body-2xl-statement text-text-main"
+          className="text-body-xl-light md:text-body-2xl-light lg:text-body-statement text-text-main"
         >
           El següent projecte<br className="hidden md:block" /> comença amb una conversa.
         </motion.h2>
@@ -209,13 +209,13 @@ function FooterContent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 pb-16 md:pb-24 border-b border-border-subtle">
 
           {/* Col 1: Bio & Sitemap */}
-          <div className="flex flex-col items-start justify-between gap-12 lg:pr-12 text-body-md">
+          <div className="flex flex-col items-start justify-between gap-12 lg:pr-12 text-body-s md:text-body-m lg:text-body-l">
             {/* Logo Scroll Simplificat */}
             <div className="text-text-main w-auto">
               <LogoSmall className="h-14 lg:h-20 w-auto" />
             </div>
 
-            <p className="text-body-md font-medium text-text-main leading-relaxed tracking-tight max-w-[420px]">
+            <p className="text-body-s md:text-body-m lg:text-body-l font-medium text-text-main leading-relaxed tracking-tight max-w-[420px]">
               Dissenyador de producte digital. Del concepte d&apos;UI/UX a la implementació en codi.
             </p>
 
@@ -245,13 +245,13 @@ function FooterContent() {
 
           {/* Col 2: Newsletter */}
           <div className="flex flex-col justify-end gap-10 md:max-w-xl lg:max-w-md lg:ml-auto w-full">
-            <p className="text-body-lg font-medium text-text-main leading-snug tracking-tight">
+            <p className="text-body-l lg:text-body-xl font-medium text-text-main leading-snug tracking-tight">
               De tant en tant, un correu amb aprenentatges reals: decisions de disseny, procés i el perquè de cada tria.
             </p>
 
             <NewsletterForm />
 
-            <p className="text-body-sm text-text-secondary/70 leading-relaxed" style={{ textWrap: "balance" }}>
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary/70 leading-relaxed" style={{ textWrap: "balance" }}>
               Sense spam ni sorolls. En apuntar-t&apos;hi acceptes la Política de privacitat; pots donar-te de baixa quan vulguis.
             </p>
           </div>

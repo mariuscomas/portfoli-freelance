@@ -38,7 +38,7 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
   return (
     <div className="flex flex-col gap-4">
       <span className="text-caption uppercase text-text-secondary">{caption}</span>
-      <h2 className="text-heading-h1 text-text-main">{title}</h2>
+      <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">{title}</h2>
     </div>
   );
 }
@@ -52,10 +52,10 @@ function ValueSection() {
         <span className="text-caption uppercase text-text-secondary">
           COL·LABORACIÓ AMB AGÈNCIES I ESTUDIS
         </span>
-        <h2 className="mt-6 max-w-4xl text-display-h3 text-text-main">
+        <h2 className="mt-6 max-w-4xl text-display-xs md:text-display-s lg:text-display-l text-text-main">
           Un perfil sènior que dissenya i entén el codi, integrat al teu equip en 48 hores.
         </h2>
-        <p className="mt-8 max-w-2xl text-body-md text-text-secondary">
+        <p className="mt-8 max-w-2xl text-body-s md:text-body-m lg:text-body-l text-text-secondary">
           Disseny UX/UI de producte per a equips que necessiten múscul sènior sense passar per una
           contractació. Hi he treballat per a:
         </p>
@@ -90,9 +90,9 @@ function RatesSection() {
               key={r.modality}
               className="flex flex-col gap-2 border-b border-border-subtle py-7 md:flex-row md:items-center md:gap-8"
             >
-              <span className="flex-1 text-body-lg text-text-main">{r.modality}</span>
-              <span className="flex-1 text-body-sm text-text-secondary">{r.detail}</span>
-              <span className="text-display-h5 text-text-main md:w-44 md:text-right">{r.rate}</span>
+              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{r.modality}</span>
+              <span className="flex-1 text-body-xs-light md:text-body-s-light text-text-secondary">{r.detail}</span>
+              <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main md:w-44 md:text-right">{r.rate}</span>
             </li>
           ))}
         </ul>
@@ -120,8 +120,8 @@ function IntegrationSection() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {COLLAB_INTEGRATION.map((item) => (
             <div key={item.title} className="flex flex-col gap-3 border-t border-border-subtle pt-6">
-              <h3 className="text-heading-h3 text-text-main">{item.title}</h3>
-              <p className="text-body-sm text-text-secondary">{item.text}</p>
+              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{item.title}</h3>
+              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{item.text}</p>
             </div>
           ))}
         </div>
@@ -143,7 +143,7 @@ function AvailabilitySection() {
           </span>
           {/* Sense xifra a posta: un recompte exacte caduca sol i ningú l'actualitza.
               L'estat qualitatiu sempre és cert i es llegeix igual de bé. */}
-          <p className="text-body-md text-text-main">
+          <p className="text-body-s md:text-body-m lg:text-body-l text-text-main">
             Obert a noves col·laboracions aquest trimestre.
           </p>
         </div>
@@ -159,9 +159,9 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
     <section className={`${SECTION_PX} py-24 bg-surface-base border-t border-border-subtle`}>
       <Reveal>
         <div className="flex flex-col gap-12 md:gap-16">
-          <p className="text-eyebrow text-text-secondary">05 · Comencem</p>
+          <p className="text-caption-eyebrow text-text-secondary">05 · Comencem</p>
 
-          <h2 className="max-w-3xl text-display-h3 text-text-main">
+          <h2 className="max-w-3xl text-display-xs md:text-display-s lg:text-display-l text-text-main">
             Necessites un perfil sènior a l’equip demà mateix?
           </h2>
 
@@ -182,7 +182,7 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
                     href={COLLAB_CALENDAR_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-body-md text-text-secondary underline underline-offset-4 hover:text-text-main"
+                    className="text-body-s md:text-body-m lg:text-body-l text-text-secondary underline underline-offset-4 hover:text-text-main"
                   >
                     O reserva una trucada
                     <span className="sr-only"> (s’obre en una pestanya nova)</span>
@@ -205,7 +205,7 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
                 </Button>
               )}
             </div>
-            <p className="text-body-sm text-text-secondary">
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
               O escriu-me directament:{" "}
               <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-4 hover:text-text-main">
                 {CONTACT_EMAIL}

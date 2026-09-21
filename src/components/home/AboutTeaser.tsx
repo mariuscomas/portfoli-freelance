@@ -8,7 +8,7 @@ import { LinkUnderline } from "@/components/ui/LinkUnderline";
 
 export default function AboutTeaser() {
   return (
-    <section className="w-full border-t border-border-subtle py-section-y-lg">
+    <section className="w-full border-t border-border-subtle py-section-m lg:py-section-xl">
 
       {/* Heading */}
       <div className="flex justify-between items-end mb-16 md:mb-20 px-4 md:px-[3vw] lg:px-[4vw]">
@@ -17,7 +17,7 @@ export default function AboutTeaser() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="font-heading text-heading-h1 uppercase text-text-main leading-none m-0"
+          className="font-heading text-display-s-medium md:text-display-m-medium lg:text-display-l-medium uppercase text-text-main leading-none m-0"
         >
           Sobre mi
         </motion.h2>
@@ -68,7 +68,7 @@ export default function AboutTeaser() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-body-2xl text-text-secondary"
+            className="text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-secondary"
           >
             Orgullós de col·laborar i poder ajudar a les empreses a aconseguir el seus objectius i millorar les experiències dels seus clients.
           </motion.p>

@@ -177,10 +177,10 @@ function SortableWorkItem({ work: w }: { work: WorkRow }) {
             aria-hidden="true"
           />
           <div className="flex flex-col min-w-0">
-            <span className="text-body-lg text-text-main font-medium truncate">
+            <span className="text-body-l lg:text-body-xl text-text-main font-medium truncate">
               {title || '(Sense títol)'}
             </span>
-            <div className="flex items-center gap-3 text-body-sm text-text-secondary">
+            <div className="flex items-center gap-3 text-body-xs-light md:text-body-s-light text-text-secondary">
               <span className="truncate">
                 /works/{slug || '...'} {w.year && `· ${w.year}`}
               </span>
@@ -203,7 +203,7 @@ function SortableWorkItem({ work: w }: { work: WorkRow }) {
             {(['ca', 'en', 'es'] as const).map((l) => (
               <span
                 key={l}
-                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-body-xs uppercase tracking-wider ${
+                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-body-2xs md:text-body-xs uppercase tracking-wider ${
                   localeStatuses[l] === 'complete'
                     ? 'text-accent'
                     : localeStatuses[l] === 'partial'
@@ -228,7 +228,7 @@ function SortableWorkItem({ work: w }: { work: WorkRow }) {
 
           {warningsCount > 0 && (
             <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-surface text-warning text-body-xs font-medium"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-surface text-warning text-body-2xs md:text-body-xs font-medium"
               title={`${warningsCount} ${warningsCount === 1 ? 'avís' : 'avisos'} al case study (alt text, blocs sense títol…)`}
             >
               <Warning size={12} weight="fill" />
@@ -242,12 +242,12 @@ function SortableWorkItem({ work: w }: { work: WorkRow }) {
             </span>
           )}
           {w.is_published ? (
-            <span className="inline-flex items-center gap-1.5 text-body-xs text-text-secondary">
+            <span className="inline-flex items-center gap-1.5 text-body-2xs md:text-body-xs text-text-secondary">
               <Eye size={14} weight="regular" />
               Publicat
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-body-xs text-text-secondary opacity-70">
+            <span className="inline-flex items-center gap-1.5 text-body-2xs md:text-body-xs text-text-secondary opacity-70">
               <EyeSlash size={14} weight="regular" />
               Esborrany
             </span>

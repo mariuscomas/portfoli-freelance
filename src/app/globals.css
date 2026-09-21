@@ -180,164 +180,11 @@
   --ghost-disabled-background: var(--surface-base);
   --ghost-disabled-font-color: var(--text-disabled);
 
-  /* --- TYPOGRAPHY / Display (Grtsk SemiBold Giga) ---
-     Tots els tokens display/* tenen mode responsiu al Figma (Desktop/Tablet/Mobile).
-     Aquí utilitzem clamp() per replicar el comportament en un sol token. */
-  --display-h1-font-size: clamp(2.5rem, 8vw, 7rem);
-  /* Figma: 40 Mobile / 64 Tablet / 112 Desktop */
-  --display-h1-line-height: 1;
-  /* Figma: 1:1 ratio (line-height === font-size) */
-  --display-h1-letter-spacing: -1px;
-  /* Figma: -1 Mobile / -3 Tablet+Desktop — el salt es fa a la media query de
-     sota (§ TOKENS RESPONSIUS). Un clamp() no serveix: el tracking no escala
-     de forma contínua entre modes, i -3px sobre 40px tancava tant el lockup
-     del hero mòbil que les lletres es tocaven. */
-
-  --display-h2-font-size: clamp(1.875rem, 6.5vw, 5.25rem);
-  /* Figma: 30 Mobile / 48 Tablet / 84 Desktop */
-  --display-h2-line-height: 1;
-  /* Figma: 1:1 ratio (line-height === font-size) */
-  --display-h2-letter-spacing: -2px;
-  /* Figma: -1 Mobile / -2 Tablet+Desktop */
-
-  --display-h3-font-size: clamp(1.0625rem, 5vw, 4rem);
-  /* Figma: 17 Mobile / 32 Tablet / 64 Desktop */
-  --display-h3-line-height: clamp(1.5rem, 5vw, 4rem);
-  /* Figma: 24 / 32 / 64 */
-  --display-h3-letter-spacing: -1px;
-  /* Figma: -1 all modes */
-
-  --display-h4-font-size: clamp(1.25rem, 3.5vw, 3rem);
-  /* Figma: 20 / 24 / 48 */
-  --display-h4-line-height: 1;
-  --display-h4-letter-spacing: -1px;
-  --display-h4-paragraph-spacing: clamp(1.25rem, 3.5vw, 3rem);
-
-  --display-h5-font-size: clamp(1rem, 2.5vw, 2rem);
-  /* Figma: 16 / 20 / 32 */
-  --display-h5-line-height: 1;
-  --display-h5-letter-spacing: -1px;
-
-  /* --- TYPOGRAPHY / Heading (Grtsk Regular) --- */
-  --heading-h1-font-size: clamp(2.5rem, 5vw, 3.5rem);
-  /* Figma: 40 / 48 / 56 */
-  --heading-h1-line-height: clamp(2.5rem, 5vw, 4rem);
-  /* Figma: 40 / 48 / 64 */
-  --heading-h1-letter-spacing: -0.5px;
-  --heading-h1-paragraph-spacing: clamp(2rem, 4vw, 4rem);
-
-  --heading-h2-font-size: clamp(2rem, 4vw, 2.5rem);
-  /* Figma: 32 / 32 / 40 */
-  --heading-h2-line-height: clamp(2.5rem, 4vw, 3.5rem);
-  /* Figma: 40 / 40 / 56 */
-  --heading-h2-letter-spacing: -0.5px;
-  /* Figma sync: Tablet/Mobile -0.5, Desktop 0 → harmonitzem */
-
-  --heading-h3-font-size: 1.5rem;
-  /* Figma: 24 all modes */
-  --heading-h3-line-height: 2rem;
-  /* Figma: 32 all modes */
-  --heading-h3-letter-spacing: -0.3px;
-  /* Figma sync: estabilitzat (era -1 Desktop) */
-
-  --heading-h4-font-size: 1rem;
-  /* Figma: 16 all modes */
-  --heading-h4-line-height: clamp(1.75rem, 3vw, 2rem);
-  /* Figma: 28 Mobile / 32 Tablet+Desktop */
-  --heading-h4-letter-spacing: -0.3px;
-
-  /* --- TYPOGRAPHY / Body (Grtsk Light/Regular) ---
-     2xl té un floor més alt (24px) i un sostre més ambiciós (56px) perquè
-     funcioni com a "lead paragraph" presencial després dels Display H1.
-     Figma marca 20/32/48 com a referència mínima, pujem perquè respira millor. */
-  --body-2xl-font-size: clamp(1.5rem, 3.5vw, 3.5rem);
-  /* 24 / 40 / 56 */
-  --body-2xl-line-height: clamp(2rem, 3.95vw, 3.95rem);
-  /* 32 / 52 / 72 */
-  --body-2xl-letter-spacing: 0;
-  --body-2xl-paragraph-spacing: 1rem;
-
-  /* Body 2XL · Statement — variant de TITULAR de la rampa 2XL.
-     Figma: estil "Body/2XL - Statement" + vars body/2xl-statement/*.
-     Mateixa mida i mateixa veu (Hanken Light) que Body/2XL; el que canvia és
-     que compon com a titular i no com a paràgraf.
-     Figma per mode: 56/59/−1 · 36/38/−0,8 · 24/25/−0,5.
-     El line-height va sense unitat (1,05 ≈ 59/56) i el tracking en em perquè
-     escalin sols amb el clamp de la mida: −0,02em dona −1,12 / −0,72 / −0,48px,
-     a una engruna dels valors del Figma.
-     NOMÉS per a frases de remat/statement. Per a lead paragraphs: text-body-2xl. */
-  --body-2xl-statement-line-height: 1.05;
-  --body-2xl-statement-letter-spacing: -0.02em;
-
-  --body-xl-font-size: clamp(1rem, 2vw, 2rem);
-  /* Figma: 16 / 18 / 32 */
-  --body-xl-line-height: clamp(1.375rem, 3vw, 3rem);
-  /* Figma: 22 / 26 / 48.
-     El terme preferent és 3vw i NO 2vw (el del font-size): compartint-lo,
-     entre ~1100 i 1600px el line-height valia exactament el mateix que el
-     font-size — interlineat 1.0 en un text de cos, que és per on van
-     aparèixer els `leading-relaxed`/`leading-snug` a mà en alguns usos. Amb
-     3vw la proporció es manté a 1.5 a tot el rang i el token toca els 48px
-     del Figma a la mateixa amplada on el font-size toca els 32 (1600px). */
-  --body-xl-letter-spacing: 0;
-
-  --body-lg-font-size: clamp(0.875rem, 1.5vw, 1.5rem);
-  /* Figma: 14 / 18 / 24 */
-  --body-lg-line-height: clamp(1.25rem, 1.5vw, 2rem);
-  /* Figma: 20 / 26 / 32 */
-  --body-lg-letter-spacing: 0;
-
-  --body-md-font-size: clamp(0.875rem, 1.25vw, 1.25rem);
-  /* Figma: 14 / 14 / 20 */
-  --body-md-line-height: clamp(1.125rem, 1.5vw, 1.75rem);
-  /* Figma: 18 / 22 / 28 */
-  --body-md-letter-spacing: 0;
-
-  --body-sm-font-size: clamp(0.75rem, 1vw, 1rem);
-
-  /* Figma: Body/XS - Regular (14/20). Graó auxiliar, sense clamp: és text de
-     suport (tooltips, notes) que no ha d'escalar amb el breakpoint. */
-  --body-xs-font-size: 0.875rem;
-  --body-xs-line-height: 1.25rem;
-  --body-xs-letter-spacing: 0;
-  /* Figma: 12 / 14 / 16 */
-  --body-sm-line-height: clamp(1.125rem, 1.5vw, 1.75rem);
-  /* Figma: 18 / 22 / 28 */
-  --body-sm-letter-spacing: 0;
-
-  /* --- TYPOGRAPHY / Caption & labels (Geist Mono) --- */
-  --caption-font-size: 0.875rem;
-  /* 14px — Figma: Others/Caption */
-  --caption-line-height: 1rem;
-  /* 16px */
-  --caption-letter-spacing: 0.02em;
-
-  /* Caption SM — variant 16px (Figma: Others/Caption - SM) per rètols de grup
-     i specs de preu dins el configurador */
-  --caption-sm-font-size: 1rem;
-  /* 16px */
-  --caption-sm-line-height: 1.125rem;
-  /* 18px */
-  --caption-sm-letter-spacing: 0;
-
-  /* --- TYPOGRAPHY / Buttons --- */
-  --button-large-font-size: clamp(0.75rem, 1.5vw, 1.25rem);
-  /* Figma: 12-14 / 14-16 / 14-20 */
-  --button-large-line-height: clamp(1.3125rem, 1.5vw, 1.75rem);
-  --button-large-letter-spacing: 0.5px;
-  --button-large-weight: 400;
-  /* Figma sync: Buttons/Large és Hanken Regular (400) */
-
-  /* Buttons/Link — Figma: button/link (24/28, Hanken Regular, ls 0).
-     NO és responsiu al Figma: el mateix valor a Desktop, Tablet i Mobile. És
-     el text dels enllaços "nus" amb subratllat (hero "Veure treballs",
-     selector d'idioma de la barra), que abans anaven a pèl amb
-     text-[24px]/leading-[28px] repetits a cada lloc. */
-  --button-link-font-size: 1.5rem;
-  /* 24px */
-  --button-link-line-height: 1.75rem;
-  /* 28px */
-  --button-link-letter-spacing: 0;
+  /* --- TYPOGRAPHY — rampa fixa (21set26) ---
+     Les mides ja no són tokens responsius: cada estil de text és una
+     @utility de mida fixa (final del fitxer). El salt entre breakpoints el
+     declara el component (text-display-l md:text-display-2xl …).
+     Doc: docs/migracio-rampa-fixa-codi-2026-09-21.md */
 
   /* --- LAYOUT / Radii --- */
   --radius-base: 16px;
@@ -363,36 +210,10 @@
   --button-square-radius: 4px;
   /* Figma: properties/large/border-radius */
 
-  /* --- LAYOUT / Section spacing — rampa `spaces` del Figma ---
-     Modes Desktop/Tablet/Mobile. A tota la rampa VERTICAL, Tablet i Mobile
-     comparteixen valor, així que n'hi ha prou amb un sol salt: el valor base
-     és Tablet+Mobile i el mode Desktop entra al breakpoint (§ TOKENS
-     RESPONSIUS). L'horitzontal x-XL sí que té tres valors i en necessita dos.
-
-     Desktop = `lg` (1024px), el llindar que ja feia servir el layout
-     (Footer: lg:px-24 per als 96px de x-XL). Tablet = `md` (768px).
-
-     Figma D/T/M:
-       y-XL 284/192/192 · y-LG 192/96/96 · y-MD 96/64/64
-       y-SM 48/48/48 · y-XS 24/24/24 · x-XL 96/48/32 */
-  --section-y-xl: 12rem;
-  /* 192 → Desktop 284 */
-  --section-y-lg: 6rem;
-  /* 96 → Desktop 192 */
-  --section-y-md: 4rem;
-  /* 64 → Desktop 96 */
-  --section-y-sm: 3rem;
-  /* 48 a tots els modes */
-  --section-y-xs: 1.5rem;
-  /* 24 a tots els modes */
-  --section-x-xl: 2rem;
-  /* 32 → Tablet 48, Desktop 96 */
-  --section-x-md: 1.5rem;
-  /* 24 a tots els modes */
-  --section-gap-md: 2rem;
-  /* 32 → Desktop 48 */
-  --section-gap-sm: 1rem;
-  /* 16 → Tablet 24 */
+  /* --- LAYOUT / Marge de pàgina — Figma spaces/page-margin/* ---
+     L'únic espai que depèn del breakpoint: 402:24 · 768:48 · 1024:72 ·
+     1440:96 · 1920:144 (graella Graella/1…5). Utilities: px-page, p-page. */
+  --page-margin: 1.5rem;
 
   /* ALÇADA DEL HEADER FIX (Header.tsx: py-6 + clúster h-10 / md:h-12).
      88 a mòbil i 96 de md amunt — la mateixa que la barra inferior del hero.
@@ -405,43 +226,36 @@
 }
 
 /* ============================================================
-   TOKENS RESPONSIUS — modes del Figma que no es poden expressar amb clamp()
-   ------------------------------------------------------------
-   Els tokens display/* tenen mode Desktop/Tablet/Mobile al Figma. La mida es
-   resol amb clamp() (interpolació contínua), però el tracking fa un SALT
-   entre modes (-1 Mobile → -3 Tablet+Desktop) i necessita el breakpoint.
-   768px = `md` de Tailwind, el mateix llindar que fan servir els components.
+   MARGE DE PÀGINA I HEADER PER BREAKPOINT
+   md 768 · lg 1024 · xl 1280 (cobreix el 1440 del Figma) · 3xl 1920
    ============================================================ */
 @media (min-width: 768px) {
   :root {
-    --display-h1-letter-spacing: -3px;
-
-    /* Mode Tablet de la rampa `spaces` (només x-XL hi canvia) */
-    --section-x-xl: 3rem;
+    --page-margin: 3rem;
     /* 48 */
-    --section-gap-sm: 1.5rem;
-    /* 24 */
-
     --header-h: 6rem;
     /* 96 = 24*2 + 48 — igual que la Navbar Bottom del hero */
   }
 }
 
-/* Mode Desktop de la rampa `spaces`. 1024px = `lg`, que és on el layout ja
-   passava a l'amplada gran (Footer: lg:px-24). */
 @media (min-width: 1024px) {
   :root {
-    --section-y-xl: 17.75rem;
-    /* 284 */
-    --section-y-lg: 12rem;
-    /* 192 */
-    --section-y-md: 6rem;
-    /* 96 */
-    --section-x-xl: 6rem;
-    /* 96 */
-    --section-gap-md: 3rem;
-    /* 48 */
+    --page-margin: 4.5rem;
+    /* 72 */
+  }
+}
 
+@media (min-width: 1280px) {
+  :root {
+    --page-margin: 6rem;
+    /* 96 */
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --page-margin: 9rem;
+    /* 144 */
   }
 }
 
@@ -538,17 +352,18 @@
   --font-mono: var(--font-mono), monospace;
   --font-caption: var(--font-caption), monospace;
 
-  /* Spacing / Section → py-section-y-lg, px-section-x-xl, etc.
-     Rampa `spaces` del Figma; els valors salten per breakpoint més amunt. */
-  --spacing-section-y-xl: var(--section-y-xl);
-  --spacing-section-y-lg: var(--section-y-lg);
-  --spacing-section-y-md: var(--section-y-md);
-  --spacing-section-y-sm: var(--section-y-sm);
-  --spacing-section-y-xs: var(--section-y-xs);
-  --spacing-section-x-xl: var(--section-x-xl);
-  --spacing-section-x-md: var(--section-x-md);
-  --spacing-section-gap-md: var(--section-gap-md);
-  --spacing-section-gap-sm: var(--section-gap-sm);
+  /* Spacing — Figma col·lecció `spaces` (un sol mode, 21set26).
+     section/* = ritme vertical entre seccions → py-section-m, pt-section-xl…
+     page = marge lateral per breakpoint → px-page, p-page.
+     Gaps i paddings interns: escala de Tailwind (space/10 = gap-10). */
+  --spacing-section-2xs: 1.5rem;  /* 24 */
+  --spacing-section-xs: 3rem;     /* 48 */
+  --spacing-section-s: 4.5rem;    /* 72 */
+  --spacing-section-m: 6rem;      /* 96 */
+  --spacing-section-l: 9rem;      /* 144 */
+  --spacing-section-xl: 12rem;    /* 192 */
+  --spacing-section-2xl: 18rem;   /* 288 */
+  --spacing-page: var(--page-margin);
 
   /* Colors / Brand → bg-primary-main */
   --color-primary-main: var(--primary-main);
@@ -678,182 +493,6 @@
     html {
       scroll-behavior: auto;
     }
-  }
-
-  /* --- DISPLAY (Grtsk SemiBold Giga) — Heros, Marquees, peces estructurals ---
-       Tots els display/* consumeixen tokens responsius del Figma (clamp). */
-  .text-display-h1 {
-    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
-    @apply font-heading font-semibold;
-    font-size: var(--display-h1-font-size);
-    line-height: var(--display-h1-line-height);
-    letter-spacing: var(--display-h1-letter-spacing);
-  }
-
-  .text-display-h2 {
-    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
-    @apply font-heading font-semibold;
-    font-size: var(--display-h2-font-size);
-    line-height: var(--display-h2-line-height);
-    letter-spacing: var(--display-h2-letter-spacing);
-  }
-
-  .text-display-h3 {
-    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
-    @apply font-heading font-semibold;
-    font-size: var(--display-h3-font-size);
-    line-height: var(--display-h3-line-height);
-    letter-spacing: var(--display-h3-letter-spacing);
-  }
-
-  .text-display-h4 {
-    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
-    @apply font-heading font-semibold;
-    font-size: var(--display-h4-font-size);
-    line-height: var(--display-h4-line-height);
-    letter-spacing: var(--display-h4-letter-spacing);
-  }
-
-  .text-display-h5 {
-    /* Figma sync: textCase ORIGINAL — l'uppercase es decideix al markup */
-    @apply font-heading font-semibold;
-    font-size: var(--display-h5-font-size);
-    line-height: var(--display-h5-line-height);
-    letter-spacing: var(--display-h5-letter-spacing);
-  }
-
-  /* --- HEADING (Bricolage Medium H1-H3, Hanken H4) --- */
-  /* Heading H1 - Figma exacte: 56px / 64px / -0.5px (preu del modal, títols principals) */
-  .text-heading-h1 {
-    /* Figma sync 2026-07-10: Heading H1-H3 → Bricolage Medium (H4 es queda Hanken) */
-    @apply font-heading font-medium;
-    font-size: var(--heading-h1-font-size);
-    line-height: var(--heading-h1-line-height);
-    letter-spacing: var(--heading-h1-letter-spacing);
-  }
-
-  .text-heading-h2 {
-    @apply font-heading font-medium;
-    font-size: var(--heading-h2-font-size);
-    line-height: var(--heading-h2-line-height);
-    letter-spacing: var(--heading-h2-letter-spacing);
-  }
-
-  .text-heading-h3 {
-    @apply font-heading font-medium;
-    font-size: var(--heading-h3-font-size);
-    line-height: var(--heading-h3-line-height);
-    letter-spacing: var(--heading-h3-letter-spacing);
-  }
-
-  .text-heading-h4 {
-    @apply font-sans font-normal;
-    font-size: var(--heading-h4-font-size);
-    line-height: var(--heading-h4-line-height);
-    letter-spacing: var(--heading-h4-letter-spacing);
-  }
-
-  /* --- BODY (Grtsk Regular / Light) — tots responsius via clamp() --- */
-  .text-body-2xl {
-    @apply font-sans font-light;
-    font-size: var(--body-2xl-font-size);
-    line-height: var(--body-2xl-line-height);
-    letter-spacing: var(--body-2xl-letter-spacing);
-  }
-
-  /* Titular de tancament — veure els tokens body-2xl-statement més amunt.
-     Comparteix el font-size de .text-body-2xl a propòsit: és el mateix graó
-     de la rampa, compost com a titular. */
-  .text-body-2xl-statement {
-    @apply font-sans font-light;
-    font-size: var(--body-2xl-font-size);
-    line-height: var(--body-2xl-statement-line-height);
-    letter-spacing: var(--body-2xl-statement-letter-spacing);
-  }
-
-  .text-body-xl {
-    @apply font-sans font-light;
-    font-size: var(--body-xl-font-size);
-    line-height: var(--body-xl-line-height);
-    letter-spacing: var(--body-xl-letter-spacing);
-  }
-
-  .text-body-lg {
-    @apply font-sans font-normal;
-    font-size: var(--body-lg-font-size);
-    line-height: var(--body-lg-line-height);
-    letter-spacing: var(--body-lg-letter-spacing);
-  }
-
-  .text-body-md {
-    @apply font-sans font-normal;
-    font-size: var(--body-md-font-size);
-    line-height: var(--body-md-line-height);
-    letter-spacing: var(--body-md-letter-spacing);
-  }
-
-  .text-body-xs {
-    @apply font-sans font-normal;
-    font-size: var(--body-xs-font-size);
-    line-height: var(--body-xs-line-height);
-    letter-spacing: var(--body-xs-letter-spacing);
-  }
-
-  .text-body-sm {
-    @apply font-sans font-light;
-    font-size: var(--body-sm-font-size);
-    line-height: var(--body-sm-line-height);
-    letter-spacing: var(--body-sm-letter-spacing);
-  }
-
-  /* --- BUTTONS --- */
-  .text-button-lg {
-    @apply font-sans;
-    font-size: var(--button-large-font-size);
-    line-height: var(--button-large-line-height);
-    letter-spacing: var(--button-large-letter-spacing);
-    font-weight: var(--button-large-weight);
-  }
-
-  .text-button-link {
-    @apply font-sans font-normal;
-    font-size: var(--button-link-font-size);
-    line-height: var(--button-link-line-height);
-    letter-spacing: var(--button-link-letter-spacing);
-  }
-
-  /* --- CAPTION & LABELS (Geist Mono) — metadades, specs, etiquetes --- */
-  .text-caption {
-    @apply font-caption font-medium;
-    font-size: var(--caption-font-size);
-    line-height: var(--caption-line-height);
-    letter-spacing: var(--caption-letter-spacing);
-  }
-
-  /* Variant 16px — Figma: Others/Caption - SM */
-  .text-caption-sm {
-    @apply font-caption font-medium;
-    font-size: var(--caption-sm-font-size);
-    line-height: var(--caption-sm-line-height);
-    letter-spacing: var(--caption-sm-letter-spacing);
-  }
-
-  /* Variant per a etiquetes en majúscula (labels de camps, eyebrows) */
-  .text-label {
-    @apply font-caption font-medium uppercase;
-    font-size: var(--caption-font-size);
-    line-height: var(--caption-line-height);
-    letter-spacing: 0.08em;
-  }
-
-  /* Eyebrow de secció — Figma: Others/Eyebrow (Geist Mono Medium, 14, UPPER, ls 1px, lh 20).
-     Rètol + índex al capdamunt d'una secció (p. ex. "05 — Comencem"). Distint de
-     .text-label (labels de camp) pel line-height 20 i el tracking d'1px. */
-  .text-eyebrow {
-    @apply font-caption font-medium uppercase;
-    font-size: var(--caption-font-size);
-    line-height: 1.25rem;
-    letter-spacing: 1px;
   }
 }
 
@@ -1012,4 +651,392 @@
     opacity: 1;
     transform: none;
   }
+}
+
+/* ============================================================
+   TIPOGRAFIA — RAMPA FIXA (Figma = codi, 21set26)
+   Un estil de text de Figma = una utility amb el mateix nom:
+     Display/L - Medium  →  text-display-l-medium
+   Cada utility porta família, pes, mida, line-height i tracking. Sense
+   clamp() ni vw: el salt el declara el component amb variants
+   (text-display-l md:text-display-2xl lg:text-display-3xl).
+   Display = Bricolage Semi Bold · Body = Hanken Regular · Caption = Geist Mono.
+   Variants de pes només on n'hi ha ús real al Figma.
+   Pes, line-height i tracking llegeixen --tw-font-weight / --tw-leading /
+   --tw-tracking: així un font-medium, leading-none o tracking-tight al
+   mateix element continua guanyant també a md: i lg: (les variants
+   responsives s'emeten després de les utilities simples).
+   Doc: docs/migracio-rampa-fixa-codi-2026-09-21.md
+   ============================================================ */
+
+@utility text-display-3xl {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 7rem;
+  line-height: var(--tw-leading, 1);
+  letter-spacing: var(--tw-tracking, -0.03em);
+}
+
+@utility text-display-2xl {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 5.25rem;
+  line-height: var(--tw-leading, 1.02);
+  letter-spacing: var(--tw-tracking, -0.03em);
+}
+
+@utility text-display-xl {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 4rem;
+  line-height: var(--tw-leading, 1.05);
+  letter-spacing: var(--tw-tracking, -0.025em);
+}
+
+@utility text-display-l {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 3.5rem;
+  line-height: var(--tw-leading, 1.07);
+  letter-spacing: var(--tw-tracking, -0.022em);
+}
+
+@utility text-display-l-medium {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 3.5rem;
+  line-height: var(--tw-leading, 1.07);
+  letter-spacing: var(--tw-tracking, -0.022em);
+}
+
+@utility text-display-m {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 3rem;
+  line-height: var(--tw-leading, 1.08);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-display-m-medium {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 3rem;
+  line-height: var(--tw-leading, 1.08);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-display-m-light {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 3rem;
+  line-height: var(--tw-leading, 1.08);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-display-s {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 2.5rem;
+  line-height: var(--tw-leading, 1.1);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-display-s-medium {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 2.5rem;
+  line-height: var(--tw-leading, 1.1);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-display-xs {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 2rem;
+  line-height: var(--tw-leading, 1.15);
+  letter-spacing: var(--tw-tracking, -0.015em);
+}
+
+@utility text-display-xs-medium {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 2rem;
+  line-height: var(--tw-leading, 1.15);
+  letter-spacing: var(--tw-tracking, -0.015em);
+}
+
+@utility text-display-xs-light {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 2rem;
+  line-height: var(--tw-leading, 1.15);
+  letter-spacing: var(--tw-tracking, -0.015em);
+}
+
+@utility text-display-2xs {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.2);
+  letter-spacing: var(--tw-tracking, -0.01em);
+}
+
+@utility text-display-2xs-medium {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.2);
+  letter-spacing: var(--tw-tracking, -0.01em);
+}
+
+@utility text-display-2xs-regular {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.2);
+  letter-spacing: var(--tw-tracking, -0.01em);
+}
+
+@utility text-display-2xs-light {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.2);
+  letter-spacing: var(--tw-tracking, -0.01em);
+}
+
+@utility text-body-3xl {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 3.5rem;
+  line-height: var(--tw-leading, 1.1);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-body-3xl-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 3.5rem;
+  line-height: var(--tw-leading, 1.1);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-body-2xl {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 2rem;
+  line-height: var(--tw-leading, 1.25);
+  letter-spacing: var(--tw-tracking, -0.01em);
+}
+
+@utility text-body-2xl-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 2rem;
+  line-height: var(--tw-leading, 1.25);
+  letter-spacing: var(--tw-tracking, -0.01em);
+}
+
+@utility text-body-xl {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.35);
+  letter-spacing: var(--tw-tracking, -0.005em);
+}
+
+@utility text-body-xl-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.35);
+  letter-spacing: var(--tw-tracking, -0.005em);
+}
+
+@utility text-body-l {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-l-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-l-medium {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-l-semibold {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-m {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.125rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-m-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 1.125rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-m-medium {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 1.125rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-s {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-s-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-s-medium {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-s-semibold {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.5);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-xs {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-xs-light {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-xs-medium {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.45);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-body-2xs {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 0.75rem;
+  line-height: var(--tw-leading, 1.4);
+  letter-spacing: var(--tw-tracking, 0.01em);
+}
+
+@utility text-body-2xs-medium {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 0.75rem;
+  line-height: var(--tw-leading, 1.4);
+  letter-spacing: var(--tw-tracking, 0.01em);
+}
+
+@utility text-body-statement {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 300);
+  font-size: 3.5rem;
+  line-height: var(--tw-leading, 1.05);
+  letter-spacing: var(--tw-tracking, -0.02em);
+}
+
+@utility text-caption {
+  font-family: var(--font-caption);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.15);
+  letter-spacing: var(--tw-tracking, 0.02em);
+}
+
+@utility text-caption-sm {
+  font-family: var(--font-caption);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.125);
+  letter-spacing: var(--tw-tracking, 0.02em);
+}
+
+@utility text-caption-eyebrow {
+  font-family: var(--font-caption);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.43);
+  letter-spacing: var(--tw-tracking, 0.07em);
+  text-transform: uppercase;
+}
+
+@utility text-label {
+  font-family: var(--font-caption);
+  font-weight: var(--tw-font-weight, 500);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.15);
+  letter-spacing: var(--tw-tracking, 0.08em);
+  text-transform: uppercase;
+}
+
+/* Botons: mida del mode XL de buttons-properties (label/large, label/link). */
+
+@utility text-button-lg {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.4);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-button-link {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.1667);
+  letter-spacing: var(--tw-tracking, 0);
 }

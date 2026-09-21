@@ -275,11 +275,11 @@ export default function HeroTitle({
     };
   }, [reduced, resolvedTheme, coarse]);
 
-  // Estil del DS, no valors en cru: `.text-display-h1` porta el clamp
+  // Estil del DS, no valors en cru: `.text-display-l md:text-display-2xl lg:text-display-3xl` porta el clamp
   // (32 / 64 / 112), line-height 1 i letter-spacing −3px de Figma. Abans hi
   // havia `tracking-[-0.01em]` (−1,1px a 112), que feia el lockup ~82px més
   // ample del que marca el token — prou per menjar-se el marge amb el camp.
-  const lockupCls = "text-display-h1";
+  const lockupCls = "text-display-l md:text-display-2xl lg:text-display-3xl";
 
   return (
     <div

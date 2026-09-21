@@ -44,14 +44,14 @@ export default function CollabTeaser() {
       aria-labelledby="collab-titol"
       className="flex w-full flex-col border-t border-border-strong lg:flex-row"
     >
-      <div className="flex flex-1 flex-col justify-center gap-8 px-section-x-xl py-section-y-md">
-        <p className="text-eyebrow text-text-secondary">DEDICACIÓ CONTINUADA</p>
+      <div className="flex flex-1 flex-col justify-center gap-8 px-page py-section-s lg:py-section-m">
+        <p className="text-caption-eyebrow text-text-secondary">DEDICACIÓ CONTINUADA</p>
 
         <div className="flex flex-col gap-4">
-          <h2 id="collab-titol" className="text-display-h3 text-text-main">
+          <h2 id="collab-titol" className="text-display-xs md:text-display-s lg:text-display-l text-text-main">
             Col&middot;laboració
           </h2>
-          <p className="text-body-sm text-text-secondary">
+          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             Reforç sènior de producte i UI per al teu estudi, quan el necessites.
             M&apos;integro al teu flux de treball (Figma, Slack, sprints) sense
             friccions. Disponibilitat limitada, actualitzada cada mes.
@@ -70,11 +70,11 @@ export default function CollabTeaser() {
         </LinkUnderline>
       </div>
 
-      <ul className="flex flex-1 flex-col justify-center gap-8 divide-y divide-border-subtle px-section-x-xl py-section-y-md">
+      <ul className="flex flex-1 flex-col justify-center gap-8 divide-y divide-border-subtle px-page py-section-s lg:py-section-m">
         {MODALITATS.map((m, i) => (
           <li key={m.title} className={i === 0 ? "flex flex-col gap-1" : "flex flex-col gap-1 pt-8"}>
-            <p className="text-body-lg text-text-main">{m.title}</p>
-            <p className="text-body-sm text-text-secondary">{m.detail}</p>
+            <p className="text-body-l lg:text-body-xl text-text-main">{m.title}</p>
+            <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{m.detail}</p>
           </li>
         ))}
       </ul>
