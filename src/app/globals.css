@@ -566,6 +566,95 @@
 }
 
 /* ============================================================
+   REVEAL — Entrades d'scroll de la home (guió 21set26)
+   Veure: src/components/common/RevealGroup.tsx
+   docs/home-guio-entrades-2026-09-21.md
+   G1 reveal-line (màscara de línia) · G2 reveal-up (fade-up curt)
+   · G3 reveal-rule-v (filet vertical que es dibuixa de dalt a baix).
+   Tot penja de [data-reveal-armed]: sense JS o amb reduced-motion,
+   no s'aplica cap estat ocult.
+   ============================================================ */
+:root {
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Màscara: el padding inferior evita retallar descendents (g, p, ç). */
+.reveal-line {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.reveal-line-inner {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal-armed] .reveal-up {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.5s var(--ease-reveal),
+      transform 0.5s var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal-armed] .reveal-line-inner {
+    transform: translateY(105%);
+    transition: transform 0.7s var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal-armed][data-revealed] .reveal-up,
+  [data-reveal-armed][data-revealed] .reveal-line-inner {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Imatge de treball (home): la caixa es destapa des de baix amb clip-path
+     i la imatge passa d'escala 1,06 a 1. L'escala va en un embolcall propi
+     perquè no trepitgi la transició del hover (scale 1,03) de la <img>. */
+  [data-reveal-armed] .reveal-clip {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.9s var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal-armed] .reveal-clip-media {
+    transform: scale(1.06);
+    transition: transform 0.9s var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal-armed][data-revealed] .reveal-clip {
+    clip-path: inset(0 0 0 0);
+  }
+  [data-reveal-armed][data-revealed] .reveal-clip-media {
+    transform: none;
+  }
+
+  /* G3: una tapa del color del fons, damunt del filet dret (divide-x), que
+     s'encongeix cap avall i el descobreix de dalt a baix. Només lg, on la
+     tríada és en fila i els filets són verticals. */
+  @media (width >= 64rem) {
+    [data-reveal-armed] .reveal-rule-v {
+      position: relative;
+    }
+    [data-reveal-armed] .reveal-rule-v::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: -1px;
+      width: 1px;
+      height: 100%;
+      background: var(--color-surface-base);
+      transform-origin: bottom;
+      transition: transform 0.6s var(--ease-reveal);
+      transition-delay: var(--reveal-delay-rule, 0ms);
+    }
+    [data-reveal-armed][data-revealed] .reveal-rule-v::after {
+      transform: scaleY(0);
+    }
+  }
+}
+
+/* ============================================================
    HERO — Lockup interactiu (efecte de cursor)
    Veure: src/components/home/HeroTitle.tsx
    Mode fosc: degradat de marca revelat a través de les lletres

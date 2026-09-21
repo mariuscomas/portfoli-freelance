@@ -42,6 +42,7 @@ export default function WorksTeaserInteractive({ projects }: { projects: Project
         projects={projects}
         onProjectHover={setHoveredProject}
         spacingClassName="px-6 gap-y-8 lg:gap-y-12 gap-x-4 md:gap-x-6"
+        reveal="clip"
       />
 
       {/* Custom cursor amb fletxa, fixat a la pantalla */}

@@ -1,8 +1,9 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
-import { ArrowDown, DribbbleLogo, LinkedinLogo, BehanceLogo } from "@phosphor-icons/react";
+import { ArrowDown, ArrowRight, DribbbleLogo, LinkedinLogo, BehanceLogo } from "@phosphor-icons/react";
 import { onIntroRevealed } from "@/lib/introSignal";
+import TransitionLink from "@/components/common/TransitionLink";
 import HeroTitle from "@/components/home/HeroTitle";
 import HeroField from "@/components/home/HeroField";
 import LanguageSelector from "@/components/common/LanguageSelector";
@@ -137,21 +138,9 @@ export default function Hero({
             i el Figma el marca Regular (400) — divergència del DS que NO toco
             aquí per no arrossegar-la a tots els Body/XL del site.
 
-            El `max-md:` porta els valors del Figma mòbil (18/27) allà on no
-            són el token responsiu: al Figma aquest text no està lligat a
-            body/* sinó escrit a mà, i el token (16/22 a 375px) es queda curt
-            per a un hero.
-
-            Nota tècnica: .text-body-* viuen a @layer components, i a Tailwind
-            v4 les variants (md:) només s'apliquen a utilities. Per això
-            l'override va en sentit invers (base = token, max-md = Figma) i no
-            amb md:text-body-xl-light lg:text-body-2xl-light, que no generaria res.
-
-            El paràgraf és clamp() i no 18px clavats: el Figma dibuixa a 402px,
-            on la primera frase cap just en una línia; a 375px (iPhone SE/13
-            mini) 18px la parteixen i el <br/> deixa un bloc de tres línies
-            desigual. El clamp toca els 18px del disseny a 400px i cedeix uns
-            píxels per sota per mantenir les dues línies previstes.
+            Figma: Body/M · XL · 2XL Regular (18 · 24 · 32), rampa fixa
+            (21set26). A 375px la primera frase es parteix en dues línies i el
+            bloc en fa tres: acceptat per Marius en lloc del clamp() d'abans.
 
             Sense `max-w`: a 32px la primera frase fa uns 610px i els 520px
             d'abans la partien just on el <br/> ja preveu el salt. La columna
@@ -161,7 +150,7 @@ export default function Hero({
             Separacions: el Figma apila títol, paràgraf i link amb un gap únic
             de 48px (mt-12), no amb dos valors diferents.
           */}
-          <p className="mt-6 text-body-m-light md:text-body-xl-light lg:text-body-2xl-light font-normal text-text-main max-md:text-[clamp(1rem,4.5vw,1.125rem)] max-md:leading-[27px] md:mt-12">
+          <p className="mt-6 text-body-m md:text-body-xl lg:text-body-2xl text-text-main md:mt-12">
             Dissenyo i construeixo productes digitals.
             <br />
             Un sol interlocutor, de principi a fi.
@@ -171,13 +160,26 @@ export default function Hero({
               és com el defineix el Figma. El subratllat cau 6px sota la caixa
               de text (Figma: Border a bottom -6) i la fletxa fa 20px amb 10px
               de separació. */}
-          <a
-            href="#treballs"
-            className="mt-6 inline-flex min-h-11 items-center gap-2.5 text-button-link text-text-main md:mt-12"
-          >
-            <span className="border-b border-text-main pb-1.5">Veure treballs</span>
-            <ArrowDown size={20} weight="regular" aria-hidden />
-          </a>
+          {/* Dos Links (Figma «CTAs», 21set26): el primer fa scroll (ArrowDown),
+              el segon navega a /colaboracio (ArrowRight). És la drecera per a
+              agències que abans feia el Split. Gap space/4 a mòbil (a 24 no
+              cabia en 354px) i space/8 des de md. */}
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 md:mt-12 md:gap-x-8">
+            <a
+              href="#treballs"
+              className="inline-flex min-h-11 items-center gap-2.5 text-button-link text-text-main"
+            >
+              <span className="border-b border-text-main pb-1.5">Veure treballs</span>
+              <ArrowDown size={20} weight="regular" aria-hidden />
+            </a>
+            <TransitionLink
+              href="/colaboracio"
+              className="inline-flex min-h-11 items-center gap-2.5 text-button-link text-text-main"
+            >
+              <span className="border-b border-text-main pb-1.5">Ets una agència?</span>
+              <ArrowRight size={20} weight="regular" aria-hidden />
+            </TransitionLink>
+          </div>
         </div>
       </div>
 

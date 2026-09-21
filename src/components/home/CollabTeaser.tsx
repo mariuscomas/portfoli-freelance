@@ -1,6 +1,7 @@
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
 import { COLLAB_CALENDAR_URL } from "@/lib/pricing";
+import RevealGroup from "@/components/common/RevealGroup";
 
 /**
  * Secció · Col·laboració de la home.
@@ -8,12 +9,17 @@ import { COLLAB_CALENDAR_URL } from "@/lib/pricing";
  * Figma: "Section · Col·laboració"
  *   Desktop 1728 → 12115:45503 · Tablet 834 → 12119:45749 · Mobile 402 → 12120:46080
  *
- * La segona porta del doble funnel. Va DESPRÉS de Serveis i no abans: qui
- * arriba a la portada majoritàriament ve a comprar un projecte; les agències
- * ja saben què busquen i baixen.
+ * La porta per a agències i estudis. Va DESPRÉS de Serveis i del tall
+ * (CollabBreak), que és on la home canvia d'interlocutor. La drecera per a
+ * qui ho sap des del principi és el Link «Ets una agència?» del hero (21set26,
+ * substitueix el Split).
  *
- * SINGULAR a posta a la descripció («m'integro»): és l'excepció acordada de
- * la veu de marca, perquè aquí ser una sola persona és justament l'argument.
+ * Descripció: «Treballo dins del teu flux…» i no «M'integro…», que ja ho diu
+ * la frase 2 del tall just abans.
+ *
+ * Entrada (guió 21set26): com Serveis. Títol G1; etiqueta, descripció i CTA
+ * G2 cada 80 ms; modalitats G2 cada 100 ms des de 250 ms. Dos grups perquè a
+ * mòbil la llista queda a sota i s'ha de disparar quan hi arriba.
  *
  * SENSE XIFRES. Les modalitats es nomenen, però la tarifa no surt a la
  * portada: la negociació d'hores no es fa en una card, i les xifres de la
@@ -22,6 +28,8 @@ import { COLLAB_CALENDAR_URL } from "@/lib/pricing";
  * La vora superior és `border-strong` (com al Figma): separa un bloc dirigit
  * a un altre públic, no una secció més del mateix recorregut.
  */
+
+const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
 
 const MODALITATS = [
   {
@@ -44,20 +52,21 @@ export default function CollabTeaser() {
       aria-labelledby="collab-titol"
       className="flex w-full flex-col border-t border-border-strong lg:flex-row"
     >
-      <div className="flex flex-1 flex-col justify-center gap-8 px-page py-section-s lg:py-section-m">
-        <p className="text-caption-eyebrow text-text-secondary">DEDICACIÓ CONTINUADA</p>
+      <RevealGroup className="flex flex-1 flex-col justify-center gap-8 px-page py-section-s lg:py-section-m">
+        <p className="reveal-up text-caption-eyebrow text-text-secondary" style={delay(80)}>DEDICACIÓ CONTINUADA</p>
 
         <div className="flex flex-col gap-4">
           <h2 id="collab-titol" className="text-display-xs md:text-display-s lg:text-display-l text-text-main">
-            Col&middot;laboració
+            <span className="reveal-line"><span className="reveal-line-inner">Col&middot;laboració</span></span>
           </h2>
-          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
+          <p style={delay(160)} className="reveal-up text-body-xs-light md:text-body-s-light text-text-secondary">
             Reforç sènior de producte i UI per al teu estudi, quan el necessites.
-            M&apos;integro al teu flux de treball (Figma, Slack, sprints) sense
-            friccions. Disponibilitat limitada, actualitzada cada mes.
+            Treballo dins del teu flux (Figma, Slack, sprints) des del primer
+            dia. Disponibilitat limitada, actualitzada cada mes.
           </p>
         </div>
 
+        <div className="reveal-up" style={delay(240)}>
         <LinkUnderline
           as="a"
           href={COLLAB_CALENDAR_URL}
@@ -68,16 +77,21 @@ export default function CollabTeaser() {
           Reserva una trucada
           <span className="sr-only"> (s&apos;obre en una pestanya nova)</span>
         </LinkUnderline>
-      </div>
+        </div>
+      </RevealGroup>
 
-      <ul className="flex flex-1 flex-col justify-center gap-8 divide-y divide-border-subtle px-page py-section-s lg:py-section-m">
+      <RevealGroup as="ul" className="flex flex-1 flex-col justify-center gap-8 divide-y dash-divide-h-border-default px-page py-section-s lg:py-section-m">
         {MODALITATS.map((m, i) => (
-          <li key={m.title} className={i === 0 ? "flex flex-col gap-1" : "flex flex-col gap-1 pt-8"}>
+          <li
+            key={m.title}
+            style={delay(250 + i * 100)}
+            className={i === 0 ? "reveal-up flex flex-col gap-1" : "reveal-up flex flex-col gap-1 pt-8"}
+          >
             <p className="text-body-l lg:text-body-xl text-text-main">{m.title}</p>
             <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{m.detail}</p>
           </li>
         ))}
-      </ul>
+      </RevealGroup>
     </section>
   );
 }

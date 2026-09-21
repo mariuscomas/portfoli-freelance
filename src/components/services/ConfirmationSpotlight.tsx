@@ -202,7 +202,10 @@ export default function ConfirmationSpotlight({
       {/* contingut sempre llegible */}
       <div className="cspot__content">
         <div className="col" ref={colRef}>
-          <h1 className="reveal" role="status">
+          {/* Figma: Display/S · 2XL Semi Bold (mòbil 11643-17747, desktop al
+              mestre 11587-12626); XL a tablet, que el Figma no dibuixa.
+              Substitueix el clamp(38→80) d'abans (21set26). */}
+          <h1 className="reveal text-display-s md:text-display-xl lg:text-display-2xl" role="status">
             Sol·licitud enviada.
           </h1>
           <p className="cspot__lead reveal">
@@ -288,8 +291,9 @@ const CSS = `
   display:flex; align-items:center; }
 .cspot .col{ max-width:560px; }
 .cspot h1{
-  font-family:var(--font-heading, var(--font-sans)); font-weight:600; letter-spacing:-.035em;
-  font-size:clamp(38px,5.4vw,80px); line-height:.98; color:var(--fg);
+  /* Tipus: utilities del JSX (Display/S · XL · 2XL). Aquí no, que aquest
+     CSS no té @layer i guanyaria a les utilities. */
+  color:var(--fg);
   white-space:nowrap; text-shadow:0 0 calc(18px*var(--sh)) var(--bg);
 }
 .cspot__lead{

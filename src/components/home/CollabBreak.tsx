@@ -102,13 +102,13 @@ export default function CollabBreak() {
     >
       <div className="sticky top-0 grid h-svh place-content-center place-items-center overflow-hidden px-page motion-reduce:static motion-reduce:h-auto motion-reduce:gap-6 motion-reduce:py-section-xl motion-reduce:lg:py-section-2xl">
         <p ref={firstRef} className={phrase}>
-          I si el projecte no s’acaba?
+          Ets un estudi o una agència?
         </p>
         <p
           ref={secondRef}
           className={`${phrase} opacity-0 motion-reduce:row-start-2 motion-reduce:opacity-100`}
         >
-          Seguim al teu costat.
+          M’integro al teu equip.
         </p>
       </div>
     </div>

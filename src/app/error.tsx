@@ -29,39 +29,34 @@ export default function GlobalError({
 
   return (
     <main className="flex min-h-[100dvh] flex-col w-full bg-surface-base">
-      <section className="flex flex-1 flex-col justify-center px-6 md:px-12 lg:px-24 py-20">
-
-        <div className="relative overflow-hidden pointer-events-none -mx-6 md:-mx-12 lg:-mx-24 mb-12">
-          <p
-            aria-hidden="true"
-            className="font-heading font-semibold uppercase text-error/15 whitespace-nowrap leading-none select-none"
-            style={{ fontSize: "clamp(8rem, 30vw, 26rem)", letterSpacing: "-0.05em" }}
-          >
-            500 · 500 · 500
-          </p>
-        </div>
+      {/* Figma: Errors — 500 i 404 (node 12213:11753 / 11771 / 11789) */}
+      <section className="flex flex-1 flex-col justify-center gap-12 px-page py-20">
+        <p
+          aria-hidden="true"
+          className="text-display-l md:text-display-2xl lg:text-display-3xl uppercase text-error/15 whitespace-nowrap select-none"
+        >
+          500 · 500 · 500
+        </p>
 
         <div className="flex flex-col gap-6 max-w-2xl">
-          <span className="text-label text-error">
+          <span className="text-caption-eyebrow text-error">
             Error · {error.digest || "Inesperat"}
           </span>
           <h1 className="text-body-l-semibold md:text-display-2xs lg:text-display-m text-text-main">
             Alguna cosa no ha anat com tocava.
           </h1>
-          <p className="text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-secondary leading-relaxed">
+          <p className="text-body-l-light lg:text-body-xl-light text-text-secondary">
             Disculpa les molèsties. Pots provar de recarregar la pàgina o tornar a la home.
             Si el problema persisteix, escriu-me directament.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 mt-6">
-            <button
-              type="button"
+          <div className="flex flex-col md:flex-row gap-6 pt-6">
+            <LinkUnderline
               onClick={reset}
-              className="group inline-flex items-center gap-3 text-text-main hover:text-accent transition-colors duration-300 text-body-l lg:text-body-xl font-medium w-fit pb-2 border-b border-text-main hover:border-accent cursor-pointer"
+              icon={<ArrowClockwise size={20} weight="regular" className="shrink-0" aria-hidden />}
             >
-              <ArrowClockwise size={20} weight="regular" className="group-hover:rotate-180 transition-transform duration-500" />
               Tornar a provar
-            </button>
+            </LinkUnderline>
 
             <Link href="/" className="group w-fit">
               <LinkUnderline

@@ -209,20 +209,22 @@ export default function WorkDetailLayout({ data }: Props) {
       </div>
 
       {/* Conclusion Section — `conclusion` és HTML (RichTextEditor).
-          Valors alineats amb el node Figma 10682-5666:
-          - font-size: 48 px desktop (clamp 24→48 fluid amb 2.5vw)
-          - line-height: 1.33 (64px @ 48px font)
-          - font-weight: 400 (Regular, no medium)
-          - letter-spacing: 0
+          Figma (node 10682-5666): Body/XL · 2XL · 3XL Regular (24 · 32 · 56),
+          rampa fixa 21set26. L'estil porta família, pes, interlineat i
+          tracking; substitueix el clamp(24→48) d'abans. Alineació: esquerra
+          a mòbil (Figma 10818-8683), centrada des de md.
           - Width: max 1536px (article width del Figma)
-          - Section pb: 284 px (var --section/padding/y-xl)
+          - Espaiat (Figma section/m · xl · 2xl = 96 · 192 · 288, marge
+            page-margin/*). El pt fa el paper del pb de la secció de media
+            anterior al Figma, que al codi no en té. 288 des de lg, amb el
+            salt del text a 56.
           Sense prose perquè Tailwind no compon prose-p: amb classes
           custom de @layer components. */}
       {data.conclusion && (
-        <section className="relative z-10 px-6 md:px-12 lg:px-24 pt-32 md:pt-48 lg:pt-64 xl:pt-[284px] pb-32 md:pb-48 lg:pb-64 xl:pb-[284px] flex justify-center bg-surface-base">
-          <div className="w-full max-w-[1536px] flex flex-col items-center text-center">
+        <section className="relative z-10 px-page py-section-m md:py-section-xl lg:py-section-2xl flex justify-center bg-surface-base">
+          <div className="w-full max-w-[1536px] flex flex-col items-center text-left md:text-center">
             <div
-              className="text-[clamp(1.5rem,2.5vw,3rem)] leading-[1.33] tracking-normal text-text-main font-normal
+              className="text-body-xl md:text-body-2xl lg:text-body-3xl text-text-main
                 [&_p]:my-0
                 [&_strong]:text-text-main [&_strong]:font-bold
                 [&_em]:italic

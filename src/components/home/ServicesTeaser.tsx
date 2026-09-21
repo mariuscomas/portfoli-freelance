@@ -1,5 +1,6 @@
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import TransitionLink from "@/components/common/TransitionLink";
+import RevealGroup from "@/components/common/RevealGroup";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
 import { SITE_EMAIL } from "@/lib/site";
 import { PRODUCT_CALL_URL, type Product, type ProductId } from "@/lib/pricing";
@@ -32,6 +33,9 @@ const SPOKE: Record<ProductId, string> = {
   auditoria: "/serveis/auditoria",
 };
 
+/** Retard d'entrada per a un fill d'un RevealGroup (guió 21set26). */
+const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
+
 const formatPrice = (n: number) =>
   `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
 
@@ -60,22 +64,43 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
       id="serveis"
       aria-labelledby="serveis-titol"
       // La cortina sobre el tall (CollabBreak) és l'embolcall de page.tsx
-      // (SplitFunnel + Serveis, z-10 i fons opac). Mai z negatiu al tall.
+      // (Serveis, z-10 i fons opac). Mai z negatiu al tall.
       // border-b: la vora inferior és el final visible de la cortina.
       className="w-full border-y border-border-default"
     >
-      <header className="flex items-baseline gap-12 px-page pt-section-m lg:pt-section-xl pb-section-xs">
-        <h2 id="serveis-titol" className="text-display-xs md:text-display-s lg:text-display-l flex-1 text-text-main">
-          Serveis
-        </h2>
-        <CardLink href="/serveis">Explora els serveis</CardLink>
-      </header>
+      {/* Figma wireframe «Header» (21set26): etiqueta + títol + descripció.
+          Desktop 12211:59362 · Tablet 12211:59610 · Mobile 12211:59844.
+          El Split es va treure i aquesta capçalera és el primer que es llegeix
+          després del hero: diu el model (preu tancat) i com funciona. */}
+      {/* Entrada (guió 21set26): títol G1 i després etiqueta, descripció i
+          link G2 en relleu de 80 ms. */}
+      <RevealGroup as="header" className="flex flex-col gap-6 px-page pt-section-s pb-section-xs md:flex-row md:items-baseline md:gap-12 md:pt-section-m lg:items-start lg:gap-8 lg:pb-section-m">
+        <div className="flex flex-1 flex-col gap-8">
+          <p className="reveal-up text-caption-eyebrow text-text-secondary" style={delay(80)}>PROJECTES AMB PREU TANCAT</p>
+          <div className="flex flex-col gap-4">
+            <h2 id="serveis-titol" className="text-display-m md:text-display-xl lg:text-display-2xl text-text-main">
+              <span className="reveal-line"><span className="reveal-line-inner">Serveis</span></span>
+            </h2>
+            <p style={delay(160)} className="reveal-up max-w-[580px] text-body-xs-light md:text-body-s-light text-text-secondary">
+              M’encarrego del teu projecte de principi a fi. Tria un punt de
+              partida i et torno una proposta amb abast i preu.
+            </p>
+          </div>
+        </div>
+        <div className="reveal-up" style={delay(240)}>
+          <CardLink href="/serveis">Explora</CardLink>
+        </div>
+      </RevealGroup>
 
-      <div className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default lg:flex-row lg:divide-x lg:divide-y-0 lg:dash-divide-v-border-default">
-        {products.map((product) => (
+      {/* Tríada (guió 21set26): primer els filets verticals es dibuixen de
+          dalt a baix (G3, només lg) i després les cards entren d'esquerra a
+          dreta cada 100 ms (G2). */}
+      <RevealGroup className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default lg:flex-row lg:divide-x lg:divide-y-0 lg:dash-divide-v-border-default">
+        {products.map((product, i) => (
           <article
             key={product.id}
-            className="flex flex-1 flex-col gap-8 px-page py-section-s lg:py-section-m lg:p-page"
+            style={delay(250 + i * 100)}
+            className="reveal-up reveal-rule-v flex flex-1 flex-col gap-8 px-page py-section-s lg:py-section-m lg:p-page"
           >
             <div className="flex flex-1 flex-col gap-3">
               <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{product.name}</h3>
@@ -97,7 +122,7 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
             </div>
           </article>
         ))}
-      </div>
+      </RevealGroup>
 
       {/* Porta de sortida per al que no encaixa a la tríada (Figma "Row — A mida",
           desktop 12136:13866). La vora superior és `border-strong`: separa un
@@ -107,8 +132,8 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
           per sota dels 96 de les cards: la fila és secundària. Tablet: text i
           CTA en fila sense filet. Mòbil: apilat.
           Filets interns dashed, vores de secció sòlides (regla 18set26). */}
-      <div className="flex flex-col gap-6 border-t dash-h-border-strong px-page py-section-xs md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:dash-divide-v-border-default">
-        <div className="flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-page lg:py-16">
+      <RevealGroup className="flex flex-col gap-6 border-t dash-h-border-strong px-page py-section-xs md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:dash-divide-v-border-default">
+        <div className="reveal-up flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-page lg:py-16">
           <p className="text-caption-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
           <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">Una altra cosa al cap?</h3>
           <p className="text-body-xs-light md:text-body-s-light max-w-[384px] text-text-secondary">
@@ -117,7 +142,7 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 lg:w-1/3 lg:gap-4 lg:px-page lg:py-16">
+        <div style={delay(80)} className="reveal-up flex flex-col gap-6 lg:w-1/3 lg:gap-4 lg:px-page lg:py-16">
           <LinkUnderline
             as="a"
             href={PRODUCT_CALL_URL}
@@ -137,7 +162,7 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
             Escriu-me
           </LinkUnderline>
         </div>
-      </div>
+      </RevealGroup>
     </section>
   );
 }
