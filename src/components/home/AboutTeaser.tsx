@@ -1,86 +1,105 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight } from "@phosphor-icons/react";
 import TransitionLink from "@/components/common/TransitionLink";
+import RevealGroup from "@/components/common/RevealGroup";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
+import { useContactModal } from "@/context/ContactModalContext";
+
+/**
+ * Secció · Sobre mi de la home.
+ *
+ * Figma (Wireframes, 21set26): "Section · About"
+ *   Desktop 12211:59442 · Tablet 12211:59691 · Mobile 12211:59925
+ *
+ * Capçalera nova: «Ei, sóc en Màrius.» + «Encantat de conèixer-te.» amb el
+ * Link «Vols que parlem?» a la mateixa línia (obre el ContactModal). Substitueix
+ * el «SOBRE MI» en majúscules. Un sol Link: el duplicat de la dreta del 16" es
+ * va treure.
+ *
+ * És client només pel ContactModal; l'entrada és la del guió (21set26):
+ * titular G1, subtítol G2; fotos amb clip-path + escala en relleu de 120 ms;
+ * paràgraf i Link G2. Tres grups perquè a mòbil cada bloc arriba per separat.
+ */
+
+const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as React.CSSProperties;
+
+const PHOTOS = [
+  {
+    src: "/images/home_about_marius_03.png",
+    alt: "Màrius Comas",
+    // Mòbil: amplada sencera (354×319). Tablet: columna esquerra, dues files.
+    // Desktop: una de tres (544×616).
+    className:
+      "col-span-2 aspect-[354/319] md:col-span-1 md:row-span-2 md:aspect-auto lg:row-span-1 lg:aspect-[544/616]",
+  },
+  {
+    src: "/images/home_about_marius_02.png",
+    alt: "Paisatge de l'Empordà a contrallum",
+    className: "aspect-square md:aspect-[3/2] lg:aspect-[544/616]",
+  },
+  {
+    src: "/images/home_about_marius_01.png",
+    alt: "Paisatge de l'Empordà al capvespre",
+    className: "aspect-square md:aspect-[3/2] lg:aspect-[544/616]",
+  },
+];
 
 export default function AboutTeaser() {
+  const { open: openContactModal } = useContactModal();
+
   return (
-    <section className="w-full border-t border-border-subtle py-section-m lg:py-section-xl">
-
-      {/* Heading */}
-      <div className="flex justify-between items-end mb-16 md:mb-20 px-4 md:px-[3vw] lg:px-[4vw]">
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="font-heading text-display-s-medium md:text-display-m-medium lg:text-display-l-medium uppercase text-text-main leading-none m-0"
+    <section className="flex w-full flex-col gap-12 border-t border-border-subtle py-section-s md:gap-16 md:py-section-m lg:gap-24 lg:py-section-xl">
+      <RevealGroup as="header" className="flex flex-col gap-4 px-page">
+        <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l text-text-main">
+          <span className="reveal-line">
+            <span className="reveal-line-inner">Ei, sóc en Màrius.</span>
+          </span>
+        </h2>
+        <div
+          className="reveal-up flex flex-wrap items-baseline gap-x-2.5 gap-y-1"
+          style={delay(80)}
         >
-          Sobre mi
-        </motion.h2>
-      </div>
-
-      {/* 3 Images Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 px-4 md:px-[3vw] lg:px-[4vw] gap-4 md:gap-6 w-full">
-
-        {/* Imatge 1 (Esquerra): Ocupa 2 columnes a mòbil, 1 columna i 2 files a Tablet, i 1 columna i 1 fila a Desktop */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-          className="col-span-2 md:col-span-1 md:row-span-2 lg:row-span-1 w-full relative overflow-hidden bg-surface-elevated grayscale hover:grayscale-0 transition-all duration-500 aspect-square md:aspect-auto lg:aspect-[4/5] h-full min-h-[300px]"
-        >
-          <Image src="/images/home_about_marius_03.png" alt="Màrius Comas" fill className="object-cover absolute inset-0" />
-        </motion.div>
-
-        {/* Imatge 2 (Dreta Dalt) */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="col-span-1 w-full relative overflow-hidden bg-surface-elevated grayscale hover:grayscale-0 transition-all duration-500 aspect-square md:aspect-[4/3] lg:aspect-[4/5]"
-        >
-          <Image src="/images/home_about_marius_02.png" alt="Paisatge 1" fill className="object-cover absolute inset-0" />
-        </motion.div>
-
-        {/* Imatge 3 (Dreta Baix) */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="col-span-1 w-full relative overflow-hidden bg-surface-elevated grayscale hover:grayscale-0 transition-all duration-500 aspect-square md:aspect-[4/3] lg:aspect-[4/5]"
-        >
-          <Image src="/images/home_about_marius_01.png" alt="Paisatge 2" fill className="object-cover absolute inset-0" />
-        </motion.div>
-      </div>
-
-      {/* Text Content - Right Aligned (Alineat amb les fotos de la dreta) */}
-      <div className="w-full px-4 md:px-[3vw] lg:px-[4vw] mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6 lg:gap-0">
-        {/* Figma (node 10756:5169): col 6/span 6 d'un grid de 12 → meitat dreta deixant 1 columna (1/12 ≈ 128px) d'aire a la dreta, igual que a l'esquerra de la columna */}
-        <div className="md:col-start-2 lg:col-start-6 lg:col-span-6 flex flex-col gap-10">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-body-xl-light md:text-body-2xl-light lg:text-body-3xl-light text-text-secondary"
+          <p className="text-body-xl lg:text-body-2xl text-text-main">Encantat de conèixer-te.</p>
+          <LinkUnderline
+            onClick={openContactModal}
+            icon={<ArrowRight size={20} className="shrink-0" aria-hidden />}
           >
-            Orgullós de col·laborar i poder ajudar a les empreses a aconseguir el seus objectius i millorar les experiències dels seus clients.
-          </motion.p>
+            Vols que parlem?
+          </LinkUnderline>
+        </div>
+      </RevealGroup>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+      <RevealGroup className="grid w-full grid-cols-2 gap-4 px-6 md:gap-6 lg:grid-cols-3">
+        {PHOTOS.map((photo, i) => (
+          <div
+            key={photo.src}
+            style={delay(i * 120)}
+            className={`reveal-clip relative w-full overflow-hidden bg-surface-elevated grayscale transition-[filter] duration-500 hover:grayscale-0 ${photo.className}`}
           >
-            {/* Figma: Buttons / Custom / Link (12127:62472). Navega → ArrowRight. */}
-            <TransitionLink href="/about" className="group w-fit">
+            <div className="reveal-clip-media absolute inset-0">
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
+        ))}
+      </RevealGroup>
+
+      <RevealGroup className="grid w-full grid-cols-1 px-page md:grid-cols-12">
+        <div className="flex flex-col gap-12 md:col-span-8 md:col-start-4 md:gap-16 lg:col-span-6 lg:col-start-6">
+          <p className="reveal-up max-w-[580px] text-body-xl lg:text-body-2xl text-text-secondary">
+            Orgullós de col·laborar i poder ajudar les empreses a aconseguir els
+            seus objectius i millorar les experiències dels seus clients.
+          </p>
+          <div className="reveal-up" style={delay(80)}>
+            {/* Figma: Buttons / Custom / Link. Navega → ArrowRight. */}
+            <TransitionLink href="/about" className="group block w-fit">
               <LinkUnderline
                 as="span"
                 icon={
@@ -94,9 +113,9 @@ export default function AboutTeaser() {
                 Descobreix més sobre mi
               </LinkUnderline>
             </TransitionLink>
-          </motion.div>
+          </div>
         </div>
-      </div>
+      </RevealGroup>
     </section>
   );
 }

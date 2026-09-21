@@ -609,6 +609,16 @@
     transform: none;
   }
 
+  /* Tancament: paraula per paraula, de 20% a 100% d'opacitat, un cop. */
+  [data-reveal-armed] .reveal-word {
+    opacity: 0.2;
+    transition: opacity 0.5s var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal-armed][data-revealed] .reveal-word {
+    opacity: 1;
+  }
+
   /* Imatge de treball (home): la caixa es destapa des de baix amb clip-path
      i la imatge passa d'escala 1,06 a 1. L'escala va en un embolcall propi
      perquè no trepitgi la transició del hover (scale 1,03) de la <img>. */
