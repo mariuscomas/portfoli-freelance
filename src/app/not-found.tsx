@@ -4,16 +4,18 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, type Transition } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
+import { LinkUnderline } from "@/components/ui/LinkUnderline";
 
 /**
  * /404 — Pàgina no trobada
  *
  * Aproximació minimalista (inspirada en limeiq.com/404):
- *   - "404" petit a sobre, com a label
+ *   - "404" petit a sobre, com a etiqueta (Caption/Eyebrow)
  *   - Missatge gran que s'escriu lletra a lletra, en cicle infinit
  *     (escriu → pausa → esborra → següent missatge → ...)
  *   - Dos tons en la mateixa frase: arrel en main, complement en secondary
- *   - CTA: link underline + pastilla quadrada amb fletxa
+ *   - CTA: Link del DS amb ArrowRight, com a la 500
+ *   Figma: Errors — 500 i 404 (nodes 12216:20209 / 20217 / 20225)
  *
  * El Header global ja l'hereta de SiteShell → NavigationWrapper.
  */
@@ -102,23 +104,22 @@ export default function NotFound() {
   };
 
   return (
-    <section className="flex h-[100dvh] w-full flex-col items-center justify-center bg-surface-base px-6 md:px-12 lg:px-24">
+    <section className="flex h-[100dvh] w-full flex-col items-center justify-center bg-surface-base px-page">
       <div className="flex flex-col items-center text-center gap-10">
         {/* Etiqueta 404 */}
         <motion.span
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={fadeIn}
-          className="font-heading text-body-l lg:text-body-xl text-text-main"
+          className="text-caption-eyebrow text-text-secondary"
         >
           404
         </motion.span>
 
         {/* Missatge gran — typewriter en bucle amb dos tons */}
-        {/* DS-exception: escala responsiva pròpia perquè el typewriter capiga en 1 línia a cada breakpoint */}
+        {/* Una línia a cada breakpoint: Display/XS · M · XL (32 · 48 · 64) */}
         <h1
-          className="font-heading font-normal leading-tight tracking-tight !whitespace-nowrap max-w-full text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
-          style={{ whiteSpace: "nowrap" }}
+          className="text-display-xs md:text-display-m lg:text-display-xl whitespace-nowrap max-w-full"
           aria-live="polite"
           aria-label={current.text}
         >
@@ -132,20 +133,27 @@ export default function NotFound() {
           />
         </h1>
 
-        {/* CTA — link underline + pastilla amb fletxa */}
+        {/* CTA — Link del DS */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...fadeIn, delay: 0.25 }}
           className="mt-6"
         >
-          <Link href="/" className="group inline-flex items-center gap-3 text-text-main">
-            <span className="text-body-l lg:text-body-xl underline underline-offset-[6px] decoration-text-main/80 group-hover:decoration-accent group-hover:text-accent transition-colors">
+          <Link href="/" className="group w-fit">
+            <LinkUnderline
+              as="span"
+              icon={
+                <ArrowRight
+                  size={20}
+                  weight="regular"
+                  className="shrink-0 transition-transform group-hover:translate-x-1"
+                  aria-hidden
+                />
+              }
+            >
               Tornar a la home
-            </span>
-            <span className="inline-flex items-center justify-center size-10 rounded-[10px] bg-primary-main text-text-main-inverse transition-transform duration-300 group-hover:translate-x-1">
-              <ArrowRight size={18} weight="regular" />
-            </span>
+            </LinkUnderline>
           </Link>
         </motion.div>
       </div>
