@@ -2,6 +2,7 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import TransitionLink from "@/components/common/TransitionLink";
 import RevealGroup from "@/components/common/RevealGroup";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
+import FrameRuler from "@/components/ui/FrameRuler";
 import { SITE_EMAIL } from "@/lib/site";
 import { PRODUCT_CALL_URL, type Product, type ProductId } from "@/lib/pricing";
 
@@ -19,12 +20,9 @@ import { PRODUCT_CALL_URL, type Product, type ProductId } from "@/lib/pricing";
  * COMPONENT DE SERVIDOR a posta: no hi ha estat ni modals, només enllaços.
  * A la portada això compta, que el Lighthouse mòbil està a 69.
  *
- * ⚠️ DIVERGÈNCIA AMB EL FIGMA, justificada: la card diu «Configura'l» i aquí
- * el CTA diu «Mira el detall», perquè el que fa és NAVEGAR a l'spoke. No és
- * el flag qui ho decideix: amb `NEXT_PUBLIC_CONFIGURATOR=1` en local, un
- * «Configura'l» que porta a una altra pàgina seria una etiqueta que menteix.
- * El dia que la portada obri el configurador, aquest CTA passa a client i
- * recupera el text del Figma.
+ * Card: mestre Figma "Card · Product" 12293:90215 (Breakpoint × State).
+ * Tota la card és clicable i navega a l'spoke; el CTA diu «Mira el detall»
+ * a Figma i a codi (22set26).
  */
 
 const SPOKE: Record<ProductId, string> = {
@@ -96,61 +94,91 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
       </RevealGroup>
 
       {/* Tríada (guió 21set26): primer els filets verticals es dibuixen de
-          dalt a baix (G3, només lg) i després les cards entren d'esquerra a
+          dalt a baix (G3, només xl) i després les cards entren d'esquerra a
           dreta cada 100 ms (G2). */}
-      <RevealGroup className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default lg:flex-row lg:divide-x lg:divide-y-0 lg:dash-divide-v-border-default">
+      <RevealGroup className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default xl:flex-row xl:divide-x xl:divide-y-0 xl:dash-divide-v-border-default">
         {products.map((product, i) => (
+          // Card sencera clicable (22set26): el ::after del link cobreix
+          // l'article (relative). Hover = surface-card; focus = anell a la
+          // card, no al link. Figma: Card · Product 12293:90215 (State).
+          // Tres columnes només des de xl: a 1024 no hi cabien nom, preu i
+          // link (22set26); lg fa servir la fila de Tablet (variant Laptop = xl).
           <article
             key={product.id}
             style={delay(250 + i * 100)}
-            className="reveal-up reveal-rule-v flex flex-1 flex-col gap-8 px-page py-section-s lg:py-section-m lg:p-page"
+            className="reveal-up reveal-rule-v group/card relative flex flex-1 flex-col gap-6 px-page py-section-xs transition-colors duration-300 hover:bg-surface-card has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-inset has-[a:focus-visible]:ring-focus-ring md:flex-row md:items-center xl:flex-col xl:items-stretch xl:gap-8 xl:px-12 xl:py-section-m xl:first:pl-page xl:last:pr-page"
           >
-            <div className="flex flex-1 flex-col gap-3">
-              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{product.name}</h3>
-              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{product.description}</p>
+            <div className="flex flex-col gap-3 md:flex-1">
+              {/* El nom mana a la home (22set26): aquí fa de menú; comparar
+                  preus és feina del hub, on mana el preu (15set26). */}
+              <h3 className="text-display-s-medium 2xl:text-display-m-medium text-text-main">{product.name}</h3>
+              <p className="text-body-xs-light xl:text-body-s-light text-text-secondary">{product.description}</p>
             </div>
 
-            <div className="flex items-center justify-between gap-6">
-              {/* El preu mana sobre el nom: decisió del 15set26, mestre "Card — Web". */}
-              <p className="flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-6 md:flex-1 md:flex-col md:items-end xl:flex-none xl:flex-row xl:items-center">
+              <p className="flex flex-col gap-1 md:items-end xl:items-start">
                 <span className="text-caption text-text-secondary">{product.priceLabel}</span>
-                <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">{formatPrice(product.price)}</span>
+                <span className="whitespace-nowrap text-display-2xs xl:text-display-xs text-text-main">{formatPrice(product.price)}</span>
               </p>
-              {/* Sempre "Mira el detall": aquest enllaç NAVEGA a l'spoke en
-                  tots dos estats del flag, i una etiqueta ha de dir el que
-                  passa. El "Configura'l" del Figma arribarà el dia que la card
-                  obri el configurador des de la portada, que demana passar
-                  aquest CTA a client. */}
-              <CardLink href={SPOKE[product.id]}>Mira el detall</CardLink>
+              <TransitionLink
+                href={SPOKE[product.id]}
+                className="whitespace-nowrap after:absolute after:inset-0 focus-visible:outline-none"
+              >
+                {/* md+: Link MD del DS. Mòbil: només la fletxa (Ghost Square
+                    del Figma) i el text queda per al lector de pantalla. */}
+                <span className="max-md:sr-only">
+                  <LinkUnderline
+                    as="span"
+                    size="md"
+                    icon={<ArrowRight size={20} className="shrink-0 motion-safe:transition-transform motion-safe:group-hover/card:translate-x-1" aria-hidden />}
+                  >
+                    Mira el detall<span className="sr-only"> de {product.name}</span>
+                  </LinkUnderline>
+                </span>
+                <span aria-hidden className="flex size-12 items-center justify-center md:hidden">
+                  <ArrowRight size={32} className="motion-safe:transition-transform motion-safe:group-hover/card:translate-x-1" />
+                </span>
+              </TransitionLink>
             </div>
           </article>
         ))}
       </RevealGroup>
 
-      {/* Porta de sortida per al que no encaixa a la tríada (Figma "Row — A mida",
-          desktop 12136:13866). La vora superior és `border-strong`: separa un
-          bloc de naturalesa diferent, no una card més de la mateixa fila.
-          Desktop: un sol missatge a 2/3 (etiqueta, títol i paràgraf) i els CTA
-          al terç d'Auditoria, alineats amb el seu enllaç. Padding vertical 64,
-          per sota dels 96 de les cards: la fila és secundària. Tablet: text i
-          CTA en fila sense filet. Mòbil: apilat.
-          Filets interns dashed, vores de secció sòlides (regla 18set26). */}
-      <RevealGroup className="flex flex-col gap-6 border-t dash-h-border-strong px-page py-section-xs md:flex-row md:gap-12 lg:gap-0 lg:p-0 lg:divide-x lg:dash-divide-v-border-default">
-        <div className="reveal-up flex flex-col gap-3 md:flex-1 lg:w-2/3 lg:flex-none lg:px-page lg:py-16">
-          <p className="text-caption-eyebrow text-text-secondary">APPS, BRANDING I MOLT MÉS</p>
-          <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">Una altra cosa al cap?</h3>
-          <p className="text-body-xs-light md:text-body-s-light max-w-[384px] text-text-secondary">
-            El que no encaixa en aquests punts de partida el pressupostem junts
-            després d&apos;una trucada.
-          </p>
+      {/* Fila «a mida»: porta de sortida per al que no encaixa a la tríada.
+          Figma: mestre "Card · Una altra cosa al cap" 12304:91680
+          (Desktop 12304:91677 · Tablet 12304:91678 · Mobile 12304:91679).
+          - Vora superior SÒLIDA border-default: excepció a la regla de filets
+            (dashed dins de secció), decidida el 22set26 per marcar-la com un
+            bloc a part de la tríada.
+          - Marc de regla (FrameRuler, mestre Frame / Ruler 12305:14461): diu
+            «a mida» sense color. Substitueix la prova amb superfície Pistatxo,
+            que feia pesar la sortida secundària més que els productes.
+          - Titular un graó per sota del nom de producte a cada breakpoint.
+          - Enllaços en columna; el primari un graó per sobre del secundari. */}
+      <RevealGroup className="relative flex flex-col gap-12 border-t border-border-default px-page py-section-xs md:flex-row md:items-start md:py-section-s lg:gap-0 lg:p-0">
+        <FrameRuler />
+        <div className="reveal-up flex flex-col gap-8 md:flex-1 lg:w-2/3 lg:flex-none lg:p-page">
+          <p className="text-caption-eyebrow text-text-secondary">APPS · BRANDING I MOLT MÉS</p>
+          <div className="flex flex-col gap-4">
+            <h3 className="text-display-2xs md:text-display-xs lg:text-display-s text-text-main">Una altra cosa al cap?</h3>
+            <p className="max-w-[384px] text-body-xs-light md:text-body-s-light text-text-secondary">
+              El que no encaixa en aquests punts de partida el pressupostem junts
+              després d&apos;una trucada.
+            </p>
+          </div>
         </div>
 
-        <div style={delay(80)} className="reveal-up flex flex-col gap-6 lg:w-1/3 lg:gap-4 lg:px-page lg:py-16">
+        {/* max-md:-mb-2.5: l'àrea tàctil del darrer enllaç (min-h-11) deixa
+            ~10 px buits sota el subratllat; sense compensar, l'aire de baix
+            era més gran que el de dalt (Figma: mateix aire a dalt i a baix). */}
+        <div style={delay(80)} className="reveal-up flex flex-col items-start gap-6 max-md:-mb-2.5 lg:w-1/3 lg:px-page lg:py-page">
           <LinkUnderline
             as="a"
             href={PRODUCT_CALL_URL}
             target="_blank"
             rel="noopener noreferrer"
+            size="md"
+            className="lg:text-button-link-lg"
             icon={<ArrowRight size={20} className="shrink-0" aria-hidden />}
           >
             Reserva una trucada de 20 minuts
@@ -160,6 +188,8 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
           <LinkUnderline
             as="a"
             href={`mailto:${SITE_EMAIL}`}
+            size="sm"
+            className="lg:text-button-link-md"
             icon={<ArrowRight size={20} className="shrink-0" aria-hidden />}
           >
             Escriu-me
