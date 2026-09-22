@@ -1,82 +1,286 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import TransitionLink from "@/components/common/TransitionLink";
-import { useRef, useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useRef, useEffect, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowLineUpRight, X } from "@phosphor-icons/react";
+import TransitionLink from "@/components/common/TransitionLink";
+import LogoSmall from "@/components/common/LogoSmall";
+import Button from "@/components/ui/Button";
 import { useContactModal } from "@/context/ContactModalContext";
 
-interface MenuLink {
+/*
+  <FullScreenMenu />
+  ------------------
+  Figma: Menu (12188:55011) · mestre Item Menu (12248:74947, Breakpoint × State).
+
+  - Mòbil (< md): llista alineada a l'esquerra amb filet dashed (5/10) a
+    dalt de cada fila,
+    Display/S, fletxa a la dreta.
+  - Tablet (md–lg) i desktop (lg+): llista centrada, número i fletxa penjats
+    als costats de l'etiqueta (Display/L a tablet, Display/3XL a desktop),
+    dins d'un scroll INFINIT (decisió de disseny, 22set26; tablet també des
+    del mateix dia): la llista es repeteix i el scroll salta d'una còpia a
+    l'altra sense que es noti.
+
+  Color (22set26): cada enllaç té el seu token `nav/*`. Default en gris; el
+  color surt al hover (només on hi ha cursor: `hover:` de Tailwind v4 ja va
+  dins @media (hover:hover)) i a la pàgina actual, que a més porta un punt
+  davant del número perquè no depengui només del color. Les xarxes queden en
+  gris i només la fletxa porta el color de marca (`social/*`).
+*/
+
+type MenuLink = {
   label: string;
   href: string;
-  isExternal?: boolean;
-  /**
-   * Color personal de cada link (active + hover). Tots a HSL S=84% L=50%
-   * variant només H per cobrir 7 hues equidistants (~51° entre elles).
-   * Mateixa "família" cromàtica que l'accent verd (hsl(143, 84%, 50%)) per
-   * mantenir cohesió visual sense que cap se senti dissonant.
-   */
+  /** Token de color de l'enllaç (nav/*) o de la fletxa (social/*). */
   color: string;
-}
+  isExternal?: boolean;
+  /** Contacte no navega: obre la cortina de contacte. */
+  isContact?: boolean;
+};
 
 const menuLinks: MenuLink[] = [
-  { label: "Home", href: "/", color: "hsl(143, 84%, 50%)" },           // verd (accent original)
-  { label: "Treballs", href: "/works", color: "hsl(194, 84%, 50%)" },  // cian
-  { label: "Serveis", href: "/serveis", color: "hsl(245, 84%, 60%)" }, // blau-violeta (L pujat per llegibilitat)
-  { label: "Col·laboració", href: "/colaboracio", color: "hsl(270, 84%, 62%)" }, // violeta
-  { label: "Qui soc", href: "/about", color: "hsl(296, 84%, 60%)" },  // magenta (L pujat)
-  { label: "Behance", href: "https://www.behance.net/MariusComas", isExternal: true, color: "hsl(347, 84%, 58%)" }, // vermell-coral
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/mariuscomas/", isExternal: true, color: "hsl(38, 84%, 55%)" }, // taronja
-  // Contacte ja no navega: obre el modal de contacte (cortina). El href es
-  // manté com a identificador per marcar-lo com a especial al render.
-  { label: "Contacte", href: "/contacte", color: "hsl(89, 84%, 50%)" }, // groc-llima
+  { label: "Inici", href: "/", color: "var(--color-nav-inici)" },
+  { label: "Treballs", href: "/works", color: "var(--color-nav-treballs)" },
+  { label: "Serveis", href: "/serveis", color: "var(--color-nav-serveis)" },
+  { label: "Col·laboració", href: "/colaboracio", color: "var(--color-nav-colaboracio)" },
+  { label: "Qui soc", href: "/about", color: "var(--color-nav-qui-soc)" },
+  { label: "Contacte", href: "/contacte", color: "var(--color-nav-contacte)", isContact: true },
+  { label: "Behance", href: "https://www.behance.net/MariusComas", color: "var(--color-social-behance)", isExternal: true },
+  { label: "Dribbble", href: "https://dribbble.com/mariuscomas", color: "var(--color-social-dribbble)", isExternal: true },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/mariuscomas/", color: "var(--color-social-linkedin)", isExternal: true },
 ];
 
-/** Ítems que en lloc de navegar obren el modal de contacte. */
-const isContactLink = (link: MenuLink) => link.href === "/contacte";
+/** Còpies de la llista al loop de desktop. La del mig és la real. */
+const LOOP_COPIES = 5;
+const LOOP_MIDDLE = Math.floor(LOOP_COPIES / 2);
+/** Escala de la roda a les vores de la pantalla (el centre és 1). */
+const WHEEL_MIN = 0.55;
+
+/** Màscares de les franges d'esvaïment: opac al costat de la vora. */
+const FADE_DOWN = "linear-gradient(to bottom, #000, transparent)";
+const FADE_UP = "linear-gradient(to top, #000, transparent)";
+
+const isActiveLink = (link: MenuLink, pathname: string) =>
+  !link.isExternal && !link.isContact && pathname === link.href;
+
+/* Color de text segons l'estat. Les xarxes no s'hi apunten: queden en gris. */
+function labelColor(link: MenuLink, active: boolean) {
+  if (link.isExternal) return "text-text-secondary";
+  return active
+    ? "text-[var(--link-color)]"
+    : "text-text-secondary group-hover:text-[var(--link-color)] group-focus-visible:text-[var(--link-color)]";
+}
+
+type Layout = "mobile" | "centered";
+
+function ItemInner({
+  link,
+  index,
+  active,
+  layout,
+  labelClass,
+  arrowSize,
+  arrowClass = "",
+}: {
+  link: MenuLink;
+  index: number;
+  active: boolean;
+  layout: Layout;
+  labelClass: string;
+  arrowSize: number;
+  /** Classes de mida responsive de la fletxa (sobreescriuen arrowSize). */
+  arrowClass?: string;
+}) {
+  const number = String(index + 1).padStart(2, "0");
+  const color = labelColor(link, active);
+  // Punt de la pàgina actual: 8 px, 8 px abans del número.
+  const dot = active ? (
+    <span aria-hidden className="absolute right-full top-1/2 mr-2 size-2 -translate-y-1/2 rounded-full bg-[var(--link-color)]" />
+  ) : null;
+  const arrow = link.isExternal ? (
+    <ArrowLineUpRight aria-hidden size={arrowSize} weight="regular" className={`shrink-0 text-[var(--link-color)] ${arrowClass}`} />
+  ) : null;
+
+  if (layout === "mobile") {
+    return (
+      <span className="flex w-full items-center gap-4">
+        <span className={`relative text-caption transition-colors duration-300 ${color}`}>
+          {dot}
+          {number}
+        </span>
+        <span className={`flex-1 ${labelClass} transition-colors duration-300 ${color}`}>{link.label}</span>
+        {arrow}
+      </span>
+    );
+  }
+
+  // Centrat (tablet i desktop): número i fletxa penjats a 10 px de l'etiqueta
+  // perquè l'etiqueta quedi centrada sola, com al Figma.
+  return (
+    // data-wheel: el loop escala aquest bloc segons la distància al centre
+    // (roda). El número i la fletxa es contraescalen amb --wheel-inv perquè
+    // mantinguin la mida i segueixin enganxats a la vora de l'etiqueta.
+    <span data-wheel className="relative inline-flex origin-center items-center">
+      <span className={`absolute right-full mr-2.5 origin-right text-caption transition-colors duration-300 [scale:var(--wheel-inv,1)] ${color}`}>
+        {dot}
+        {number}
+      </span>
+      <span className={`${labelClass} transition-colors duration-300 ${color}`}>{link.label}</span>
+      {arrow && <span className="absolute left-full ml-2.5 flex origin-left [scale:var(--wheel-inv,1)]">{arrow}</span>}
+    </span>
+  );
+}
 
 export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { open: openContactModal } = useContactModal();
+  const prefersReducedMotion = useReducedMotion();
+  const loop = !prefersReducedMotion;
 
-  // Tanca el menú i obre la cortina de contacte.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const setRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   const handleContactClick = () => {
     onClose();
     openContactModal();
   };
 
+  const renderItem = (
+    link: MenuLink,
+    i: number,
+    opts: { layout: Layout; labelClass: string; arrowSize: number; arrowClass?: string; rowClass: string; focusable: boolean },
+  ) => {
+    const active = isActiveLink(link, pathname);
+    const inner = (
+      <ItemInner link={link} index={i} active={active} layout={opts.layout} labelClass={opts.labelClass} arrowSize={opts.arrowSize} arrowClass={opts.arrowClass} />
+    );
+    const common = {
+      style: { "--link-color": link.color } as React.CSSProperties,
+      className: `group block w-full outline-none ${opts.rowClass}`,
+      tabIndex: opts.focusable ? undefined : -1,
+    };
+    if (link.isContact) {
+      return (
+        <button type="button" onClick={handleContactClick} {...common} className={`${common.className} cursor-pointer text-left`}>
+          {inner}
+        </button>
+      );
+    }
+    if (link.isExternal) {
+      return (
+        <a href={link.href} target="_blank" rel="noopener noreferrer" {...common}>
+          {inner}
+          <span className="sr-only"> (s&apos;obre en una pestanya nova)</span>
+        </a>
+      );
+    }
+    return (
+      <TransitionLink href={link.href} onClick={onClose} aria-current={active ? "page" : undefined} {...common}>
+        {inner}
+      </TransitionLink>
+    );
+  };
 
-  // Tripliquem els enllaços per crear l'efecte de loop infinit al fer scroll
-  const infiniteLinks = [...menuLinks, ...menuLinks, ...menuLinks, ...menuLinks, ...menuLinks];
+  /*
+    Loop de desktop. L'alçada d'UNA còpia es mesura com la distància entre
+    l'inici de dues còpies consecutives, no com scrollHeight / N: el padding
+    del contenidor no entra al compte i el salt no es desplaça.
+  */
+  useLayoutEffect(() => {
+    if (!isOpen || !loop) return;
+    const container = scrollRef.current;
+    const a = setRefs.current[LOOP_MIDDLE];
+    const b = setRefs.current[LOOP_MIDDLE + 1];
+    if (!container || !a || !b) return;
+    // «Inici» de la còpia real, centrat a la pantalla: és on la roda el fa
+    // gran (22set26). offsetTop no depèn del transform de l'entrada.
+    const first = a.querySelector<HTMLElement>("li");
+    if (!first) return;
+    container.scrollTop = first.offsetTop + first.offsetHeight / 2 - container.clientHeight / 2;
+  }, [isOpen, loop]);
 
   useEffect(() => {
-    if (isOpen && scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      
-      // Posicionem al mig de la llista al principi
-      const singleSetHeight = container.scrollHeight / 5;
-      container.scrollTop = singleSetHeight * 2;
+    if (!isOpen || !loop) return;
+    const container = scrollRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      const first = setRefs.current[0];
+      const second = setRefs.current[1];
+      if (!first || !second) return;
+      const setHeight = second.offsetTop - first.offsetTop;
+      const { scrollTop, clientHeight, scrollHeight } = container;
+      if (scrollTop < setHeight) {
+        container.scrollTop = scrollTop + setHeight * 2;
+      } else if (scrollTop + clientHeight > scrollHeight - setHeight) {
+        container.scrollTop = scrollTop - setHeight * 2;
+      }
+    };
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [isOpen, loop]);
 
-      const handleScroll = () => {
-        const { scrollTop, scrollHeight, clientHeight } = container;
-        const currentSetHeight = scrollHeight / 5;
+  /*
+    Roda (22set26, prototip): l'ítem del centre de la pantalla es queda a la
+    mida del seu estil i els altres s'encongeixen cap als extrems, fins al
+    WHEEL_MIN a la vora. Corba quadràtica: es manté gran a prop del centre i
+    cau més de pressa a les vores. Només transform (sense reflow), recalculat
+    en un rAF per scroll i resize. La mida surt de la posició a la pantalla,
+    així que el salt entre còpies del loop no es nota.
+  */
+  useEffect(() => {
+    if (!isOpen || !loop) return;
+    const container = scrollRef.current;
+    if (!container) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const box = container.getBoundingClientRect();
+      if (box.height === 0) return; // amagat (mòbil)
+      const center = box.top + box.height / 2;
+      const half = box.height / 2;
+      container.querySelectorAll<HTMLElement>("[data-wheel]").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        // Fora de pantalla: no cal tocar-lo.
+        if (r.bottom < box.top - half || r.top > box.bottom + half) return;
+        const d = Math.min(1, Math.abs(r.top + r.height / 2 - center) / half);
+        const scale = 1 - (1 - WHEEL_MIN) * d * d;
+        el.style.transform = `scale(${scale})`;
+        el.style.setProperty("--wheel-inv", String(1 / scale));
+      });
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    schedule();
+    container.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(raf);
+      container.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [isOpen, loop]);
 
-        // Si arribem a dalt (primer set), saltem al quart set
-        if (scrollTop < currentSetHeight) {
-          container.scrollTop = scrollTop + currentSetHeight * 2;
-        }
-        // Si arribem a baix (últim set), saltem al segon set
-        else if (scrollTop + clientHeight > scrollHeight - currentSetHeight) {
-          container.scrollTop = scrollTop - currentSetHeight * 2;
-        }
-      };
+  /*
+    Entrada escalonada: cada fila puja 30 px i apareix, 50 ms després de
+    l'anterior, quan el cercle d'obertura ja és a mig camí (0,3 s). A
+    desktop totes les còpies fan el mateix recorregut per índex, així la
+    fila que treu el cap per sota entra alhora que la seva germana.
+    Amb prefers-reduced-motion, res.
+  */
+  const enter = (i: number) =>
+    prefersReducedMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 30 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.6, delay: 0.3 + i * 0.05, ease: [0.16, 1, 0.3, 1] as const },
+        };
 
-      container.addEventListener("scroll", handleScroll);
-      return () => container.removeEventListener("scroll", handleScroll);
-    }
-  }, [isOpen]);
+  const copies = loop ? LOOP_COPIES : 1;
+  const realCopy = loop ? LOOP_MIDDLE : 0;
 
   return (
     <AnimatePresence>
@@ -85,181 +289,135 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
           initial={{ clipPath: "circle(0% at 95% 5%)" }}
           animate={{ clipPath: "circle(150% at 95% 5%)" }}
           exit={{ clipPath: "circle(0% at 95% 5%)" }}
-          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          className="dark fixed inset-0 z-[100] w-full h-[100dvh] bg-surface-base text-text-main flex flex-col overflow-hidden"
+          transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.76, 0, 0.24, 1] }}
+          className="dark fixed inset-0 z-[100] h-[100dvh] w-full overflow-hidden bg-surface-base text-text-main"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menú"
         >
-          {/* Top Bar - Align with Header.tsx padding and style */}
-          <div className="fixed top-0 w-full flex justify-between items-center px-4 md:px-8 lg:px-24 py-6 md:py-8 z-[110] bg-transparent pointer-events-none">
-            {/* DS-exception: wordmark del logo, mida pròpia de marca */}
-            <TransitionLink href="/" onClick={onClose} className="text-3xl font-bold tracking-tighter text-text-main pointer-events-auto h-8 lg:h-12 flex items-center">
-              M<span className="text-text-secondary">!</span>
+          {/*
+            Barra superior: la mateixa geometria que el Header.
+            - Mòbil i tablet: fons surface-base al 90% amb desenfocament, perquè
+              la llista hi passa per sota del botó. A tablet, filet sòlid a
+              baix (a mòbil no: la primera fila ja porta el seu filet dashed). Figma: Navbar Top ·
+              Menu=True, Background 90% + background blur 10 (el radi de Figma
+              equival a blur(5px) a CSS).
+            - Desktop: sense fons. El loop s'esvaeix a dalt i a baix amb les
+              dues franges de sota (22set26).
+          */}
+          {loop && (
+            <>
+              {/*
+                Franges d'esvaïment del loop (lg+). Fons al 90% + desenfocament,
+                retallats amb una màscara lineal: així s'esvaeixen tots dos, el
+                color i el blur. Un backdrop-filter sense màscara deixaria un
+                límit dur on acaba la franja. Figma: Background de Navbar Top
+                (Desktop · Menu=True) i de Navbar Bottom, degradat 100→0 al 90%.
+              */}
+              <div
+                aria-hidden
+                className="pointer-events-none fixed inset-x-0 top-0 z-[105] hidden h-24 bg-surface-base/90 backdrop-blur-[5px] lg:block"
+                style={{ maskImage: FADE_DOWN, WebkitMaskImage: FADE_DOWN }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none fixed inset-x-0 bottom-0 z-[105] hidden h-24 bg-surface-base/90 backdrop-blur-[5px] lg:block"
+                style={{ maskImage: FADE_UP, WebkitMaskImage: FADE_UP }}
+              />
+            </>
+          )}
+          <div
+            className={`pointer-events-none fixed top-0 z-[110] flex w-full items-center justify-between bg-surface-base/90 px-page py-6 backdrop-blur-[5px] md:max-lg:border-b md:max-lg:border-border-subtle ${loop ? "lg:bg-transparent lg:backdrop-blur-none" : ""}`}
+          >
+            <TransitionLink href="/" onClick={onClose} aria-label="Inici" className="pointer-events-auto text-text-main transition-opacity hover:opacity-80">
+              <LogoSmall className="!h-[38.4px] w-auto md:!h-6" />
             </TransitionLink>
-            <button
-              onClick={onClose}
-              className="px-6 py-2 bg-text-main text-text-main-inverse rounded-full font-sans font-medium text-[16px] hover:scale-105 transition-transform uppercase tracking-normal pointer-events-auto"
-            >
-              Tancar
-            </button>
+            <div className="pointer-events-auto flex h-10 items-center md:h-12">
+              {/* Figma: Buttons / Solid / Large (MD + Pill) a md+; Solid / Square LG + Pill a mòbil. */}
+              <Button variant="solid" shape="pill" size="md" onClick={onClose} className="max-md:hidden">
+                Tancar
+              </Button>
+              <Button
+                variant="solid"
+                shape="pill"
+                size="icon"
+                onClick={onClose}
+                className="!size-12 md:hidden"
+                aria-label="Tancar"
+                iconLeft={<X size={32} weight="regular" />}
+              />
+            </div>
           </div>
 
-          {/* Menu Content */}
-          <div className="flex-1 flex flex-col justify-center items-center w-full h-full pt-20">
-            
-            {/* MOBILE / TABLET VIEW (< lg) */}
-            <div className="flex lg:hidden flex-col w-full h-full overflow-y-auto px-6 py-10">
-              <motion.div 
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.4 } }
-                }}
-                className="flex flex-col w-full"
-              >
-                {menuLinks.map((link, i) => {
-                  const isActive = pathname === link.href;
-                  const isContact = isContactLink(link);
-                  const itemContent = (
-                    <div className="flex justify-between items-center">
-                      {/* DS-exception: mides art-directed del menú full-screen (36/60px) */}
-                      <span className={`text-4xl md:text-6xl font-heading font-bold uppercase tracking-tighter transition-all group-hover:translate-x-2 duration-300 ${
-                        isActive ? "text-[var(--link-color)]" : "text-text-main group-hover:text-[var(--link-color)]"
-                      }`}>
-                        {link.label}
-                      </span>
-                      {link.isExternal && <ArrowUpRight size={32} className="opacity-50 group-hover:text-[var(--link-color)] group-hover:opacity-100 transition-all" />}
-                    </div>
-                  );
-                  return (
-                    <motion.div
-                      key={`${link.label}-${i}`}
-                      variants={{
-                        hidden: { opacity: 0, y: 30 },
-                        visible: { opacity: 1, y: 0 }
-                      }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    >
-                      {/*
-                        --link-color injectat per link → es consumeix amb
-                        text-[var(--link-color)] a les classes condicionals.
-                        Així cada enllaç té el seu propi accent (active +
-                        hover) en lloc d'un únic verd global.
-                      */}
-                      {isContact ? (
-                        <button
-                          type="button"
-                          onClick={handleContactClick}
-                          style={{ "--link-color": link.color } as React.CSSProperties}
-                          className={`block w-full py-6 border-b border-border-subtle group transition-opacity text-left ${
-                            isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
-                          }`}
-                        >
-                          {itemContent}
-                        </button>
-                      ) : (
-                        <TransitionLink
-                          href={link.href}
-                          onClick={onClose}
-                          style={{ "--link-color": link.color } as React.CSSProperties}
-                          className={`block w-full py-6 border-b border-border-subtle group transition-opacity ${
-                            isActive ? "opacity-100" : "opacity-40 hover:opacity-100"
-                          }`}
-                        >
-                          {itemContent}
-                        </TransitionLink>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            </div>
+          {/* MÒBIL (< md) */}
+          <nav aria-label="Menú" className="h-full overflow-y-auto overscroll-none pt-[var(--header-h)] pb-[max(2rem,env(safe-area-inset-bottom))] md:hidden">
+            <ul>
+              {menuLinks.map((link, i) => (
+                <motion.li key={link.label} className="border-t dash-h-border-subtle" {...enter(i)}>
+                  {renderItem(link, i, {
+                    layout: "mobile",
+                    labelClass: "text-display-s",
+                    arrowSize: 32,
+                    rowClass: "px-page py-5",
+                    focusable: true,
+                  })}
+                </motion.li>
+              ))}
+            </ul>
+          </nav>
 
-            {/* DESKTOP VIEW (lg+) - Infinite Scrollable List */}
-            <div 
-              ref={scrollContainerRef}
-              className="hidden lg:flex w-full h-full overflow-y-auto scrollbar-hide px-10 cursor-ns-resize"
-            >
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.3 } }
-                }}
-                className="flex flex-col items-center w-full py-[10vh] gap-0"
-              >
-                {infiniteLinks.map((link, i) => {
-                  const isActive = pathname === link.href;
-                  const isContact = isContactLink(link);
-                  const itemContent = (
-                    <>
-                      <span className={`font-sans text-[1.5vw] transition-all duration-300 ${
-                        isActive ? "opacity-100 text-[var(--link-color)]" : "opacity-30 group-hover:opacity-100 group-hover:text-[var(--link-color)]"
-                      }`}>
-                        {String((i % menuLinks.length) + 1).padStart(2, '0')}
-                      </span>
-                      <span className={`text-[9vw] font-heading font-bold uppercase leading-[0.85] tracking-tighter transition-all duration-500 ${
-                        isActive ? "text-[var(--link-color)] scale-105" : "text-white/20 group-hover:text-[var(--link-color)]"
-                      }`}>
-                        {link.label}
-                      </span>
-                      {link.isExternal && (
-                        <ArrowUpRight
-                          className="w-[5vw] h-[5vw] opacity-20 group-hover:opacity-100 group-hover:text-[var(--link-color)] transition-all duration-500"
-                        />
-                      )}
-                    </>
-                  );
-                  return (
-                    <motion.div
-                      key={`${link.label}-${i}`}
-                      variants={{
-                        hidden: { opacity: 0, y: 30 },
-                        visible: { opacity: 1, y: 0 }
-                      }}
-                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                      className="w-full text-center"
-                    >
-                      {/*
-                        --link-color injectat per link. Mateixa lògica que
-                        mobile: cada enllaç té el seu propi color (active +
-                        hover). El número i la fletxa external també l'usen.
-                        El label gran també es pinta amb el color del link al
-                        hover, igual que l'estat actiu (ex: Treballs en cian).
-                      */}
-                      {isContact ? (
-                        <button
-                          type="button"
-                          onClick={handleContactClick}
-                          style={{ "--link-color": link.color } as React.CSSProperties}
-                          className={`group relative inline-flex items-center gap-12 py-4 transition-all duration-500 ease-out hover:scale-105 cursor-pointer ${
-                            isActive ? "opacity-100" : "opacity-30 hover:opacity-100"
-                          }`}
-                        >
-                          {itemContent}
-                        </button>
-                      ) : (
-                        <TransitionLink
-                          href={link.href}
-                          onClick={onClose}
-                          style={{ "--link-color": link.color } as React.CSSProperties}
-                          className={`group relative inline-flex items-center gap-12 py-4 transition-all duration-500 ease-out hover:scale-105 ${
-                            isActive ? "opacity-100" : "opacity-30 hover:opacity-100"
-                          }`}
-                        >
-                          {itemContent}
-                        </TransitionLink>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            </div>
-
+          {/*
+            TABLET I DESKTOP (md+): scroll infinit (tablet des del 22set26).
+            Tablet: Display/L i fletxa de 40, amb la barra superior i la fila
+            inferior sòlides al 90% i els seus filets. Desktop: Display/3XL i
+            fletxa de 48, sense barres, amb les franges d'esvaïment.
+          */}
+          <div
+            ref={scrollRef}
+            className={`scrollbar-hide hidden h-full overflow-y-auto overscroll-none md:block ${loop ? "" : "pt-[var(--header-h)] pb-24"}`}
+          >
+            {Array.from({ length: copies }, (_, c) => {
+              const isReal = c === realCopy;
+              return (
+                <div
+                  key={c}
+                  ref={(el) => {
+                    setRefs.current[c] = el;
+                  }}
+                  // Les còpies són decoració: fora del lector de pantalla i del Tab.
+                  aria-hidden={isReal ? undefined : true}
+                  inert={isReal ? undefined : true}
+                >
+                  <nav aria-label={isReal ? "Menú" : undefined}>
+                    <ul className="flex flex-col items-center">
+                      {menuLinks.map((link, i) => (
+                        <motion.li key={link.label} {...enter(i)}>
+                          {renderItem(link, i, {
+                            layout: "centered",
+                            labelClass: "text-display-l lg:text-display-3xl",
+                            arrowSize: 40,
+                            arrowClass: "lg:size-12",
+                            rowClass: "px-6 py-5 text-center",
+                            focusable: isReal,
+                          })}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </nav>
+                </div>
+              );
+            })}
           </div>
 
-          {/* Bottom Bar (Optional Branding) */}
-          <div className="fixed bottom-0 w-full p-10 hidden lg:flex justify-between items-end pointer-events-none opacity-20">
-             <div className="text-label tracking-[0.2em]">Barcelona / 2026</div>
-             <div className="text-label tracking-[0.2em]">MÀRIUS COMAS ROSA</div>
+          {/*
+            Fila inferior (md+). Figma: Navbar Bottom, Caption/Default.
+            A tablet, filet sòlid a dalt (i la barra superior, a baix): hi ha
+            tres zones (barra, llista, peu) i entre zones el filet és sòlid.
+            A desktop no n'hi ha: el loop s'esvaeix amb les franges.
+          */}
+          <div className="pointer-events-none fixed bottom-0 z-[110] hidden h-24 w-full items-center justify-between px-page text-caption text-text-secondary md:flex md:max-lg:border-t md:max-lg:border-border-subtle md:max-lg:bg-surface-base/90 md:max-lg:backdrop-blur-[5px]">
+            <span>Empordà / 2026</span>
+            <span>mariusfreelance.com</span>
           </div>
         </motion.div>
       )}

@@ -339,7 +339,7 @@ export default function Header({
               transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
               style={{ transformOrigin: "right center" }}
               /*
-                Mòbil (22set26). Figma: Buttons / Outline / Square / Neutral a
+                Mòbil (22set26). Figma: Buttons / Solid / Square (LG + Pill) a
                 48×48, radi Pill, icona List 32. Els 48 sobresurten 4 px per
                 dalt i per baix del clúster h-10: el header es queda a 88 com
                 al Figma i --header-h no canvia. Color: el mateix `c.button`

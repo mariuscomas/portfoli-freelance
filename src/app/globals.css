@@ -18,6 +18,25 @@
 :root {
   color-scheme: light dark;
 
+  /* --- COLOR / Brand — col·lecció `brand` — col·lecció `brand` del Figma (un sol mode, no s'inverteix).
+     nav/*: color propi de cada enllaç del menú full-screen (hover a desktop,
+     pàgina actual a tots els breakpoints). social/*: fletxa de les xarxes.
+     Tots passen de 3:1 sobre surface-base Dark excepte social/linkedin
+     (2,7:1), per això les xarxes només pinten la fletxa. 22set26.
+     A :root i no a @theme: només es fan servir des d'estils inline
+     (--link-color), i Tailwind no emet les variables de @theme que cap
+     utility no fa servir. */
+  --color-nav-inici: #13ec6d;
+  --color-nav-treballs: #f5a623;
+  --color-nav-serveis: #4d9de0;
+  --color-nav-colaboracio: #b57edc;
+  --color-nav-qui-soc: #f2774c;
+  --color-nav-contacte: #c6e84a;
+  --color-social-behance: #1769ff;
+  --color-social-dribbble: #ea4c89;
+  --color-social-linkedin: #0a66c2;
+
+
   /* --- COLOR / Text --- */
   --text-main: #0b0b0b;
   /* Figma: text/main */
@@ -260,6 +279,36 @@
 }
 
 .dark {
+  /* --- Botons: re-àlies dins .dark (22set26) ---
+     Els --solid-* / --outline-* es declaren a :root com a var(--primary-main)…
+     i hereten el valor JA SUBSTITUÏT al tema clar. En un .dark NIAT (menú
+     full-screen, footer) el Solid sortia fosc sobre fons fosc. Els tornem a
+     lligar aquí perquè es resolguin contra els tokens d'aquest element. */
+  --solid-default-background: var(--primary-main);
+  --solid-default-font-color: var(--text-main-inverse);
+  --solid-focus-outline: var(--primary-main);
+  --solid-pressed-background: var(--text-main);
+  --solid-pressed-font-color: var(--text-main-inverse);
+  --solid-disabled-background: var(--surface-base);
+  --solid-disabled-font-color: var(--text-secondary-inverse);
+  --outline-default-border: var(--primary-main);
+  --outline-default-font-color: var(--primary-main);
+  --outline-hover-background: var(--surface-base);
+  --outline-hover-font-color: var(--primary-main);
+  --outline-focus-outline: var(--primary-main);
+  --outline-pressed-background: var(--border-subtle);
+  --outline-pressed-border: var(--primary-main);
+  --outline-pressed-font-color: var(--primary-main);
+  --outline-disabled-border: var(--border-subtle);
+  --outline-disabled-font-color: var(--text-disabled);
+  --ghost-default-font-color: var(--text-main);
+  --ghost-hover-font-color: var(--text-main);
+  --ghost-focus-outline: var(--primary-main);
+  --ghost-pressed-background: var(--surface-base);
+  --ghost-pressed-font-color: var(--text-main);
+  --ghost-disabled-background: var(--surface-base);
+  --ghost-disabled-font-color: var(--text-disabled);
+
   /* --- COLOR / Text (dark) --- */
   --text-main: #f2f2f2;
   --text-secondary: #999999;
