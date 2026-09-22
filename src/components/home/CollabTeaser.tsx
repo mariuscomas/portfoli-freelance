@@ -62,7 +62,7 @@ export default function CollabTeaser() {
           <p style={delay(160)} className="reveal-up text-body-xs-light md:text-body-s-light text-text-secondary">
             Reforç sènior de producte i UI per al teu estudi, quan el necessites.
             Treballo dins del teu flux (Figma, Slack, sprints) des del primer
-            dia. Disponibilitat limitada, actualitzada cada mes.
+            dia.
           </p>
         </div>
 
