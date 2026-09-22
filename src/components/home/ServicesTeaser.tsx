@@ -66,7 +66,10 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
       // La cortina sobre el tall (CollabBreak) és l'embolcall de page.tsx
       // (Serveis, z-10 i fons opac). Mai z negatiu al tall.
       // border-b: la vora inferior és el final visible de la cortina.
-      className="w-full border-y border-border-default"
+      // Sense border-t: la divisió amb el hero ja la fa el filet inferior de
+      // la Navbar Bottom (Figma, mestre 12179:11958). Amb tots dos es veia
+      // doble (22set26).
+      className="w-full border-b border-border-default"
     >
       {/* Figma wireframe «Header» (21set26): etiqueta + títol + descripció.
           Desktop 12211:59362 · Tablet 12211:59610 · Mobile 12211:59844.

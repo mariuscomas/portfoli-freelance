@@ -51,6 +51,19 @@ type Props = {
    * punt. Emetent-ne només un, el caller mana sense ambigüitat.
    */
   className: string;
+  /**
+   * Màscara CSS (valor de mask-image) aplicada inline al host. Inline i no
+   * com a classe arbitrària de Tailwind: la classe amb radial-gradient no
+   * arribava a aplicar-se al host (provat a l'iPhone, 22set26).
+   */
+  mask?: string;
+  /**
+   * El·lipse (radis en px) ancorada a la cantonada inferior dreta que
+   * coincideix amb la `mask`. Els punts de fora no es creen: la màscara els
+   * faria invisibles igualment, però cadascun és un node del DOM animat. A
+   * mòbil passava de ~1.000 punts a ~350 (22set26).
+   */
+  cornerEllipse?: { rx: number; ry: number };
 };
 
 type Dot = { bx: number; by: number; x: number; y: number; a: number; rest: boolean; op: number };
@@ -66,6 +79,8 @@ export default function HeroField({
   magnet = 30,
   radius = 210,
   fade,
+  mask,
+  cornerEllipse,
   className,
 }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -77,6 +92,8 @@ export default function HeroField({
   const fadeR = fade?.right ?? 0;
   const fadeT = fade?.top ?? 150;
   const fadeB = fade?.bottom ?? 150;
+  const ellRx = cornerEllipse?.rx ?? 0;
+  const ellRy = cornerEllipse?.ry ?? 0;
 
   useEffect(() => {
     const host = hostRef.current;
@@ -107,11 +124,14 @@ export default function HeroField({
           const fy = Math.min(ft ? smooth(y / ft) : 1, fb ? smooth((CH - y) / fb) : 1);
           const w = fx * fy;
           if (w < 0.03) continue;
+          if (ellRx && ellRy && Math.hypot((CW - x) / ellRx, (CH - y) / ellRy) > 0.97) continue;
           const op = w * 0.22;
           const el = document.createElement("div");
           el.style.cssText =
             `position:absolute;left:0;top:0;width:${dot}px;height:${dot}px;` +
-            "border-radius:9999px;background:currentColor;will-change:transform,opacity";
+            "border-radius:9999px;background:currentColor";
+          // Sense will-change: amb un per punt, cada punt era una capa de
+          // composició (centenars a l'iPhone) i l'entrada anava a batzegades.
           el.style.transform = `translate(${x - dot / 2}px,${y - dot / 2}px)`;
           el.style.opacity = String(op);
           host.appendChild(el);
@@ -144,6 +164,10 @@ export default function HeroField({
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onMove, { passive: true });
     window.addEventListener("pointerup", onLeave, { passive: true });
+    // En tàctil, quan el gest passa a ser scroll, Safari envia pointercancel i
+    // no pointerup: sense això el camp es quedava amb el dit "a sobre" i els
+    // punts no tornaven a lloc (iPhone, 22set26).
+    window.addEventListener("pointercancel", onLeave, { passive: true });
     document.addEventListener("pointerleave", onLeave);
 
     // Sense cursor el camp queda quiet — mateixa regla que el lockup
@@ -200,15 +224,17 @@ export default function HeroField({
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onMove);
       window.removeEventListener("pointerup", onLeave);
+      window.removeEventListener("pointercancel", onLeave);
       document.removeEventListener("pointerleave", onLeave);
     };
-  }, [gap, dot, magnet, radius, fadeL, fadeR, fadeT, fadeB]);
+  }, [gap, dot, magnet, radius, fadeL, fadeR, fadeT, fadeB, ellRx, ellRy]);
 
   return (
     <div
       ref={hostRef}
       aria-hidden
       className={`pointer-events-none text-text-main ${className}`}
+      style={mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined}
     />
   );
 }

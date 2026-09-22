@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 /**
@@ -89,11 +89,15 @@ export default function HeroTitle({
     root.addEventListener("pointerdown", onMove);
     root.addEventListener("pointerleave", onLeave);
     root.addEventListener("pointerup", onLeave);
+    // Tàctil: el gest que es converteix en scroll acaba amb pointercancel, no
+    // amb pointerup. Sense escoltar-lo, les lletres quedaven desplaçades.
+    root.addEventListener("pointercancel", onLeave);
     return () => {
       root.removeEventListener("pointermove", onMove);
       root.removeEventListener("pointerdown", onMove);
       root.removeEventListener("pointerleave", onLeave);
       root.removeEventListener("pointerup", onLeave);
+      root.removeEventListener("pointercancel", onLeave);
     };
   }, []);
 
@@ -117,11 +121,12 @@ export default function HeroTitle({
     // no posant els transforms a zero. Zerar-los enmig d'una interacció faria
     // saltar les lletres, i mesurar sense restar donaria una base contaminada.
     //
-    // I es remesura més d'un cop a posta: el lockup viu dins d'un contenidor
-    // amb l'animació d'entrada `.hero-enter` (translateY 24px → 0, 0,7s, i un
-    // fallback amb 2,6s de delay quan hi ha IntroLoader). Mesurar només al
-    // muntatge congelaria les bases amb el pare a mig camí i tot l'efecte
-    // quedaria desplaçat verticalment respecte del cursor.
+    // I es remesura més d'un cop a posta: cada línia del lockup entra pujant
+    // dins del seu retall (.hero-line-inner, 22set26), i amb IntroLoader
+    // l'entrada arrenca quan la cortina obre. Mesurar només al muntatge
+    // congelaria les bases amb la línia a mig camí i tot l'efecte quedaria
+    // desplaçat verticalment respecte del cursor. Per això també es remesura
+    // a cada animationend dins del titular.
 
     // Escala de la física segons la mida REAL del lockup. El desplaçament de
     // 30px i el radi de 170 estan calibrats per als 112px de desktop; aplicats
@@ -153,8 +158,11 @@ export default function HeroTitle({
     if (typeof document !== "undefined" && document.fonts?.ready) {
       document.fonts.ready.then(measureBases);
     }
-    // Després de l'entrada (0,7s) i del fallback de l'IntroLoader (2,6s + 0,7s).
-    const settleTimers = [800, 3500].map((ms) => window.setTimeout(measureBases, ms));
+    // Després de l'entrada i del fallback de l'IntroLoader (2,6s + 0,9s).
+    const settleTimers = [1000, 3600].map((ms) => window.setTimeout(measureBases, ms));
+    const rootEl = rootRef.current;
+    const onAnimEnd = () => measureBases();
+    rootEl?.addEventListener("animationend", onAnimEnd);
     const onResize = () => measureBases();
     window.addEventListener("resize", onResize);
     const dark = resolvedTheme === "dark";
@@ -271,6 +279,7 @@ export default function HeroTitle({
     return () => {
       cancelAnimationFrame(raf);
       settleTimers.forEach((t) => window.clearTimeout(t));
+      rootEl?.removeEventListener("animationend", onAnimEnd);
       window.removeEventListener("resize", onResize);
     };
   }, [reduced, resolvedTheme, coarse]);
@@ -306,10 +315,17 @@ export default function HeroTitle({
               "linear-gradient(to right, #000 0, #000 12%, transparent 58%)",
           }}
         >
+          {/* L'eco puja amb el lockup (mateixes línies i retards). */}
           {lines.map((line, i) => (
-            <span key={i} className="block">
-              {line}
-              {line}
+            <span
+              key={i}
+              className="hero-line block"
+              style={{ "--d": `${i * 90}ms` } as CSSProperties}
+            >
+              <span className="hero-line-inner block">
+                {line}
+                {line}
+              </span>
             </span>
           ))}
         </div>
@@ -330,8 +346,15 @@ export default function HeroTitle({
           cursor: !reduced && !coarse ? "none" : undefined,
         }}
       >
+        {/* Entrada: cada línia puja dins del seu retall (.hero-line /
+            .hero-line-inner, globals.css), esglaonada 90 ms. */}
         {lines.map((line, li) => (
-          <span key={li} className="block">
+          <span
+            key={li}
+            className="hero-line block"
+            style={{ "--d": `${li * 90}ms` } as CSSProperties}
+          >
+          <span className="hero-line-inner block">
             {[...line].map((ch, ci) => (
               <span
                 key={ci}
@@ -342,6 +365,7 @@ export default function HeroTitle({
                 {ch}
               </span>
             ))}
+          </span>
           </span>
         ))}
       </h1>

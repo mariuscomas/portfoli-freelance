@@ -34,7 +34,7 @@ export default function LanguageSelector({
   if (variant === "bare") {
     return (
       <div className="flex cursor-pointer items-center gap-2.5 text-text-main">
-        <span className="text-button-link">CA</span>
+        <span className="text-button-link-xl">CA</span>
         <CaretLeftIcon size={20} weight="regular" aria-hidden />
       </div>
     );

@@ -545,7 +545,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
           <button
             type="button"
             onClick={showBack ? goBack : onClose}
-            className="-m-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-main transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+            className="-m-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-main transition-colors hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
             aria-label={showBack ? "Enrere" : "Tancar"}
           >
             {showBack ? <ArrowLeft size={20} weight="regular" /> : <X size={20} weight="regular" />}

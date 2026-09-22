@@ -34,7 +34,7 @@
   --color-nav-contacte: #c6e84a;
   --color-social-behance: #1769ff;
   --color-social-dribbble: #ea4c89;
-  --color-social-linkedin: #0a66c2;
+  --color-social-linkedin: #3b8ee8; /* Figma: social/linkedin · 4.5:1 sobre #262522 (era #0a66c2, 2.7:1) */
 
 
   /* --- COLOR / Text --- */
@@ -156,6 +156,12 @@
   /* Figma: warning/main */
   --warning-surface: #fffbeb;
   /* Figma: warning/surface */
+
+  /* --- COLOR / Status (disponibilitat) — Figma: status/* (22set26)
+     Sempre acompanyat de text. ≥3:1 sobre surface/base als dos modes. */
+  --status-available: #15803d; /* green/700 · 4.6:1 */
+  --status-limited: #ea580c;   /* orange/600 · 3.2:1 */
+  --status-busy: #dc2626;      /* red/600 · 4.3:1 */
 
   /* --- COLOR / Solid Button (Figma: Solid/* aliased) --- */
   --solid-default-background: var(--primary-main);
@@ -345,6 +351,9 @@
   /* --- COLOR / Semantic (dark) — error més clar per visibilitat sobre fons fosc --- */
   --error-main: #f87171;
   /* Figma: error/main Dark */
+  --status-available: #22c55e; /* green/500 */
+  --status-limited: #f59e0b;   /* amber/500 */
+  --status-busy: #ef4444;      /* red/500 */
   --accent-surface: #06301b;
   /* Figma: accent/surface Dark */
 
@@ -378,6 +387,9 @@
   --color-primary-main: var(--primary-main);
   --color-focus-ring: var(--focus-ring);
   --color-error: var(--error-main);
+  --color-status-available: var(--status-available);
+  --color-status-limited: var(--status-limited);
+  --color-status-busy: var(--status-busy);
   --color-accent-surface: var(--accent-surface);
   --color-discipline-ux: var(--discipline-ux-surface);
   --color-discipline-ui: var(--discipline-ui-surface);
@@ -432,6 +444,11 @@
   --color-discipline-ux: var(--discipline-ux-surface);
   --color-discipline-ui: var(--discipline-ui-surface);
   --color-discipline-dev: var(--discipline-dev-surface);
+
+  /* Colors / Status → bg-status-available, bg-status-limited, bg-status-busy */
+  --color-status-available: var(--status-available);
+  --color-status-limited: var(--status-limited);
+  --color-status-busy: var(--status-busy);
 
   /* Colors / Text → text-main, text-secondary, text-main-inverse, etc. */
   --color-text-main: var(--text-main);
@@ -741,27 +758,99 @@
   }
 }
 
-/* Entrada subtil del hero per CSS (segura: acaba sempre en opacity 1) */
-.hero-enter {
-  animation: heroEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* ============================================================
+   ENTRADA DEL HERO (22set26) — seqüència única, ~1,2 s
+   t=0 quan l'IntroLoader obre (senyal onIntroRevealed → .hero-go).
+     Camp          0 ms   fade 600
+     Titular       0 / 90 / 180 ms   cada línia puja dins del seu retall, 700
+     Paràgraf      360 ms  puja 16 px + fade, 600
+     Barra         400 ms  puja la seva alçada, 700
+     CTAs          460 / 540 ms  com el paràgraf
+   Header quiet (la cortina ja el revela). Un sol easing: expo-out.
+   Substitueix el .hero-enter (tot el bloc pujant 24 px alhora).
+   Xarxa de seguretat: en espera (.hero-wait) els elements estan amagats però
+   porten un keyframe propi que els mostra als 2,6 s si el senyal no arribés.
+   Tot sota no-preference: amb reduced-motion no s'amaga ni s'anima res.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-wait .hero-line-inner,
+  .hero-wait [data-hero-in],
+  .hero-wait .hero-bar {
+    opacity: 0;
+    animation: heroFallbackShow 0.4s ease 2.6s forwards;
+  }
+
+  /* Retall de la línia només mentre dura la pujada (sense fill: en acabar
+     torna a clip-path none i el magnètic/aberració no queden tallats). El
+     marge inferior negatiu deixa respirar els descendents (g, y, p). */
+  .hero-go .hero-line {
+    animation: heroLineClip calc(var(--d, 0ms) + 700ms) linear;
+  }
+  .hero-go .hero-line-inner {
+    animation: heroRise 700ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both;
+  }
+  .hero-go [data-hero-in] {
+    animation: heroFadeUp 600ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both;
+  }
+  .hero-go .hero-bar {
+    animation: heroBarUp 700ms cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0ms) both;
+  }
+  .hero-go .hero-camp {
+    animation: heroFade 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-wait .hero-camp {
+    opacity: 0;
+    animation: heroFallbackShow 0.4s ease 2.6s forwards;
+  }
 }
 
-@keyframes heroEnter {
+@keyframes heroLineClip {
+  from,
+  to {
+    clip-path: inset(-0.2em -0.2em -0.28em -0.2em);
+  }
+}
+@keyframes heroRise {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes heroFadeUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
+@keyframes heroBarUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes heroFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes heroFallbackShow {
+  to {
+    opacity: 1;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-enter {
-    animation: none;
-  }
-
   /* WCAG 2.2.2 — les utilitats d'animació de Tailwind (animate-bounce a la
      fletxa del hero, animate-pulse, animate-spin) no respecten la preferència
      per elles mateixes: es queden en bucle infinit encara que l'usuari hagi
@@ -771,33 +860,6 @@
   .animate-ping,
   .animate-spin {
     animation: none !important;
-  }
-}
-
-/* Estat d'ESPERA de l'entrada del hero mentre l'intro cobreix la pantalla.
-   Quan l'IntroLoader emet el senyal de reveal, Hero.tsx canvia la classe a
-   .hero-enter i l'entrada arrenca sincronitzada amb el forat que s'obre.
-   Xarxa de seguretat: keyframes propis (nom diferent perquè el canvi de
-   classe reiniciï l'animació netament) amb delay — si el senyal no arribés
-   mai, el hero entra sol i acaba SEMPRE en opacity 1.
-   Només sota no-preference: amb reduced-motion el hero mai s'amaga. */
-@media (prefers-reduced-motion: no-preference) {
-  .hero-enter-wait {
-    opacity: 0;
-    transform: translateY(24px);
-    animation: heroEnterFallback 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.6s
-      forwards;
-  }
-}
-
-@keyframes heroEnterFallback {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -1181,7 +1243,32 @@
   letter-spacing: var(--tw-tracking, 0);
 }
 
-@utility text-button-link {
+/* Button/Link/SM·MD·LG·XL — variant Size del mestre Buttons / Custom / Link (22set26). */
+@utility text-button-link-sm {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.1429);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-button-link-md {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.125);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-button-link-lg {
+  font-family: var(--font-sans);
+  font-weight: var(--tw-font-weight, 400);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.2);
+  letter-spacing: var(--tw-tracking, 0);
+}
+
+@utility text-button-link-xl {
   font-family: var(--font-sans);
   font-weight: var(--tw-font-weight, 400);
   font-size: 1.5rem;

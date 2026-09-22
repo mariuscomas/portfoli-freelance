@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Header from "./Header";
-import FullScreenMenu from "./FullScreenMenu";
+import FullScreenMenu, { circleFrom, type MenuCircle } from "./FullScreenMenu";
 import { HeaderContrastProvider } from "@/context/HeaderContrastContext";
 
 export default function NavigationWrapper({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Cercle d'obertura: centrat al botó que obre el menú (22set26).
+  const [openCircle, setOpenCircle] = useState<MenuCircle | null>(null);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -25,9 +27,16 @@ export default function NavigationWrapper({ children }: { children: React.ReactN
   // del Header segons el seu hero, i el Header el llegeixi des del context.
   return (
     <HeaderContrastProvider>
-      <Header onMenuClick={() => setIsMenuOpen(true)} isMenuOpen={isMenuOpen} />
+      <Header
+        onMenuClick={(e) => {
+          setOpenCircle(circleFrom(e.currentTarget));
+          setIsMenuOpen(true);
+        }}
+        isMenuOpen={isMenuOpen}
+      />
       <FullScreenMenu
         isOpen={isMenuOpen}
+        openCircle={openCircle}
         onClose={() => setIsMenuOpen(false)}
       />
       {/* Embolcall neutre, NO <main>: cada page.tsx públic ja declara el seu

@@ -346,7 +346,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="-m-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-main transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+          className="-m-2 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-text-main transition-colors hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
           aria-label="Tancar"
         >
           <X size={28} weight="regular" />
@@ -537,7 +537,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
           Escriu-me un correu i et responc el mateix dia?{" "}
           <a
             href={`mailto:${EMAIL}`}
-            className="rounded-base underline decoration-text-secondary/40 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+            className="rounded-base underline decoration-text-secondary/40 underline-offset-4 transition-colors hover:text-text-secondary hover:decoration-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
           >
             {EMAIL}
           </a>
@@ -546,7 +546,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
           href={CALL_BOOKING_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex w-fit items-center gap-1.5 rounded-base text-body-s text-text-main transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base md:text-right"
+          className="group inline-flex w-fit items-center gap-1.5 rounded-base text-body-s text-text-main transition-colors hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base md:text-right"
         >
           Prefereixes parlar? Agafem 30 min sense compromís.
           <ArrowUpRight size={16} weight="regular" aria-hidden="true" />

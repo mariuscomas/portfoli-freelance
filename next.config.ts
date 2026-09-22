@@ -5,6 +5,13 @@ const supabaseHost = SUPABASE_URL ? new URL(SUPABASE_URL).hostname : undefined;
 
 const nextConfig: NextConfig = {
   /*
+    Dev server des de l'iPhone (xarxa local). Next 16 bloqueja les peticions
+    de dev (HMR, chunks) que no vénen de localhost; sense això la pàgina
+    carrega però no s'hidrata. Només afecta `next dev`, no producció.
+  */
+  allowedDevOrigins: ["192.168.*.*"],
+
+  /*
     Optimització d'imatges
     ----------------------
     Next.js converteix automàticament <Image> a AVIF/WebP segons el navegador.

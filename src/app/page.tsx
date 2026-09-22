@@ -10,7 +10,11 @@ import WorksTeaser from "@/components/home/WorksTeaser";
 import Clients from "@/components/home/Clients";
 import AboutTeaser from "@/components/home/AboutTeaser";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   /*
     Intro un cop per sessió de navegador: la cookie de sessió `mf-intro-seen`
     la posa l'IntroLoader al client quan comença a reproduir-se. Llegint-la
@@ -21,7 +25,9 @@ export default async function Home() {
     La ruta ja és dinàmica (el layout llegeix la cookie del tema).
   */
   const cookieStore = await cookies();
-  const playIntro = cookieStore.get("mf-intro-seen")?.value !== "1";
+  // `?intro` la força encara que la sessió ja l'hagi vista (per revisar-la).
+  const forceIntro = (await searchParams).intro !== undefined;
+  const playIntro = forceIntro || cookieStore.get("mf-intro-seen")?.value !== "1";
 
   /*
     Tríada de serveis: MATEIXA font que /serveis (taula `services` + pricing.ts).

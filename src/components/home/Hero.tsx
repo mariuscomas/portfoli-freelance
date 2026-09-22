@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, type CSSProperties } from "react";
 import { ArrowDown, ArrowRight, DribbbleLogo, LinkedinLogo, BehanceLogo } from "@phosphor-icons/react";
 import { onIntroRevealed } from "@/lib/introSignal";
 import TransitionLink from "@/components/common/TransitionLink";
@@ -92,23 +92,58 @@ export default function Hero({
   /** True quan l'IntroLoader es reproduirà: l'entrada espera el seu reveal. */
   introPending?: boolean;
 }) {
-  // Entrada sincronitzada amb el reveal de l'intro. Sense intro (sessió
-  // repetida, altres contextos), entra directament des del SSR com sempre.
-  const [entered, setEntered] = useState(!introPending);
+  // Entrada: SEMPRE s'anima, també en recarregar (22set26). Amb intro,
+  // arrenca quan la cortina obre; sense intro, just després del primer
+  // paint del client. Abans, sense intro, la classe d'entrada ja venia del
+  // SSR: l'animació corria mentre la pàgina encara carregava (sobretot al
+  // mòbil) i en pintar-se ja havia acabat, i semblava que tot entrés directe.
+  const [entered, setEntered] = useState(false);
   useEffect(() => {
-    if (entered) return;
-    return onIntroRevealed(() => setEntered(true));
-  }, [entered]);
+    if (introPending) return onIntroRevealed(() => setEntered(true));
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => setEntered(true));
+    });
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
+    };
+  }, [introPending]);
 
   return (
-    <section className="relative z-10 flex h-[100dvh] w-full flex-col overflow-hidden bg-surface-base">
+    <section
+      className={`relative z-10 flex h-svh w-full flex-col overflow-hidden bg-surface-base ${
+        entered ? "hero-go" : "hero-wait"
+      }`}
+    >
+      {/* Entrada (22set26): seqüència única de ~1,2 s definida a globals.css
+          («ENTRADA DEL HERO»). La classe va a la secció perquè hi participen
+          el camp, el titular, el paràgraf, els CTAs i la barra. */}
       {/* Camp reactiu — Figma col·loca el "Col" a la meitat dreta EXACTA del
           frame (x 864 de 1728) i li dona tota l'alçada del contingut: de dalt
           de tot fins a la línia superior de la barra. D'aquí `w-1/2` (i no una
           amplada fixa, que a 1920 deixava un buit a la dreta) i `bottom-24`
           (= els 96px de la barra). */}
+      {/* Mòbil — el camp és FONS del hero, no una franja del flux (Figma
+          «Home - iPhone 16 Pro» 12244:62996, capa Camp 12244:63013, 22set26).
+          La franja de 200px no cabia en un viewport de 699pt (iPhone de 844
+          amb la barra de Safari a baix): el contingut desbordava 52pt i
+          l'overflow-hidden tallava la barra inferior. Com a fons no ocupa
+          alçada. Retícula i punt del Figma (15,31 / 3,83) i màscara radial
+          ancorada a la cantonada inferior dreta (330×308, alfa 1→0); la
+          rotació de -127° del gradient de Figma és inapreciable i no es porta. */}
       <HeroField
-        className="pointer-events-none absolute right-0 top-0 bottom-24 hidden w-1/2 lg:block"
+        className="hero-camp pointer-events-none absolute inset-x-0 top-0 bottom-24 block md:hidden"
+        mask="radial-gradient(330px 308px at 100% 100%, #000, transparent)"
+        cornerEllipse={{ rx: 330, ry: 308 }}
+        gap={15.31}
+        dot={3.83}
+        magnet={18}
+        radius={120}
+        fade={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      />
+      <HeroField
+        className="hero-camp pointer-events-none absolute right-0 top-0 bottom-24 hidden w-1/2 lg:block"
         gap={32}
         dot={3}
         magnet={30}
@@ -123,9 +158,7 @@ export default function Hero({
           superior de la barra, que és el que marca el Figma (Section · Hero
           11325:8842, Content amb padding-top = alçada del navbar). */}
       <div
-        className={`relative z-10 flex flex-1 flex-col items-start justify-center pt-[var(--header-h)] px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36 ${
-          entered ? "hero-enter" : "hero-enter-wait"
-        }`}
+        className="relative z-10 flex flex-1 flex-col items-start justify-center pt-[var(--header-h)] px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36"
       >
         <div className="w-full max-w-[744px]">
           {/* Lockup interactiu (magnètic + aberració) — veure HeroTitle.tsx */}
@@ -150,9 +183,9 @@ export default function Hero({
             Separacions: el Figma apila títol, paràgraf i link amb un gap únic
             de 48px (mt-12), no amb dos valors diferents.
           */}
-          <p className="mt-6 text-body-m md:text-body-xl lg:text-body-2xl text-text-main md:mt-12">
-            Dissenyo i construeixo productes digitals.
-            <br />
+          <p data-hero-in style={{ "--d": "360ms" } as CSSProperties} className="mt-6 text-body-l md:text-body-xl lg:text-body-2xl text-text-main md:mt-12">
+            Dissenyo i construeixo productes digitals.{" "}
+            <br className="hidden md:inline" />
             Un sol interlocutor, de principi a fi.
           </p>
 
@@ -164,17 +197,24 @@ export default function Hero({
               el segon navega a /colaboracio (ArrowRight). És la drecera per a
               agències que abans feia el Split. Gap space/4 a mòbil (a 24 no
               cabia en 354px) i space/8 des de md. */}
-          <div className="mt-6 flex flex-wrap items-center gap-x-4 md:mt-12 md:gap-x-8">
+          {/* Mòbil (Figma 12244:63010): columna, 48 per sobre i 32 visibles
+              entre links. El gap és 12 perquè cada link té min-h-11 (44) amb el
+              text de 24 centrat: 12 + 10 + 10 = 32 entre textos. */}
+          <div className="mt-12 flex flex-col items-start gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-8 md:gap-y-0">
             <a
               href="#treballs"
-              className="inline-flex min-h-11 items-center gap-2.5 text-button-link text-text-main"
+              data-hero-in
+              style={{ "--d": "460ms" } as CSSProperties}
+              className="inline-flex min-h-11 items-center gap-2.5 text-button-link-lg md:text-button-link-xl text-text-main"
             >
               <span className="border-b border-text-main pb-1.5">Veure treballs</span>
               <ArrowDown size={20} weight="regular" aria-hidden />
             </a>
             <TransitionLink
               href="/colaboracio"
-              className="inline-flex min-h-11 items-center gap-2.5 text-button-link text-text-main"
+              data-hero-in
+              style={{ "--d": "540ms" } as CSSProperties}
+              className="inline-flex min-h-11 items-center gap-2.5 text-button-link-lg md:text-button-link-xl text-text-main"
             >
               <span className="border-b border-text-main pb-1.5">Ets una agència?</span>
               <ArrowRight size={20} weight="regular" aria-hidden />
@@ -183,7 +223,9 @@ export default function Hero({
         </div>
       </div>
 
-      {/* Sota lg el camp és una FRANJA DEL FLUX entre el contingut i la barra,
+      {/* TABLET (md–lg). El mòbil ja no segueix aquest patró: des del 22set26
+          el seu camp és fons absolut (vegeu la instància de dalt).
+          Sota lg el camp és una FRANJA DEL FLUX entre el contingut i la barra,
           no una capa absoluta: així no cal endevinar cap offset quan canvia
           l'alçada del viewport (barra d'adreces del navegador). El tablet feia
           banda absoluta a dalt (`top-24`, 220px) i s'ha alineat amb el Figma
@@ -192,15 +234,7 @@ export default function Hero({
           instàncies i no una perquè gap/dot/radius són props de JS i no poden
           commutar per breakpoint. */}
       <HeroField
-        className="pointer-events-none relative block h-[200px] w-full shrink-0 md:hidden"
-        gap={20}
-        dot={2.5}
-        magnet={18}
-        radius={120}
-        fade={{ left: 70, right: 70, top: 70, bottom: 70 }}
-      />
-      <HeroField
-        className="pointer-events-none relative hidden h-[260px] w-full shrink-0 md:block lg:hidden"
+        className="hero-camp pointer-events-none relative hidden h-[260px] w-full shrink-0 md:block lg:hidden"
         gap={26}
         dot={2.75}
         magnet={24}
@@ -216,7 +250,7 @@ export default function Hero({
           Les xarxes van amb `ml-auto` perquè a mòbil, sense la llista pel mig,
           res no empeny cap a la dreta. Amb la llista visible (`flex-1`) l'auto
           ja no té espai a repartir i no fa res. */}
-      <div className="relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-border-subtle md:gap-8 3xl:gap-12 px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36">
+      <div style={{ "--d": "400ms" } as CSSProperties} className="hero-bar relative z-10 flex h-24 w-full shrink-0 items-center gap-6 border-y border-border-default md:gap-8 3xl:gap-12 px-6 md:px-12 lg:px-18 xl:px-24 3xl:px-36">
         <ThemeToggle />
         <LanguageSelector variant="bare" />
         <DisciplineRow items={DISCIPLINES} className="hidden 2xl:flex" />

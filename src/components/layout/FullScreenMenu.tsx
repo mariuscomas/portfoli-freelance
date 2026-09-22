@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { useRef, useEffect, useLayoutEffect } from "react";
-import { usePathname } from "next/navigation";
-import { ArrowLineUpRight, X } from "@phosphor-icons/react";
-import TransitionLink from "@/components/common/TransitionLink";
+import { useRef, useEffect, useLayoutEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLineUpRight } from "@phosphor-icons/react";
+import MenuIcon from "@/components/common/MenuIcon";
 import LogoSmall from "@/components/common/LogoSmall";
 import Button from "@/components/ui/Button";
 import { useContactModal } from "@/context/ContactModalContext";
@@ -61,6 +62,37 @@ const WHEEL_MIN = 0.55;
 /** Màscares de les franges d'esvaïment: opac al costat de la vora. */
 const FADE_DOWN = "linear-gradient(to bottom, #000, transparent)";
 const FADE_UP = "linear-gradient(to top, #000, transparent)";
+
+/*
+  Cercle d'obertura i tancament (22set26): neix i mor al centre del botó
+  (List a l'obrir, X al tancar), no en un punt fix de la pantalla. El radi
+  final és la distància a la cantonada més llunyana del viewport, perquè el
+  cercle cobreixi just la pantalla i la corba no es malgasti fora.
+*/
+export type MenuCircle = { x: number; y: number; r: number };
+
+export function circleFrom(el: Element): MenuCircle {
+  const b = el.getBoundingClientRect();
+  const x = b.left + b.width / 2;
+  const y = b.top + b.height / 2;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const r = Math.hypot(Math.max(x, w - x), Math.max(y, h - y));
+  return { x, y, r };
+}
+
+/** Si no hi ha botó (p. ex. obert per codi): cantonada superior dreta. */
+function fallbackCircle(): MenuCircle {
+  if (typeof window === "undefined") return { x: 0, y: 0, r: 0 };
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  return { x: w - 48, y: 48, r: Math.hypot(w, h) };
+}
+
+const circleVariants = {
+  closed: (c: MenuCircle) => ({ clipPath: `circle(0px at ${c.x}px ${c.y}px)` }),
+  open: (c: MenuCircle) => ({ clipPath: `circle(${c.r}px at ${c.x}px ${c.y}px)` }),
+};
 
 const isActiveLink = (link: MenuLink, pathname: string) =>
   !link.isExternal && !link.isContact && pathname === link.href;
@@ -133,13 +165,67 @@ function ItemInner({
   );
 }
 
-export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function FullScreenMenu({
+  isOpen,
+  onClose: onCloseProp,
+  openCircle,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  openCircle?: MenuCircle | null;
+}) {
   const pathname = usePathname();
   const { open: openContactModal } = useContactModal();
   const prefersReducedMotion = useReducedMotion();
   const loop = !prefersReducedMotion;
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const closeRefs = useRef<(HTMLElement | null)[]>([]);
+
+  /*
+    Tancament: el cercle es replega cap a la X visible (la de mòbil o la de
+    md+). Va per `custom` d'AnimatePresence perquè l'element que surt ja no
+    rep props noves i així sí que li arriba el centre actualitzat.
+  */
+  const [closeCircle, setCloseCircle] = useState<MenuCircle | null>(null);
+  const onClose = () => {
+    const btn = closeRefs.current.find((b) => b && b.offsetWidth > 0);
+    setCloseCircle(btn ? circleFrom(btn) : null);
+    onCloseProp();
+  };
+  const circle = (isOpen ? openCircle : (closeCircle ?? openCircle)) ?? fallbackCircle();
+
+  /*
+    Navegació des del menú (22set26): el menú fa de cortina. En clicar, el
+    menú es queda obert, es navega de seguida i, quan la ruta destí ja s'ha
+    muntat (canvia el pathname), el cercle es replega i destapa la pàgina
+    nova. Abans es tancava en clicar i deixava veure la pàgina actual durant
+    el replegament. No passa per la cortina de colors de les transicions:
+    duplicaria la que ja fa el cercle.
+  */
+  const router = useRouter();
+  const pendingHref = useRef<string | null>(null);
+  const navigate = (href: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Cmd/Ctrl/Maj/clic del mig: el navegador obre pestanya nova, no toquem res.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (href === pathname) {
+      onClose();
+      return;
+    }
+    pendingHref.current = href;
+    router.push(href);
+  };
+  const onCloseRef = useRef(onClose);
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  });
+  useEffect(() => {
+    if (pendingHref.current && pathname === pendingHref.current) {
+      pendingHref.current = null;
+      onCloseRef.current();
+    }
+  }, [pathname]);
   const setRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleContactClick = () => {
@@ -177,9 +263,9 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
       );
     }
     return (
-      <TransitionLink href={link.href} onClick={onClose} aria-current={active ? "page" : undefined} {...common}>
+      <Link href={link.href} onClick={navigate(link.href)} aria-current={active ? "page" : undefined} {...common}>
         {inner}
-      </TransitionLink>
+      </Link>
     );
   };
 
@@ -279,16 +365,41 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
           transition: { duration: 0.6, delay: 0.3 + i * 0.05, ease: [0.16, 1, 0.3, 1] as const },
         };
 
+  /*
+    Entrada de mòbil (22set26, patró Motto): cada fila puja des de sota dins
+    d'una màscara (overflow-hidden) i el seu filet es dibuixa d'esquerra a
+    dreta, tots dos amb 1,25 s d'ease expo i 75 ms d'esglaó. El filet es
+    revela amb clip-path i no amb scaleX perquè és dashed: escalar-lo
+    estiraria els guions mentre dura l'animació. Sense animació de sortida
+    per ítem: el cercle ja tanca el menú sencer.
+  */
+  const mobileEase = [0.16, 1, 0.3, 1] as const;
+  const mobileTiming = (i: number) => ({ duration: 1.25, delay: 0.3 + i * 0.075, ease: mobileEase });
+  const mobileRise = (i: number) =>
+    prefersReducedMotion
+      ? {}
+      : { initial: { y: "100%" }, animate: { y: "0%" }, transition: mobileTiming(i) };
+  const mobileRule = (i: number) =>
+    prefersReducedMotion
+      ? {}
+      : {
+          initial: { clipPath: "inset(0 100% 0 0)" },
+          animate: { clipPath: "inset(0 0% 0 0)" },
+          transition: mobileTiming(i),
+        };
+
   const copies = loop ? LOOP_COPIES : 1;
   const realCopy = loop ? LOOP_MIDDLE : 0;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence custom={circle}>
       {isOpen && (
         <motion.div
-          initial={{ clipPath: "circle(0% at 95% 5%)" }}
-          animate={{ clipPath: "circle(150% at 95% 5%)" }}
-          exit={{ clipPath: "circle(0% at 95% 5%)" }}
+          custom={circle}
+          variants={circleVariants}
+          initial="closed"
+          animate="open"
+          exit="closed"
           transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.76, 0, 0.24, 1] }}
           className="dark fixed inset-0 z-[100] h-[100dvh] w-full overflow-hidden bg-surface-base text-text-main"
           role="dialog"
@@ -329,22 +440,35 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
           <div
             className={`pointer-events-none fixed top-0 z-[110] flex w-full items-center justify-between bg-surface-base/90 px-page py-6 backdrop-blur-[5px] md:max-lg:border-b md:max-lg:border-border-subtle ${loop ? "lg:bg-transparent lg:backdrop-blur-none" : ""}`}
           >
-            <TransitionLink href="/" onClick={onClose} aria-label="Inici" className="pointer-events-auto text-text-main transition-opacity hover:opacity-80">
+            <Link href="/" onClick={navigate("/")} aria-label="Inici" className="pointer-events-auto text-text-main transition-opacity hover:opacity-80">
               <LogoSmall className="!h-[38.4px] w-auto md:!h-6" />
-            </TransitionLink>
+            </Link>
             <div className="pointer-events-auto flex h-10 items-center md:h-12">
               {/* Figma: Buttons / Solid / Large (MD + Pill) a md+; Solid / Square LG + Pill a mòbil. */}
-              <Button variant="solid" shape="pill" size="md" onClick={onClose} className="max-md:hidden">
+              <Button
+                ref={(el: HTMLElement | null) => {
+                  closeRefs.current[0] = el;
+                }}
+                variant="solid"
+                shape="pill"
+                size="md"
+                onClick={onClose}
+                className="max-md:hidden"
+              >
                 Tancar
               </Button>
               <Button
+                ref={(el: HTMLElement | null) => {
+                  closeRefs.current[1] = el;
+                }}
                 variant="solid"
                 shape="pill"
                 size="icon"
                 onClick={onClose}
                 className="!size-12 md:hidden"
                 aria-label="Tancar"
-                iconLeft={<X size={32} weight="regular" />}
+                // Morph barres → X mentre el cercle s'obre, i al revés en tancar.
+                iconLeft={<MenuIcon />}
               />
             </div>
           </div>
@@ -353,15 +477,20 @@ export default function FullScreenMenu({ isOpen, onClose }: { isOpen: boolean; o
           <nav aria-label="Menú" className="h-full overflow-y-auto overscroll-none pt-[var(--header-h)] pb-[max(2rem,env(safe-area-inset-bottom))] md:hidden">
             <ul>
               {menuLinks.map((link, i) => (
-                <motion.li key={link.label} className="border-t dash-h-border-subtle" {...enter(i)}>
-                  {renderItem(link, i, {
-                    layout: "mobile",
-                    labelClass: "text-display-s",
-                    arrowSize: 32,
-                    rowClass: "px-page py-5",
-                    focusable: true,
-                  })}
-                </motion.li>
+                <li key={link.label} className="relative">
+                  <motion.span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 border-t dash-h-border-subtle" {...mobileRule(i)} />
+                  <span className="block overflow-hidden">
+                    <motion.span className="block" {...mobileRise(i)}>
+                      {renderItem(link, i, {
+                        layout: "mobile",
+                        labelClass: "text-display-s",
+                        arrowSize: 32,
+                        rowClass: "px-page py-5",
+                        focusable: true,
+                      })}
+                    </motion.span>
+                  </span>
+                </li>
               ))}
             </ul>
           </nav>

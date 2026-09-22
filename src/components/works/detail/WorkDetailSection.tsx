@@ -68,7 +68,7 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
             className={`prose prose-neutral prose-lg lg:prose-xl max-w-[640px] text-text-secondary
               prose-p:my-0 prose-p:leading-normal
               prose-strong:text-text-main prose-strong:font-semibold
-              prose-em:text-text-main prose-a:text-text-main prose-a:underline hover:prose-a:text-accent
+              prose-em:text-text-main prose-a:text-text-main prose-a:underline hover:prose-a:text-text-secondary
               ${viewMode === "visual" ? "" : ""}`}
             dangerouslySetInnerHTML={{ __html: text.description }}
           />

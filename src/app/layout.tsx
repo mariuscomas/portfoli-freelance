@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { TransitionProvider } from "@/context/TransitionContext";
 import PageTransition from "@/components/common/PageTransition";
 import { buildMetadata } from "@/lib/seo";
+import type { Viewport } from "next";
 import "./globals.css";
 import Analytics from "@/components/analytics/Analytics";
 import CookieBanner from "@/components/common/CookieBanner";
@@ -54,6 +55,17 @@ export const metadata = buildMetadata({
     "Portfoli professional de Màrius Comas, Digital Product Designer especialitzat en UI/UX. Estratègia, producte i sistemes per a startups i corporacions.",
   path: "/",
 });
+
+// Color de la UI del navegador (barra d'estat / d'adreces) = surface/base de
+// cada mode. Segueix la preferència del SO, no el toggle del site: el color
+// adaptat a cada situació (tema triat, menú obert) va a part (22set26).
+// Safari d'iOS 26 pot ignorar-lo i tenyir segons el contingut de dalt.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f2f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#262522" },
+  ],
+};
 
 export default async function RootLayout({
   children,

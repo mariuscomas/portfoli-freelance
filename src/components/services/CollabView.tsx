@@ -15,6 +15,7 @@ import {
 } from "@/lib/pricing";
 import { SITE_EMAIL } from "@/lib/site";
 import { COLLAB_CLIENT_LOGOS } from "@/lib/clients";
+import { AVAILABILITY, AVAILABILITY_COPY, AVAILABILITY_DOT } from "@/lib/availability";
 
 const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
 const CONTACT_EMAIL = SITE_EMAIL;
@@ -138,13 +139,13 @@ function AvailabilitySection() {
       <Reveal>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
           <span className="flex items-center gap-3">
-            <span aria-hidden className="h-3 w-3 rounded-full bg-accent" />
+            <span aria-hidden className={`h-3 w-3 rounded-full ${AVAILABILITY_DOT[AVAILABILITY]}`} />
             <span className="text-caption uppercase text-text-secondary">DISPONIBILITAT ACTUAL</span>
           </span>
           {/* Sense xifra a posta: un recompte exacte caduca sol i ningú l'actualitza.
               L'estat qualitatiu sempre és cert i es llegeix igual de bé. */}
           <p className="text-body-s md:text-body-m lg:text-body-l text-text-main">
-            Obert a noves col·laboracions aquest trimestre.
+            {AVAILABILITY_COPY[AVAILABILITY]}
           </p>
         </div>
       </Reveal>

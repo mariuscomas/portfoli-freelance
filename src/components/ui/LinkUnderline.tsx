@@ -9,12 +9,13 @@ import React, { forwardRef } from "react";
    https://www.figma.com/design/kYJGrKCJyy3nlMg2idLzOE/MariusFreelance?node-id=10564-2064
 
    Spec del mestre:
-   - Text:      estil Buttons/Link (24/28, Hanken Regular) → .text-button-link
+   - Text:      estil Button/Link/<Size>, Hanken Regular → .text-button-link-<size>
+                SM 14/16 · MD 16/18 · LG 20/24 · XL 24/28 (default XL)
    - Color:     Link/Default/font-color + /border (alias text/main); text i
                 subratllat comparteixen token, com al mestre
    - Subratllat: stroke 1px, 6px sota la caixa de text  → pb-1.5 + border-b
    - Icona:     20×20, 10px de separació                → gap-2.5
-   - Variants:  Active (True = amb subratllat / False = sense)
+   - Variants:  Size (SM / MD / LG / XL) × Active (True = amb subratllat / False = sense)
                 × State (Default / Hover / Focus)
    - Props:     Show Icon (boolean) + Icon (instance swap)
 
@@ -25,13 +26,25 @@ import React, { forwardRef } from "react";
    fa 28px d'alt; els 44 són l'àrea tàctil, no la caixa visual.
 
    Estats (Figma: propietat State = Default / Hover / Focus):
-   - Hover: Link/Hover/font-color + Link/Hover/border → accent/main
+   - Hover: Link/Hover/font-color + Link/Hover/border → text/secondary
+     (marca monocroma, 22set26: substitueix accent/main, el verd #13ec6d)
    - Focus: Link/Focus/outline → focus/ring (= primary/main, s'inverteix amb
      el tema). Al Figma es pinta com a stroke de 2px cap enfora; l'offset de
      4px el posa el codi.
    ============================================================ */
 
+export type LinkUnderlineSize = "sm" | "md" | "lg" | "xl";
+
+const sizeClass: Record<LinkUnderlineSize, string> = {
+  sm: "text-button-link-sm",
+  md: "text-button-link-md",
+  lg: "text-button-link-lg",
+  xl: "text-button-link-xl",
+};
+
 type CommonProps = {
+  /** Mida del text. Figma: variant Size. Default "xl". */
+  size?: LinkUnderlineSize;
   /** Subratllat visible. Figma: variant Active. Default true. */
   active?: boolean;
   /** Icona opcional a la dreta (20×20). Figma: Show Icon + Icon. */
@@ -68,9 +81,9 @@ export type LinkUnderlineProps = AsButton | AsAnchor | AsSpan;
 
 const base = [
   "group inline-flex min-h-11 w-fit items-center gap-2.5",
-  "text-button-link text-text-main",
+  "text-text-main",
   "transition-colors duration-300",
-  "hover:text-accent",
+  "hover:text-text-secondary",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-4",
   "focus-visible:ring-focus-ring focus-visible:ring-offset-surface-base",
 ].join(" ");
@@ -79,7 +92,7 @@ export const LinkUnderline = forwardRef<
   HTMLButtonElement & HTMLAnchorElement,
   LinkUnderlineProps
 >(function LinkUnderline(
-  { active = true, icon, children, className = "", ...rest },
+  { size = "xl", active = true, icon, children, className = "", ...rest },
   ref,
 ) {
   const content = (
@@ -87,7 +100,7 @@ export const LinkUnderline = forwardRef<
       <span
         className={
           active
-            ? "border-b border-text-main pb-1.5 transition-colors duration-300 group-hover:border-accent"
+            ? "border-b border-text-main pb-1.5 transition-colors duration-300 group-hover:border-text-secondary"
             : undefined
         }
       >
@@ -97,7 +110,7 @@ export const LinkUnderline = forwardRef<
     </>
   );
 
-  const classes = `${base} ${className}`.trim();
+  const classes = `${base} ${sizeClass[size]} ${className}`.trim();
 
   // `as` és API del component, no un atribut d'HTML: no ha d'arribar al DOM.
   const domProps: Record<string, unknown> = { ...rest };

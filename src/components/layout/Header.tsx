@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
-import { List } from "@phosphor-icons/react";
+import MenuIcon from "@/components/common/MenuIcon";
 import TransitionLink from "@/components/common/TransitionLink";
 import LogoSmall from "@/components/common/LogoSmall";
 import { useScrollHide } from "@/hooks/useScrollHide";
@@ -25,7 +25,7 @@ import Button from "@/components/ui/Button";
   - Logo: només la M. (el wordmark ja no hi és, tampoc a l'expandit);
     glif de 32 a mòbil i 20 de md amunt.
   - Marge lateral = page-margin (px-page), el mateix que la graella.
-  - Mòbil: el Menú és un botó rodó de 48 amb la icona List (Phosphor);
+  - Mòbil: el Menú és un botó rodó de 48 amb la icona MenuIcon (barres, geometria de Phosphor List);
     de md amunt segueix la pastilla «Menú».
   - «Comencem?» Body/S - Medium a tauleta i Body/M - Medium a desktop.
 
@@ -88,7 +88,8 @@ export default function Header({
   onMenuClick,
   isMenuOpen = false,
 }: {
-  onMenuClick: () => void;
+  /** Rep l'esdeveniment: el menú neix del centre del botó que l'obre. */
+  onMenuClick: (e: React.MouseEvent<HTMLElement>) => void;
   isMenuOpen?: boolean;
 }) {
   const pathname = usePathname();
@@ -340,14 +341,14 @@ export default function Header({
               style={{ transformOrigin: "right center" }}
               /*
                 Mòbil (22set26). Figma: Buttons / Solid / Square (LG + Pill) a
-                48×48, radi Pill, icona List 32. Els 48 sobresurten 4 px per
+                48×48, radi Pill, icona de barres 32 (MenuIcon). Els 48 sobresurten 4 px per
                 dalt i per baix del clúster h-10: el header es queda a 88 com
                 al Figma i --header-h no canvia. Color: el mateix `c.button`
                 que la pastilla, perquè segueixi el contrast del hero.
               */
               className={`md:hidden !size-12 hover:scale-105 will-change-[opacity,transform] ${c.button}`}
               aria-label="Obrir Menú"
-              iconLeft={<List size={32} weight="regular" />}
+              iconLeft={<MenuIcon open={false} />}
             />
           )}
         </AnimatePresence>

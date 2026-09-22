@@ -157,10 +157,32 @@ function FooterContent() {
   // Parallax: el contingut del footer entra una mica més lent → profunditat.
   const footerInnerY = useTransform(scrollYProgress, [0, 1], ["-12%", "0%"]);
 
+  // Footer "armat" (sticky) només quan la sentinella és a menys d'una
+  // pantalla del final del viewport; fins llavors és `relative`, al seu lloc
+  // natural del flux. Motiu: sticky bottom-0 i més alt que la pantalla, la seva
+  // part de dalt quedava enganxada darrere la vora superior del viewport i
+  // Safari d'iOS 26 tenyia la barra d'estat amb el seu fons fosc a totes les
+  // pàgines (comprovat a l'iPhone amagant el footer, 22set26).
+  // - `visibility:hidden` NO serveix: Safari el continua mostrejant (provat).
+  // - relative → sticky no mou res visible: en armar-se, el footer puja per
+  //   DARRERE la cortina opaca (z-[1]) i l'alçada del document no canvia.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => setArmed(e.isIntersecting),
+      { rootMargin: "0px 0px 100% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [pathname]);
+
   // El Header fa fade-out quan la cortina ja ha revelat bona part del footer.
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setRevealed(v > 0.6);
   });
+
 
   // Reset en canviar de ruta o desmuntar (evita deixar el Header amagat).
   useEffect(() => () => setRevealed(false), [pathname, setRevealed]);
@@ -217,7 +239,7 @@ function FooterContent() {
           hit-testing i l'input de la newsletter no rep clics. La cortina
           (SiteShell, z-[1]) el tapa igualment perquè té z superior. */}
       <footer
-        className="dark sticky bottom-0 left-0 w-full z-0 flex flex-col overflow-hidden bg-surface-card"
+        className={`dark ${armed ? "sticky" : "relative"} bottom-0 left-0 w-full z-0 flex flex-col overflow-hidden bg-surface-card`}
       >
       <motion.div style={{ y: footerInnerY }} className="w-full flex flex-col">
 
