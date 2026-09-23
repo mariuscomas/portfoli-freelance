@@ -707,11 +707,18 @@
 
   /* G3: una tapa del color del fons, damunt del filet dret (divide-x), que
      s'encongeix cap avall i el descobreix de dalt a baix. Només xl, on la
-     tríada és en fila i els filets són verticals (des de xl, 22set26). */
+     tríada és en fila i els filets són verticals (des de xl, 22set26).
+     Els selectors van en parella (compost + descendent) perquè l'element que
+     porta la tapa pot ser el mateix que arma el grup: a la tríada cada card
+     és el seu propi RevealGroup (22set26). La tapa NO pot viure dins d'un
+     element amb `.reveal-up`: l'opacitat 0 de l'entrada la faria invisible i
+     el filet es veuria sencer des del primer fotograma. */
   @media (width >= 80rem) {
+    [data-reveal-armed].reveal-rule-v,
     [data-reveal-armed] .reveal-rule-v {
       position: relative;
     }
+    [data-reveal-armed].reveal-rule-v::after,
     [data-reveal-armed] .reveal-rule-v::after {
       content: "";
       position: absolute;
@@ -724,6 +731,7 @@
       transition: transform 0.6s var(--ease-reveal);
       transition-delay: var(--reveal-delay-rule, 0ms);
     }
+    [data-reveal-armed][data-revealed].reveal-rule-v::after,
     [data-reveal-armed][data-revealed] .reveal-rule-v::after {
       transform: scaleY(0);
     }

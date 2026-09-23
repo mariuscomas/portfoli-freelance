@@ -84,6 +84,47 @@ const LAYOUT_SHIFT_DURATION = 0.5;
 const HIDE_OUT_DURATION = 0.6;
 const HIDE_IN_DURATION = 0.3;
 
+/* ─── PROTOTIP DE MOTION DEL NAVBAR (22set26) ─────────────────────────────
+   Les tres propostes de Marius, muntades per jutjar-les en moviment (el
+   comportament no es pot jutjar en un frame de Figma). Posa PROTO a false
+   per tornar al comportament aprovat sense esborrar res.
+     1. Logo: puja darrere d'una màscara i arriba abans que el botó.
+     2. Botó Menú: surt com si la pantalla se l'empassés, amb impuls previ.
+     3. Scroll: el logo marxa i queda només el botó, que neix de dins amb
+        un rebot final.
+     4. Scroll avall: en comptes de lliscar el marc sencer amunt (15set26),
+        surt cada peça amb el seu gest.
+   Amb prefers-reduced-motion el prototip queda desactivat sencer.        */
+const PROTO = true;
+// El logo puja darrere d'una màscara, com els underlines dels links: el glif
+// emergeix de la seva pròpia línia base. Descartades la rotació i el desenfoc
+// (22set26): rotar converteix un glif tipogràfic en objecte i el blur de
+// `filter` és isòtrop, així que sobre la M. es llegeix com a error de
+// renderitzat i no com a velocitat.
+const PROTO_LOGO_TRAVEL = "115%"; // amagat del tot, descendents inclosos
+const PROTO_LOGO_DURATION = 0.6;
+// La SORTIDA no pot dur la corba d'entrada del sistema: amb easeOutQuint més
+// de mig recorregut passa al primer 20% del temps i el glif sembla que fugi
+// d'una estrebada. Per marxar, arrencar suau i accelerar.
+const PROTO_LOGO_OUT_DURATION = 0.45;
+const PROTO_LOGO_OUT_EASE: [number, number, number, number] = [0.4, 0, 0.6, 1];
+// El logo marxa MOLT abans que el header es compacti: passa per sobre del
+// titular del hero i als 100px de COMPACT_ENTER ja l'ha trepitjat. Histeresi
+// pròpia perquè no flickegi a la vora del llindar.
+const PROTO_LOGO_HIDE_ENTER = 24;
+const PROTO_LOGO_HIDE_EXIT = 8;
+const PROTO_BTN_DELAY = 0.22; // el logo arriba primer
+// Back-out: passa de llarg i torna — el rebot final del zoom-in.
+const PROTO_BTN_IN_EASE: [number, number, number, number] = [0.34, 1.56, 0.64, 1];
+const PROTO_BTN_IN_DURATION = 0.55;
+const PROTO_BTN_OUT_DURATION = HIDE_OUT_DURATION; // 0.6, la sortida ja aprovada
+// Segon tram de la sortida. L'ease-in fort que hi havia ([0.7,0,0.84,0])
+// mantenia el botó gros i opac fins al final i el feia caure de cop: el gest
+// acabava en un pop. Ara el tram frena, i l'opacitat s'acaba ABANS que
+// l'escala perquè el botó ja sigui invisible quan es tanca del tot.
+const PROTO_BTN_OUT_EASE: [number, number, number, number] = [0.33, 0, 0.2, 1];
+const PROTO_BTN_OUT_FADE = 0.9; // fracció de la durada que dura el fos
+
 export default function Header({
   onMenuClick,
   isMenuOpen = false,
@@ -96,12 +137,12 @@ export default function Header({
   const { scrollY } = useScroll();
   const [hasMounted, setHasMounted] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
+  const [isLogoOut, setIsLogoOut] = useState(false);
   const { hidden: isScrollHidden, show } = useScrollHide(COMPACT_ENTER);
   // Per sota de lg no hi ha links inline: el Menu hi ha de ser sempre.
   const isBelowLg = useMediaQuery(BELOW_LG_QUERY);
   // A lg+ el Menu és el relleu dels links inline quan es compacta; per sota
   // hi és sempre, perquè allà no hi ha cap més sortida de navegació.
-  const showMenuButton = isCompact || isBelowLg;
   const [hasFocusWithin, setHasFocusWithin] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const contrast = useHeaderContrast();
@@ -114,6 +155,9 @@ export default function Header({
       if (prev) return latest > COMPACT_EXIT;
       return latest > COMPACT_ENTER;
     });
+    setIsLogoOut((prev) =>
+      prev ? latest > PROTO_LOGO_HIDE_EXIT : latest > PROTO_LOGO_HIDE_ENTER
+    );
   });
 
   // Inicialitzem abans del primer scroll event i marquem el muntatge.
@@ -126,6 +170,7 @@ export default function Header({
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
       setIsCompact(window.scrollY > COMPACT_ENTER);
+      setIsLogoOut(window.scrollY > PROTO_LOGO_HIDE_ENTER);
     });
     const t = setTimeout(() => setHasMounted(true), 1000);
     return () => {
@@ -147,12 +192,46 @@ export default function Header({
 
   // El Header s'amaga també quan el footer s'està revelant (el bloc fosc
   // puja per sobre del contingut i el taparia).
-  const isVisible =
-    hasMounted && !isFooterRevealed && (!isScrollHidden || hasFocusWithin);
+  // Amb el prototip actiu, qui entra i surt són les PECES, no el marc: el marc
+  // es queda quiet (és transparent i no ocupa res) i el logo i el botó hi
+  // entren i en surten cadascun amb el seu gest. 22set26, substitueix el
+  // desplaçament del marc sencer del 15set26: amb dos gestos de peça definits
+  // (la màscara del logo, l'empassada del botó), fer lliscar la barra a sobre
+  // era un tercer moviment que se'ls menjava tots dos.
+  const proto = PROTO && !prefersReducedMotion;
+  const isShellVisible =
+    !isFooterRevealed && (!isScrollHidden || hasFocusWithin);
+  // Les peces hi són quan el marc ja ha "obert" i l'scroll no les fa fora.
+  const piecesIn = hasMounted && isShellVisible;
+  // El marc: amb prototip mai es mou; sense, el comportament aprovat.
+  const isVisible = proto ? true : hasMounted && isShellVisible;
 
   // Amb reduced-motion el header no es desplaça: només es fon. Llavors sí
   // que cal tallar-li els clics, perquè invisible segueix ocupant la franja.
-  const pe = isVisible ? "pointer-events-auto" : "pointer-events-none";
+  const pe = (proto ? piecesIn : isVisible && hasMounted)
+    ? "pointer-events-auto"
+    : "pointer-events-none";
+
+  // Només la PRIMERA entrada porta el retard: quan el botó reapareix fent
+  // scroll amunt ha de ser immediat, si no se sent mandrós.
+  const [hasEntered, setHasEntered] = useState(false);
+  const btnDelay = proto && !hasEntered ? PROTO_BTN_DELAY : 0;
+  useEffect(() => {
+    if (!hasMounted) return;
+    const t = setTimeout(
+      () => setHasEntered(true),
+      (PROTO_BTN_DELAY + PROTO_BTN_IN_DURATION) * 1000
+    );
+    return () => clearTimeout(t);
+  }, [hasMounted]);
+
+  // El logo desapareix en compactar-se el header (proposta 3).
+  const logoGone = proto && (isLogoOut || !piecesIn);
+
+  // Amb el prototip, el botó no surt fins que el marc "obre" (hasMounted) i
+  // marxa amb l'empassada quan l'scroll avall se l'emporta.
+  const showMenuButton =
+    (isCompact || isBelowLg) && (!PROTO ? true : proto ? piecesIn : hasMounted);
 
   // Tokens condicionals segons el contrast declarat per la pàgina.
   //  - underline: color de la línia base (estat active).
@@ -195,16 +274,18 @@ export default function Header({
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -20 }}
+      initial={PROTO ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
       animate={{
-        opacity: isVisible ? 1 : 0,
-        y: isVisible ? 0 : prefersReducedMotion ? 0 : "-100%",
+        opacity: proto ? 1 : isVisible ? 1 : 0,
+        y: proto ? 0 : isVisible ? 0 : prefersReducedMotion ? 0 : "-100%",
       }}
       transition={{
         duration: hasMounted
           ? isVisible
             ? HIDE_IN_DURATION
             : HIDE_OUT_DURATION
+          : PROTO
+          ? 0
           : 0.6,
         ease: ANIM_EASE,
       }}
@@ -218,10 +299,43 @@ export default function Header({
         20 de la caixa 20×24 del SVG de LogoSmall: h-6 dona el glif de 20 de
         md amunt i h-[38.4px] el de 32 a mòbil.
       */}
-      <div className={`${pe} flex items-center ${logoColor} transition-colors duration-300`}>
-        <TransitionLink href="/" aria-label="Inici" className="hover:opacity-80 transition-opacity">
-          <LogoSmall className="!h-[38.4px] md:!h-6 w-auto" />
-        </TransitionLink>
+      <div
+        className={`${pe} flex items-center ${logoColor} transition-colors duration-300 overflow-hidden`}
+        style={{
+          pointerEvents: isVisible && hasMounted && !logoGone ? "auto" : "none",
+        }}
+      >
+        <motion.div
+          className="will-change-[transform,clip-path]"
+          variants={{
+            // ENTRADA: el glif puja darrere la vora de la caixa.
+            hidden: { y: PROTO_LOGO_TRAVEL, clipPath: "inset(0 0 0% 0)" },
+            visible: {
+              y: "0%",
+              clipPath: "inset(0 0 0% 0)",
+              transition: { duration: PROTO_LOGO_DURATION, ease: ANIM_EASE },
+            },
+            // SORTIDA: el glif no es mou; una cortina el tapa de baix cap
+            // amunt, així que el peu de la M. marxa primer i el capdamunt és
+            // l'últim que es veu. Tornant, la mateixa cortina el destapa.
+            gone: {
+              y: "0%",
+              clipPath: "inset(0 0 100% 0)",
+              transition: {
+                duration: PROTO_LOGO_OUT_DURATION,
+                ease: PROTO_LOGO_OUT_EASE,
+              },
+            },
+          }}
+          initial={proto ? "hidden" : false}
+          animate={
+            !proto ? undefined : !hasMounted ? "hidden" : logoGone ? "gone" : "visible"
+          }
+        >
+          <TransitionLink href="/" aria-label="Inici" className="hover:opacity-80 transition-opacity">
+            <LogoSmall className="!h-[38.4px] md:!h-6 w-auto" />
+          </TransitionLink>
+        </motion.div>
       </div>
 
       {/*
@@ -283,7 +397,15 @@ export default function Header({
       <div className={`flex items-center gap-10 ${pe} h-10 md:h-12`}>
         <motion.div
           layout
-          transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
+          animate={
+            proto ? { opacity: piecesIn ? 1 : 0, y: piecesIn ? 0 : -8 } : undefined
+          }
+          transition={{
+            duration: LAYOUT_SHIFT_DURATION,
+            ease: ANIM_EASE,
+            opacity: { duration: ANIM_DURATION, ease: ANIM_EASE },
+          }}
+          style={proto && !piecesIn ? { pointerEvents: "none" } : undefined}
           className="will-change-transform"
         >
           {/* Ja no navega a /contacte: obre el modal de contacte (cortina). */}
@@ -305,13 +427,43 @@ export default function Header({
               variant="solid"
               shape="pill"
               size="md"
-              layout
               onClick={onMenuClick}
-              initial={{ opacity: 0, scale: 0.85 }}
+              initial={proto ? { opacity: 0, scale: 0.2 } : { opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
-              style={{ transformOrigin: "right center" }}
+              exit={
+                proto
+                  ? {
+                      // Agafa impuls i la pantalla se l'empassa.
+                      opacity: [1, 1, 0],
+                      scale: [1, 1.08, 0.35],
+                      transition: {
+                        duration: PROTO_BTN_OUT_DURATION,
+                        times: [0, 0.28, 1],
+                        ease: [PROTO_BTN_IN_EASE, PROTO_BTN_OUT_EASE],
+                        opacity: {
+                          duration: PROTO_BTN_OUT_DURATION * PROTO_BTN_OUT_FADE,
+                          // Sense replà: el fos arrenca de seguida i es
+                          // reparteix per tot el gest en comptes de
+                          // concentrar-se al tram final.
+                          times: [0, 0.12, 1],
+                          ease: "easeOut",
+                        },
+                      },
+                    }
+                  : { opacity: 0, scale: 0.85 }
+              }
+              transition={
+                proto
+                  ? {
+                      // El desplaçament del clúster el fa el `layout` del
+                      // «Comencem?»; el botó només escala des del seu lloc.
+                      duration: PROTO_BTN_IN_DURATION,
+                      ease: PROTO_BTN_IN_EASE,
+                      delay: btnDelay,
+                    }
+                  : { duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }
+              }
+              style={{ transformOrigin: proto ? "center" : "right center" }}
               /*
                 Botó del DS (Figma: Buttons / Solid / Large amb modes MD + Pill).
                 El color el sobreescriu `c.button` amb `!` perquè el contrast
@@ -332,13 +484,43 @@ export default function Header({
               variant="solid"
               shape="pill"
               size="icon"
-              layout
               onClick={onMenuClick}
-              initial={{ opacity: 0, scale: 0.85 }}
+              initial={proto ? { opacity: 0, scale: 0.2 } : { opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.85 }}
-              transition={{ duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }}
-              style={{ transformOrigin: "right center" }}
+              exit={
+                proto
+                  ? {
+                      // Agafa impuls i la pantalla se l'empassa.
+                      opacity: [1, 1, 0],
+                      scale: [1, 1.08, 0.35],
+                      transition: {
+                        duration: PROTO_BTN_OUT_DURATION,
+                        times: [0, 0.28, 1],
+                        ease: [PROTO_BTN_IN_EASE, PROTO_BTN_OUT_EASE],
+                        opacity: {
+                          duration: PROTO_BTN_OUT_DURATION * PROTO_BTN_OUT_FADE,
+                          // Sense replà: el fos arrenca de seguida i es
+                          // reparteix per tot el gest en comptes de
+                          // concentrar-se al tram final.
+                          times: [0, 0.12, 1],
+                          ease: "easeOut",
+                        },
+                      },
+                    }
+                  : { opacity: 0, scale: 0.85 }
+              }
+              transition={
+                proto
+                  ? {
+                      // El desplaçament del clúster el fa el `layout` del
+                      // «Comencem?»; el botó només escala des del seu lloc.
+                      duration: PROTO_BTN_IN_DURATION,
+                      ease: PROTO_BTN_IN_EASE,
+                      delay: btnDelay,
+                    }
+                  : { duration: LAYOUT_SHIFT_DURATION, ease: ANIM_EASE }
+              }
+              style={{ transformOrigin: proto ? "center" : "right center" }}
               /*
                 Mòbil (22set26). Figma: Buttons / Solid / Square (LG + Pill) a
                 48×48, radi Pill, icona de barres 32 (MenuIcon). Els 48 sobresurten 4 px per
