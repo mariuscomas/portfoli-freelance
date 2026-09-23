@@ -41,7 +41,7 @@ test("estat del wireframe: Tot + Benchmark = 1.350 €", () => {
   assert.deepEqual(q.extras, [{ id: "benchmark", label: "Benchmark competitiu", amount: 250 }]);
 });
 
-test("extres sumen i respecten l'ordre del catàleg", () => {
+test("extres sumen i respecten l’ordre del catàleg", () => {
   const q = calcAudit({
     focuses: ["ux"],
     extras: ["figma", "test", "benchmark"], // ordre d'entrada barrejat

@@ -63,7 +63,7 @@ export default function CookieBanner() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Cookies d'analítica"
+      aria-label="Cookies d’analítica"
       className="fixed inset-x-4 bottom-4 z-[120] md:inset-x-8 lg:inset-x-16"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-4 rounded-card border border-border-subtle bg-surface-card p-5 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.08)] md:flex-row md:items-center md:gap-8 md:p-6">

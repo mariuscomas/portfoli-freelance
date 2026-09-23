@@ -140,7 +140,7 @@ export async function submitQuote(input: SubmitQuoteInput): Promise<QuoteResult>
 function logMail(what: string, r: MailResult) {
   if (r.ok) return;
   if (r.skipped) {
-    console.warn(`[quote] ${what}: no enviat, falta RESEND_API_KEY a l'entorn del procés`);
+    console.warn(`[quote] ${what}: no enviat, falta RESEND_API_KEY a l’entorn del procés`);
     return;
   }
   console.error(`[quote] ${what}: no enviat`, r.status ?? "", r.error ?? "");

@@ -723,7 +723,7 @@ export const QUOTE_STATUS_META: Record<QuoteStatus, QuoteStatusMeta> = {
   },
   negociacio: {
     label: 'En negociació',
-    description: 'Hi ha una contraproposta d\'abast sobre la taula. Només una.',
+    description: 'Hi ha una contraproposta d’abast sobre la taula. Només una.',
     tone: 'warning',
   },
   acceptada: {

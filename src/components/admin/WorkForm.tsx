@@ -391,14 +391,14 @@ export default function WorkForm({
         ? {
             title: 'Descartar esborrany',
             message:
-              "Aquest esborrany s'eliminarà definitivament. No s'havia publicat encara.",
+              "Aquest esborrany s’eliminarà definitivament. No s’havia publicat encara.",
             confirmLabel: 'Descartar',
             danger: true,
           }
         : {
             title: 'Eliminar treball',
             message:
-              "El treball s'eliminarà del llistat i del públic. L'acció no es pot desfer.",
+              "El treball s’eliminarà del llistat i del públic. L’acció no es pot desfer.",
             confirmLabel: 'Eliminar',
             danger: true,
           }
@@ -816,7 +816,7 @@ export default function WorkForm({
               >
                 <RichTextEditor
                   label="Conclusió"
-                  hint="Una frase de tancament. S'usa al final del case study (sota l'últim bloc, sobre les imatges finals)."
+                  hint="Una frase de tancament. S’usa al final del case study (sota l’últim bloc, sobre les imatges finals)."
                   name={`conclusion_${locale}`}
                   rows={5}
                   defaultValue={localeValue(work?.conclusion, locale)}
@@ -1188,7 +1188,7 @@ function LocaleSwitcher({
           type="button"
           onClick={copyFromCA}
           className="inline-flex items-center gap-1.5 text-body-xs-light md:text-body-s-light text-text-secondary hover:text-text-main transition-colors underline underline-offset-4 decoration-text-secondary/40 hover:decoration-text-main"
-          title="Copia els 6 camps de la versió CA als camps de l'idioma actiu"
+          title="Copia els 6 camps de la versió CA als camps de l’idioma actiu"
         >
           ↪ Copiar de CA
         </button>
@@ -1228,7 +1228,7 @@ function AutosaveIndicator({
   status: SaveStatus
   lastSavedAt: Date | null
 }) {
-  // Mantenim "segons des de l'últim save" en state per evitar cridar
+  // Mantenim "segons des de l’últim save" en state per evitar cridar
   // Date.now() durant el render (react-hooks/purity).
   const [secondsAgo, setSecondsAgo] = useState(0)
 

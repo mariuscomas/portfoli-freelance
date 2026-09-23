@@ -9,7 +9,7 @@ export const SITE = {
   name: "Màrius Freelance",
   shortName: "Màrius",
   description:
-    "Digital Product Designer especialitzat en UI/UX. Disseny d'estratègia, producte i sistemes per a startups i corporacions.",
+    "Digital Product Designer especialitzat en UI/UX. Disseny d’estratègia, producte i sistemes per a startups i corporacions.",
   // URL base que cal sobreescriure al deploy via NEXT_PUBLIC_SITE_URL.
   // Per defecte usem localhost en dev.
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",

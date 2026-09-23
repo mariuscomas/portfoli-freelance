@@ -256,7 +256,7 @@ function Toolbar({ editor }: { editor: Editor | null }) {
         shortcut="⌘K"
         onClick={() => {
           const previous = editor.getAttributes('link').href as string | undefined
-          const url = window.prompt('URL de l\'enllaç:', previous || 'https://')
+          const url = window.prompt('URL de l’enllaç:', previous || 'https://')
           if (url === null) return
           if (url === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run()

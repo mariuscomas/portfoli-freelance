@@ -404,7 +404,7 @@ export default function ImageUploadField({
           setStatus('error')
           setLastCompression(null)
           setError(
-            `No s'ha pogut reduir la imatge per sota de ${formatBytes(MAX_BYTES)} (ha quedat en ${formatBytes(optimised.size)}). Prova d'exportar-la amb menys resolució.`
+            `No s’ha pogut reduir la imatge per sota de ${formatBytes(MAX_BYTES)} (ha quedat en ${formatBytes(optimised.size)}). Prova d’exportar-la amb menys resolució.`
           )
           return
         }
@@ -437,7 +437,7 @@ export default function ImageUploadField({
         if (uploadError) throw uploadError
 
         const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
-        if (!data?.publicUrl) throw new Error('No s\'ha pogut obtenir la URL pública')
+        if (!data?.publicUrl) throw new Error('No s’ha pogut obtenir la URL pública')
 
         setValue(data.publicUrl)
         setStatus('idle')
@@ -559,7 +559,7 @@ export default function ImageUploadField({
             className={`absolute inset-0 block w-full h-full rounded-md ${
               objectFit === 'cover' ? 'object-cover' : 'object-contain'
             }`}
-            onError={() => setError('No s\'ha pogut carregar la previsualització')}
+            onError={() => setError('No s’ha pogut carregar la previsualització')}
           />
           <button
             type="button"
@@ -583,7 +583,7 @@ export default function ImageUploadField({
           imageUrl={currentValue}
           imageAlt={currentAlt}
           label={label}
-          onError={() => setError('No s\'ha pogut carregar la previsualització')}
+          onError={() => setError('No s’ha pogut carregar la previsualització')}
           onEdit={() => setModalOpen(true)}
           onReplace={() => inputRef.current?.click()}
           onOpenUrl={() => {

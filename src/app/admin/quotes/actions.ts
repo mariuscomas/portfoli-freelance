@@ -40,7 +40,7 @@ export async function updateQuoteStatus(
   const allowed = QUOTE_REASONS_BY_STATUS[next]
   if (allowed) {
     if (!reason || !(allowed as readonly string[]).includes(reason)) {
-      throw new Error(`L'estat "${next}" necessita un motiu vàlid.`)
+      throw new Error(`L’estat "${next}" necessita un motiu vàlid.`)
     }
   }
 
@@ -151,7 +151,7 @@ export async function sendProposal(id: string) {
   const site = process.env.NEXT_PUBLIC_SITE_URL || ''
   if (!site || site.includes('localhost') || site.includes('127.0.0.1')) {
     throw new Error(
-      "NEXT_PUBLIC_SITE_URL apunta a localhost: l'enllaç de la proposta no funcionaria. Posa-hi el domini abans d'enviar-la.",
+      "NEXT_PUBLIC_SITE_URL apunta a localhost: l’enllaç de la proposta no funcionaria. Posa-hi el domini abans d’enviar-la.",
     )
   }
 
@@ -194,6 +194,6 @@ export async function sendProposal(id: string) {
     mailed: false as const,
     warning:
       `La proposta consta com a enviada, però el correu NO ha sortit: ${motiu}. ` +
-      `Passa-li l'enllaç tu mateix o arregla-ho i prem «Reenvia».`,
+      `Passa-li l’enllaç tu mateix o arregla-ho i prem «Reenvia».`,
   }
 }

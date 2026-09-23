@@ -62,7 +62,7 @@ export async function subscribeNewsletter(
     }
     return {
       status: "error",
-      message: "No s'ha pogut completar la subscripció. Torna-ho a provar en uns minuts.",
+      message: "No s’ha pogut completar la subscripció. Torna-ho a provar en uns minuts.",
     }
   }
 

@@ -33,14 +33,14 @@ const linia = (q: ReturnType<typeof v2>, id: string) => q.extras.find((e) => e.i
 
 // ————————————————————————————————— El flag manda
 
-test("amb el joc v1 no s'ofereix cap mòdul del pla nou", () => {
+test("amb el joc v1 no s’ofereix cap mòdul del pla nou", () => {
   const disponibles = v1(web()).availableExtras;
   for (const id of ["seo", "accessibilitat", "analitica", "integracio", "blog", "areaPrivada", "migracio", "formacio"] as ConfigExtraId[]) {
     assert.equal(disponibles.includes(id), false, `${id} no hauria de ser-hi al v1`);
   }
 });
 
-test("amb el joc v1 un mòdul demanat s'ignora del tot", () => {
+test("amb el joc v1 un mòdul demanat s’ignora del tot", () => {
   const q = v1(web({ seo: true, blog: true }));
   assert.equal(q.extras.length, 0);
   assert.equal(q.extrasTotal, 0);
@@ -135,7 +135,7 @@ test("un pack incomplet no descompta res", () => {
   assert.equal(q.extrasTotal, 550);
 });
 
-test("el descompte del pack és l'última línia del desglòs", () => {
+test("el descompte del pack és l’última línia del desglòs", () => {
   const q = v2(web({ seo: true, analitica: true, accessibilitat: true }));
   assert.equal(q.extras.at(-1)?.id, "pack-rendiment");
   assert.ok(q.extras.slice(0, -1).every((e) => e.amount > 0));

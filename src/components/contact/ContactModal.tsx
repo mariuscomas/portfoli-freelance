@@ -87,7 +87,7 @@ function validateStep(key: StepDef["key"], value: string): string | null {
     if (!EMAIL_REGEX.test(v)) return "Si us plau, escriu un correu vàlid.";
   }
   if (key === "message") {
-    if (v.length < 5) return "Explica-m'ho amb almenys 5 caràcters.";
+    if (v.length < 5) return "Explica-m’ho amb almenys 5 caràcters.";
     if (v.length > 5000) return "El missatge és massa llarg (màx 5000 caràcters).";
   }
   return null;
@@ -548,7 +548,7 @@ function CurtainContent({ onClose }: { onClose: () => void }) {
           rel="noopener noreferrer"
           className="group inline-flex w-fit items-center gap-1.5 rounded-base text-body-s text-text-main transition-colors hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base md:text-right"
         >
-          Prefereixes parlar? Agafem 30 min sense compromís.
+          Prefereixes parlar? Agafem 30 min.
           <ArrowUpRight size={16} weight="regular" aria-hidden="true" />
           <span className="sr-only">(s&apos;obre en una pestanya nova)</span>
         </a>

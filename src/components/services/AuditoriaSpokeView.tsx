@@ -58,7 +58,7 @@ const SPOKE_INCLUDES = AUDIT_BASE_INCLUDES.filter((item) => !item.startsWith("Va
 const FOCUS_COPY: Record<AuditFocus, { name: string; description: string; tag: string }> = {
   ux: {
     name: "Experiència",
-    description: "Fluxos, arquitectura d'informació i punts de fricció.",
+    description: "Fluxos, arquitectura d’informació i punts de fricció.",
     tag: "Fluxos · Usabilitat",
   },
   ui: {
@@ -88,11 +88,11 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Puc triar només un focus?",
-    a: "Sí. Tries un focus, dos o els tres, i el preu s'ajusta segons quants en triïs.",
+    a: "Sí. Tries un focus, dos o els tres, i el preu s’ajusta segons quants en triïs.",
   },
   {
     q: "Com és el descompte?",
-    a: "Si fem el projecte en 3 mesos, l'import de l'auditoria es descompta íntegre.",
+    a: "Si fem el projecte en 3 mesos, l’import de l’auditoria es descompta íntegre.",
   },
   {
     q: "Quant triga?",
@@ -100,7 +100,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "I si no vull seguir?",
-    a: "L'auditoria val per si sola: t'enduus l'informe i el roadmap, sense cap compromís.",
+    a: "L’auditoria val per si sola: t’enduus l’informe i el roadmap, sense cap compromís.",
   },
 ];
 
@@ -134,7 +134,7 @@ function IncludesSection() {
   return (
     <section id="que-inclou" className={`${SECTION_PX} pt-20 pb-20 bg-surface-base`}>
       <Reveal>
-        <SectionHeader caption="01 · QUÈ INCLOU" title="Què t'enduus" />
+        <SectionHeader caption="01 · QUÈ INCLOU" title="Què t’enduus" />
       </Reveal>
       <Reveal className="mt-8">
         <div className="flex flex-col gap-1.5">
@@ -271,7 +271,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
         <h2 className="max-w-3xl text-display-xs md:text-display-s lg:text-display-l text-text-main">
           {CONFIGURATOR_ENABLED
             ? "Configura la teva auditoria en dos minuts i rep el pressupost al moment."
-            : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
+            : "Explica’m el projecte i et torno una proposta amb el preu tancat."}
         </h2>
         <div className="mt-10 flex flex-col gap-4">
           <Button
@@ -293,7 +293,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
               reserva 20 minuts
               <span className="sr-only"> (s’obre en una pestanya nova)</span>
             </a>{" "}
-            i en parlem, sense compromís.
+            i en parlem.
           </p>
         </div>
       </Reveal>
@@ -409,7 +409,7 @@ export default function AuditoriaSpokeView() {
           <>
             {"Revisió experta de la teva UI, UX i conversió, amb informe prioritzat "}
             <br className="hidden lg:block" />
-            {"i pla d'acció. I si fem el projecte en 3 mesos, te la descomptes íntegra."}
+            {"i pla d’acció. I si fem el projecte en 3 mesos, te la descompto íntegra."}
           </>
         }
         price={formatPrice(FULL_PRICE)}

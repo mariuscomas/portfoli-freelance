@@ -31,7 +31,7 @@ test("no confon un objecte qualsevol amb una traducció", () => {
 
 // ————————————————————————————————— t()
 
-test("dona l'idioma demanat quan hi és", () => {
+test("dona l’idioma demanat quan hi és", () => {
   assert.equal(t({ ca: "Hola", en: "Hello" }), "Hola")
   assert.equal(t({ ca: "Hola", en: "Hello" }, "en"), "Hello")
 })
@@ -40,7 +40,7 @@ test("un string ja resolt passa tal qual", () => {
   assert.equal(t("Hola"), "Hola")
 })
 
-test("cau al català quan l'idioma demanat no hi és", () => {
+test("cau al català quan l’idioma demanat no hi és", () => {
   assert.equal(t({ ca: "Hola" }, "en"), "Hola")
 })
 

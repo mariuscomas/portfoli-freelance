@@ -78,7 +78,7 @@ test("disciplines buides = totes (De principi a fi)", () => {
   assert.deepEqual(q([]).disciplines, ["ux", "ui", "dev"]);
 });
 
-test("les disciplines es normalitzen a l'ordre canònic", () => {
+test("les disciplines es normalitzen a l’ordre canònic", () => {
   assert.deepEqual(q(["dev", "ux"]).disciplines, ["ux", "dev"]);
 });
 
@@ -107,7 +107,7 @@ test("Desenvolupament · 1 pàgina + Motion = 1.940 €", () => {
 });
 
 // ————————————————————————————————— Escalat de pàgina extra
-test("el preu de pàgina extra depèn de l'abast", () => {
+test("el preu de pàgina extra depèn de l’abast", () => {
   assert.equal(q(["ux", "ui", "dev"]).pageExtraPrice, 200);
   assert.equal(q(["dev"]).pageExtraPrice, 100); // dev sol
   assert.equal(q(["ux"]).pageExtraPrice, 50); // només disseny
@@ -158,7 +158,7 @@ test("idiomes extra: 150 € per idioma (només amb Dev)", () => {
   assert.equal(q(["dev"], { languages: 3 }).extrasTotal, 450);
 });
 
-test("quantitats 0 o negatives no generen línia d'extra", () => {
+test("quantitats 0 o negatives no generen línia d’extra", () => {
   const c = q(["ux", "ui", "dev"], { pages: 0, languages: -5 });
   assert.equal(c.extras.length, 0);
   assert.equal(c.total, 2400);

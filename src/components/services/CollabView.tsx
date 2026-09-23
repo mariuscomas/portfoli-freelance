@@ -217,7 +217,7 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
           {/* Segona porta — pont cap a serveis (client final amb producte propi) */}
           <BridgeDoor
             eyebrow="Tens un producte propi entre mans?"
-            line="T'acompanyo d'inici a fi, de l'estratègia a producció."
+            line="T’acompanyo d’inici a fi, de l’estratègia a producció."
             href="/serveis"
             cta="Mira com treballo end-to-end"
           />
