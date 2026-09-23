@@ -42,7 +42,7 @@ const WEB_EXTRAS = EXTRAS.filter((e) => e.appliesTo.includes("web"));
 const FOCUS_COPY: Record<Discipline, { title: string; description: string }> = {
   ux: {
     title: "Disseny UX",
-    description: "Immersió, arquitectura d'informació i experiència a mida.",
+    description: "Immersió, arquitectura d’informació i experiència a mida.",
   },
   ui: {
     title: "Disseny UI",
@@ -61,15 +61,15 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Puc contractar només una fase?",
-    a: "Sí. Tries l'abast: UX, UI, desenvolupament o tot de principi a fi.",
+    a: "Sí. Tries l’abast: UX, UI, desenvolupament o tot de principi a fi.",
   },
   {
     q: "Què passa si necessito més pàgines?",
-    a: "Cada pàgina extra són +200 €, i va desglossada al pressupost abans de tancar-lo.",
+    a: "Amb disseny i desenvolupament, 200 € per pàgina. Si contractes menys disciplines, baixa; el configurador ho suma en viu abans que tanquis el pressupost.",
   },
   {
     q: "Quant triga?",
-    a: "Depèn de l'abast; ho concretem a la proposta amb dates tancades, sense sorpreses.",
+    a: "Depèn de l’abast; ho concretem a la proposta amb dates tancades, sense sorpreses.",
   },
   {
     q: "I el manteniment després?",
@@ -213,7 +213,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
         <h2 className="max-w-3xl text-display-xs md:text-display-s lg:text-display-l text-text-main">
           {CONFIGURATOR_ENABLED
             ? "Configura la teva web en dos minuts i rep el pressupost al moment."
-            : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
+            : "Explica’m el projecte i et torno una proposta amb el preu tancat."}
         </h2>
         <div className="mt-10 flex flex-col gap-4">
           <Button
@@ -235,7 +235,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
               reserva 20 minuts
               <span className="sr-only"> (s’obre en una pestanya nova)</span>
             </a>{" "}
-            i en parlem, sense compromís.
+            i en parlem.
           </p>
         </div>
       </Reveal>
