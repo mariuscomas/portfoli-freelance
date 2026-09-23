@@ -305,7 +305,7 @@ function FooterContent() {
             <NewsletterForm />
 
             <p className="text-body-xs-light md:text-body-s-light text-text-secondary/70 leading-relaxed" style={{ textWrap: "balance" }}>
-              Sense spam ni sorolls. En apuntar-t&apos;hi acceptes la Política de privacitat; pots donar-te de baixa quan vulguis.
+              Sense spam ni sorolls. En apuntar-t&apos;hi acceptes la Política de privacitat. Pots donar-te de baixa quan vulguis.
             </p>
           </div>
 

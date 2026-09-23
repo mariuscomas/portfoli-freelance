@@ -8,6 +8,7 @@ import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { SITE_EMAIL } from "@/lib/site";
 import { useContactModal } from "@/context/ContactModalContext";
 import TransitionLink from "@/components/common/TransitionLink";
+import { Button } from "@/components/ui/Button";
 import { DisciplineChips } from "@/components/services/configuratorShared";
 import {
   PROCESS_STEPS,
@@ -160,7 +161,7 @@ function TriadaSection({
   return (
     <section id="productes" className="scroll-mt-24 border-t border-border-subtle bg-surface-base">
       <Reveal className={`${SECTION_PX} py-16`}>
-        <SectionHeader caption="SERVEIS · PREUS DES DE" title="Punts de partida" />
+        <SectionHeader caption="SERVEIS" title="Punts de partida" />
       </Reveal>
 
       {/* Fila d'abast — alineada amb el títol, 24 px sobre la línia de les
@@ -276,22 +277,48 @@ function ProcessSection() {
  */
 function RecurrentsSection() {
   return (
-    <section className={`${SECTION_PX} bg-surface-base py-24 lg:py-32`}>
+    <section className="border-t border-border-subtle bg-surface-base">
       <Reveal>
-        <SectionHeader caption="RECURRENTS · SEMPRE A PART DEL TOTAL" title="Després del llançament" />
-      </Reveal>
-      <Reveal className="mt-16">
-        <dl className="flex flex-col">
-          {RECURRENTS.map((r) => (
-            <div
-              key={r.label}
-              className="flex items-center justify-between gap-12 border-b border-border-subtle py-8"
-            >
-              <dt className="text-body-l lg:text-body-xl text-text-main">{r.label}</dt>
-              <dd className="shrink-0 text-right text-body-l lg:text-body-xl text-text-secondary">{r.price}</dd>
-            </div>
-          ))}
-        </dl>
+        <div className="flex flex-col lg:min-h-[424px] lg:flex-row lg:items-stretch">
+          {/* Capçalera. A desktop és la primera columna de la fila i porta el
+              filet dashed a la dreta; a mòbil i tablet és una banda a sobre. */}
+          <div className="flex flex-col justify-center gap-6 px-6 py-24 md:px-12 lg:w-[594px] lg:shrink-0 lg:border-r lg:border-dashed lg:border-border-subtle lg:px-12 lg:py-24">
+            <span className="text-caption uppercase text-text-secondary">
+              RECURRENTS · A PART DEL PRESSUPOST
+            </span>
+            <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
+              Després del llançament
+            </h2>
+          </div>
+
+          {/* Les tres cards. A mòbil s'apilen i el filet va a dalt; de md amunt
+              van en columnes i el filet passa a l'esquerra de cada card. */}
+          <ul className="flex flex-1 flex-col md:flex-row md:border-t md:border-dashed md:border-border-subtle lg:border-t-0">
+            {RECURRENTS.map((r, i) => (
+              <li
+                key={r.label}
+                className="flex flex-1 items-center gap-8 border-t border-dashed border-border-subtle px-6 py-8 md:items-stretch md:flex-col md:gap-8 md:border-t-0 md:border-l md:p-12"
+              >
+                <span className="text-caption-sm shrink-0 text-text-secondary">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="flex flex-1 flex-col gap-6 md:justify-between md:gap-10">
+                  <div className="flex flex-col gap-4">
+                    <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">
+                      {r.label}
+                    </h3>
+                    <p className="text-body-xs-light lg:text-body-s-light text-text-secondary">
+                      {r.body}
+                    </p>
+                  </div>
+                  <span className="text-body-l-semibold md:text-display-2xs-medium lg:text-display-xs-medium text-text-main">
+                    {r.price}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </Reveal>
     </section>
   );
@@ -307,20 +334,28 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
       <Reveal>
         <div className="flex flex-col gap-16 lg:flex-row lg:items-start">
           <div className="flex flex-1 flex-col gap-16">
-            <p className="text-caption-eyebrow text-text-secondary">05 · Comencem</p>
+            <p className="text-caption-eyebrow text-text-secondary">Comencem</p>
 
             <h2 className="text-display-xs md:text-display-s lg:text-display-l text-text-main">
               {CONFIGURATOR_ENABLED
-                ? "No saps per on començar? Configura el teu projecte en dos minuts."
-                : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
+                ? "Tria el punt de partida i tanca el preu en dos minuts."
+                : "Explica’m el projecte i et torno una proposta amb el preu tancat."}
             </h2>
 
             <div className="flex flex-col gap-8">
-              <button type="button" onClick={() => onConfigure("web")} className="group self-start">
-                <LinkArrow className="text-caption-eyebrow">
-                  {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
-                </LinkArrow>
-              </button>
+              {/* CTA principal de la pàgina: botó sòlid del DS, no enllaç. És
+                  l'única acció que obre el configurador i ha de guanyar els
+                  enllaços de la secció (Figma: Buttons / Solid / Large). */}
+              <Button
+                variant="solid"
+                size="lg"
+                shape="pill"
+                className="self-start"
+                onClick={() => onConfigure("web")}
+                iconRight={<ArrowRight size={20} weight="regular" aria-hidden />}
+              >
+                {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
+              </Button>
               <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
                 Si ho prefereixes,{" "}
                 <a
@@ -332,7 +367,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
                   reserva una trucada de 20 min
                   <span className="sr-only"> (s’obre en una pestanya nova)</span>
                 </a>{" "}
-                i en parlem sense compromís.
+                i en parlem.
               </p>
             </div>
           </div>

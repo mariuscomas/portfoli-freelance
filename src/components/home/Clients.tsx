@@ -23,9 +23,14 @@ import { CLIENT_LOGOS } from "@/lib/clients";
  * que pinten el patró 5/10 del DS; `border-dashed` del navegador no el
  * respecta.
  *
- * Les fletxes són el botó del DS (Ghost / Square Large, 56 amb icona 32)
- * dins d'una cel·la de 96 que és qui porta el filet. Al Figma venien com a
- * instància escalada ×1,71; es va corregir el 23set26 — cap valor nou.
+ * Les fletxes surten del mestre Buttons / Ghost / Square / Neutral
+ * (11507:9312), que té Size 32 · 56 · 96. A mòbil el botó va sol a Size=56;
+ * de md amunt OMPLE la cel·la de 96 que porta el filet (Size=96), perquè el
+ * hover arribi de filet a filet: si el gris només cobrís els 56 centrals, la
+ * zona que reacciona no coincidiria amb el requadre que es veu. El 96 no
+ * porta radius ni vora, que el filet de la cel·la ja fa de límit i una vora
+ * sòlida a sobre el doblaria. El salt de mida el decideix aquest component
+ * (md:size-full), no el token, com amb la tipografia. Decidit 23set26.
  */
 
 /* ------------------------------------------------------------
@@ -46,10 +51,10 @@ const ClientLogo = ({ src, name, height }: { src: string; name: string; height: 
 // Els logos i la seva alçada normalitzada surten de lib/clients (font única,
 // compartida amb /colaboracio). Aquí només hi viu el relat de cada client.
 const DESCRIPCIONS: Record<string, string> = {
-  north: "El meu salt a l'automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria. I sí, va ser tan divertit com sona.",
-  quantion: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l'insurtech. Burocràcia complexa, interfícies simples.",
+  north: "El meu salt a l’automoció. Amb North Studio vaig dissenyar interfícies de cotxe colze a colze amb enginyeria. I sí, va ser tan divertit com sona.",
+  quantion: "UI/UX Senior a Quantion, dissenyant per a la salut pública i l’insurtech. Burocràcia complexa, interfícies simples.",
   cupra: "Sí, el panell del teu pròxim Cupra potser el vaig dibuixar jo. Disseny HMI on cada píxel ha de funcionar a 200 km/h.",
-  santalucia: "Diversos productes per a Santalucía Impulsa: des d'un agrupador d'assegurances tipus Fintonic fins a un gestor d'herències amb IA.",
+  santalucia: "Diversos productes per a Santalucía Impulsa: des d’un agrupador d’assegurances tipus Fintonic fins a un gestor d’herències amb IA.",
   alphanet: "UI/UX per a Alphanet: les tauletes que els cossos policials porten al cotxe i les pantalles de sala de control. Aquí un mal botó no és un bug, és un problema.",
   onabitz: "De tot una mica per a Onabitz com a UI/UX designer. Projectes variats, mateixa obsessió pel detall.",
 };
@@ -170,6 +175,7 @@ export default function Clients() {
                   variant="ghost"
                   size="icon"
                   shape="square"
+                  className="md:size-full md:rounded-none"
                   aria-label="Clients anteriors"
                   disabled={!canPrev}
                   onClick={() => scrollByStep(-1)}
@@ -182,6 +188,7 @@ export default function Clients() {
                   variant="ghost"
                   size="icon"
                   shape="square"
+                  className="md:size-full md:rounded-none"
                   aria-label="Clients següents"
                   disabled={!canNext}
                   onClick={() => scrollByStep(1)}
