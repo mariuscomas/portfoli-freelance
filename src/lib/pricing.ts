@@ -123,6 +123,10 @@ interface ProductPricing {
   lliurament: number;
   disciplinePrice: Record<Discipline, number>;
   pagesInclude: string;
+  /** Línia de pàgines legals. Va just després de `pagesInclude` perquè el
+   *  matisa: són obligatòries per RGPD i no compten com a pàgina de disseny.
+   *  Només els productes que en tenen la declaren. */
+  legalInclude?: string;
   restIncludes: string[];
   devIncludes: string[];
   /** Preu de pàgina extra segons les disciplines triades. */
@@ -187,6 +191,7 @@ const PRICING_V2: Record<ConfigProduct, ProductPricing> = {
     // reposicionament ha de dir que hi van incloses sense comptar com a
     // pàgina de disseny.
     pagesInclude: "3 pàgines: inici, serveis i contacte",
+    legalInclude: "Avís legal, privacitat i cookies (no compten com a pàgines)",
     restIncludes: ["Responsive (Mobile First)", "1 idioma"],
     devIncludes: [
       "Transicions lleugeres",
@@ -480,6 +485,7 @@ export function calcConfiguration(
 
   const includes = [
     P.pagesInclude,
+    ...(P.legalInclude ? [P.legalInclude] : []),
     disciplineIncludeLine(chosen),
     ...P.restIncludes,
     ...(has.has("dev") ? P.devIncludes : []),

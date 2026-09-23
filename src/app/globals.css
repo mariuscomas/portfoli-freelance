@@ -592,8 +592,8 @@
   }
 }
 /* ============================================================
-   FILETS DASHED — patró del DS: guió 5 px, espai 10 px, gruix 1
-   (Figma, Ajustes de trazo: Discontinuo, Guion 5, Espacio 10, Interior).
+   FILETS DASHED — patró del DS: guió 3 px, espai 9 px, gruix 1 (23set26; abans 5/10)
+   (Figma, Ajustes de trazo: Discontinuo, Guion 3, Espacio 9, Interior).
    `border-dashed` no deixa triar el patró: cada navegador el pinta amb
    guions de ~3 px enganxats. Aquí el filet és un border-image amb un
    degradat repetit, de manera que ocupa el mateix gruix que la vora i el
@@ -609,25 +609,25 @@
    ============================================================ */
 @utility dash-h-* {
   --dash-color: --value(--color-*);
-  border-image: repeating-linear-gradient(to right, var(--dash-color) 0 5px, transparent 5px 15px) 1 0;
+  border-image: repeating-linear-gradient(to right, var(--dash-color) 0 3px, transparent 3px 12px) 1 0;
 }
 
 @utility dash-v-* {
   --dash-color: --value(--color-*);
-  border-image: repeating-linear-gradient(to bottom, var(--dash-color) 0 5px, transparent 5px 15px) 0 1;
+  border-image: repeating-linear-gradient(to bottom, var(--dash-color) 0 3px, transparent 3px 12px) 0 1;
 }
 
 @utility dash-divide-h-* {
   & > :not(:last-child) {
     --dash-color: --value(--color-*);
-    border-image: repeating-linear-gradient(to right, var(--dash-color) 0 5px, transparent 5px 15px) 1 0;
+    border-image: repeating-linear-gradient(to right, var(--dash-color) 0 3px, transparent 3px 12px) 1 0;
   }
 }
 
 @utility dash-divide-v-* {
   & > :not(:last-child) {
     --dash-color: --value(--color-*);
-    border-image: repeating-linear-gradient(to bottom, var(--dash-color) 0 5px, transparent 5px 15px) 0 1;
+    border-image: repeating-linear-gradient(to bottom, var(--dash-color) 0 3px, transparent 3px 12px) 0 1;
   }
 }
 

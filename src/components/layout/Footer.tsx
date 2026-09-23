@@ -126,9 +126,14 @@ export default function Footer() {
 }
 
 /** Titular del tancament, per línies (el salt només a partir de md). */
-const CLOSING_LINES = [
-  ["El", "següent", "projecte"],
-  ["comença", "amb", "una", "conversa."],
+/**
+ * Titular de tancament, paraula per paraula (el reveal entra una per una).
+ * `em` = èmfasi per to (text/secondary), com al Figma; `glue` = sense espai
+ * davant, per al punt final, que va al color base.
+ */
+const CLOSING_LINES: { w: string; em?: boolean; glue?: boolean }[][] = [
+  [{ w: "El" }, { w: "següent" }, { w: "projecte" }],
+  [{ w: "comença" }, { w: "amb" }, { w: "una" }, { w: "conversa", em: true }, { w: ".", glue: true }],
 ];
 const CLOSING_WORDS = CLOSING_LINES.flat().length;
 
@@ -198,8 +203,12 @@ function FooterContent() {
       {/* Entrada (guió 21set26): el titular s'omple paraula per paraula
           (20% → 100%, 60 ms per paraula, un cop, sense fixar) i el Link puja
           després (G2). Surt a totes les pàgines amb footer. */}
-      <RevealGroup as="section" className="relative z-[1] w-full border-t border-border-subtle bg-surface-base px-page py-section-m lg:py-section-xl flex flex-col items-start gap-8 md:gap-12">
-        <h2 className="text-body-xl-light md:text-body-2xl-light lg:text-body-statement text-text-main">
+      <RevealGroup as="section" className="relative z-[1] w-full border-t border-border-default bg-surface-base px-page py-section-m lg:py-section-xl flex flex-col items-start gap-8 md:gap-12">
+        {/* Figma (23set26): el titular passa de Hanken Light (Body/2XL -
+            Statement, decisió 14set26) a Display — Bricolage SemiBold 56 a
+            1728/1280, 40 a 834 i 32 a 402. El salt entre graons el decideix
+            el component, com marca la rampa fixa. */}
+        <h2 className="text-display-xs md:text-display-s xl:text-display-l text-text-main">
           {CLOSING_LINES.map((line, li) => (
             <Fragment key={li}>
               {li > 0 && <br className="hidden md:block" />}
@@ -207,9 +216,12 @@ function FooterContent() {
                 const i = CLOSING_LINES.slice(0, li).flat().length + wi;
                 return (
                   <Fragment key={wi}>
-                    {i > 0 && " "}
-                    <span className="reveal-word" style={{ "--reveal-delay": `${i * 60}ms` } as React.CSSProperties}>
-                      {word}
+                    {i > 0 && !word.glue && " "}
+                    <span
+                      className={`reveal-word${word.em ? " text-text-secondary" : ""}`}
+                      style={{ "--reveal-delay": `${i * 60}ms` } as React.CSSProperties}
+                    >
+                      {word.w}
                     </span>
                   </Fragment>
                 );
