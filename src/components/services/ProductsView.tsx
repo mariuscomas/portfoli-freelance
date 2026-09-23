@@ -5,11 +5,11 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
-import { SITE_EMAIL } from "@/lib/site";
 import { useContactModal } from "@/context/ContactModalContext";
 import TransitionLink from "@/components/common/TransitionLink";
 import { Button } from "@/components/ui/Button";
 import { DisciplineChips } from "@/components/services/configuratorShared";
+import CustomWorkRow from "@/components/services/CustomWorkRow";
 import {
   PROCESS_STEPS,
   CONDITIONS,
@@ -197,38 +197,14 @@ function TriadaSection({
         </div>
       </Reveal>
 
-      {/* A mida: banda a sang amb filet inferior discontinu — el que el
-          catàleg no cobreix es pressuposta per trucada. */}
-      <Reveal>
-        <div
-          className={`${SECTION_PX} flex flex-col gap-8 border-b dash-h-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
-        >
-          <div className="flex flex-1 flex-col gap-3">
-            <span className="text-caption uppercase text-text-secondary">APPS, BRANDING I MÉS</span>
-            <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">Una altra cosa al cap?</h3>
-            <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
-              El que no encaixa en aquests punts de partida el pressupostem junts després d’una
-              trucada.
-            </p>
-          </div>
-          {/* Dues sortides, com al Figma: trucada per a qui vol parlar, correu
-              per a qui prefereix escriure. No repeteixen substantiu. */}
-          <div className="flex shrink-0 flex-col gap-6 lg:flex-row lg:items-center lg:gap-12">
-            <a
-              href={PRODUCT_CALL_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group"
-            >
-              <LinkArrow>Reserva una trucada</LinkArrow>
-              <span className="sr-only">(s’obre en una pestanya nova)</span>
-            </a>
-            <a href={`mailto:${SITE_EMAIL}`} className="group">
-              <LinkArrow>Escriu-me</LinkArrow>
-            </a>
-          </div>
-        </div>
-      </Reveal>
+      {/* Fila «a mida»: el mateix component que pinta la home (mestre
+          12304:91680). El hub li passa la seva constant de marge, que encara
+          no és la rampa page-margin. */}
+      <CustomWorkRow
+        as={Reveal}
+        padX={SECTION_PX}
+        padInner="lg:p-16 xl:p-24"
+      />
     </section>
   );
 }

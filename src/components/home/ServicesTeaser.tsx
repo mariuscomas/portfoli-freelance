@@ -2,9 +2,8 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import TransitionLink from "@/components/common/TransitionLink";
 import RevealGroup from "@/components/common/RevealGroup";
 import { LinkUnderline } from "@/components/ui/LinkUnderline";
-import FrameRuler from "@/components/ui/FrameRuler";
-import { SITE_EMAIL } from "@/lib/site";
-import { PRODUCT_CALL_URL, type Product, type ProductId } from "@/lib/pricing";
+import CustomWorkRow from "@/components/services/CustomWorkRow";
+import { type Product, type ProductId } from "@/lib/pricing";
 
 /**
  * Secció · Serveis de la home.
@@ -195,58 +194,18 @@ export default function ServicesTeaser({ products }: { products: Product[] }) {
         ))}
       </div>
 
-      {/* Fila «a mida»: porta de sortida per al que no encaixa a la tríada.
-          Figma: mestre "Card · Una altra cosa al cap" 12304:91680
-          (Desktop 12304:91677 · Tablet 12304:91678 · Mobile 12304:91679).
-          - Vora superior SÒLIDA border-default: excepció a la regla de filets
-            (dashed dins de secció), decidida el 22set26 per marcar-la com un
-            bloc a part de la tríada.
-          - Marc de regla (FrameRuler, mestre Frame / Ruler 12305:14461): diu
-            «a mida» sense color. Substitueix la prova amb superfície Pistatxo,
-            que feia pesar la sortida secundària més que els productes.
-          - Titular un graó per sota del nom de producte a cada breakpoint.
-          - Enllaços en columna; el primari un graó per sobre del secundari. */}
-      <RevealGroup className="relative flex flex-col gap-12 border-t border-border-default px-page py-section-xs md:flex-row md:items-start md:py-section-s lg:gap-0 lg:p-0">
-        <FrameRuler />
-        <div className="reveal-up flex flex-col gap-8 md:flex-1 lg:w-2/3 lg:flex-none lg:p-page">
-          <p className="text-caption-eyebrow text-text-secondary">APPS · BRANDING I MOLT MÉS</p>
-          <div className="flex flex-col gap-4">
-            <h3 className="text-display-2xs md:text-display-xs lg:text-display-s text-text-main">Una altra cosa al cap?</h3>
-            <p className="max-w-[384px] text-body-xs-light md:text-body-s-light text-text-secondary">
-              El que no encaixa en aquests punts de partida el pressupostem junts
-              després d&apos;una trucada.
-            </p>
-          </div>
-        </div>
-
-        {/* max-md:-mb-2.5: l'àrea tàctil del darrer enllaç (min-h-11) deixa
-            ~10 px buits sota el subratllat; sense compensar, l'aire de baix
-            era més gran que el de dalt (Figma: mateix aire a dalt i a baix). */}
-        <div style={delay(80)} className="reveal-up flex flex-col items-start gap-6 max-md:-mb-2.5 lg:w-1/3 lg:px-page lg:py-page">
-          <LinkUnderline
-            as="a"
-            href={PRODUCT_CALL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            size="md"
-            className="lg:text-button-link-lg"
-            icon={<ArrowRight size={20} className="shrink-0" aria-hidden />}
-          >
-            Reserva una trucada de 20 minuts
-            <span className="sr-only"> (s&apos;obre en una pestanya nova)</span>
-          </LinkUnderline>
-          {/* Singular a posta: «escriu-me» va amb el correu personal. */}
-          <LinkUnderline
-            as="a"
-            href={`mailto:${SITE_EMAIL}`}
-            size="sm"
-            className="lg:text-button-link-md"
-            icon={<ArrowRight size={20} className="shrink-0" aria-hidden />}
-          >
-            Escriu-me
-          </LinkUnderline>
-        </div>
-      </RevealGroup>
+      {/* Fila «a mida»: el component la documenta (mestre 12304:91680).
+          La home passa el marge de la rampa (px-page / p-page) i les classes
+          d'entrada del guió d'scroll; el retard de 80 ms encadena els
+          enllaços darrere del text. */}
+      <CustomWorkRow
+        as={RevealGroup}
+        padX="px-page"
+        padInner="lg:p-page"
+        textClassName="reveal-up"
+        linksClassName="reveal-up"
+        linksStyle={delay(80)}
+      />
     </section>
   );
 }
