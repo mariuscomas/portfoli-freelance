@@ -9,16 +9,17 @@
 /**
  * Configurador de pressupostos (web/landing/auditoria i col·laboració).
  *
- * TANCAT per al llançament (16set26): els preus "des de" i les tarifes segueixen
- * visibles, però els CTA porten a contacte i trucada en comptes d'obrir el
- * configurador, que encara no s'ha validat en viu.
+ * OBERT (23set26). Substitueix el tancament del 16set26, que mantenia els CTA
+ * apuntant a contacte i trucada mentre el flux no s'havia validat en viu. S'obre
+ * junt amb els preus del pla modular, que ja són els que calcula el configurador
+ * (vegeu PRICING_V2_ENABLED a pricing.ts).
  *
- * Es pot obrir NOMÉS EN LOCAL amb `NEXT_PUBLIC_CONFIGURATOR=1` al `.env.local`,
- * per provar-lo sense tocar codi ni arriscar-se a commitar-lo obert. A producció
- * la variable no hi és, així que el default mana i segueix tancat. Per obrir-lo
- * de debò, definir la variable a l'entorn de Vercel o canviar el default aquí.
+ * El default mana i el configurador surt a tot arreu: hub de /serveis, els tres
+ * spokes i /colaboracio. Es pot tancar en un entorn concret amb
+ * `NEXT_PUBLIC_CONFIGURATOR=0`, però com que NEXT_PUBLIC_* s'incrusta al build,
+ * tancar-lo demana un desplegament: no és un interruptor calent.
  */
-export const CONFIGURATOR_ENABLED = process.env.NEXT_PUBLIC_CONFIGURATOR === "1";
+export const CONFIGURATOR_ENABLED = process.env.NEXT_PUBLIC_CONFIGURATOR !== "0";
 
 /**
  * Preus del pla modular 2026 (600 · 990 · 1.990). TANCAT.
