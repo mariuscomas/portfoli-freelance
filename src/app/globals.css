@@ -64,6 +64,8 @@
 
   /* --- COLOR / Surface --- */
   --surface-base: #f2f2f2;
+  /* Fons enfosquit darrere d'un full o modal (Figma surface/scrim, 24set26). */
+  --surface-scrim: rgb(11 11 11 / 0.4);
   /* Figma: surface/base */
   --surface-card: #ffffff;
   /* Figma: surface/card */
@@ -333,6 +335,7 @@
 
   /* --- COLOR / Surface (dark) --- */
   --surface-base: #262522;
+  --surface-scrim: rgb(0 0 0 / 0.6);
   --surface-card: #0a0a0a;
   --surface-image: #444749;
   /* Figma: surface/image mode Dark (neutral/700) — plaqueta discreta, 1,64:1 */
@@ -386,6 +389,7 @@
   --color-text-secondary-inverse: var(--text-secondary-inverse);
   --color-text-disabled: var(--text-disabled);
   --color-surface-base: var(--surface-base);
+  --color-surface-scrim: var(--surface-scrim);
   --color-surface-card: var(--surface-card);
   --color-surface-image: var(--surface-image);
   --color-surface-card-inverse: var(--surface-card-inverse);
@@ -486,6 +490,7 @@
 
   /* Colors / Surface → bg-surface-base, bg-surface-card, bg-surface-image, etc. */
   --color-surface-base: var(--surface-base);
+  --color-surface-scrim: var(--surface-scrim);
   --color-surface-card: var(--surface-card);
   --color-surface-image: var(--surface-image);
   --color-surface-card-inverse: var(--surface-card-inverse);

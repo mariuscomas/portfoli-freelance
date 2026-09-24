@@ -173,3 +173,38 @@ test("web completa amb el Pack Rendiment = 1.990 + 810", () => {
   assert.equal(q.baseTotal, 1990);
   assert.equal(q.total, 2800);
 });
+
+// Dependències visibles (24set26): sense CMS, el blog i la formació surten
+// deshabilitats (lockedExtras), no amagats; amb CMS, passen a disponibles.
+test("sense CMS, blog i formació queden bloquejats i no sumen", () => {
+  const q = calcConfiguration(
+    { product: "web", disciplines: ["ux", "ui", "dev"], modules: { blog: 1, formacio: 1 } },
+    PRICING_SETS.v2,
+  );
+  assert.deepEqual([...q.lockedExtras].sort(), ["blog", "formacio"]);
+  assert.equal(q.extras.some((e) => e.id === "blog" || e.id === "formacio"), false);
+});
+
+test("amb CMS, res no queda bloquejat", () => {
+  const q = calcConfiguration({ product: "web", disciplines: ["ux", "ui", "dev"], cms: true }, PRICING_SETS.v2);
+  assert.deepEqual(q.lockedExtras, []);
+});
+
+test("sense Dev, el blog no surt ni bloquejat (el CMS tampoc s'ofereix)", () => {
+  const q = calcConfiguration({ product: "web", disciplines: ["ux"] }, PRICING_SETS.v2);
+  assert.deepEqual(q.lockedExtras, []);
+});
+
+// Nota dinàmica del pack (24set26).
+test("packStatus: cap, parcial i aplicat del Pack Rendiment", async () => {
+  const { PACKS, packStatus } = await import("./pricing.ts");
+  const p = PACKS.find((x) => x.id === "rendiment")!;
+  const on = (ids: string[]) => (id: string) => ids.includes(id);
+  assert.equal(packStatus(p, "web", on([])).state, "cap");
+  assert.equal(packStatus(p, "web", on([])).tots, "SEO, analítica i accessibilitat");
+  const parcial = packStatus(p, "web", on(["seo", "analitica"]));
+  assert.equal(parcial.state, "parcial");
+  assert.equal(parcial.falten, "accessibilitat");
+  assert.equal(parcial.estalvi, 90);
+  assert.equal(packStatus(p, "web", on(["seo", "analitica", "accessibilitat"])).state, "aplicat");
+});

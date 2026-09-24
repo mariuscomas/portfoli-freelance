@@ -2,16 +2,20 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore, useId } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence, useReducedMotion, useSpring, useTransform, useAnimationControls } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useSpring, useTransform, useAnimationControls, useDragControls } from "framer-motion";
 import { X, CaretDown, Check, Question } from "@phosphor-icons/react";
 import { DISCIPLINES, DISCIPLINE_ORDER, type Discipline } from "@/lib/pricing";
+import Button from "@/components/ui/Button";
 
 /* ============================================================
    Primitius compartits pels configuradors (productes i col·laboració)
    ============================================================ */
 
+/** "3.000 €" amb espai dur (la xifra i el € no es parteixen a final de línia)
+ *  i signe menys tipogràfic per als descomptes («−90 €», com l'etiqueta
+ *  «(−10%)» del pack). Decidit 24set26. */
 export const formatEuro = (n: number) =>
-  `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
+  `${n < 0 ? "\u2212" : ""}${Math.abs(n).toLocaleString("ca-ES", { maximumFractionDigits: 0 })}\u00A0€`;
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -354,11 +358,14 @@ export function HelpToggle({ label, text }: { label: string; text: string }) {
 export function ConfigRow({
   label,
   caption,
+  captionId,
   help,
   children,
 }: {
   label: string;
   caption: string;
+  /** Id de la caption, per lligar-la a un control deshabilitat (aria-describedby). */
+  captionId?: string;
   /** Text d'ajuda de l'extra. Sense això no surt cap `?`. */
   help?: string;
   children: React.ReactNode;
@@ -379,7 +386,7 @@ export function ConfigRow({
           <Question size={16} weight="light" aria-hidden="true" className="shrink-0 text-text-secondary" />
         ) : null}
       </span>
-      <span className="text-caption-sm uppercase text-text-secondary">{caption}</span>
+      <span id={captionId} className="text-caption-sm uppercase text-text-secondary">{caption}</span>
     </>
   );
 
@@ -472,29 +479,52 @@ export function Switch({
   label,
   checked,
   onChange,
+  disabled = false,
+  describedBy,
+  onBlockedClick,
 }: {
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  /** Mòdul que depèn d'un altre que no està actiu (variant Disabled del
+   *  mestre Switch, 24set26): pista `border-subtle`, pom `surface-card`. */
+  disabled?: boolean;
+  /** Id del text que explica per què està deshabilitat. */
+  describedBy?: string;
+  /** Amb `disabled`: el botó queda aria-disabled (no `disabled`) i el clic
+   *  obre la confirmació de dependència en lloc de no fer res (24set26). */
+  onBlockedClick?: () => void;
 }) {
+  const blocked = disabled && !!onBlockedClick;
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
       aria-label={label}
-      onClick={() => onChange(!checked)}
-      className="inline-flex min-h-11 shrink-0 items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+      aria-describedby={describedBy}
+      aria-disabled={blocked ? true : undefined}
+      disabled={disabled && !blocked}
+      onClick={() => (blocked ? onBlockedClick?.() : onChange(!checked))}
+      className="inline-flex min-h-11 shrink-0 items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base disabled:cursor-not-allowed aria-disabled:cursor-pointer"
     >
       <span
         aria-hidden="true"
         className={`relative h-7 w-[52px] rounded-full transition-colors duration-200 ${
-          checked ? "bg-primary-main" : "bg-surface-card ring-1 ring-inset ring-text-secondary/70"
+          disabled
+            ? "bg-border-subtle"
+            : checked
+              ? "bg-primary-main"
+              : "bg-surface-card ring-1 ring-inset ring-text-secondary/70"
         }`}
       >
         <span
           className={`absolute top-[2px] h-6 w-6 rounded-full transition-[left,background-color] duration-200 ${
-            checked ? "left-[26px] bg-surface-card shadow-sm" : "left-[2px] bg-text-secondary/70"
+            disabled
+              ? "left-[2px] bg-surface-card"
+              : checked
+                ? "left-[26px] bg-surface-card shadow-sm"
+                : "left-[2px] bg-text-secondary/70"
           }`}
         />
       </span>
@@ -943,5 +973,215 @@ function DisciplineChip({
       </AnimatePresence>
       <span>{DISCIPLINES[discipline].label}</span>
     </motion.button>
+  );
+}
+
+/* ============================================================
+   Full inferior (mòbil i tauleta) · mestre Figma `Sheet` 12501-11957
+   ============================================================ */
+/**
+ * S'obre per sobre del contingut i per sota del peu, que queda visible (el
+ * total i el CTA no es tapen). Fons `surface-scrim`; clic al fons, Esc i la X
+ * el tanquen, i el focus torna a qui l'ha obert. No és modal: el peu queda
+ * actiu a posta (es pot continuar sense tancar-lo). Pensat per anar DINS d'un
+ * contenidor `relative` que ja sigui el peu: el full s'ancora a `bottom-full`.
+ * Decidit 24set26 (wizard de 3 passos, el desglòs substitueix el pas Resum).
+ */
+export function Sheet({
+  id,
+  title,
+  open,
+  onClose,
+  returnFocusRef,
+  children,
+}: {
+  id: string;
+  title: string;
+  open: boolean;
+  onClose: () => void;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
+  children: React.ReactNode;
+}) {
+  const reduce = useReducedMotion();
+  const closeRef = useRef<HTMLButtonElement>(null);
+  // Lliscar cap avall per tancar (24set26). L'arrossegament només arrenca des
+  // del tirador i la capçalera, perquè el cos del full pot fer scroll propi.
+  const drag = useDragControls();
+
+  useEffect(() => {
+    if (!open) return;
+    closeRef.current?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    const ret = returnFocusRef?.current;
+    return () => {
+      window.removeEventListener("keydown", onKey, true);
+      ret?.focus({ preventScroll: true });
+    };
+  }, [open, onClose, returnFocusRef]);
+
+  return (
+    <AnimatePresence>
+      {open ? (
+        <>
+          <motion.div
+            key="scrim"
+            aria-hidden="true"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 0.2 }}
+            className="fixed inset-0 z-0 bg-surface-scrim"
+          />
+          <motion.div
+            key="sheet"
+            id={id}
+            role="dialog"
+            aria-label={title}
+            initial={{ y: reduce ? 0 : "100%", opacity: reduce ? 0 : 1 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: reduce ? 0 : "100%", opacity: reduce ? 0 : 1 }}
+            transition={{ duration: reduce ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }}
+            drag={reduce ? false : "y"}
+            dragControls={drag}
+            dragListener={false}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.7 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 80 || info.velocity.y > 500) onClose();
+            }}
+            className="absolute inset-x-0 bottom-full z-10 flex max-h-[calc(100dvh-10rem)] flex-col rounded-t-3xl bg-surface-base px-6 pb-8 md:px-12"
+          >
+            <div
+              className="flex cursor-grab touch-none justify-center pt-3 pb-2 active:cursor-grabbing"
+              aria-hidden="true"
+              onPointerDown={(e) => drag.start(e)}
+            >
+              <span className="h-1 w-10 rounded-full bg-border-default" />
+            </div>
+            <div
+              className="flex touch-none items-center justify-between pt-4 pb-6"
+              onPointerDown={(e) => {
+                // La X té el seu propi clic; la resta de la capçalera arrossega.
+                if ((e.target as HTMLElement).closest("button")) return;
+                drag.start(e);
+              }}
+            >
+              <h2 className="text-display-2xs-medium md:text-display-xs-medium text-text-main">{title}</h2>
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={onClose}
+                aria-label="Tanca el resum"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-text-main focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main"
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
+            <div className="min-h-0 overflow-y-auto overscroll-none">{children}</div>
+          </motion.div>
+        </>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+/* ============================================================
+   Confirmació de dependència · mestre Figma `Popover · Dependència` 12523-24944
+   ============================================================ */
+/**
+ * S'obre en tocar un mòdul bloquejat. Diu què cal i quant suma abans d'activar
+ * res. `mode="popover"` (desktop): ancorat sota el switch, alineat a la dreta.
+ * `mode="inline"` (mòbil/tauleta): desplegable sota la fila. Esc i «Cancel·la»
+ * tanquen; el focus va a «Activa’ls tots dos».
+ */
+export function DependencyConfirm({
+  mode,
+  text,
+  onConfirm,
+  onCancel,
+}: {
+  mode: "popover" | "inline";
+  text: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const reduce = useReducedMotion();
+  const boxRef = useRef<HTMLDivElement>(null);
+  // onCancel arriba com a funció nova a cada render del pare: es llegeix d'una
+  // ref perquè l'efecte (focus inicial i listeners) només corri en obrir-se.
+  const cancelRef = useRef(onCancel);
+  useEffect(() => {
+    cancelRef.current = onCancel;
+  }, [onCancel]);
+  useEffect(() => {
+    boxRef.current?.querySelector<HTMLElement>("[data-autofocus-confirm]")?.focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        cancelRef.current();
+      }
+    };
+    // Clic o toc fora de la bombolla: cancel·la (no activa res). Decidit 24set26.
+    // El listener s'enregistra al tick següent perquè el mateix clic que l'obre
+    // no el tanqui.
+    const onDown = (e: PointerEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) cancelRef.current();
+    };
+    const t = window.setTimeout(() => window.addEventListener("pointerdown", onDown, true), 0);
+    window.addEventListener("keydown", onKey, true);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("pointerdown", onDown, true);
+      window.removeEventListener("keydown", onKey, true);
+    };
+  }, []);
+
+  const body = (
+    <div
+      ref={boxRef}
+      role="alertdialog"
+      aria-label="Cal activar un altre mòdul"
+      className="rounded-xl border border-border-subtle bg-surface-card p-4 text-text-main shadow-soft"
+    >
+      <p className="text-body-2xs md:text-body-xs">{text}</p>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Button variant="solid" shape="pill" size="md" onClick={onConfirm} data-autofocus-confirm>
+          Activa’ls tots dos
+        </Button>
+        <Button variant="ghost" shape="pill" size="md" onClick={onCancel}>
+          Cancel·la
+        </Button>
+      </div>
+    </div>
+  );
+
+  if (mode === "popover") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: reduce ? 0 : -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduce ? 0 : 0.18 }}
+        className="absolute right-0 top-full z-20 mt-1 w-[280px]"
+      >
+        {body}
+      </motion.div>
+    );
+  }
+  return (
+    <motion.div
+      initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+      animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+      transition={{ duration: reduce ? 0 : 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className="overflow-hidden"
+    >
+      <div className="pb-6">{body}</div>
+    </motion.div>
   );
 }

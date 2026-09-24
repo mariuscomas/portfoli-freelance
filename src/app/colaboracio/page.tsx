@@ -20,12 +20,12 @@ export default function CollaboracioPage() {
     <main className="flex min-h-[100dvh] flex-col w-full overflow-x-clip bg-surface-base">
       <SharedPageHero
         title="Col·laboració"
-        description="Disseny UX/UI de producte per a agències i estudis. Un perfil sènior que entén el codi, s’integra al teu equip en 48 hores i treballa amb les teves eines. Sense passar per una contractació."
+        description="Disseny UX/UI de producte per a agències i estudis, amb tarifes clares per durada."
         afterDescription={
           <ServicesHeroCta
-            href="#colaboracio"
-            label="Consulta tarifes i disponibilitat"
-            shortLabel="Consulta tarifes"
+            href="#tarifes"
+            label="Mira les tarifes"
+            shortLabel="Tarifes"
           />
         }
         showControls
