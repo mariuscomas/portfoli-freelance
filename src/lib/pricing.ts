@@ -355,6 +355,19 @@ export interface ConfigExtraDef {
   >;
   /** Família del pas d'extres del configurador. */
   family: ExtraFamily;
+  /**
+   * Mòdul del qual depèn (el blog i la formació necessiten el CMS). Mentre no
+   * està actiu, la fila es pinta deshabilitada amb `label` a la caption en lloc
+   * d'amagar-se, perquè el client sàpiga que el mòdul existeix. Decidit 24set26.
+   */
+  requires?: {
+    id: ConfigExtraId;
+    /** Caption de la fila bloquejada («Necessita el CMS»). */
+    label: string;
+    /** Frase de la confirmació en tocar-la: subjecte i mòdul que cal. */
+    subject: string;
+    needs: string;
+  };
   /** Només amb el joc de preus v2 (mòduls del pla modular 2026). */
   v2Only?: boolean;
   /** Condició de disponibilitat. Sense `when`, sempre disponible. */
@@ -391,7 +404,7 @@ export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   // El blog DEMANA el CMS actiu (com la formació): un blog sense panell
   // d'edició vol dir que cada entrada nova te l'han de demanar a tu, que és
   // el contrari del que el client entén quan compra un blog. Decidit 18set26.
-  blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, when: ({ product, has, actius }) => product === "web" && has.has("dev") && actius.has("cms"), help: "Secció d’entrades o de productes amb llistat, fitxa i filtres, sobre el panell d’edició. El disseny de la fitxa entra al preu; els continguts els publiques tu." },
+  blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, requires: { id: "cms", label: "Necessita el CMS", subject: "El blog", needs: "el panell d’edició (CMS)" }, when: ({ product, has, actius }) => product === "web" && has.has("dev") && actius.has("cms"), help: "Secció d’entrades o de productes amb llistat, fitxa i filtres, sobre el panell d’edició. El disseny de la fitxa entra al preu; els continguts els publiques tu." },
   areaPrivada: { id: "areaPrivada", label: "Àrea privada", control: "toggle", basis: "flat", price: 500, family: "amplia", v2Only: true, when: ({ product, has }) => product === "web" && has.has("dev"), help: "Zona amb accés per usuari i contrasenya per al que no ha de ser públic: tarifes, documents o material reservat a clients." },
   integracio: { id: "integracio", label: "Integracions externes", control: "counter", basis: "perUnit", price: 250, unitLabel: "INTEGRACIÓ", perProduct: { landing: { help: "Connecto la landing amb una eina que ja fas servir (CRM, reserves, facturació, newsletter). El preu és per integració." } }, family: "capacitats", v2Only: true, when: ({ has }) => has.has("dev"), help: "Connecto el web amb una eina que ja fas servir (CRM, reserves, facturació, newsletter). El preu és per integració." },
   seo: { id: "seo", label: "SEO tècnic", control: "toggle", basis: "flat", price: 300, perProduct: { landing: { help: "La feina que fa que els cercadors entenguin la landing: metadades, dades estructurades i velocitat. No inclou continguts ni campanyes." } }, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "La feina que fa que els cercadors entenguin el web: metadades, dades estructurades, sitemap i velocitat. No inclou continguts ni campanyes." },
@@ -399,7 +412,7 @@ export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   accessibilitat: { id: "accessibilitat", label: "Accessibilitat WCAG 2.2 AA", control: "toggle", basis: "flat", price: 350, family: "rendiment", v2Only: true, when: ({ has }) => has.has("ui") || has.has("dev"), help: "Reviso i corregeixo fins a complir la norma: contrast, navegació amb teclat, lectors de pantalla i formularis ben etiquetats." },
   migracio: { id: "migracio", label: "Migració de continguts", control: "toggle", basis: "flat", price: 150, perProduct: { landing: { help: "Passo els continguts de la pàgina actual a la nova: textos, imatges i enllaços." } }, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "Passo els continguts de la web actual a la nova: textos, imatges i enllaços de les pàgines del projecte. Un blog o catàleg amb històric el pressuposto a part." },
   // Sense CMS no hi ha res a ensenyar a fer servir.
-  formacio: { id: "formacio", label: "Formació i manual del CMS", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ actius }) => actius.has("cms"), help: "Sessió d’una hora, gravada, i un manual curt perquè el teu equip publiqui sense dependre de ningú." },
+  formacio: { id: "formacio", label: "Formació i manual del CMS", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, requires: { id: "cms", label: "Necessita el CMS", subject: "La formació", needs: "el panell d’edició (CMS)" }, when: ({ actius }) => actius.has("cms"), help: "Sessió d’una hora, gravada, i un manual curt perquè el teu equip publiqui sense dependre de ningú." },
 };
 
 /**
@@ -415,11 +428,14 @@ export interface PackDef {
   discountPct: number;
   /** Text d'ajuda del pack al configurador. */
   help?: string;
+  /** Nom curt de cada mòdul per a la nota dinàmica del pack, en minúscula de
+   *  frase («afegeix accessibilitat»). Mateix ordre que `modules`. */
+  shortNames: Partial<Record<ConfigExtraId, string>>;
 }
 
 export const PACKS: PackDef[] = [
-  { id: "contingut", label: "Pack Contingut", modules: ["cms", "blog", "formacio", "migracio"], discountPct: 10, help: "El CMS, el blog, la migració i la formació junts, amb un 10% de descompte. S’aplica sol quan els tens tots quatre actius." },
-  { id: "rendiment", label: "Pack Rendiment", modules: ["seo", "analitica", "accessibilitat"], discountPct: 10, help: "SEO tècnic, analítica i accessibilitat junts, amb un 10% de descompte. S’aplica sol quan els tens tots tres actius." },
+  { id: "contingut", label: "Pack Contingut", modules: ["cms", "blog", "formacio", "migracio"], discountPct: 10, shortNames: { cms: "CMS", blog: "blog", formacio: "formació", migracio: "migració" }, help: "El CMS, el blog, la migració i la formació junts, amb un 10% de descompte. S’aplica sol quan els tens tots quatre actius." },
+  { id: "rendiment", label: "Pack Rendiment", modules: ["seo", "analitica", "accessibilitat"], discountPct: 10, shortNames: { seo: "SEO", analitica: "analítica", accessibilitat: "accessibilitat" }, help: "SEO tècnic, analítica i accessibilitat junts, amb un 10% de descompte. S’aplica sol quan els tens tots tres actius." },
 ];
 
 /** Selecció de l'usuari al configurador. Tots els extres són opcionals. */
@@ -456,6 +472,9 @@ export interface ConfigQuote {
   includes: string[];
   /** Extres disponibles segons l'abast. */
   availableExtras: ConfigExtraId[];
+  /** Mòduls que es poden oferir però depenen d'un altre que no està actiu
+   *  (vegeu `requires`). No sumen ni es poden encendre; es pinten deshabilitats. */
+  lockedExtras: ConfigExtraId[];
   /** Preu d'una pàgina extra segons l'abast. */
   pageExtraPrice: number;
   /** Desglòs de la base (fases), en ordre. */
@@ -525,6 +544,16 @@ export function calcConfiguration(
   );
   const avail = availableExtras({ product, has, actius }, esV2);
   const available = new Set(avail);
+  // Bloquejats: fallen el `when` només perquè el mòdul que demanen no és actiu,
+  // i aquest mòdul sí que es pot triar amb l'abast actual.
+  const locked = (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]).filter((id) => {
+    const def = CONFIG_EXTRAS[id];
+    if (!def.requires || available.has(id) || !available.has(def.requires.id)) return false;
+    if (def.v2Only && !esV2) return false;
+    const amb = new Set(actius);
+    amb.add(def.requires.id);
+    return def.when ? def.when({ product, has, actius: amb }) : true;
+  });
 
   const extras: QuoteLine[] = [];
 
@@ -563,6 +592,7 @@ export function calcConfiguration(
     scopeLabel: scopeLabel(chosen),
     includes,
     availableExtras: avail,
+    lockedExtras: locked,
     pageExtraPrice,
     phases,
     baseTotal,
@@ -652,12 +682,14 @@ export interface AuditSizeDef {
   label: string;
   range: string;
   increment: number;
+  /** El rang en una frase, per a la card de la pàgina (Figma v2, 24set26). */
+  help: string;
 }
 
 export const AUDIT_SIZES: AuditSizeDef[] = [
-  { id: "s", label: "Landing o web petita", range: "fins ~10 pantalles · 2 fluxos", increment: 0 },
-  { id: "m", label: "Web mitjana", range: "fins ~20 pantalles · 4 fluxos", increment: 300 },
-  { id: "l", label: "Web gran, app o 2 productes", range: "fins ~40 pantalles · 8 fluxos", increment: 600 },
+  { id: "s", label: "Landing o web petita", range: "fins ~10 pantalles · 2 fluxos", increment: 0, help: "Fins a unes 10 pantalles i 2 fluxos." },
+  { id: "m", label: "Web mitjana", range: "fins ~20 pantalles · 4 fluxos", increment: 300, help: "Fins a unes 20 pantalles i 4 fluxos." },
+  { id: "l", label: "Web gran, app o 2 productes", range: "fins ~40 pantalles · 8 fluxos", increment: 600, help: "Fins a unes 40 pantalles i 8 fluxos." },
 ];
 
 export interface AuditExtraDef {
@@ -905,18 +937,20 @@ export interface CollabRate {
   rate: string;
 }
 
+/** Tarifes per durada de /colaboracio. `detail` diu què compra cada tarifa,
+ *  no només l'import (24set26). Figma: files `Row · Recurrent`. */
 export const COLLAB_RATES: CollabRate[] = [
-  { modality: "Ad-hoc / hores soltes", detail: "Mínim facturable 4 h", rate: "40 €/h" },
-  { modality: "Setmana completa", detail: "≈1.520 €/setmana", rate: "38 €/h" },
-  { modality: "Mes complet", detail: "≈5.600 €/mes", rate: "35 €/h" },
-  { modality: "Compromís 3+ mesos", detail: "≈4.800-5.100 €/mes · preavís 2-4 setmanes", rate: "30-32 €/h" },
+  { modality: "Ad-hoc / hores soltes", detail: "Encàrrecs puntuals, mínim 4 h facturables", rate: "40 €/h" },
+  { modality: "Setmana completa", detail: "40 h de dedicació, ≈ 1.520 €/setmana", rate: "38 €/h" },
+  { modality: "Mes complet", detail: "Unes 160 h de dedicació, ≈ 5.600 €/mes", rate: "35 €/h" },
+  { modality: "Compromís 3+ mesos", detail: "Dedicació completa, preavís de 2–4 setmanes", rate: "30–32 €/h" },
 ];
 
 export const COLLAB_MODIFIERS = [
   "Urgència < 48 h: +10%",
   "Dedicació parcial: tram superior",
   "Renovació: mateixa tarifa",
-  "Facturació mensual · 15-30 dies · sense IVA",
+  "Facturació mensual · 15–30 dies · sense IVA",
 ] as const;
 
 // ————— Configurador de tarifa (font de veritat del configurador de col·laboració)
@@ -1044,12 +1078,22 @@ export const packFamily = (pack: (typeof PACKS)[number]) => {
   return pack.modules.every((id) => CONFIG_EXTRAS[id].family === first) ? first : null;
 };
 
-/** Famílies amb contingut, en l'ordre del catàleg. Les buides no surten. */
-export function groupExtras(available: readonly ConfigExtraId[]): ExtraGroup[] {
+/**
+ * Famílies amb contingut, en l'ordre del catàleg. Les buides no surten.
+ * `locked` (els mòduls deshabilitats per dependència) s'intercalen al seu lloc
+ * del catàleg; els packs només compten els disponibles.
+ */
+export function groupExtras(
+  available: readonly ConfigExtraId[],
+  locked: readonly ConfigExtraId[] = [],
+): ExtraGroup[] {
+  const pintats = (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]).filter(
+    (id) => available.includes(id) || locked.includes(id),
+  );
   return EXTRA_FAMILIES.map((f) => ({
     id: f.id,
     label: f.label,
-    ids: available.filter((id) => CONFIG_EXTRAS[id].family === f.id),
+    ids: pintats.filter((id) => CONFIG_EXTRAS[id].family === f.id),
     packs: PACKS.filter((p) => packFamily(p) === f.id && packVisible(p, available)),
   })).filter((g) => g.ids.length > 0);
 }
@@ -1061,6 +1105,36 @@ export function groupExtras(available: readonly ConfigExtraId[]): ExtraGroup[] {
  */
 export function crossFamilyPacks(available: readonly ConfigExtraId[]) {
   return PACKS.filter((p) => packFamily(p) === null && packVisible(p, available));
+}
+
+/** «a, b i c» en català. */
+const llistaCat = (xs: string[]) =>
+  xs.length <= 1 ? (xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} i ${xs[xs.length - 1]}`;
+
+/**
+ * Estat de la nota d'un pack segons els mòduls encesos (decidit 24set26):
+ * «cap» n'explica el contingut, «parcial» diu quants en tens i què falta,
+ * «aplicat» confirma l'estalvi. Els imports surten de `packAmounts`.
+ */
+export function packStatus(
+  pack: PackDef,
+  product: ConfigProduct,
+  actius: (id: ConfigExtraId) => boolean,
+) {
+  const { suma, amb } = packAmounts(pack, product);
+  const estalvi = suma - amb;
+  const nom = (id: ConfigExtraId) => pack.shortNames[id] ?? CONFIG_EXTRAS[id].label;
+  const tinc = pack.modules.filter(actius);
+  const falten = pack.modules.filter((id) => !actius(id));
+  const state = tinc.length === 0 ? "cap" : falten.length === 0 ? "aplicat" : "parcial";
+  return {
+    state,
+    estalvi,
+    tinc: tinc.length,
+    total: pack.modules.length,
+    tots: llistaCat(pack.modules.map(nom)),
+    falten: llistaCat(falten.map(nom)),
+  } as const;
 }
 
 /** Preu del pack: suma dels seus mòduls i import amb el descompte aplicat. */

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useId, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, ArrowRight, ArrowLeft, Check } from "@phosphor-icons/react";
+import { X, ArrowRight, ArrowLeft, Check, CaretUp, CaretDown } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import ConfirmationSpotlight from "@/components/services/ConfirmationSpotlight";
 import { submitQuote, type QuoteProduct } from "@/app/actions/quotes";
@@ -12,7 +12,6 @@ import {
   AnimatedTotal,
   useIsClient,
   useMediaQuery,
-  chipClass,
   ConfigRow,
   Stepper,
   Switch,
@@ -24,6 +23,8 @@ import {
   RadioList,
   DisciplineChips,
   formatEuro,
+  Sheet,
+  DependencyConfirm,
 } from "./configuratorShared";
 import {
   PRODUCTS,
@@ -34,8 +35,9 @@ import {
   PACKS,
   groupExtras,
   crossFamilyPacks,
-  packAmounts,
+  packStatus,
   extraCaption,
+  extraPricing,
   extraHelp,
   calcAudit,
   AUDIT_FOCUSES,
@@ -50,6 +52,7 @@ import {
   type ConfigExtraId,
   type ConfigQuote,
   type AuditFocus,
+  type AuditQuote,
   type AuditSize,
   RESPONSE_SLA,
 } from "@/lib/pricing";
@@ -294,7 +297,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
   const mobileWizard = isMobile && configurable;
   // Layout unificat (Resum persistent que llisca) només a web/landing desktop.
   const runDesktop = !isMobile && configProduct !== null;
-  const CONFIG_SUBSTEPS = configProduct ? 3 : 4;
+  // Web/landing: 2 sub-passos (Tipus+Base → Extres) + dades = 3 passos.
+  // Auditoria: 3 (Tipus+Base+Cobreix → Abast → Extres) + dades = 4. El pas
+  // Resum s'ha retirat a tots dos: el desglòs s'obre des del total del peu (24set26).
+  const CONFIG_SUBSTEPS = configProduct ? 2 : 3;
   const totalSteps = mobileWizard ? CONFIG_SUBSTEPS + 1 : 2;
   const currentStep =
     phase === "config" ? (mobileWizard ? mobileStep + 1 : 1) : mobileWizard ? totalSteps : 2;
@@ -329,7 +335,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
       : [
           product.name,
           quote?.scopeLabel,
-          quote && quote.extras.length > 0 ? `${quote.extras.length} extres` : null,
+          // Les línies de pack són descomptes, no extres (24set26).
+          quote && quote.extras.some((e) => !e.id.startsWith("pack-"))
+            ? `${quote.extras.filter((e) => !e.id.startsWith("pack-")).length} extres`
+            : null,
           formatEuro(total),
         ]
   )
@@ -377,12 +386,12 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
         : {}
   ) as unknown as Json;
 
+  // Mateix model que les disciplines de la web (24set26): toggles independents,
+  // mínim un d'encès; «Tot» vol dir els tres encesos.
   const toggleFocus = (f: AuditFocus) =>
     setFocuses((prev) => {
-      // Des de "Tot" (tots els focus), clicar-ne un el selecciona en net.
-      if (prev.length === AUDIT_FOCUSES.length) return [f];
       if (prev.includes(f)) return prev.length === 1 ? prev : prev.filter((x) => x !== f);
-      return [...prev, f];
+      return AUDIT_FOCUSES.map((x) => x.id).filter((id) => id === f || prev.includes(id));
     });
 
   /** Resum llegible de la configuració, annexat al missatge del formulari. */
@@ -421,9 +430,13 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
 
   const stepLabel =
     phase === "config"
-      ? "Pas 1 de 2 · Tipus de projecte i extres"
+      ? isAudit
+        ? "Pas 1 de 2 · Tipus d’auditoria, abast i extres"
+        : "Pas 1 de 2 · Tipus de projecte i extres"
       : phase === "form"
-        ? `${configurable ? "Pas 2 de 2 · " : ""}Explica'm el teu projecte. Et responc en menys de ${RESPONSE_SLA}.`
+        ? configurable
+          ? "Pas 2 de 2 · Brief i dades"
+          : `Explica’m el teu projecte. Et responc en menys de ${RESPONSE_SLA}.`
         : null;
 
   // ————— Submit del layout unificat (web/landing desktop) —————
@@ -636,12 +649,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         </span>
                       </div>
                     </div>
-                    <div className="border-t dash-h-border-subtle pt-6">
-                      <p className="text-caption uppercase text-text-secondary">
-                        No inclòs al total:{" "}
-                        {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
-                      </p>
-                    </div>
+                    <NotIncludedNote />
                   </>
                 )}
               </motion.aside>
@@ -735,7 +743,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         Les dades
                       </h3>
                       <Field
-                        label="Email"
+                        label="El teu correu"
                         required
                         name="email"
                         type="email"
@@ -746,15 +754,15 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         disabled={submitting}
                       />
                       <Field
-                        label="Nom"
+                        label="El teu nom"
                         name="name"
                         type="text"
                         autoComplete="name"
-                        placeholder="El teu nom"
+                        placeholder="Nom i cognom"
                         disabled={submitting}
                       />
                       <SelectField
-                        label="Com m'has conegut?"
+                        label="Com m’has conegut?"
                         name="source"
                         options={SOURCE_OPTIONS}
                         placeholder="Selecciona una opció"
@@ -844,9 +852,9 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
             className="flex min-h-0 flex-1 flex-col"
           >
             {mobileWizard ? (
-              /* ——— MÒBIL · wizard de 3 sub-passos (Tipus+Base → Extres → Resum) ——— */
+              /* ——— MÒBIL/TAULETA · 2 sub-passos (Tipus+Base → Extres); el Resum és al full del peu ——— */
               <>
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-none px-6 md:px-12">
                   <motion.div
                     key={mobileStep}
                     initial={{ opacity: 0, x: reduce ? 0 : 24 }}
@@ -869,13 +877,17 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       onChange={setExtra}
                       />
                     )}
-                    {mobileStep === 2 && (
-                      <ResumSection quote={quote} total={total} baseOpen showTotal={false} />
-                    )}
                     {mobileStep >= 1 && <MobileReassurance />}
                   </motion.div>
                 </div>
-                <MobileTotalFooter total={total} cta="Continua" onCta={advanceConfig} />
+                <MobileTotalFooter
+                  total={total}
+                  cta="Continua"
+                  onCta={advanceConfig}
+                  breakdown={
+                    <ResumSection quote={quote} total={total} baseOpen={false} showTotal={false} showTitle={false} />
+                  }
+                />
               </>
             ) : (
               /* ——— DESKTOP · una pantalla, 3 columnes ——— */
@@ -957,9 +969,9 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
             className="flex min-h-0 flex-1 flex-col"
           >
             {mobileWizard ? (
-              /* ——— MÒBIL · wizard auditoria: Focus+Base+Cobreix → Mida → Extres → Resum ——— */
+              /* ——— MÒBIL/TAULETA · wizard auditoria: Focus+Base+Cobreix → Abast → Extres; el Resum és al full del peu ——— */
               <>
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-none px-6 md:px-12">
                   <motion.div
                     key={mobileStep}
                     initial={{ opacity: 0, x: reduce ? 0 : 24 }}
@@ -976,17 +988,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                               data-autofocus
                               tabIndex={-1}
                             >
-                              Tipus de projecte
+                              Tipus d’auditoria
                             </h3>
-                            <p className="text-body-s font-normal text-text-secondary">
-                              Tria un focus o combina&apos;ls. L&apos;abast i el preu s&apos;ajusten.
-                            </p>
                           </div>
-                          <AuditFocusChips
-                            focuses={focuses}
-                            onToggle={toggleFocus}
-                            onSelectAll={() => setFocuses(["ux", "ui", "dev"])}
-                          />
+                          <DisciplineChips disciplines={focuses} onToggle={toggleFocus} label="Tipus d’auditoria" />
                         </div>
                         <div className="flex flex-col">
                           <div className="border-b border-border-subtle py-5">
@@ -1034,10 +1039,10 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                           data-autofocus
                           tabIndex={-1}
                         >
-                          Quant de producte hem d&apos;auditar?
+                          Abast
                         </h3>
                         <RadioList
-                          ariaLabel="Quant de producte hem d'auditar?"
+                          ariaLabel="Abast de l’auditoria"
                           options={AUDIT_SIZES.map((s) => ({
                             id: s.id,
                             label: s.label,
@@ -1069,104 +1074,56 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         ))}
                       </div>
                     )}
-                    {mobileStep === 3 && (
-                      <div className="flex flex-col">
-                        <h3
-                          className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
-                          data-autofocus
-                          tabIndex={-1}
-                        >
-                          Resum
-                        </h3>
-                        <div className="flex items-center gap-6 border-b border-border-subtle py-3">
-                          <span className="flex-1 text-body-s text-text-main">
-                            {auditQuote.focuses.length === 3
-                              ? "Base · Tot (UX + UI + Dev)"
-                              : `Base · ${auditQuote.focuses.map((f) => f.label).join(" + ")}`}
-                          </span>
-                          <span className="shrink-0 text-caption text-text-secondary tabular-nums">
-                            {formatEuro(auditQuote.baseTotal)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-6 border-b border-border-subtle py-3">
-                          <span className="flex-1 text-body-s text-text-main">
-                            Abast · {auditQuote.size.label}
-                          </span>
-                          <span className="shrink-0 text-caption text-text-secondary tabular-nums">
-                            {auditQuote.sizeIncrement
-                              ? `+${formatEuro(auditQuote.sizeIncrement)}`
-                              : "(inclòs)"}
-                          </span>
-                        </div>
-                        {auditQuote.extras.length > 0 && (
-                          <SummaryGroup
-                            title="Extres"
-                            amount={auditQuote.extrasTotal}
-                            lines={auditQuote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
-                          />
-                        )}
-                        <div className="mt-8 border-t dash-h-border-subtle pt-6">
-                          <p className="text-caption uppercase text-text-secondary">
-                            No inclòs al total:{" "}
-                            {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
-                          </p>
-                        </div>
-                      </div>
-                    )}
                     {mobileStep >= 1 && <MobileReassurance />}
                   </motion.div>
                 </div>
-                <MobileTotalFooter total={total} cta="Continua" onCta={advanceConfig} />
+                <MobileTotalFooter
+                  total={total}
+                  cta="Continua"
+                  onCta={advanceConfig}
+                  breakdown={
+                    <>
+                      <AuditResumRows auditQuote={auditQuote} />
+                      <NotIncludedNote className="mt-8" />
+                    </>
+                  }
+                />
               </>
             ) : (
               /* ——— DESKTOP · una pantalla, 3 columnes ——— */
               <>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12">
               <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
-                {/* COLUMNA A — Base de l'auditoria */}
+                {/* Figma 12516-15446 (24set26): el focus, la Base i «Què cobreix» a
+                    l'esquerra (com la web); Abast i Extres al mig; Resum a la dreta. */}
+                {/* COLUMNA A — Tipus d'auditoria + Base + Què cobreix */}
                 <section
-                  aria-label="Base inclosa"
-                  className="flex flex-col lg:border-r lg:border-border-subtle lg:pr-6"
+                  aria-label="Tipus d’auditoria i base inclosa"
+                  className="flex flex-col gap-10 lg:border-r lg:border-border-subtle lg:pr-6"
                 >
-                  <div className="border-b border-border-subtle py-5">
-                    <h3
-                      className="text-body-s font-medium text-text-main focus:outline-none"
-                      data-autofocus
-                      tabIndex={-1}
-                    >
-                      Base.
-                      <span className="font-normal text-text-secondary"> Sempre inclosa</span>
+                  <div className="flex flex-col gap-6">
+                    <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main focus:outline-none" data-autofocus tabIndex={-1}>
+                      1. Tipus d’auditoria
                     </h3>
+                    <DisciplineChips disciplines={focuses} onToggle={toggleFocus} label="Tipus d’auditoria" />
                   </div>
-                  {AUDIT_BASE_INCLUDES.map((item) => (
-                    <p
-                      key={item}
-                      className="border-b border-border-subtle py-4 text-body-xs-light md:text-body-s-light text-text-main"
-                    >
-                      {item}
-                    </p>
-                  ))}
-                </section>
-
-                {/* COLUMNA B — Focus + Què cobreix + Abast + Extres */}
-                <section aria-label="Configuració" className="flex flex-col gap-10">
-                  <div className="flex flex-col gap-4">
-                    <div className="pt-1">
-                      <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">Què vols auditar?</h3>
-                      <p className="text-body-s font-normal text-text-main">
-                        Tria un focus o combina&apos;ls. L&apos;abast i el preu s&apos;ajusten.
-                      </p>
+                  <div className="flex flex-col">
+                    <div className="border-b border-border-subtle py-5">
+                      <h4 className="text-body-s font-medium text-text-main">
+                        Base.
+                        <span className="font-normal"> Sempre inclosa</span>
+                      </h4>
                     </div>
-                    <AuditFocusChips
-                      focuses={focuses}
-                      onToggle={toggleFocus}
-                      onSelectAll={() => setFocuses(["ux", "ui", "dev"])}
-                    />
-                  </div>
-
-                  <Accordion title="Què cobreix" level="h3" defaultOpen>
+                    {AUDIT_BASE_INCLUDES.map((item) => (
+                      <p
+                        key={item}
+                        className="border-b border-border-subtle py-4 text-body-xs-light md:text-body-s-light text-text-main"
+                      >
+                        {item}
+                      </p>
+                    ))}
                     {auditQuote.focuses.map((f) => (
-                      <Accordion key={f.id} title={f.label} level="h4" defaultOpen={false} indent>
+                      <Accordion key={f.id} title={`Què cobreix ${f.id.toUpperCase()}`} level="h4" defaultOpen={false}>
                         {f.covers.map((c) => (
                           <p
                             key={c}
@@ -1177,11 +1134,15 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         ))}
                       </Accordion>
                     ))}
-                  </Accordion>
+                  </div>
+                </section>
 
-                  <Accordion title="Quant de producte hem d'auditar?" level="h3" defaultOpen>
+                {/* COLUMNA B — Abast + Extres */}
+                <section aria-label="Abast i extres" className="flex flex-col gap-10">
+                  <div className="flex flex-col gap-6">
+                    <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">2. Abast</h3>
                     <RadioList
-                      ariaLabel="Quant de producte hem d'auditar?"
+                      ariaLabel="Abast de l’auditoria"
                       options={AUDIT_SIZES.map((s) => ({
                         id: s.id,
                         label: s.label,
@@ -1191,9 +1152,11 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       value={auditSize}
                       onChange={(id) => setAuditSize(id as AuditSize)}
                     />
-                  </Accordion>
-
-                  <Accordion title="Extres" level="h3" defaultOpen>
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="border-b border-border-subtle pb-5 text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">
+                      3. Extres
+                    </h3>
                     {AUDIT_EXTRAS.map((e) => (
                       <ConfigRow key={e.id} label={e.label} caption={`+${e.price} €`} help={e.help}>
                         <Switch
@@ -1203,7 +1166,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         />
                       </ConfigRow>
                     ))}
-                  </Accordion>
+                  </div>
                 </section>
 
                 {/* COLUMNA C — Resum */}
@@ -1215,33 +1178,19 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                     <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
                       Resum
                     </h3>
-                    <div className="flex items-center gap-6 border-b border-border-subtle py-3">
-                      <span className="flex-1 text-body-s text-text-main">
-                        {auditQuote.focuses.length === 3
-                          ? "Base · Tot (UX + UI + Dev)"
-                          : `Base · ${auditQuote.focuses.map((f) => f.label).join(" + ")}`}
-                      </span>
-                      <span className="shrink-0 text-caption text-text-secondary tabular-nums">
-                        {formatEuro(auditQuote.baseTotal)}
-                      </span>
+                    <AuditResumRows auditQuote={auditQuote} />
+                    <div className="border-b border-border-subtle">
+                      <Accordion title="Lliurables" level="h4" defaultOpen={false}>
+                        {AUDIT_DELIVERABLES.map((d) => (
+                          <p
+                            key={d}
+                            className="border-b border-border-subtle py-3 text-body-xs-light md:text-body-s-light text-text-secondary"
+                          >
+                            {d}
+                          </p>
+                        ))}
+                      </Accordion>
                     </div>
-                    <div className="flex items-center gap-6 border-b border-border-subtle py-3">
-                      <span className="flex-1 text-body-s text-text-main">
-                        Abast · {auditQuote.size.label}
-                      </span>
-                      <span className="shrink-0 text-caption text-text-secondary tabular-nums">
-                        {auditQuote.sizeIncrement
-                          ? `+${formatEuro(auditQuote.sizeIncrement)}`
-                          : "(inclòs)"}
-                      </span>
-                    </div>
-                    {auditQuote.extras.length > 0 && (
-                      <SummaryGroup
-                        title="Extres"
-                        amount={auditQuote.extrasTotal}
-                        lines={auditQuote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
-                      />
-                    )}
                     <div className="flex items-center gap-6 py-5">
                       <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Total</span>
                       <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums">
@@ -1254,18 +1203,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       </span>
                     </div>
                   </div>
-                  <div className="border-t dash-h-border-subtle pt-2">
-                    <Accordion title="Lliurables" level="h4" defaultOpen={false}>
-                      {AUDIT_DELIVERABLES.map((d) => (
-                        <p
-                          key={d}
-                          className="border-b border-border-subtle py-3 text-body-xs-light md:text-body-s-light text-text-secondary"
-                        >
-                          {d}
-                        </p>
-                      ))}
-                    </Accordion>
-                  </div>
+                  <NotIncludedNote />
                 </aside>
               </div>
             </div>
@@ -1325,6 +1263,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
               pricing={quotePricing}
               isMobile={isMobile}
               recap={recap}
+              auditQuote={auditQuote}
               onBack={configurable ? () => setPhase("config") : null}
               onSent={(info) => {
                 setSentInfo(info);
@@ -1343,39 +1282,6 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
 /* ============================================================
    Auditoria — chips de focus (multi-selecció)
    ============================================================ */
-function AuditFocusChips({
-  focuses,
-  onToggle,
-  onSelectAll,
-}: {
-  focuses: AuditFocus[];
-  onToggle: (f: AuditFocus) => void;
-  onSelectAll: () => void;
-}) {
-  const allSelected = focuses.length === AUDIT_FOCUSES.length;
-  return (
-    <div role="group" aria-label="Què vols auditar?" className="flex flex-wrap gap-1">
-      <button type="button" aria-pressed={allSelected} onClick={onSelectAll} className={chipClass(allSelected)}>
-        Tot
-      </button>
-      {AUDIT_FOCUSES.map((f) => {
-        const active = !allSelected && focuses.includes(f.id);
-        return (
-          <button
-            key={f.id}
-            type="button"
-            aria-pressed={active}
-            onClick={() => onToggle(f.id)}
-            className={chipClass(active)}
-          >
-            {f.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 /* ============================================================
    Seccions del config web/landing — reutilitzades en el grid de
    desktop (3 columnes) i en el wizard de mòbil (una per sub-pas).
@@ -1466,13 +1372,18 @@ function TipusBaseSection({
 
 /** Aparició/desaparició d'una fila d'extra: col·lapse d'alçada + fade. */
 function ExtraReveal({ reduce, children }: { reduce: boolean | null; children: ReactNode }) {
+  // overflow-hidden només mentre dura l'animació d'alçada: un cop oberta, la
+  // fila ha de deixar sortir el popover de dependència (24set26).
+  const [settled, setSettled] = useState(!!reduce);
   return (
     <motion.div
       initial={reduce ? false : { opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
       transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
-      className="shrink-0 overflow-hidden"
+      onAnimationStart={() => setSettled(false)}
+      onAnimationComplete={() => setSettled(true)}
+      className={`shrink-0 ${settled ? "" : "overflow-hidden"}`}
     >
       {children}
     </motion.div>
@@ -1511,48 +1422,181 @@ function ExtresSection({
 }) {
   const reduce = useReducedMotion();
 
+  // Nota dinàmica del pack (mestre Figma `Nota · Pack` 12523-24490).
   const packNote = (pack: (typeof PACKS)[number]) => {
-    const { suma, amb } = packAmounts(pack, product);
+    const st = packStatus(pack, product, (id) => (values[id] ?? 0) > 0);
+    const euros = formatEuro(st.estalvi);
     return (
-      <p key={`pack-${pack.id}`} className="pt-4 text-caption-sm text-text-secondary">
-        {pack.label} · els {pack.modules.length} junts: {suma} € → {amb} € (−{pack.discountPct}%)
+      <p
+        key={`pack-${pack.id}`}
+        aria-live="polite"
+        className={`flex items-start gap-2 pt-4 text-caption-sm ${
+          st.state === "cap" ? "text-text-secondary" : "text-text-main"
+        }`}
+      >
+        {st.state === "aplicat" ? (
+          <Check size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+        ) : null}
+        <span>
+          {st.state === "cap"
+            ? `${pack.label} · ${st.tots} junts: −${pack.discountPct}%`
+            : st.state === "parcial"
+              ? `${pack.label} · en tens ${st.tinc}\u00A0de\u00A0${st.total}. Afegeix ${st.falten} i estalvies ${euros}.`
+              : `${pack.label} aplicat · estalvies ${euros}`}
+        </span>
       </p>
     );
   };
+  const locked = new Set(quote.lockedExtras);
+  // Confirmació de dependència oberta (id del mòdul bloquejat), 24set26.
+  const [confirmId, setConfirmId] = useState<ConfigExtraId | null>(null);
+  const isMobile = useMediaQuery("(max-width: 1023px)");
+  const confirmText = (id: ConfigExtraId) => {
+    const req = CONFIG_EXTRAS[id].requires!;
+    return `${req.subject} necessita ${req.needs}, +${formatEuro(extraPricing(req.id, product).price)}.`;
+  };
+
+
+  const grups = groupExtras(quote.availableExtras, quote.lockedExtras);
+  const actiusDe = (ids: ConfigExtraId[]) =>
+    ids.filter((x) => !locked.has(x) && (values[x] ?? 0) > 0).length;
+  // M1 (24set26): famílies plegables. Oberta per defecte la primera i les que
+  // ja tenen mòduls actius; després mana l'usuari.
+  const [openFams, setOpenFams] = useState<Set<string>>(
+    () => new Set(grups.filter((g, i) => i === 0 || actiusDe(g.ids) > 0).map((g) => g.id)),
+  );
+  const toggleFam = (fid: string) =>
+    setOpenFams((prev) => {
+      const next = new Set(prev);
+      if (next.has(fid)) next.delete(fid);
+      else next.add(fid);
+      return next;
+    });
 
   const fills: ReactNode[] = [];
-  for (const grup of groupExtras(quote.availableExtras)) {
-    fills.push(
-      <p key={`grp-${grup.id}`} className="pb-2 pt-6 text-caption-sm text-text-secondary">
-        {grup.label}:
-      </p>,
-    );
+  for (const grup of grups) {
+    const rows: ReactNode[] = [];
+    const total = grup.ids.length;
+    const actius = actiusDe(grup.ids);
+    const obert = openFams.has(grup.id);
+    const panelId = `fam-${grup.id}`;
 
     for (const id of grup.ids) {
       const def = CONFIG_EXTRAS[id];
-      const value = values[id] ?? 0;
-      fills.push(
+      // Un mòdul bloquejat no suma encara que l'usuari l'hagués encès abans
+      // d'apagar el CMS: es pinta apagat i deshabilitat.
+      const isLocked = locked.has(id);
+      const value = isLocked ? 0 : (values[id] ?? 0);
+      const captionId = `extra-${id}-caption`;
+      const caption = extraCaption(id, product, quote, value);
+      rows.push(
         <ExtraReveal key={id} reduce={reduce}>
           <ConfigRow
             label={def.label}
-            caption={extraCaption(id, product, quote, value)}
+            caption={isLocked && def.requires ? `${caption} · ${def.requires.label}` : caption}
+            captionId={captionId}
             help={extraHelp(id, product)}
           >
             {def.control === "counter" ? (
               <Stepper label={def.label} value={value} onChange={(v) => onChange(id, v)} />
             ) : (
-              <Switch
-                label={def.label}
-                checked={value > 0}
-                onChange={(b) => onChange(id, b ? 1 : 0)}
-              />
+              <span className="relative">
+                <Switch
+                  label={def.label}
+                  checked={value > 0}
+                  onChange={(b) => onChange(id, b ? 1 : 0)}
+                  disabled={isLocked}
+                  describedBy={isLocked ? captionId : undefined}
+                  onBlockedClick={isLocked && def.requires ? () => setConfirmId(id) : undefined}
+                />
+                {!isMobile && confirmId === id && def.requires ? (
+                  <DependencyConfirm
+                    mode="popover"
+                    text={confirmText(id)}
+                    onConfirm={() => {
+                      onChange(def.requires!.id, 1);
+                      onChange(id, 1);
+                      setConfirmId(null);
+                    }}
+                    onCancel={() => setConfirmId(null)}
+                  />
+                ) : null}
+              </span>
             )}
           </ConfigRow>
+          <AnimatePresence initial={false}>
+            {isMobile && confirmId === id && def.requires ? (
+              <DependencyConfirm
+                mode="inline"
+                text={confirmText(id)}
+                onConfirm={() => {
+                  onChange(def.requires!.id, 1);
+                  onChange(id, 1);
+                  setConfirmId(null);
+                }}
+                onCancel={() => setConfirmId(null)}
+              />
+            ) : null}
+          </AnimatePresence>
         </ExtraReveal>,
       );
     }
 
-    for (const pack of grup.packs) fills.push(packNote(pack));
+    for (const pack of grup.packs) rows.push(packNote(pack));
+
+    fills.push(
+      <div key={`grp-${grup.id}`} className="flex flex-col pt-6">
+        {/* Mestre Figma `Capçalera · Família` 12528-25262 */}
+        <button
+          type="button"
+          aria-expanded={obert}
+          aria-controls={panelId}
+          onClick={() => toggleFam(grup.id)}
+          className="flex min-h-11 w-full items-center gap-3 border-b border-border-subtle py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+        >
+          <span className="flex-1 text-caption-sm text-text-main">{grup.label}</span>
+          <span className="text-caption-sm text-text-secondary tabular-nums">
+            {actius > 0 ? (
+              <>
+                <span className="hidden md:inline">{`${total} mòduls · `}</span>
+                {`${actius} ${actius === 1 ? "actiu" : "actius"}`}
+              </>
+            ) : (
+              `${total} mòduls`
+            )}
+          </span>
+          <CaretDown
+            size={16}
+            aria-hidden="true"
+            className={`shrink-0 text-text-secondary transition-transform ${obert ? "rotate-180" : ""}`}
+          />
+        </button>
+        <AnimatePresence initial={false}>
+          {obert ? (
+            <motion.div
+              key="panel"
+              id={panelId}
+              initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+              exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              transition={{ duration: reduce ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className={`flex flex-col ${reduce ? "" : "overflow-hidden"}`}
+              onAnimationStart={() => {
+                const el = document.getElementById(panelId);
+                if (el && !reduce) el.style.overflow = "hidden";
+              }}
+              onAnimationComplete={(def) => {
+                // Un cop oberta, deixa sortir el popover de dependència.
+                const el = document.getElementById(panelId);
+                if (el && (def as { height?: string }).height === "auto") el.style.overflow = "visible";
+              }}
+            >
+              <AnimatePresence initial={false}>{rows}</AnimatePresence>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>,
+    );
   }
 
   // Els packs que creuen famílies (el Pack Contingut) van al final de tot.
@@ -1567,7 +1611,7 @@ function ExtresSection({
       >
         {stepIndex != null && `${stepIndex}. `}Extres
       </h3>
-      <AnimatePresence initial={false}>{fills}</AnimatePresence>
+      {fills}
     </section>
   );
 }
@@ -1577,6 +1621,7 @@ function ResumSection({
   total,
   baseOpen,
   showTotal,
+  showTitle = true,
   className,
   runLayoutId,
 }: {
@@ -1584,6 +1629,8 @@ function ResumSection({
   total: number;
   baseOpen: boolean;
   showTotal: boolean;
+  /** Dins del full inferior el títol el posa el full («Resum»). */
+  showTitle?: boolean;
   className?: string;
   /** Si es passa, el Resum és un element compartit (layoutId) que llisca de
    *  posició entre config i form. layout="position" evita el jitter d'alçada. */
@@ -1597,13 +1644,15 @@ function ResumSection({
       className={`flex flex-col gap-6 ${className ?? ""}`}
     >
       <div className="flex flex-col">
-        <h3
-          className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
-          data-autofocus
-          tabIndex={-1}
-        >
-          Resum
-        </h3>
+        {showTitle ? (
+          <h3
+            className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
+            data-autofocus
+            tabIndex={-1}
+          >
+            Resum
+          </h3>
+        ) : null}
         <SummaryGroup
           title="Total Base"
           amount={quote.baseTotal}
@@ -1634,11 +1683,7 @@ function ResumSection({
           </div>
         )}
       </div>
-      <div className="border-t dash-h-border-subtle pt-6">
-        <p className="text-caption uppercase text-text-secondary">
-          No inclòs al total: {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
-        </p>
-      </div>
+      <NotIncludedNote />
     </motion.aside>
   );
 }
@@ -1708,41 +1753,143 @@ function MobileTotalFooter({
   submit,
   loading,
   describedBy,
+  breakdown,
 }: {
   total: number;
-  cta: string;
+  cta: ReactNode;
   onCta?: () => void;
   submit?: boolean;
   loading?: boolean;
   describedBy?: string;
+  /** Desglòs que obre el total (full inferior). Sense això el total és text. */
+  breakdown?: ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const sheetId = useId();
+
+  const totalValue = (
+    <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium leading-none text-text-main tabular-nums">
+      <span aria-hidden="true">
+        <AnimatedTotal value={total} />
+      </span>
+      <span className="sr-only" aria-live="polite">
+        Total orientatiu: {formatEuro(total)}
+      </span>
+    </span>
+  );
+
   return (
-    <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-col">
-          <span className="text-caption text-text-secondary">Total</span>
-          <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium leading-none text-text-main tabular-nums">
-            <span aria-hidden="true">
-              <AnimatedTotal value={total} />
-            </span>
-            <span className="sr-only" aria-live="polite">
-              Total orientatiu: {formatEuro(total)}
-            </span>
-          </span>
+    <div className="relative z-20 shrink-0">
+      {breakdown ? (
+        <Sheet id={sheetId} title="Resum" open={open} onClose={() => setOpen(false)} returnFocusRef={triggerRef}>
+          {breakdown}
+        </Sheet>
+      ) : null}
+      <footer className="relative z-10 border-t border-border-subtle bg-surface-base px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:px-12">
+        <div className="flex items-center justify-between gap-4">
+          {breakdown ? (
+            /* Figma: «Total» + caret (amunt tancat, avall obert), 24set26. */
+            <button
+              ref={triggerRef}
+              type="button"
+              aria-expanded={open}
+              aria-controls={sheetId}
+              onClick={() => setOpen((o) => !o)}
+              className="flex min-h-11 flex-col items-start text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-main focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+            >
+              <span className="flex items-center gap-2 text-caption text-text-main">
+                Total
+                {open ? (
+                  <CaretDown size={16} aria-hidden="true" />
+                ) : (
+                  <CaretUp size={16} aria-hidden="true" />
+                )}
+                <span className="sr-only">{open ? ", amaga el desglòs" : ", mostra el desglòs"}</span>
+              </span>
+              {totalValue}
+            </button>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-caption text-text-secondary">Total</span>
+              {totalValue}
+            </div>
+          )}
+          <Button
+            variant="solid"
+            shape="pill"
+            size="xl"
+            type={submit ? "submit" : "button"}
+            onClick={onCta}
+            loading={loading}
+            aria-describedby={describedBy}
+          >
+            {cta}
+          </Button>
         </div>
-        <Button
-          variant="solid"
-          shape="pill"
-          size="xl"
-          type={submit ? "submit" : "button"}
-          onClick={onCta}
-          loading={loading}
-          aria-describedby={describedBy}
-        >
-          {cta}
-        </Button>
+      </footer>
+    </div>
+  );
+}
+
+/**
+ * Files del Resum de l'auditoria (Base · focus, Abast, Extres). Compartides pel
+ * Resum de desktop, el del pas de dades i el full de desglòs de mòbil/tauleta.
+ */
+function AuditResumRows({ auditQuote }: { auditQuote: AuditQuote }) {
+  return (
+    <>
+      <div className="flex items-center gap-6 border-b border-border-subtle py-3">
+        <span className="flex-1 text-body-s text-text-main">
+          {auditQuote.focuses.length === 3
+            ? "Base · Tot (UX + UI + Dev)"
+            : `Base · ${auditQuote.focuses.map((f) => f.label).join(" + ")}`}
+        </span>
+        <span className="shrink-0 text-caption text-text-secondary tabular-nums">
+          {formatEuro(auditQuote.baseTotal)}
+        </span>
       </div>
-    </footer>
+      <div className="flex items-center gap-6 border-b border-border-subtle py-3">
+        <span className="flex-1 text-body-s text-text-main">Abast · {auditQuote.size.label}</span>
+        <span className="shrink-0 text-caption text-text-secondary tabular-nums">
+          {auditQuote.sizeIncrement ? `+${formatEuro(auditQuote.sizeIncrement)}` : "(inclòs)"}
+        </span>
+      </div>
+      {auditQuote.extras.length > 0 && (
+        <SummaryGroup
+          title="Extres"
+          amount={auditQuote.extrasTotal}
+          lines={auditQuote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
+        />
+      )}
+    </>
+  );
+}
+
+/**
+ * Nota «No inclòs al total» del Resum i del full de desglòs. Taula (decidit
+ * 24set26, substitueix les dues vinyetes del mateix dia, que a desktop es
+ * llegien malament): els recurrents surten de RECURRENTS i l'IVA va a part.
+ */
+function NotIncludedNote({ className = "" }: { className?: string }) {
+  // Taula del mestre Figma `Nota · No inclòs` (12523-24142): capçalera, una fila
+  // per recurrent (nom a l'esquerra, import en mono a la dreta) i l'IVA a sota.
+  return (
+    <div className={`flex flex-col gap-3 border-t dash-h-border-subtle pt-6 ${className}`}>
+      <p className="text-caption text-text-secondary">No inclòs al total</p>
+      <dl className="flex flex-col">
+        {RECURRENTS.map((r) => (
+          <div
+            key={r.label}
+            className="flex items-baseline justify-between gap-4 border-b border-dashed border-border-subtle py-2"
+          >
+            <dt className="text-body-2xs md:text-body-xs text-text-secondary">{r.label}</dt>
+            <dd className="shrink-0 whitespace-nowrap text-caption text-text-main tabular-nums">{r.price}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="text-body-2xs md:text-body-xs text-text-secondary">Preus sense IVA</p>
+    </div>
   );
 }
 
@@ -1776,12 +1923,15 @@ function LeadForm({
   pricing,
   isMobile,
   recap,
+  auditQuote,
   onBack,
   onSent,
 }: {
   product: Product;
   summary: string;
   quote: ConfigQuote | null;
+  /** Resum de l'auditoria (quan no hi ha `quote`). */
+  auditQuote?: AuditQuote | null;
   total: number;
   selection: Json;
   pricing: Json;
@@ -1902,7 +2052,7 @@ function LeadForm({
       {isMobile ? (
         /* ——— MÒBIL · pas 4: recap compacte + dades, footer Total + enviar ——— */
         <>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-none px-6 md:px-12">
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 py-6">
               <div className="flex flex-col gap-2">
                 {recap && <span className="text-caption text-text-secondary">{recap}</span>}
@@ -1915,7 +2065,7 @@ function LeadForm({
                 </h3>
               </div>
               <Field
-                label="Email"
+                label="El teu correu"
                 required
                 name="email"
                 type="email"
@@ -1926,15 +2076,15 @@ function LeadForm({
                 disabled={submitting}
               />
               <Field
-                label="Nom"
+                label="El teu nom"
                 name="name"
                 type="text"
                 autoComplete="name"
-                placeholder="El teu nom"
+                placeholder="Nom i cognom"
                 disabled={submitting}
               />
               <SelectField
-                label="Com m'has conegut?"
+                label="Com m’has conegut?"
                 name="source"
                 options={SOURCE_OPTIONS}
                 placeholder="Selecciona una opció"
@@ -1979,10 +2129,30 @@ function LeadForm({
           </div>
           <MobileTotalFooter
             total={total}
-            cta={submitting ? "Enviant..." : "Envia i rep la proposta"}
+            cta={
+              submitting ? (
+                "Enviant..."
+              ) : (
+                /* A mòbil el text llarg no hi cap amb el total (24set26). */
+                <>
+                  <span className="md:hidden">Rep la proposta</span>
+                  <span className="hidden md:inline">Envia i rep la proposta</span>
+                </>
+              )
+            }
             submit
             loading={submitting}
             describedBy={error ? errorId : undefined}
+            breakdown={
+              quote ? (
+                <ResumSection quote={quote} total={total} baseOpen={false} showTotal={false} showTitle={false} />
+              ) : auditQuote ? (
+                <>
+                  <AuditResumRows auditQuote={auditQuote} />
+                  <NotIncludedNote className="mt-8" />
+                </>
+              ) : undefined
+            }
           />
         </>
       ) : (
@@ -1990,46 +2160,46 @@ function LeadForm({
         <>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12">
         <div className="mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_556px_minmax(0,1fr)] lg:gap-12">
-          {/* COLUMNA A — Les dades */}
-          <section
-            aria-label="Les dades"
-            className="flex flex-col gap-8 lg:border-r lg:border-border-subtle lg:pr-6"
+          {/* COLUMNA A — Resum (Figma: Resum · El brief · Les dades, 24set26) */}
+          <aside
+            aria-label="Resum"
+            className="flex flex-col gap-6 lg:border-r lg:border-border-subtle lg:pr-6"
           >
-            <h3
-              className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
-              data-autofocus
-              tabIndex={-1}
-            >
-              Les dades
-            </h3>
-            <Field
-              label="Email"
-              required
-              name="email"
-              type="email"
-              autoComplete="email"
-              inputMode="email"
-              placeholder="tu@correu.com"
-              error={emailError}
-              disabled={submitting}
-            />
-            <Field
-              label="Nom"
-              name="name"
-              type="text"
-              autoComplete="name"
-              placeholder="El teu nom"
-              disabled={submitting}
-            />
-            <SelectField
-              label="Com m'has conegut?"
-              name="source"
-              options={SOURCE_OPTIONS}
-              placeholder="Selecciona una opció"
-              disabled={submitting}
-            />
-            {consentField}
-          </section>
+            <div className="flex flex-col">
+              <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
+                Resum
+              </h3>
+              {quote && (
+                <>
+                  <SummaryGroup
+                    title="Total Base"
+                    amount={quote.baseTotal}
+                    defaultOpen={false}
+                    lines={quote.phases.map((p, i) => ({
+                      label: `Fase ${i + 1} · ${p.label}`,
+                      amount: p.amount,
+                    }))}
+                  />
+                  {quote.extras.length > 0 && (
+                    <SummaryGroup
+                      title="Extres"
+                      amount={quote.extrasTotal}
+                      defaultOpen={false}
+                      lines={quote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
+                    />
+                  )}
+                </>
+              )}
+              {!quote && auditQuote ? <AuditResumRows auditQuote={auditQuote} /> : null}
+              <div className="flex items-center gap-6 py-5">
+                <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Total</span>
+                <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums">
+                  {formatEuro(total)}
+                </span>
+              </div>
+            </div>
+            <NotIncludedNote />
+          </aside>
 
           {/* COLUMNA B — El brief */}
           <section
@@ -2037,7 +2207,7 @@ function LeadForm({
             className="flex flex-col gap-6 lg:border-r lg:border-border-subtle lg:pr-6"
           >
             <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
-              El brief
+              {auditQuote ? "4. " : ""}El brief
             </h3>
             <ChipGroup
               label="Quan vols arrencar?"
@@ -2071,50 +2241,46 @@ function LeadForm({
             )}
           </section>
 
-          {/* COLUMNA C — Resum (fix a la dreta als dos passos) */}
-          <aside
-            aria-label="Resum"
-            className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
+          {/* COLUMNA C — Les dades */}
+          <section
+            aria-label="Les dades"
+            className="flex flex-col gap-8"
           >
-            <div className="flex flex-col">
-              <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
-                Resum
-              </h3>
-              {quote && (
-                <>
-                  <SummaryGroup
-                    title="Total Base"
-                    amount={quote.baseTotal}
-                    defaultOpen={false}
-                    lines={quote.phases.map((p, i) => ({
-                      label: `Fase ${i + 1} · ${p.label}`,
-                      amount: p.amount,
-                    }))}
-                  />
-                  {quote.extras.length > 0 && (
-                    <SummaryGroup
-                      title="Extres"
-                      amount={quote.extrasTotal}
-                      defaultOpen={false}
-                      lines={quote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
-                    />
-                  )}
-                </>
-              )}
-              <div className="flex items-center gap-6 py-5">
-                <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Total</span>
-                <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums">
-                  {formatEuro(total)}
-                </span>
-              </div>
-            </div>
-            <div className="border-t dash-h-border-subtle pt-6">
-              <p className="text-caption uppercase text-text-secondary">
-                No inclòs al total:{" "}
-                {RECURRENTS.map((r) => `${r.label} ${r.price}`).join(" · ")} · Sense IVA
-              </p>
-            </div>
-          </aside>
+            <h3
+              className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
+              data-autofocus
+              tabIndex={-1}
+            >
+              {auditQuote ? "5. " : ""}Les dades
+            </h3>
+            <Field
+              label="El teu correu"
+              required
+              name="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              placeholder="tu@correu.com"
+              error={emailError}
+              disabled={submitting}
+            />
+            <Field
+              label="El teu nom"
+              name="name"
+              type="text"
+              autoComplete="name"
+              placeholder="Nom i cognom"
+              disabled={submitting}
+            />
+            <SelectField
+              label="Com m’has conegut?"
+              name="source"
+              options={SOURCE_OPTIONS}
+              placeholder="Selecciona una opció"
+              disabled={submitting}
+            />
+            {consentField}
+          </section>
         </div>
       </div>
 

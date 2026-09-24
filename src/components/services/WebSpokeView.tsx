@@ -405,53 +405,100 @@ export function FocusSection({
 
 // ————————————————————————————————— 03 · Extres
 
-export function ExtrasSection({ product = "web" }: { product?: ConfigProduct }) {
-  // Figma: 03 · Extres (desktop 12343:100332; landing 12477-20382). Els
-  // extres del catàleg v2 que el producte ofereix, agrupats per les tres
-  // famílies del configurador, amb preu i ajuda del producte a cada card.
-  const groups = extraGroups(product);
+export interface CardGridItem {
+  key: string;
+  label: string;
+  help?: string;
+  /** Text de preu tal com es llegeix («400 €», «150 € · PER IDIOMA», «INCLOSA»). */
+  price: string;
+}
+
+export interface CardGridGroup {
+  id: string;
+  /** Eyebrow de la família. Sense label, la graella va sola (auditoria). */
+  label?: string;
+  items: CardGridItem[];
+}
+
+/** Secció de capçal a 1/3 i graella de cards a 2/3 (Figma: 03 · Extres).
+ *  Compartida pels extres de web i landing i per la talla i els extres de
+ *  l'auditoria (24set26). */
+export function CardGridSection({
+  id,
+  caption,
+  title,
+  description,
+  groups,
+}: {
+  id?: string;
+  caption: string;
+  title: string;
+  description: string;
+  groups: CardGridGroup[];
+}) {
   return (
-    <section className="border-t border-border-default bg-surface-base xl:grid xl:grid-cols-3">
+    <section id={id} className="border-t border-border-default bg-surface-base xl:grid xl:grid-cols-3">
       <Reveal className="flex flex-col gap-8 px-page py-section-xs md:border-b md:dash-h-border-default md:py-section-s xl:border-b-0 xl:border-r xl:dash-v-border-default xl:pt-section-xl xl:pb-section-m">
-        <span className="text-caption uppercase text-text-secondary">03 · EXTRES</span>
+        <span className="text-caption uppercase text-text-secondary">{caption}</span>
         <div className="flex flex-col gap-4">
           <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l-medium text-text-main">
-            Fes-la teva
+            {title}
           </h2>
           <p className="text-body-s md:max-w-xl md:text-body-l xl:text-body-s-light text-text-secondary">
-            Mòduls opcionals que se sumen a la base. Tries els que necessites i el configurador els va sumant
-            en viu.
+            {description}
           </p>
         </div>
       </Reveal>
       <div className="xl:col-span-2">
         {groups.map((group) => (
-          <Reveal key={group.id}>
-            <h3 className="px-page pt-10 pb-4 text-caption uppercase text-text-secondary md:pb-6 xl:px-12">
-              {group.label}
-            </h3>
+          <Reveal key={group.id} className={group.label ? undefined : "md:pt-10"}>
+            {group.label && (
+              <h3 className="px-page pt-10 pb-4 text-caption uppercase text-text-secondary md:pb-6 xl:px-12">
+                {group.label}
+              </h3>
+            )}
             <ul className="md:grid md:grid-cols-2 md:px-page xl:grid-cols-3 xl:px-12">
-              {group.ids.map((id) => {
-                const def = CONFIG_EXTRAS[id];
-                const help = extraHelp(id, product);
-                return (
-                  <li
-                    key={id}
-                    className="flex flex-col gap-2 border-t dash-h-border-default px-page py-6 md:gap-4 md:border-t-0 md:p-12"
-                  >
-                    <span className="text-body-l text-text-main">{def.label}</span>
-                    {help && (
-                      <span className="text-body-xs xl:text-body-s-light text-text-secondary">{help}</span>
-                    )}
-                    <span className="text-caption uppercase text-text-main">{extraPriceLabel(id, product)}</span>
-                  </li>
-                );
-              })}
+              {group.items.map((item) => (
+                <li
+                  key={item.key}
+                  className="flex flex-col gap-2 border-t dash-h-border-default px-page py-6 md:gap-4 md:border-t-0 md:p-12"
+                >
+                  <span className="text-body-l text-text-main">{item.label}</span>
+                  {item.help && (
+                    <span className="text-body-xs xl:text-body-s-light text-text-secondary">{item.help}</span>
+                  )}
+                  <span className="text-caption uppercase text-text-main">{item.price}</span>
+                </li>
+              ))}
             </ul>
           </Reveal>
         ))}
       </div>
     </section>
+  );
+}
+
+export function ExtrasSection({ product = "web" }: { product?: ConfigProduct }) {
+  // Figma: 03 · Extres (desktop 12343:100332; landing 12477-20382). Els
+  // extres del catàleg v2 que el producte ofereix, agrupats per les tres
+  // famílies del configurador, amb preu i ajuda del producte a cada card.
+  const groups: CardGridGroup[] = extraGroups(product).map((g) => ({
+    id: g.id,
+    label: g.label,
+    items: g.ids.map((id) => ({
+      key: id,
+      label: CONFIG_EXTRAS[id].label,
+      help: extraHelp(id, product),
+      price: extraPriceLabel(id, product),
+    })),
+  }));
+  return (
+    <CardGridSection
+      caption="03 · EXTRES"
+      title="Fes-la teva"
+      description="Mòduls opcionals que se sumen a la base. Tries els que necessites i el configurador els va sumant en viu."
+      groups={groups}
+    />
   );
 }
 
@@ -508,7 +555,19 @@ export function ConfiguratorTeaser({
 
 // ————————————————————————————————— 04 · Procés + condicions
 
-export function SpokeProcessSection() {
+export type ProcessStep = { num: string; title: string; text: string };
+
+export function SpokeProcessSection({
+  caption = "04 · COM TREBALLO",
+  title = "De la idea a producció",
+  description = "Quatre fases, sempre en aquest ordre. Saps què toca a cada moment i què has d’aportar tu.",
+  steps = PROCESS_STEPS,
+}: {
+  caption?: string;
+  title?: string;
+  description?: string;
+  steps?: readonly ProcessStep[];
+}) {
   // Figma: 04 · Com treballo. Desktop: capçal · imatge · fases en llista;
   // iPad: capçal, quatre fases en columnes i la imatge a tot l'ample a sota;
   // mòbil: fases apilades. Sense PROCESS_IMAGE, la imatge no es pinta.
@@ -517,19 +576,17 @@ export function SpokeProcessSection() {
     <section className={`border-t border-border-default bg-surface-base xl:grid ${cols}`}>
       <Reveal className="flex flex-col gap-12 px-page py-section-s xl:justify-center xl:gap-6 xl:py-section-xs">
         <div className="flex flex-col gap-8 xl:gap-6">
-          <span className="text-caption uppercase text-text-secondary">04 · COM TREBALLO</span>
+          <span className="text-caption uppercase text-text-secondary">{caption}</span>
           <div className="flex flex-col gap-4 xl:gap-6">
             <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l-medium text-text-main">
-              De la idea a producció
+              {title}
             </h2>
-            <p className="text-body-s md:text-body-l xl:text-body-s-light text-text-secondary">
-              Quatre fases, sempre en aquest ordre. Saps què toca a cada moment i què has d’aportar tu.
-            </p>
+            <p className="text-body-s md:text-body-l xl:text-body-s-light text-text-secondary">{description}</p>
           </div>
         </div>
         {/* Fases, iPad i mòbil (a desktop van a la columna de la dreta). */}
         <ol className="divide-y dash-divide-h-border-default md:grid md:grid-cols-4 md:divide-x md:divide-y-0 md:dash-divide-v-border-default xl:hidden">
-          {PROCESS_STEPS.map((step) => (
+          {steps.map((step) => (
             <li key={step.num} className="flex items-center gap-6 p-4 md:flex-col md:items-start">
               <span className="text-caption-sm text-text-secondary">{step.num}</span>
               <div className="flex flex-col gap-2">
@@ -555,7 +612,7 @@ export function SpokeProcessSection() {
       )}
       <Reveal className="hidden xl:flex xl:flex-col xl:justify-center xl:py-12">
         <ol className="divide-y dash-divide-h-border-default">
-          {PROCESS_STEPS.map((step) => (
+          {steps.map((step) => (
             <li key={step.num} className="flex items-center gap-6 px-6 py-6">
               <span className="text-caption text-text-secondary">{step.num}</span>
               <div className="flex flex-col gap-1">
@@ -572,12 +629,12 @@ export function SpokeProcessSection() {
 
 // ————————————————————————————————— 05 · FAQ
 
-export function FaqSection({ items = FAQ }: { items?: FaqItem[] }) {
+export function FaqSection({ items = FAQ, caption = "05 · PREGUNTES" }: { items?: FaqItem[]; caption?: string }) {
   // Figma: 05 · Preguntes. Filets dashed entre files (dins de la secció).
   return (
     <section className="flex flex-col gap-12 border-t border-border-default bg-surface-base px-page py-section-s xl:gap-16 xl:py-section-m">
       <Reveal className="flex flex-col gap-5">
-        <span className="text-caption uppercase text-text-secondary">05 · PREGUNTES</span>
+        <span className="text-caption uppercase text-text-secondary">{caption}</span>
         <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l-medium text-text-main">
           Dubtes freqüents
         </h2>
@@ -646,17 +703,20 @@ export function FinalCtaSection({
   onConfigure,
   onContact,
   noun = "web",
+  title,
 }: {
   onConfigure: () => void;
   onContact: () => void;
-  /** «web» o «landing». */
+  /** «web», «landing» o «auditoria». */
   noun?: string;
+  /** Titular propi; per defecte «Comencem la teva {noun}?». */
+  title?: string;
 }) {
   return (
     <section className="border-t border-border-default bg-surface-base px-page py-section-s xl:py-section-m">
       <Reveal className="flex flex-col gap-10 md:gap-8">
         <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l text-text-main">
-          Comencem la teva {noun}?
+          {title ?? `Comencem la teva ${noun}?`}
         </h2>
         <div className="flex flex-col items-start gap-6">
           <LinkUnderline

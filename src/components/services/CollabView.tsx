@@ -114,7 +114,7 @@ function IntegrationSection() {
   return (
     <section className={`${SECTION_PX} py-section-s lg:py-section-m bg-surface-base border-t border-border-default`}>
       <Reveal>
-        <SectionHeader caption="ZERO FRICCIÓ" title="Com m’integro" />
+        <SectionHeader caption="COM TREBALLO AMB EL TEU EQUIP" title="Com m’integro" />
       </Reveal>
       <Reveal className="mt-16">
         <IntegrationCards />

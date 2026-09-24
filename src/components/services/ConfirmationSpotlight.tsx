@@ -205,20 +205,26 @@ export default function ConfirmationSpotlight({
           {/* Figma: Display/S · 2XL Semi Bold (mòbil 11643-17747, desktop al
               mestre 11587-12626); XL a tablet, que el Figma no dibuixa.
               Substitueix el clamp(38→80) d'abans (21set26). */}
+          {/* Mòbil i tauleta (<1024): la referència va d'eyebrow sobre el
+              titular (Figma 12506-15510). A desktop va dins del paràgraf. */}
+          {reference ? (
+            <p className="cspot__eyebrow reveal text-caption-sm uppercase">
+              Ref. #{reference}
+            </p>
+          ) : null}
           <h1 className="reveal text-display-s md:text-display-xl lg:text-display-2xl" role="status">
             Sol·licitud enviada.
           </h1>
+          {/* Sense <br />: el salt el decideix l'amplada (regla de salts
+              manuals, 24set26). */}
           <p className="cspot__lead reveal">
-            T&apos;he enviat una còpia a {email}
-            <br />
+            <span className="cspot__sent">T’he enviat una còpia a {email}</span>{" "}
             {reference ? (
-              <>
+              <span className="cspot__refinline">
                 <span className="ref">Ref. #{reference}</span> ·{" "}
-              </>
+              </span>
             ) : null}
-            Responc en {RESPONSE_SLA}
-            <br />
-            amb un primer abast i una proposta concreta.
+            Responc en {RESPONSE_SLA} amb un primer abast i una proposta concreta.
           </p>
           <a
             className="cspot__cta reveal"
@@ -351,13 +357,41 @@ const CSS = `
 .cspot .reveal{ opacity:0; transform:translateY(14px); }
 .cspot .reveal.in{ opacity:1; transform:none; transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
 
-@media (max-width:820px){
-  .cspot__content{ justify-content:center; text-align:center; }
-  .cspot .col{ margin:0 auto; max-width:none; }
-  .cspot__lead{ max-width:none; }
+.cspot__eyebrow{ display:none; }
+
+/* Mòbil i tauleta (<1024, el mateix tall que l'assistent del configurador).
+   Figma: mòbil 12506-15510, tauleta 12506-15528. Text a l'esquerra, check a
+   dalt a la dreta sense rebaixar, i la trucada a tota l'amplada al peu, a
+   l'abast del polze. Substitueix el centrat amb el check al 50% (24set26). */
+@media (max-width:1023px){
+  .cspot{ display:flex; }
+  .cspot__content{
+    width:100%; min-height:100%; flex-direction:column; align-items:stretch;
+    padding:calc(env(safe-area-inset-top) + 174px) 24px calc(env(safe-area-inset-bottom) + 48px);
+  }
+  .cspot .col{ max-width:none; flex:1; display:flex; flex-direction:column; }
+  .cspot__eyebrow{ display:block; margin-bottom:12px; color:var(--fg); }
+  .cspot__refinline{ display:none; }
   .cspot h1{ white-space:normal; }
-  .cspot__checkwrap{ right:auto; left:50%; top:24%; transform:translate(-50%,-50%); width:70vw; opacity:.5; }
-  .cspot__cta, .cspot__links{ align-items:center; }
+  .cspot__lead{ max-width:none; margin-top:12px; font-size:16px; line-height:24px; }
+  .cspot__sent{ display:block; margin-bottom:12px; }
+  .cspot__checkwrap{ right:59px; top:calc(env(safe-area-inset-top) + 18px); transform:none; width:107px; }
+  .cspot__close{ top:calc(env(safe-area-inset-top) + 16px); right:16px; }
+  .cspot__cta{
+    margin-top:auto; width:100%; justify-content:center; min-height:64px;
+    border-radius:9999px; font-size:18px;
+  }
+  .cspot__links{ margin-top:24px; align-items:center; }
+  .cspot__secondary{ text-align:center; }
+}
+@media (min-width:768px) and (max-width:1023px){
+  .cspot__content{ padding-left:48px; padding-right:48px; }
+  .cspot__close{ top:24px; right:48px; }
+  /* El check a l'esquerra del botó de tancar, amb 24 de marge. */
+  .cspot__checkwrap{ right:116px; }
+  .cspot__cta{ width:fit-content; }
+  .cspot__links{ align-items:flex-start; }
+  .cspot__secondary{ text-align:left; }
 }
 @media (prefers-reduced-motion: reduce){
   .cspot .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
