@@ -1464,7 +1464,7 @@ function ListEditor({
                     : 'text-text-secondary hover:text-text-main border border-border-default'
                 }`}
               >
-                {t === 'none' ? 'Cap' : t === 'what-we-did' ? 'Què vam fer' : 'Característiques'}
+                {t === 'none' ? 'Cap' : t === 'what-we-did' ? 'La meva aportació' : 'Fitxa'}
               </button>
             ))}
           </div>
