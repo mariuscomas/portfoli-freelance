@@ -18,7 +18,11 @@ import {
 } from "@/lib/pricing";
 import { SITE_EMAIL } from "@/lib/site";
 
-const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
+/* Marge lateral de pàgina. Llegeix la rampa `--page-margin`
+   (402:24 · 768:48 · 1024:72 · 1440:96 · 1920:144), que mana des del
+   21set26. Abans era "px-6 md:px-12 lg:px-16 xl:px-24" escrit a mà,
+   que a lg donava 64 on la rampa en diu 72 i no tenia el graó de 144. */
+const SECTION_PX = "px-page";
 const CONTACT_EMAIL = SITE_EMAIL;
 
 const formatPrice = (n: number) =>

@@ -900,6 +900,16 @@
    Doc: docs/migracio-rampa-fixa-codi-2026-09-21.md
    ============================================================ */
 
+/* 4XL només a ≥1920 (3xl): a 1920 el marge salta a 144 i el 3XL quedava al
+   6,9 % de la caixa, contra el 9 % a 1440. 144 el torna al 8,8 % (24set26). */
+@utility text-display-4xl {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 9rem;
+  line-height: var(--tw-leading, 1);
+  letter-spacing: var(--tw-tracking, -0.03em);
+}
+
 @utility text-display-3xl {
   font-family: var(--font-heading);
   font-weight: var(--tw-font-weight, 600);

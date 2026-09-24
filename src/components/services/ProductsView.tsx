@@ -10,24 +10,24 @@ import TransitionLink from "@/components/common/TransitionLink";
 import { Button } from "@/components/ui/Button";
 import { DisciplineChips } from "@/components/services/configuratorShared";
 import CustomWorkRow from "@/components/services/CustomWorkRow";
+import ProcessSection from "@/components/services/ProcessSection";
+import ProductCard from "@/components/services/ProductCard";
 import {
-  PROCESS_STEPS,
-  CONDITIONS,
   RECURRENTS,
   PRODUCT_CALL_URL,
   DISCIPLINE_ORDER,
   AUDIT_BASE_BY_COUNT,
   calcConfiguration,
-  scopeLabel,
   type Product,
   type ProductId,
   type Discipline,
 } from "@/lib/pricing";
 
-const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
-
-const formatPrice = (n: number) =>
-  `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
+/* Marge lateral de pàgina. Llegeix la rampa `--page-margin`
+   (402:24 · 768:48 · 1024:72 · 1440:96 · 1920:144), que mana des del
+   21set26. Abans era "px-6 md:px-12 lg:px-16 xl:px-24" escrit a mà,
+   que a lg donava 64 on la rampa en diu 72 i no tenia el graó de 144. */
+const SECTION_PX = "px-page";
 
 function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
   const reduce = useReducedMotion();
@@ -98,45 +98,6 @@ function priceFor(product: Product, disciplines: Discipline[]): number {
   return calcConfiguration({ product: product.id, disciplines }).baseTotal;
 }
 
-function ProductCard({
-  product,
-  disciplines,
-  className = "",
-}: {
-  product: Product;
-  disciplines: Discipline[];
-  className?: string;
-}) {
-  return (
-    <TransitionLink
-      href={`/serveis/${product.id}`}
-      className={`group flex flex-col gap-10 p-8 transition-colors hover:bg-surface-card/40 lg:p-12 ${className}`}
-    >
-      <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">{product.name}</h3>
-
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-3">
-          <span className="text-caption uppercase text-text-secondary">{product.priceLabel}</span>
-          {/* aria-live: el preu reacciona als chips d'abast de la capçalera */}
-          <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main" aria-live="polite">
-            {formatPrice(priceFor(product, disciplines))}
-          </span>
-        </div>
-        <div className="flex flex-col gap-3">
-          <span className="text-caption uppercase text-text-secondary">
-            {scopeLabel(disciplines)}
-          </span>
-          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{product.description}</p>
-        </div>
-      </div>
-
-      <div className="mt-auto pt-2">
-        <LinkArrow>{product.cta}</LinkArrow>
-      </div>
-    </TransitionLink>
-  );
-}
-
 /**
  * Punts de partida — tríada Web · Landing · Auditoria.
  *
@@ -159,7 +120,7 @@ function TriadaSection({
   onToggle: (d: Discipline) => void;
 }) {
   return (
-    <section id="productes" className="scroll-mt-24 border-t border-border-subtle bg-surface-base">
+    <section id="productes" className="scroll-mt-24 border-t border-border-default bg-surface-base">
       <Reveal className={`${SECTION_PX} py-16`}>
         <SectionHeader caption="SERVEIS" title="Punts de partida" />
       </Reveal>
@@ -177,21 +138,21 @@ function TriadaSection({
         </div>
       </Reveal>
 
-      {/* Columnes a sang separades per filets (Figma), no cards flotants */}
+      {/* Columnes a sang separades per filets dashed (dins de la secció,
+          18set26): a dalt entre files quan s'apilen, a la dreta quan van en
+          columnes. La vora sòlida de sota la posa la fila «a mida». */}
       <Reveal>
-        <div className="grid grid-cols-1 border-y border-border-subtle md:grid-cols-3 lg:px-12">
-          {products.map((p, i) => (
+        <div className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default xl:flex-row xl:divide-x xl:divide-y-0 xl:dash-divide-v-border-default">
+          {products.map((p) => (
             <ProductCard
               key={p.id}
-              product={p}
-              disciplines={disciplines}
-              className={
-                i === 0
-                  ? "border-b border-border-subtle md:border-b-0"
-                  : i === 1
-                    ? "border-b border-border-subtle md:border-x md:border-b-0"
-                    : ""
-              }
+              name={p.name}
+              description={p.description}
+              priceLabel={p.priceLabel}
+              price={priceFor(p, disciplines)}
+              href={`/serveis/${p.id}`}
+              cta={p.cta}
+              livePrice
             />
           ))}
         </div>
@@ -209,42 +170,6 @@ function TriadaSection({
   );
 }
 
-// ————————————————————————————————— Procés + condicions
-
-/**
- * Com treballem — banda invertida (Figma: la secció fixa el mode Dark).
- * Els tokens del DS s'inverteixen amb la classe `.dark`, així que embolcallem
- * la secció amb `dark` i el contingut llegeix els mateixos noms de token.
- * `bg-surface-base` dins de `.dark` ja resol al gris fosc del sistema.
- */
-function ProcessSection() {
-  return (
-    <section className={`dark ${SECTION_PX} bg-surface-base py-24 lg:pb-40`}>
-      <Reveal>
-        <SectionHeader caption="EL PROCÉS" title="Com treballo" />
-      </Reveal>
-      <Reveal className="mt-16">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
-          {PROCESS_STEPS.map((step) => (
-            <div key={step.num} className="flex flex-col gap-4 border-t border-border-subtle pt-6">
-              <span className="text-caption-sm text-text-secondary">{step.num}</span>
-              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{step.title}</h3>
-              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{step.text}</p>
-            </div>
-          ))}
-        </div>
-        <ul className="mt-16 flex flex-wrap gap-x-8 gap-y-3">
-          {CONDITIONS.map((c) => (
-            <li key={c} className="text-caption uppercase text-text-secondary">
-              {c}
-            </li>
-          ))}
-        </ul>
-      </Reveal>
-    </section>
-  );
-}
-
 // ————————————————————————————————— Recurrents
 
 /**
@@ -253,48 +178,50 @@ function ProcessSection() {
  */
 function RecurrentsSection() {
   return (
-    <section className="border-t border-border-subtle bg-surface-base">
+    <section className={`${SECTION_PX} border-t border-border-default bg-surface-base py-section-s lg:py-section-m`}>
       <Reveal>
-        <div className="flex flex-col lg:min-h-[424px] lg:flex-row lg:items-stretch">
-          {/* Capçalera. A desktop és la primera columna de la fila i porta el
-              filet dashed a la dreta; a mòbil i tablet és una banda a sobre. */}
-          <div className="flex flex-col justify-center gap-6 px-6 py-24 md:px-12 lg:w-[594px] lg:shrink-0 lg:border-r lg:border-dashed lg:border-border-subtle lg:px-12 lg:py-24">
-            <span className="text-caption uppercase text-text-secondary">
-              RECURRENTS · A PART DEL PRESSUPOST
-            </span>
-            <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
-              Després del llançament
-            </h2>
-          </div>
-
-          {/* Les tres cards. A mòbil s'apilen i el filet va a dalt; de md amunt
-              van en columnes i el filet passa a l'esquerra de cada card. */}
-          <ul className="flex flex-1 flex-col md:flex-row md:border-t md:border-dashed md:border-border-subtle lg:border-t-0">
-            {RECURRENTS.map((r, i) => (
-              <li
-                key={r.label}
-                className="flex flex-1 items-center gap-8 border-t border-dashed border-border-subtle px-6 py-8 md:items-stretch md:flex-col md:gap-8 md:border-t-0 md:border-l md:p-12"
-              >
-                <span className="text-caption-sm shrink-0 text-text-secondary">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="flex flex-1 flex-col gap-6 md:justify-between md:gap-10">
-                  <div className="flex flex-col gap-4">
-                    <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">
-                      {r.label}
-                    </h3>
-                    <p className="text-body-xs-light lg:text-body-s-light text-text-secondary">
-                      {r.body}
-                    </p>
-                  </div>
-                  <span className="text-body-l-semibold md:text-display-2xs-medium lg:text-display-xs-medium text-text-main">
-                    {r.price}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <div className="flex flex-col gap-6">
+          <span className="text-caption uppercase text-text-secondary">
+            RECURRENTS · A PART DEL PRESSUPOST
+          </span>
+          <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
+            Després del llançament
+          </h2>
         </div>
+      </Reveal>
+
+      {/* Taula de tarifes (24set26, substitueix les tres cards). Figma: set
+          "Row · Recurrent" 12438:12648, una variant per breakpoint.
+          El contingut és el mateix als tres; el que canvia és on cau el preu:
+            mòbil  → apilat: nom, què inclou, preu
+            tablet → nom i preu comparteixen la línia de dalt
+            desktop→ tres columnes de la graella de 12: 3 · 6 · 3, el preu a la
+                     dreta tancant amb el marge de pàgina
+          Els `pr` de desktop són els carrils del Figma (48 i 112), que deixen
+          el text a 336 i 656 dins de les seves 3 i 6 columnes.
+          Filet dashed entre files: separa dins d'una secció (18set26).
+          Ritme (24set26): padding de secció section/s (72) i section/m (96) a
+          desktop, 64 del títol a la primera fila, 0 entre files. Nom i preu en
+          text/main, «què inclou» en text/secondary. */}
+      <Reveal className="mt-16">
+        <ul>
+          {RECURRENTS.map((r) => (
+            <li
+              key={r.label}
+              className="grid gap-3 border-t dash-h-border-default py-6 md:grid-cols-[1fr_auto] md:items-baseline md:gap-x-12 md:py-8 lg:grid-cols-12 lg:items-center lg:gap-x-0 lg:py-10"
+            >
+              <h3 className="order-1 text-display-s-medium text-text-main lg:col-span-3 lg:pr-12">
+                {r.label}
+              </h3>
+              <p className="order-2 text-body-s-light text-text-secondary md:order-3 md:col-span-2 lg:order-2 lg:col-span-6 lg:pr-28">
+                {r.body}
+              </p>
+              <span className="order-3 text-display-xs-medium text-text-main md:order-2 lg:order-3 lg:col-span-3 lg:text-right">
+                {r.price}
+              </span>
+            </li>
+          ))}
+        </ul>
       </Reveal>
     </section>
   );
@@ -305,7 +232,7 @@ function RecurrentsSection() {
 function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void }) {
   return (
     <section
-      className={`${SECTION_PX} border-t border-border-subtle bg-surface-base pt-24 pb-32 lg:pb-48`}
+      className={`${SECTION_PX} border-t border-border-default bg-surface-base pt-24 pb-32 lg:pb-48`}
     >
       <Reveal>
         <div className="flex flex-col gap-16 lg:flex-row lg:items-start">
@@ -396,7 +323,7 @@ export default function ProductsView({ products }: { products: Product[] }) {
   return (
     <>
       <TriadaSection products={products} disciplines={disciplines} onToggle={toggleDiscipline} />
-      <ProcessSection />
+      <ProcessSection caption="EL PROCÉS" title="Com treballo" reveal={Reveal} />
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} />
 
