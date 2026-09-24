@@ -1229,3 +1229,64 @@ export function extraCaption(
   }
   return `+${price} €`;
 }
+
+/* ============================================================
+   M6 (24set26) · Configuració compartible del configurador web/landing.
+   L'enllaç guarda la SELECCIÓ (disciplines i mòduls), mai els imports: qui
+   l'obre veu el preu d'avui. Format llegible i sense caràcters que calgui
+   escapar: `/serveis/web?d=ux.ui&m=pagina-2.seo`. Viu aquí perquè depèn del
+   catàleg i els tests el carreguen sense bundler.
+   Decisió i motius: docs/configurador-auditoria-ux-2026-09-24.md (M6).
+   ============================================================ */
+
+export interface SharedConfig {
+  disciplines: Discipline[];
+  extras: Partial<Record<ConfigExtraId, number>>;
+}
+
+/** Sostre d'un comptador compartit: un enllaç no pot demanar 900 pàgines. */
+const MAX_COUNT = 20;
+
+export function encodeConfig(c: SharedConfig): string {
+  const d = DISCIPLINE_ORDER.filter((x) => c.disciplines.includes(x)).join(".");
+  const m = (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[])
+    .filter((id) => (c.extras[id] ?? 0) > 0)
+    .map((id) => {
+      const v = c.extras[id] ?? 0;
+      return CONFIG_EXTRAS[id].control === "counter" && v > 1 ? `${id}-${v}` : id;
+    })
+    .join(".");
+  return m ? `d=${d}&m=${m}` : `d=${d}`;
+}
+
+/** `null` si l'enllaç no porta cap configuració vàlida. El que no s'entén es descarta. */
+export function decodeConfig(search: string): SharedConfig | null {
+  const params = new URLSearchParams(search);
+  const d = params.get("d");
+  if (!d) return null;
+  const disciplines = DISCIPLINE_ORDER.filter((x) => d.split(".").includes(x));
+  if (disciplines.length === 0) return null;
+  const extras: SharedConfig["extras"] = {};
+  for (const tok of (params.get("m") ?? "").split(".").filter(Boolean)) {
+    const [id, raw] = tok.split("-");
+    if (!(id in CONFIG_EXTRAS)) continue;
+    const def = CONFIG_EXTRAS[id as ConfigExtraId];
+    const n = raw == null ? 1 : Number.parseInt(raw, 10);
+    if (!Number.isFinite(n) || n < 1) continue;
+    extras[id as ConfigExtraId] = def.control === "counter" ? Math.min(n, MAX_COUNT) : 1;
+  }
+  return { disciplines, extras };
+}
+
+/** L'enllaç apunta sempre a l'spoke del producte, que és on viu el configurador. */
+export function shareUrl(origin: string, product: ConfigProduct, c: SharedConfig): string {
+  return `${origin}/serveis/${product}?${encodeConfig(c)}`;
+}
+
+/** Treu els paràmetres de la configuració de l'URL actual (en tancar el modal). */
+export function stripShareParams(href: string): string {
+  const u = new URL(href);
+  u.searchParams.delete("d");
+  u.searchParams.delete("m");
+  return `${u.pathname}${u.search}${u.hash}`;
+}

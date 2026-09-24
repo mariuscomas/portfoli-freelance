@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useId, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, ArrowRight, ArrowLeft, Check, CaretUp, CaretDown, Plus } from "@phosphor-icons/react";
+import { X, ArrowRight, ArrowLeft, Check, CaretUp, CaretDown, Plus, ShareNetwork } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import ConfirmationSpotlight from "@/components/services/ConfirmationSpotlight";
 import { submitQuote, type QuoteProduct } from "@/app/actions/quotes";
@@ -38,6 +38,10 @@ import {
   packStatus,
   disciplineUnlock,
   orderExtrasByFamily,
+  decodeConfig,
+  shareUrl,
+  stripShareParams,
+  type SharedConfig,
   DISCIPLINES,
   extraCaption,
   extraPricing,
@@ -112,15 +116,36 @@ interface ConfiguratorModalProps {
 }
 
 export default function ConfiguratorModal({ isOpen, onClose, productId }: ConfiguratorModalProps) {
+  // M6 (24set26): un enllaç compartit (`/serveis/web?d=…&m=…`) obre el
+  // configurador sol, amb la selecció carregada. Només a l'spoke del producte;
+  // el modal s'obre sense que la vista pare n'hagi de saber res. Es llegeix un
+  // cop, en muntar (a SSR no hi ha window i el portal no es pinta igualment).
+  const [shared, setShared] = useState<SharedConfig | null>(() => {
+    if (typeof window === "undefined") return null;
+    if (productId !== "web" && productId !== "landing") return null;
+    if (window.location.pathname !== `/serveis/${productId}`) return null;
+    return decodeConfig(window.location.search);
+  });
+  const [sharedOpen, setSharedOpen] = useState(shared !== null);
+  const open = isOpen || sharedOpen;
+  const close = () => {
+    if (sharedOpen) {
+      setSharedOpen(false);
+      setShared(null);
+      window.history.replaceState(window.history.state, "", stripShareParams(window.location.href));
+    }
+    onClose();
+  };
+
   // Obertura del configurador: un sol event per obertura, amb el producte.
   const openedRef = useRef(false);
   useEffect(() => {
-    if (isOpen && !openedRef.current) {
+    if (open && !openedRef.current) {
       openedRef.current = true;
       trackEvent(EVENTS.configuratorOpen, { product: productId ?? "desconegut" });
     }
-    if (!isOpen) openedRef.current = false;
-  }, [isOpen, productId]);
+    if (!open) openedRef.current = false;
+  }, [open, productId]);
 
   const isClient = useIsClient();
   const reduce = useReducedMotion();
@@ -131,7 +156,7 @@ export default function ConfiguratorModal({ isOpen, onClose, productId }: Config
 
   return createPortal(
     <AnimatePresence>
-      {isOpen && product && (
+      {open && product && (
         <motion.div
           key="configurator-curtain"
           initial={reduce ? { opacity: 0 } : { y: "-100%" }}
@@ -140,7 +165,7 @@ export default function ConfiguratorModal({ isOpen, onClose, productId }: Config
           transition={{ duration: reduce ? 0.2 : 0.8, ease: [0.76, 0, 0.24, 1] }}
           className="fixed inset-0 z-[110] h-[100dvh] w-full bg-surface-base text-text-main"
         >
-          <CurtainContent product={product} onClose={onClose} />
+          <CurtainContent product={product} onClose={close} shared={shared} />
         </motion.div>
       )}
     </AnimatePresence>,
@@ -150,7 +175,16 @@ export default function ConfiguratorModal({ isOpen, onClose, productId }: Config
 
 type Phase = "config" | "form" | "sent";
 
-function CurtainContent({ product, onClose }: { product: Product; onClose: () => void }) {
+function CurtainContent({
+  product,
+  onClose,
+  shared,
+}: {
+  product: Product;
+  onClose: () => void;
+  /** M6: selecció d'un enllaç compartit (només web i landing). */
+  shared?: SharedConfig | null;
+}) {
   // Web i landing es configuren pel mateix motor (rols); auditoria salta al form.
   const configProduct: ConfigProduct | null =
     product.id === "web" ? "web" : product.id === "landing" ? "landing" : null;
@@ -169,7 +203,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const [mobileStep, setMobileStep] = useState(0);
   // Web / landing (calcConfiguration)
-  const [disciplines, setDisciplines] = useState<Discipline[]>(["ux", "ui", "dev"]);
+  const [disciplines, setDisciplines] = useState<Discipline[]>(shared?.disciplines ?? ["ux", "ui", "dev"]);
   // 3 toggles independents, tots encesos per defecte (àncora en abast complet:
   // l'usuari treu, no afegeix). Mínim 1: no es pot desmarcar l'últim actiu.
   const toggleDiscipline = (d: Discipline) =>
@@ -187,7 +221,40 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
    * es van quedar sense interfície. Amb un mapa, afegir un mòdul torna a ser
    * només tocar el catàleg de `pricing.ts`.
    */
-  const [extraVals, setExtraVals] = useState<Partial<Record<ConfigExtraId, number>>>({});
+  const [extraVals, setExtraVals] = useState<Partial<Record<ConfigExtraId, number>>>(shared?.extras ?? {});
+
+  // M6 (24set26): compartir la selecció. Mateix patró que /works
+  // (useShareWork): menú natiu on n'hi ha; si no, copia l'enllaç i ho diu.
+  const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+  }, []);
+  const shareConfig = async () => {
+    if (!configProduct) return;
+    const url = shareUrl(window.location.origin, configProduct, { disciplines, extras: extraVals });
+    const track = (method: string) =>
+      trackEvent(EVENTS.share, { method, content_type: "configuration", item_id: configProduct });
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: PRODUCT_TITLES[product.id], url });
+        track("native");
+      } catch {
+        // L'usuari ha tancat el menú: no és un error.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      if (copiedTimer.current) clearTimeout(copiedTimer.current);
+      copiedTimer.current = setTimeout(() => setCopied(false), 2000);
+      track("copy_link");
+    } catch {
+      // Sense permís de porta-retalls: no fingim que s'ha copiat.
+    }
+  };
+  const shareAction = configProduct ? { onShare: shareConfig, copied } : undefined;
   const setExtra = (id: ConfigExtraId, value: number) =>
     setExtraVals((prev) => ({ ...prev, [id]: value }));
   const n = (id: ConfigExtraId) => extraVals[id] ?? 0;
@@ -677,6 +744,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       quote={quote}
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
+                      shared={shared != null}
                       stepIndex={1}
                       className="lg:border-r lg:border-border-subtle lg:pr-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0"
                     />
@@ -872,6 +940,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                         quote={quote}
                         disciplines={disciplines}
                         onToggle={toggleDiscipline}
+                        shared={shared != null}
                       />
                     )}
                     {mobileStep === 1 && (
@@ -892,7 +961,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                   cta="Continua"
                   onCta={advanceConfig}
                   breakdown={
-                    <ResumSection quote={quote} total={total} baseOpen={false} showTotal={false} showTitle={false} />
+                    <ResumSection quote={quote} total={total} baseOpen={false} showTotal={false} showTitle={false} share={shareAction} />
                   }
                 />
               </>
@@ -910,6 +979,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       quote={quote}
                       disciplines={disciplines}
                       onToggle={toggleDiscipline}
+                      shared={shared != null}
                       className="lg:border-r lg:border-border-subtle lg:pr-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0"
                     />
                     <ExtresSection
@@ -926,6 +996,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       total={total}
                       baseOpen={false}
                       showTotal
+                      share={shareAction}
                       className="lg:border-l lg:border-border-subtle lg:pl-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pb-10 lg:[&>*]:shrink-0"
                     />
                   </div>
@@ -1301,12 +1372,15 @@ function TipusBaseSection({
   onToggle,
   stepIndex,
   className,
+  shared,
 }: {
   quote: ConfigQuote;
   disciplines: Discipline[];
   onToggle: (d: Discipline) => void;
   stepIndex?: number;
   className?: string;
+  /** M6: s'ha obert des d'un enllaç compartit. */
+  shared?: boolean;
 }) {
   const reduce = useReducedMotion();
   return (
@@ -1322,6 +1396,12 @@ function TipusBaseSection({
         >
           {stepIndex != null && `${stepIndex}. `}Tipus de projecte
         </h3>
+        {shared ? (
+          // Figma: «Nota · Configuració compartida» (12550-18865). L'enllaç porta la selecció, no els imports.
+          <p className="-mt-4 text-body-xs text-text-secondary">
+            Configuració compartida. Pots canviar el que vulguis: el total es calcula amb els preus d’avui.
+          </p>
+        ) : null}
         <DisciplineChips disciplines={disciplines} onToggle={onToggle} />
       </div>
 
@@ -1676,6 +1756,7 @@ function ResumSection({
   showTitle = true,
   className,
   runLayoutId,
+  share,
 }: {
   quote: ConfigQuote;
   total: number;
@@ -1683,6 +1764,8 @@ function ResumSection({
   showTotal: boolean;
   /** Dins del full inferior el títol el posa el full («Resum»). */
   showTitle?: boolean;
+  /** M6: botó «Comparteix el pressupost» sota el total (web i landing). */
+  share?: { onShare: () => void; copied: boolean };
   className?: string;
   /** Si es passa, el Resum és un element compartit (layoutId) que llisca de
    *  posició entre config i form. layout="position" evita el jitter d'alçada. */
@@ -1734,6 +1817,24 @@ function ResumSection({
             </span>
           </div>
         )}
+        {share ? (
+          // Figma: Outline MD pill amb ShareNetwork, amplada completa (12550-19049).
+          <div className="pt-4">
+            <Button
+              variant="outline"
+              shape="pill"
+              size="md"
+              fullWidth
+              onClick={share.onShare}
+              iconLeft={share.copied ? <Check size={16} /> : <ShareNetwork size={16} />}
+            >
+              {share.copied ? "Enllaç copiat" : "Comparteix el pressupost"}
+            </Button>
+            <span className="sr-only" aria-live="polite">
+              {share.copied ? "Enllaç copiat al porta-retalls." : ""}
+            </span>
+          </div>
+        ) : null}
       </div>
       <NotIncludedNote />
     </motion.aside>
