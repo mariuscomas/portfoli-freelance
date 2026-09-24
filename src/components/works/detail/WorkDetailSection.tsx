@@ -77,7 +77,7 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
         {text.listDetails && text.listDetails.length > 0 && (
           <div className="w-full pt-24">
             {/* h4 baixa a text-body-l lg:text-body-xl font-medium per harmonitzar amb el body */}
-            <h4 className="font-medium text-text-main text-body-l lg:text-body-xl mb-6">Details</h4>
+            <h4 className="font-medium text-text-main text-body-l lg:text-body-xl mb-6">Fitxa</h4>
             <div className="flex flex-col w-full max-w-[640px]">
               {text.listDetails.map((item, index) => {
                 const href = item.href?.trim() || detailHref(item.value);
@@ -106,7 +106,7 @@ export default function WorkDetailSection({ text, viewMode }: Props) {
         {text.listItems && text.listItems.length > 0 && text.listType === "what-we-did" && (
           <div className="w-full pt-16">
             {/* h4 baixa a text-body-l lg:text-body-xl font-medium per harmonitzar amb el body */}
-            <h4 className="font-medium text-text-main text-body-l lg:text-body-xl mb-6">(El que vam fer)</h4>
+            <h4 className="font-medium text-text-main text-body-l lg:text-body-xl mb-6">La meva aportació</h4>
             {/*
               text-body-l lg:text-body-xl + leading-relaxed (mateix tractament que el body
               paragraph). gap-5 (20px) entre items perquè cada bullet pugui

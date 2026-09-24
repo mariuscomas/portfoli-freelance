@@ -208,3 +208,25 @@ test("packStatus: cap, parcial i aplicat del Pack Rendiment", async () => {
   assert.equal(parcial.estalvi, 90);
   assert.equal(packStatus(p, "web", on(["seo", "analitica", "accessibilitat"])).state, "aplicat");
 });
+
+// M2b · línia de disciplina (24set26).
+test("disciplineUnlock: Dev obre 10 mòduls a web UX+UI, 11 a UX sol, 6 a la landing", async () => {
+  const { disciplineUnlock } = await import("./pricing.ts");
+  const uxui = disciplineUnlock("web", ["ux", "ui"])!;
+  assert.equal(uxui.discipline, "dev");
+  assert.equal(uxui.modules.length, 10);
+  assert.equal(uxui.baseDelta, 620);
+  assert.equal(uxui.noms, "idiomes, motion, CMS, blog, àrea privada, integracions, SEO, analítica, migració i formació");
+  assert.equal(disciplineUnlock("web", ["ux"])!.modules.length, 11);
+  assert.equal(disciplineUnlock("landing", ["ux", "ui"])!.modules.length, 6);
+  assert.equal(disciplineUnlock("web", ["ux", "ui", "dev"]), null);
+  assert.equal(disciplineUnlock("web", ["ux", "dev"]), null);
+});
+
+// M4 · ordre del Resum per família (24set26).
+test("orderExtrasByFamily: família, catàleg, pack de família i pack creuat al final", async () => {
+  const { orderExtrasByFamily } = await import("./pricing.ts");
+  const ids = ["cms", "redaccio", "blog", "seo", "pack-contingut", "pack-rendiment", "pagina", "accessibilitat"];
+  const out = orderExtrasByFamily(ids.map((id) => ({ id }))).map((l) => l.id);
+  assert.deepEqual(out, ["pagina", "blog", "cms", "redaccio", "seo", "accessibilitat", "pack-rendiment", "pack-contingut"]);
+});

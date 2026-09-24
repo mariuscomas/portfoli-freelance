@@ -1137,6 +1137,69 @@ export function packStatus(
   } as const;
 }
 
+/** Noms curts dels mòduls per a llistes dins d'una frase (M2b, 24set26). */
+export const EXTRA_SHORT_NAMES: Record<ConfigExtraId, string> = {
+  pagina: "pàgines extra",
+  idioma: "idiomes",
+  motion: "motion",
+  cms: "CMS",
+  redaccio: "redacció",
+  blog: "blog",
+  areaPrivada: "àrea privada",
+  integracio: "integracions",
+  seo: "SEO",
+  analitica: "analítica",
+  accessibilitat: "accessibilitat",
+  migracio: "migració",
+  formacio: "formació",
+};
+
+/**
+ * M2b (24set26): la disciplina apagada que obre més mòduls, quins són (en
+ * l'ordre del catàleg, bloquejats inclosos) i què suma a la base. `null` si
+ * totes hi són o cap no n'obre cap. Figma: mestre `Nota · Disciplina` 12535-17566.
+ */
+export function disciplineUnlock(product: ConfigProduct, disciplines: readonly Discipline[]) {
+  const pintats = (q: ConfigQuote) => new Set<ConfigExtraId>([...q.availableExtras, ...q.lockedExtras]);
+  const ara = calcConfiguration({ product, disciplines: [...disciplines] });
+  const tinc = pintats(ara);
+  let best: { discipline: Discipline; modules: ConfigExtraId[]; baseDelta: number } | null = null;
+  for (const d of DISCIPLINE_ORDER) {
+    if (disciplines.includes(d)) continue;
+    const amb = calcConfiguration({ product, disciplines: [...disciplines, d] });
+    const nous = [...pintats(amb)].filter((id) => !tinc.has(id));
+    const ordenats = (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]).filter((id) => nous.includes(id));
+    if (ordenats.length > 0 && (!best || ordenats.length > best.modules.length)) {
+      best = { discipline: d, modules: ordenats, baseDelta: amb.baseTotal - ara.baseTotal };
+    }
+  }
+  return best ? { ...best, noms: llistaCat(best.modules.map((id) => EXTRA_SHORT_NAMES[id])) } : null;
+}
+
+/**
+ * M4 (24set26): les línies d'Extres del Resum en l'ordre de la columna Extres
+ * (per família i, dins, per catàleg). La línia d'un pack va just després de la
+ * seva família; la d'un pack que creua famílies (Pack Contingut), al final.
+ */
+export function orderExtrasByFamily<T extends { id: string }>(lines: readonly T[]): T[] {
+  const cataleg = Object.keys(CONFIG_EXTRAS) as ConfigExtraId[];
+  const fams = EXTRA_FAMILIES.map((f) => f.id);
+  const rang = (line: T): [number, number, number] => {
+    if (line.id.startsWith("pack-")) {
+      const pack = PACKS.find((p) => `pack-${p.id}` === line.id);
+      const fam = pack ? packFamily(pack) : null;
+      return [fam ? fams.indexOf(fam) : fams.length, 1, 0];
+    }
+    const id = line.id as ConfigExtraId;
+    const def = CONFIG_EXTRAS[id];
+    return def ? [fams.indexOf(def.family), 0, cataleg.indexOf(id)] : [fams.length + 1, 0, 0];
+  };
+  return [...lines].sort((a, b) => {
+    const [ra, rb] = [rang(a), rang(b)];
+    return ra[0] - rb[0] || ra[1] - rb[1] || ra[2] - rb[2];
+  });
+}
+
 /** Preu del pack: suma dels seus mòduls i import amb el descompte aplicat. */
 export function packAmounts(pack: (typeof PACKS)[number], product: ConfigProduct) {
   const suma = pack.modules.reduce((acc, id) => acc + extraPricing(id, product).price, 0);
