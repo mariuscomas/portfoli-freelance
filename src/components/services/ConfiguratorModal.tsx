@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useId, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, ArrowRight, ArrowLeft, Check, CaretUp, CaretDown } from "@phosphor-icons/react";
+import { X, ArrowRight, ArrowLeft, Check, CaretUp, CaretDown, Plus } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import ConfirmationSpotlight from "@/components/services/ConfirmationSpotlight";
 import { submitQuote, type QuoteProduct } from "@/app/actions/quotes";
@@ -36,6 +36,9 @@ import {
   groupExtras,
   crossFamilyPacks,
   packStatus,
+  disciplineUnlock,
+  orderExtrasByFamily,
+  DISCIPLINES,
   extraCaption,
   extraPricing,
   extraHelp,
@@ -634,7 +637,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                           title="Extres"
                           amount={quote.extrasTotal}
                           defaultOpen={false}
-                          lines={quote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
+                          lines={orderExtrasByFamily(quote.extras).map((e) => ({ label: e.label, amount: e.amount }))}
                         />
                       )}
                       <div className="flex items-center gap-6 py-5">
@@ -682,6 +685,8 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       product={configProduct!}
                       values={extraVals}
                       onChange={setExtra}
+                      disciplines={disciplines}
+                      onAddDiscipline={toggleDiscipline}
                       stepIndex={2}
                       className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pr-6 lg:pb-10 lg:[&>*]:shrink-0"
                     />
@@ -875,6 +880,8 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       product={configProduct!}
                       values={extraVals}
                       onChange={setExtra}
+                      disciplines={disciplines}
+                      onAddDiscipline={toggleDiscipline}
                       />
                     )}
                     {mobileStep >= 1 && <MobileReassurance />}
@@ -910,6 +917,8 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                       product={configProduct!}
                       values={extraVals}
                       onChange={setExtra}
+                      disciplines={disciplines}
+                      onAddDiscipline={toggleDiscipline}
                       className="lg:min-h-0 lg:overflow-y-auto lg:overscroll-none lg:pr-6 lg:pb-10 lg:[&>*]:shrink-0"
                     />
                     <ResumSection
@@ -1412,6 +1421,8 @@ function ExtresSection({
   onChange,
   stepIndex,
   className,
+  disciplines,
+  onAddDiscipline,
 }: {
   quote: ConfigQuote;
   product: ConfigProduct;
@@ -1419,6 +1430,9 @@ function ExtresSection({
   onChange: (id: ConfigExtraId, value: number) => void;
   stepIndex?: number;
   className?: string;
+  /** M2b: amb totes dues, la línia «Amb X, N mòduls més» i el botó que l'encén. */
+  disciplines?: Discipline[];
+  onAddDiscipline?: (d: Discipline) => void;
 }) {
   const reduce = useReducedMotion();
 
@@ -1602,9 +1616,47 @@ function ExtresSection({
   // Els packs que creuen famílies (el Pack Contingut) van al final de tot.
   for (const pack of crossFamilyPacks(quote.availableExtras)) fills.push(packNote(pack));
 
+  // M2b (24set26): una sola línia al final quan una disciplina apagada amaga
+  // mòduls. El botó l'encén aquí mateix: a mòbil i tauleta els chips són al pas 1.
+  // Figma: mestre `Nota · Disciplina` 12535-17566.
+  const unlock = disciplines && onAddDiscipline ? disciplineUnlock(product, disciplines) : null;
+  // El botó desapareix en prémer-lo: el focus torna al titular de la secció.
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  if (unlock) {
+    const n = unlock.modules.length;
+    const nom = DISCIPLINES[unlock.discipline].label;
+    const detall = unlock.noms.charAt(0).toUpperCase() + unlock.noms.slice(1);
+    fills.push(
+      <div key="unlock" className="flex flex-col gap-4 pt-6">
+        <div className="flex flex-col gap-1">
+          <p className="text-body-s md:text-body-m lg:text-body-l text-text-main">
+            {`Amb ${nom}, ${n}\u00A0${n === 1 ? "mòdul" : "mòduls"} més`}
+          </p>
+          <p className="text-body-xs text-text-secondary">
+            {`${detall}. Suma ${formatEuro(unlock.baseDelta)} a la base.`}
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          shape="pill"
+          size="md"
+          iconLeft={<Plus size={16} />}
+          onClick={() => {
+            onAddDiscipline!(unlock.discipline);
+            titleRef.current?.focus();
+          }}
+          className="-ml-[var(--button-md-padding)] min-h-11 self-start"
+        >
+          {`Afegeix ${nom}`}
+        </Button>
+      </div>,
+    );
+  }
+
   return (
     <section aria-label="Extres" className={`flex flex-col ${className ?? ""}`}>
       <h3
+        ref={titleRef}
         className="sticky top-0 z-10 border-b border-border-subtle bg-surface-base py-5 text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium lg:pt-15 text-text-main focus:outline-none"
         data-autofocus
         tabIndex={-1}
@@ -1666,7 +1718,7 @@ function ResumSection({
           <SummaryGroup
             title="Extres"
             amount={quote.extrasTotal}
-            lines={quote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
+            lines={orderExtrasByFamily(quote.extras).map((e) => ({ label: e.label, amount: e.amount }))}
           />
         )}
         {showTotal && (
@@ -1767,6 +1819,41 @@ function MobileTotalFooter({
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const sheetId = useId();
+  const reduce = useReducedMotion();
+
+  // M4b (24set26): què ha mogut el total. Cada canvi suma al delta visible i
+  // reinicia el temps; 1,5 s després de l'últim, desapareix. A mòbil i tauleta
+  // el Resum és dins del full tancat: aquí és l'únic lloc on es veu.
+  // Patró «estat de renders previs» (com StepProgress), sense setState en efecte.
+  const [seen, setSeen] = useState(total);
+  const [delta, setDelta] = useState<{ value: number; n: number } | null>(null);
+  if (seen !== total) {
+    setSeen(total);
+    setDelta((p) => ({ value: (p?.value ?? 0) + (total - seen), n: (p?.n ?? 0) + 1 }));
+  }
+  const deltaN = delta?.n;
+  useEffect(() => {
+    if (deltaN == null) return;
+    const t = setTimeout(() => setDelta(null), 1500);
+    return () => clearTimeout(t);
+  }, [deltaN]);
+  const deltaNode = (
+    <AnimatePresence>
+      {delta && delta.value !== 0 ? (
+        <motion.span
+          key="delta"
+          aria-hidden="true"
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
+          transition={{ duration: reduce ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="text-caption text-text-secondary tabular-nums"
+        >
+          {delta.value < 0 ? `\u2212${formatEuro(-delta.value)}` : `+${formatEuro(delta.value)}`}
+        </motion.span>
+      ) : null}
+    </AnimatePresence>
+  );
 
   const totalValue = (
     <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium leading-none text-text-main tabular-nums">
@@ -1806,12 +1893,16 @@ function MobileTotalFooter({
                   <CaretUp size={16} aria-hidden="true" />
                 )}
                 <span className="sr-only">{open ? ", amaga el desglòs" : ", mostra el desglòs"}</span>
+                {deltaNode}
               </span>
               {totalValue}
             </button>
           ) : (
             <div className="flex flex-col">
-              <span className="text-caption text-text-secondary">Total</span>
+              <span className="flex items-center gap-2 text-caption text-text-secondary">
+                Total
+                {deltaNode}
+              </span>
               {totalValue}
             </div>
           )}
@@ -2185,7 +2276,7 @@ function LeadForm({
                       title="Extres"
                       amount={quote.extrasTotal}
                       defaultOpen={false}
-                      lines={quote.extras.map((e) => ({ label: e.label, amount: e.amount }))}
+                      lines={orderExtrasByFamily(quote.extras).map((e) => ({ label: e.label, amount: e.amount }))}
                     />
                   )}
                 </>

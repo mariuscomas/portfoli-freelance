@@ -654,6 +654,20 @@ export function SummaryGroup({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const reduce = useReducedMotion();
+  // M4c (24set26): la fila que acaba d'entrar o de canviar d'import es marca
+  // un instant (fons surface-card que s'esvaeix). No al muntatge: el primer
+  // pintat no és un canvi. Patró d'estat de renders previs, sense efecte.
+  const firma = lines.map((l) => `${l.label}=${l.amount}`).join("|");
+  const [prev, setPrev] = useState<{ firma: string; imports: Map<string, number> }>(() => ({
+    firma,
+    imports: new Map(lines.map((l) => [l.label, l.amount])),
+  }));
+  const [flash, setFlash] = useState<{ labels: Set<string>; n: number }>({ labels: new Set(), n: 0 });
+  if (prev.firma !== firma) {
+    const nous = new Set(lines.filter((l) => prev.imports.get(l.label) !== l.amount).map((l) => l.label));
+    setPrev({ firma, imports: new Map(lines.map((l) => [l.label, l.amount])) });
+    if (nous.size > 0) setFlash((f) => ({ labels: nous, n: f.n + 1 }));
+  }
   return (
     <div className="flex flex-col">
       <button
@@ -689,10 +703,20 @@ export function SummaryGroup({
               {lines.map((l) => (
                 <div
                   key={l.label}
-                  className="flex items-center gap-6 border-b border-border-subtle py-3"
+                  className="relative flex items-center gap-6 border-b border-border-subtle py-3"
                 >
-                  <span className="flex-1 text-body-xs-light md:text-body-s-light text-text-secondary">{l.label}</span>
-                  <span className="text-caption text-text-secondary tabular-nums">
+                  {flash.labels.has(l.label) ? (
+                    <motion.span
+                      key={`flash-${flash.n}`}
+                      aria-hidden="true"
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 0 }}
+                      transition={{ duration: reduce ? 0 : 1.2, delay: reduce ? 0 : 0.3, ease: "easeOut" }}
+                      className="pointer-events-none absolute inset-y-0 -left-3 right-0 bg-surface-card"
+                    />
+                  ) : null}
+                  <span className="relative flex-1 text-body-xs-light md:text-body-s-light text-text-secondary">{l.label}</span>
+                  <span className="relative text-caption text-text-secondary tabular-nums">
                     {formatEuro(l.amount)}
                   </span>
                 </div>
