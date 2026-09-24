@@ -5,15 +5,22 @@ import { motion, useReducedMotion } from "framer-motion";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
-import SpokeHero from "@/components/services/SpokeHero";
+import {
+  FocusSection,
+  IncludesSection,
+  ProductSpokeHero,
+  type FocusCard,
+  type SpokeHeroCopy,
+  type SpokeHeroScope,
+} from "@/components/services/WebSpokeView";
 import Button from "@/components/ui/Button";
 import {
-  AUDIT_FOCUSES,
   AUDIT_SIZES,
   AUDIT_EXTRAS,
   AUDIT_BASE_INCLUDES,
   AUDIT_BASE_BY_COUNT,
   PRODUCT_CALL_URL,
+  PRODUCTS,
   type AuditFocus,
 } from "@/lib/pricing";
 import { SITE_EMAIL } from "@/lib/site";
@@ -40,11 +47,6 @@ const formatPrice = (n: number) =>
  */
 const FULL_PRICE = AUDIT_BASE_BY_COUNT[3];
 const MIN_PRICE = AUDIT_BASE_BY_COUNT[1];
-
-/** Frase de preus per nombre de focus (1/2/3), derivada del catàleg. */
-const FOCUS_COUNT_PRICING = `1 focus ${formatPrice(AUDIT_BASE_BY_COUNT[1])}, 2 focus ${formatPrice(
-  AUDIT_BASE_BY_COUNT[2],
-)}, 3 focus ${formatPrice(AUDIT_BASE_BY_COUNT[3])}`;
 
 /**
  * La 01 enumera LLIURABLES. L'última línia d'AUDIT_BASE_INCLUDES ("Val per si
@@ -76,6 +78,15 @@ const FOCUS_COPY: Record<AuditFocus, { name: string; description: string; tag: s
     tag: "Rendiment · Accessibilitat",
   },
 };
+
+// Cards de «02 · Focus» (Figma v2: la card d'Abast de web, 24set26). Qualsevol
+// focus sol val el mateix, així que totes diuen «DES DE» el preu d'un focus.
+const AUDIT_FOCUS_CARDS: FocusCard[] = (["ux", "ui", "dev"] as const).map((id) => ({
+  id,
+  title: FOCUS_COPY[id].name,
+  description: FOCUS_COPY[id].description,
+  price: MIN_PRICE,
+}));
 
 // Procés específic de l'auditoria (no és el PROCESS_STEPS de web/landing).
 const AUDIT_PROCESS = [
@@ -134,78 +145,7 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
 
 // ————————————————————————————————— 01 · Què t'enduus
 
-function IncludesSection() {
-  return (
-    <section id="que-inclou" className={`${SECTION_PX} pt-20 pb-20 bg-surface-base`}>
-      <Reveal>
-        <SectionHeader caption="01 · QUÈ INCLOU" title="Què t’enduus" />
-      </Reveal>
-      <Reveal className="mt-8">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-caption uppercase text-text-secondary">DES DE</span>
-          <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">{formatPrice(FULL_PRICE)}</span>
-          <span className="text-caption text-text-secondary">
-            Tots tres focus. Un de sol, {formatPrice(MIN_PRICE)}.
-          </span>
-        </div>
-      </Reveal>
-      <Reveal className="mt-14">
-        <ul>
-          {SPOKE_INCLUDES.map((item, i) => (
-            <li
-              key={item}
-              className="flex items-baseline gap-6 border-t border-border-subtle py-5 md:gap-10"
-            >
-              <span className="text-caption uppercase tabular-nums text-text-secondary">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{item}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-10 text-caption text-text-secondary">
-          Per auditar només necessitem accés al teu producte o prototip.
-        </p>
-      </Reveal>
-    </section>
-  );
-}
-
 // ————————————————————————————————— 02 · Focus
-
-function FocusSection() {
-  return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
-      <Reveal>
-        <SectionHeader caption="02 · FOCUS" title="Tria on mirem" />
-      </Reveal>
-      <Reveal className="mt-8">
-        <p className="max-w-2xl text-body-l lg:text-body-xl text-text-secondary">
-          Un focus, dos o els tres. El preu s&apos;ajusta segons quants en triïs: {FOCUS_COUNT_PRICING}.
-        </p>
-      </Reveal>
-      <Reveal className="mt-14">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {AUDIT_FOCUSES.map((f) => (
-            <article
-              key={f.id}
-              className="flex flex-col gap-4 rounded-card border border-border-subtle bg-surface-card p-8 lg:p-10"
-            >
-              <span className="text-caption uppercase text-text-secondary">{f.id.toUpperCase()}</span>
-              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{FOCUS_COPY[f.id].name}</h3>
-              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{FOCUS_COPY[f.id].description}</p>
-              <div className="mt-auto pt-4">
-                <span className="text-caption uppercase text-text-secondary">
-                  {FOCUS_COPY[f.id].tag}
-                </span>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Reveal>
-    </section>
-  );
-}
 
 // ————————————————————————————————— 03 · Talla
 
@@ -384,6 +324,30 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
   );
 }
 
+// Hero v2 (Figma: Serveis - Detall Auditoria · Hero, 12484-13828 · iPad
+// 12484-14017 · mòbil 12484-14207). Mateix component que web i landing; el
+// selector tria per NOMBRE de focus, que és el que mou el preu.
+const AUDIT_PRODUCT = PRODUCTS.find((p) => p.id === "auditoria")!;
+
+const AUDIT_HERO_COPY: SpokeHeroCopy = {
+  eyebrow: "SERVEIS · AUDITORIA UI/UX",
+  title: "Sabràs exactament què falla i què arreglar primer.",
+  description:
+    "Revisió experta de la teva UI, UX i conversió, amb informe prioritzat i pla d’acció. I si fem el projecte en 3 mesos, te la descompto íntegra.",
+  ctaLabel: "Configura la teva auditoria",
+};
+
+const AUDIT_HERO_SCOPE: SpokeHeroScope = {
+  options: [
+    { value: "3", label: "Els tres focus", price: AUDIT_BASE_BY_COUNT[3] },
+    { value: "2", label: "Dos focus", price: AUDIT_BASE_BY_COUNT[2] },
+    { value: "1", label: "Un focus", price: AUDIT_BASE_BY_COUNT[1] },
+  ],
+  fullNote: `o un de sol, ${formatPrice(MIN_PRICE)}`,
+  partialNote: `o els tres focus, ${formatPrice(FULL_PRICE)}`,
+  label: "Nombre de focus",
+};
+
 export default function AuditoriaSpokeView() {
   // Configurador full-screen (cortina). Mantenim el producte seleccionat
   // en tancar perquè l'animació de sortida no es talli. Aquí és sempre "auditoria".
@@ -400,31 +364,24 @@ export default function AuditoriaSpokeView() {
 
   return (
     <>
-      <SpokeHero
-        eyebrow="SERVEIS · AUDITORIA UI/UX"
-        headline={
-          <>
-            {"Sabràs exactament què falla "}
-            <br className="hidden lg:block" />
-            {"i què arreglar primer."}
-          </>
-        }
-        subhead={
-          <>
-            {"Revisió experta de la teva UI, UX i conversió, amb informe prioritzat "}
-            <br className="hidden lg:block" />
-            {"i pla d’acció. I si fem el projecte en 3 mesos, te la descompto íntegra."}
-          </>
-        }
-        price={formatPrice(FULL_PRICE)}
-        scopeNote={`Tots tres focus · un de sol, ${formatPrice(MIN_PRICE)}`}
-        scrollCta={{ href: "#que-inclou", label: "Mira què inclou" }}
-        showControls
-        ctaLabel="Configura la teva auditoria"
-        onCta={openConfigurator}
+      <ProductSpokeHero
+        product={AUDIT_PRODUCT}
+        copy={AUDIT_HERO_COPY}
+        scope={AUDIT_HERO_SCOPE}
+        onConfigure={openConfigurator}
+        onContact={contact.open}
       />
-      <IncludesSection />
-      <FocusSection />
+      <IncludesSection
+        includes={SPOKE_INCLUDES}
+        title="Què t’enduus"
+        description="Per auditar només necessito accés al teu producte o prototip."
+      />
+      <FocusSection
+        caption="02 · FOCUS"
+        title="Tria on miro"
+        description={`Tries un focus o més d’un. El preu depèn de quants: un ${formatPrice(AUDIT_BASE_BY_COUNT[1])}, dos ${formatPrice(AUDIT_BASE_BY_COUNT[2])} i els tres ${formatPrice(AUDIT_BASE_BY_COUNT[3])}.`}
+        cards={AUDIT_FOCUS_CARDS}
+      />
       <SizesSection />
       <ExtrasSection />
       <ConfiguratorTeaser onConfigure={openConfigurator} />

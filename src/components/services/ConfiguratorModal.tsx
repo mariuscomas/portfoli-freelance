@@ -1414,9 +1414,11 @@ function TipusBaseSection({
         <div className="border-b border-border-subtle py-5">
           <h3 className="text-body-s font-medium text-text-main">
             Base.
-            <span className="font-normal text-text-secondary">
+            {/* Una sola frase certa a les 7 combinacions de disciplines:
+                «un projecte complet» era fals amb una o dues. Decidit 24set26. */}
+            <span className="font-normal">
               {" "}
-              Tot el que inclou un projecte complet.
+              El que inclou l’abast que has triat.
             </span>
           </h3>
         </div>

@@ -105,7 +105,9 @@ const FOCUS_TINT: Record<Discipline, { bg: string; secondary: string }> = {
   dev: { bg: "bg-surface-tint-pistachio", secondary: "text-text-fixed-dark-secondary" },
 };
 
-const FAQ: { q: string; a: string }[] = [
+export type FaqItem = { q: string; a: string };
+
+const FAQ: FaqItem[] = [
   {
     q: "Qui aporta els continguts?",
     a: "Els textos, el logo i les imatges els aportes tu. Si no els tens, la redacció és un extra.",
@@ -152,8 +154,6 @@ function Reveal({ children, className }: { children: React.ReactNode; className?
 // Compartit amb /serveis/landing (Figma: Serveis - Detall Landing v2, 24set26):
 // la mateixa estructura, amb el copy i el producte del configurador per props.
 
-type Scope = "tot" | Discipline;
-
 export interface SpokeHeroCopy {
   eyebrow: string;
   title: string;
@@ -170,29 +170,55 @@ const WEB_HERO_COPY: SpokeHeroCopy = {
   ctaLabel: "Configura la teva web",
 };
 
+/** Opcions del selector del hero. La primera és l'abast complet. */
+export interface SpokeHeroScope {
+  options: { value: string; label: string; price: number }[];
+  /** Nota amb l'abast complet triat («o per fases, des de 570 €»). */
+  fullNote: string;
+  /** Nota amb un abast parcial triat («o el projecte complet, 990 €»). */
+  partialNote: string;
+  /** Nom accessible del selector. */
+  label: string;
+}
+
+/** Selector per defecte de web i landing: projecte complet o una disciplina. */
+const disciplineScope = (product: Product, configProduct: ConfigProduct): SpokeHeroScope => {
+  const priceFrom = (d: Discipline) => disciplinePriceFrom(d, configProduct);
+  const phaseFloor = Math.min(...DISCIPLINE_ORDER.map(priceFrom));
+  return {
+    options: [
+      { value: "tot", label: "Projecte complet", price: product.price },
+      ...DISCIPLINE_ORDER.map((d) => ({ value: d, label: FOCUS_COPY[d].title, price: priceFrom(d) })),
+    ],
+    fullNote: `o per fases, des de ${formatPrice(phaseFloor)}`,
+    partialNote: `o el projecte complet, ${formatPrice(product.price)}`,
+    label: "Abast del projecte",
+  };
+};
+
 export function ProductSpokeHero({
   product,
-  configProduct,
+  configProduct = "web",
   copy,
+  scope: scopeProp,
   onConfigure,
   onContact,
 }: {
   product: Product;
-  configProduct: ConfigProduct;
+  configProduct?: ConfigProduct;
   copy: SpokeHeroCopy;
+  /** Selector propi (l'auditoria tria per nombre de focus, no per disciplina). */
+  scope?: SpokeHeroScope;
   onConfigure: () => void;
   onContact: () => void;
 }) {
-  const [scope, setScope] = useState<Scope>("tot");
-  const priceFrom = (d: Discipline) => disciplinePriceFrom(d, configProduct);
-  const phaseFloor = Math.min(...DISCIPLINE_ORDER.map(priceFrom));
-  const price = scope === "tot" ? product.price : priceFrom(scope);
-  // La nota ensenya l'altra opció: el terra per fases amb el projecte
-  // complet triat, i el complet quan es mira una fase.
-  const note =
-    scope === "tot"
-      ? `o per fases, des de ${formatPrice(phaseFloor)}`
-      : `o el projecte complet, ${formatPrice(product.price)}`;
+  const scopeDef = scopeProp ?? disciplineScope(product, configProduct);
+  const [scope, setScope] = useState(scopeDef.options[0].value);
+  const current = scopeDef.options.find((o) => o.value === scope) ?? scopeDef.options[0];
+  const price = current.price;
+  // La nota ensenya l'altra opció: el terra amb l'abast complet triat, i el
+  // complet quan es mira una opció parcial.
+  const note = scope === scopeDef.options[0].value ? scopeDef.fullNote : scopeDef.partialNote;
   const ctaLabel = CONFIGURATOR_ENABLED ? copy.ctaLabel : "Demana pressupost";
   const arrow = (
     <ArrowRight size={20} weight="regular" className="shrink-0 transition-transform group-hover:translate-x-1" aria-hidden />
@@ -224,16 +250,15 @@ export function ProductSpokeHero({
             {formatPrice(price)}
           </span>
           <label className="relative inline-flex items-center self-start">
-            <span className="sr-only">Abast del projecte</span>
+            <span className="sr-only">{scopeDef.label}</span>
             <select
               value={scope}
-              onChange={(e) => setScope(e.target.value as Scope)}
+              onChange={(e) => setScope(e.target.value)}
               className="cursor-pointer appearance-none bg-transparent py-1 pr-6 text-body-s uppercase text-text-secondary hover:text-text-main focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus-ring"
             >
-              <option value="tot">Projecte complet</option>
-              {DISCIPLINE_ORDER.map((d) => (
-                <option key={d} value={d}>
-                  {FOCUS_COPY[d].title}
+              {scopeDef.options.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
                 </option>
               ))}
             </select>
@@ -309,43 +334,66 @@ export function IncludesSection({
 
 // ————————————————————————————————— 02 · Abast (focus)
 
-function FocusSection() {
+export interface FocusCard {
+  /** Decideix la superfície de color (FOCUS_TINT). */
+  id: Discipline;
+  title: string;
+  description: string;
+  price: number;
+}
+
+/** Cards d'abast de web: una per disciplina, amb el preu «des de» del producte. */
+export const disciplineCards = (
+  configProduct: ConfigProduct,
+  copy: Record<Discipline, { title: string; description: string }> = FOCUS_COPY,
+): FocusCard[] =>
+  DISCIPLINE_ORDER.map((d) => ({ id: d, ...copy[d], price: disciplinePriceFrom(d, configProduct) }));
+
+export function FocusSection({
+  caption = "02 · ABAST",
+  title = "Tria fins on arribem",
+  description = "El projecte sencer o una fase solta. Contracta les tres disciplines, o només la que necessites.",
+  cards = disciplineCards("web"),
+}: {
+  caption?: string;
+  title?: string;
+  description?: string;
+  cards?: FocusCard[];
+}) {
   // Figma: Exploracio · Abast — Disciplines (desktop 12343:100322, iPad
   // 12353:109085, mòbil 12353:109451). Mòbil: cards apilades a tot l'ample;
   // md: tres cards en fila a tot l'ample; xl: capçal a 1/3 i cards a 2/3.
+  // Compartit amb landing (disciplines) i auditoria (focus), 24set26.
   return (
     <section className="border-t border-border-default bg-surface-base xl:grid xl:grid-cols-3">
       <Reveal className="flex flex-col gap-8 px-page py-section-xs md:py-section-s xl:justify-end xl:gap-6 xl:py-section-m">
-        <span className="text-caption uppercase text-text-secondary">02 · ABAST</span>
+        <span className="text-caption uppercase text-text-secondary">{caption}</span>
         <div className="flex flex-col gap-4 xl:gap-8">
           <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l-medium text-text-main">
-            Tria fins on arribem
+            {title}
           </h2>
           <p className="text-body-s md:max-w-xl md:text-body-l xl:max-w-none xl:text-body-s-light text-text-secondary">
-            El projecte sencer o una fase solta. Contracta les tres disciplines, o només la que
-            necessites.
+            {description}
           </p>
         </div>
       </Reveal>
       <Reveal className="grid grid-cols-1 md:grid-cols-3 xl:col-span-2 xl:gap-6 xl:py-section-m xl:pl-6 xl:pr-page">
-        {DISCIPLINE_ORDER.map((d) => {
-          const tint = FOCUS_TINT[d];
+        {cards.map((card) => {
+          const tint = FOCUS_TINT[card.id];
           return (
             <article
-              key={d}
+              key={card.id}
               className={`flex flex-col gap-8 px-12 py-section-xs md:p-8 xl:aspect-[3/4] ${tint.bg}`}
             >
               <div className="flex flex-1 flex-col gap-4">
                 <h3 className="text-display-2xs-medium xl:text-display-xs-medium text-text-fixed-dark">
-                  {FOCUS_COPY[d].title}
+                  {card.title}
                 </h3>
-                <p className={`text-body-s xl:text-body-l ${tint.secondary}`}>{FOCUS_COPY[d].description}</p>
+                <p className={`text-body-s xl:text-body-l ${tint.secondary}`}>{card.description}</p>
               </div>
               <div className="flex flex-col gap-2">
                 <span className={`text-caption uppercase ${tint.secondary}`}>DES DE</span>
-                <span className="text-display-xs-medium text-text-fixed-dark">
-                  {formatPrice(disciplinePriceFrom(d))}
-                </span>
+                <span className="text-display-xs-medium text-text-fixed-dark">{formatPrice(card.price)}</span>
               </div>
             </article>
           );
@@ -409,7 +457,14 @@ export function ExtrasSection({ product = "web" }: { product?: ConfigProduct }) 
 
 // ————————————————————————————————— Configurador (banda fosca)
 
-function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
+export function ConfiguratorTeaser({
+  onConfigure,
+  noun = "web",
+}: {
+  onConfigure: () => void;
+  /** «web» o «landing»: Configura la teva {noun}. */
+  noun?: string;
+}) {
   // Banda fosca: mode Dark local (tokens normals s'inverteixen) — patró DS.
   // En Dark, l'accent elèctric pot ser text («al moment»), 22set26.
   return (
@@ -421,7 +476,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
             <h2 className="max-w-4xl text-display-m md:text-display-l text-text-main">
               {CONFIGURATOR_ENABLED ? (
                 <>
-                  Configura la teva web en dos minuts i rep el pressupost{" "}
+                  Configura la teva {noun} en dos minuts i rep el pressupost{" "}
                   <span className="text-accent">al moment</span>.
                 </>
               ) : (
@@ -444,7 +499,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
           </div>
         </div>
         <Button variant="solid" size="lg" shape="pill" className="self-start xl:self-center" onClick={onConfigure}>
-          {CONFIGURATOR_ENABLED ? "Configura la teva web" : "Demana pressupost"}
+          {CONFIGURATOR_ENABLED ? `Configura la teva ${noun}` : "Demana pressupost"}
         </Button>
       </Reveal>
     </section>
@@ -453,7 +508,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
 
 // ————————————————————————————————— 04 · Procés + condicions
 
-function ProcessSection() {
+export function SpokeProcessSection() {
   // Figma: 04 · Com treballo. Desktop: capçal · imatge · fases en llista;
   // iPad: capçal, quatre fases en columnes i la imatge a tot l'ample a sota;
   // mòbil: fases apilades. Sense PROCESS_IMAGE, la imatge no es pinta.
@@ -517,7 +572,7 @@ function ProcessSection() {
 
 // ————————————————————————————————— 05 · FAQ
 
-function FaqSection() {
+export function FaqSection({ items = FAQ }: { items?: FaqItem[] }) {
   // Figma: 05 · Preguntes. Filets dashed entre files (dins de la secció).
   return (
     <section className="flex flex-col gap-12 border-t border-border-default bg-surface-base px-page py-section-s xl:gap-16 xl:py-section-m">
@@ -529,7 +584,7 @@ function FaqSection() {
       </Reveal>
       <Reveal>
         <dl>
-          {FAQ.map(({ q, a }) => (
+          {items.map(({ q, a }) => (
             <div
               key={q}
               className="flex flex-col gap-2 border-t dash-h-border-default py-6 md:flex-row md:gap-12 xl:py-7"
@@ -546,7 +601,7 @@ function FaqSection() {
 
 // ————————————————————————————————— 06 · Recurrents
 
-function RecurrentsSection() {
+export function RecurrentsSection() {
   // Figma: 06 · Després del llançament, mestre «Card - Recurrents» amb una
   // variant per breakpoint. Filets dashed: a dalt de cada card al mòbil; a
   // l'iPad, a dalt de la fila i entre cards; a desktop, a l'esquerra de totes.
@@ -587,12 +642,21 @@ function RecurrentsSection() {
 
 // ————————————————————————————————— CTA final
 
-function FinalCtaSection({ onConfigure, onContact }: { onConfigure: () => void; onContact: () => void }) {
+export function FinalCtaSection({
+  onConfigure,
+  onContact,
+  noun = "web",
+}: {
+  onConfigure: () => void;
+  onContact: () => void;
+  /** «web» o «landing». */
+  noun?: string;
+}) {
   return (
     <section className="border-t border-border-default bg-surface-base px-page py-section-s xl:py-section-m">
       <Reveal className="flex flex-col gap-10 md:gap-8">
         <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l text-text-main">
-          Comencem la teva web?
+          Comencem la teva {noun}?
         </h2>
         <div className="flex flex-col items-start gap-6">
           <LinkUnderline
@@ -601,7 +665,7 @@ function FinalCtaSection({ onConfigure, onContact }: { onConfigure: () => void; 
             onClick={onConfigure}
             icon={<ArrowRight size={20} weight="regular" className="shrink-0 transition-transform group-hover:translate-x-1" aria-hidden />}
           >
-            {CONFIGURATOR_ENABLED ? "Configura la teva web" : "Demana pressupost"}
+            {CONFIGURATOR_ENABLED ? `Configura la teva ${noun}` : "Demana pressupost"}
           </LinkUnderline>
           <p className="text-body-m xl:text-body-l text-text-secondary">
             O{" "}
@@ -643,7 +707,7 @@ export default function WebSpokeView({ product }: { product: Product }) {
       <FocusSection />
       <ExtrasSection />
       <ConfiguratorTeaser onConfigure={openConfigurator} />
-      <ProcessSection />
+      <SpokeProcessSection />
       <FaqSection />
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} onContact={contact.open} />
