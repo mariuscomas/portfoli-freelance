@@ -6,10 +6,11 @@ import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
-import TransitionLink from "@/components/common/TransitionLink";
 import { Button } from "@/components/ui/Button";
 import { DisciplineChips } from "@/components/services/configuratorShared";
 import CustomWorkRow from "@/components/services/CustomWorkRow";
+import RateTable from "@/components/services/RateTable";
+import BridgeDoor from "@/components/services/BridgeDoor";
 import ProcessSection from "@/components/services/ProcessSection";
 import ProductCard from "@/components/services/ProductCard";
 import {
@@ -56,23 +57,6 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
       <span className="text-caption uppercase text-text-secondary">{caption}</span>
       <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">{title}</h2>
     </div>
-  );
-}
-
-/** Enllaç de text subratllat amb fletxa — "Buttons / Custom / Link" del DS. */
-function LinkArrow({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span
-      className={`inline-flex min-h-11 items-center gap-2.5 text-button-lg text-text-main underline underline-offset-8 decoration-1 group-hover:decoration-2 ${className}`}
-    >
-      {children}
-      <ArrowRight
-        size={20}
-        weight="regular"
-        className="shrink-0 transition-transform group-hover:translate-x-1"
-        aria-hidden
-      />
-    </span>
   );
 }
 
@@ -190,38 +174,12 @@ function RecurrentsSection() {
         </div>
       </Reveal>
 
-      {/* Taula de tarifes (24set26, substitueix les tres cards). Figma: set
-          "Row · Recurrent" 12438:12648, una variant per breakpoint.
-          El contingut és el mateix als tres; el que canvia és on cau el preu:
-            mòbil  → apilat: nom, què inclou, preu
-            tablet → nom i preu comparteixen la línia de dalt
-            desktop→ tres columnes de la graella de 12: 3 · 6 · 3, el preu a la
-                     dreta tancant amb el marge de pàgina
-          Els `pr` de desktop són els carrils del Figma (48 i 112), que deixen
-          el text a 336 i 656 dins de les seves 3 i 6 columnes.
-          Filet dashed entre files: separa dins d'una secció (18set26).
-          Ritme (24set26): padding de secció section/s (72) i section/m (96) a
-          desktop, 64 del títol a la primera fila, 0 entre files. Nom i preu en
-          text/main, «què inclou» en text/secondary. */}
+      {/* Taula de tarifes (24set26, substitueix les tres cards). Component
+          compartit amb /colaboracio. Ritme (24set26): padding de secció
+          section/s (72) i section/m (96) a desktop, 64 del títol a la primera
+          fila, 0 entre files. */}
       <Reveal className="mt-16">
-        <ul>
-          {RECURRENTS.map((r) => (
-            <li
-              key={r.label}
-              className="grid gap-3 border-t dash-h-border-default py-6 md:grid-cols-[1fr_auto] md:items-baseline md:gap-x-12 md:py-8 lg:grid-cols-12 lg:items-center lg:gap-x-0 lg:py-10"
-            >
-              <h3 className="order-1 text-display-s-medium text-text-main lg:col-span-3 lg:pr-12">
-                {r.label}
-              </h3>
-              <p className="order-2 text-body-s-light text-text-secondary md:order-3 md:col-span-2 lg:order-2 lg:col-span-6 lg:pr-28">
-                {r.body}
-              </p>
-              <span className="order-3 text-display-xs-medium text-text-main md:order-2 lg:order-3 lg:col-span-3 lg:text-right">
-                {r.price}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <RateTable rows={RECURRENTS.map((r) => ({ name: r.label, body: r.body, price: r.price }))} />
       </Reveal>
     </section>
   );
@@ -277,16 +235,12 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
 
           {/* Segona porta — pont cap a col·laboració (agències i estudis).
               Al Figma és una card lateral, no una banda sota el CTA. */}
-          <TransitionLink
+          <BridgeDoor
+            eyebrow="Ets una agència o estudi?"
+            line="Treballo integrat al teu equip, com un sènior més."
             href="/colaboracio"
-            className="group flex flex-col gap-6 rounded-card border border-border-default bg-surface-card/30 p-8 transition-colors hover:border-border-strong lg:w-[412px] lg:shrink-0"
-          >
-            <span className="flex flex-col gap-4 text-text-secondary">
-              <span className="text-caption-eyebrow">Ets una agència o estudi?</span>
-              <span className="text-body-xs-light md:text-body-s-light">Treballo integrat al teu equip, com un sènior més.</span>
-            </span>
-            <LinkArrow className="text-caption-eyebrow">Incorpora&apos;m al teu equip</LinkArrow>
-          </TransitionLink>
+            cta="Incorpora’m al teu equip"
+          />
         </div>
       </Reveal>
     </section>
