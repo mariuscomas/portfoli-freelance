@@ -36,6 +36,7 @@ import {
   crossFamilyPacks,
   packAmounts,
   extraCaption,
+  extraHelp,
   calcAudit,
   AUDIT_FOCUSES,
   AUDIT_SIZES,
@@ -1058,7 +1059,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
                           Extres
                         </h3>
                         {AUDIT_EXTRAS.map((e) => (
-                          <ConfigRow key={e.id} label={e.label} caption={`+${e.price} €`}>
+                          <ConfigRow key={e.id} label={e.label} caption={`+${e.price} €`} help={e.help}>
                             <Switch
                               label={e.label}
                               checked={!!auditExtrasOn[e.id]}
@@ -1194,7 +1195,7 @@ function CurtainContent({ product, onClose }: { product: Product; onClose: () =>
 
                   <Accordion title="Extres" level="h3" defaultOpen>
                     {AUDIT_EXTRAS.map((e) => (
-                      <ConfigRow key={e.id} label={e.label} caption={`+${e.price} €`}>
+                      <ConfigRow key={e.id} label={e.label} caption={`+${e.price} €`} help={e.help}>
                         <Switch
                           label={e.label}
                           checked={!!auditExtrasOn[e.id]}
@@ -1533,7 +1534,7 @@ function ExtresSection({
           <ConfigRow
             label={def.label}
             caption={extraCaption(id, product, quote, value)}
-            help={def.help}
+            help={extraHelp(id, product)}
           >
             {def.control === "counter" ? (
               <Stepper label={def.label} value={value} onChange={(v) => onChange(id, v)} />

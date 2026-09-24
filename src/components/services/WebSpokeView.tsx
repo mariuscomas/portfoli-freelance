@@ -13,14 +13,16 @@ import { ServicesHeroCta } from "@/components/services/ServicesViews";
 import {
   calcConfiguration,
   CONFIG_EXTRAS,
+  extraHelp,
+  extraPricing,
   EXTRA_FAMILIES,
   PRICING_V2_ENABLED,
   RECURRENTS,
   PROCESS_STEPS,
   PRODUCT_CALL_URL,
   DISCIPLINE_ORDER,
-  type ConfigExtraDef,
   type ConfigExtraId,
+  type ConfigProduct,
   type Discipline,
   type ExtraContext,
   type Product,
@@ -35,33 +37,41 @@ const formatPrice = (n: number) =>
 /** Preu "des de" d'una disciplina solta. Ho resol calcConfiguration: el
  *  tancament val diferent amb Dev (posada en producció) i sense (lliurament),
  *  i sumar-ho a mà aquí tornaria a divergir del configurador. */
-const disciplinePriceFrom = (d: Discipline) =>
-  calcConfiguration({ product: "web", disciplines: [d] }).baseTotal;
+const disciplinePriceFrom = (d: Discipline, product: ConfigProduct = "web") =>
+  calcConfiguration({ product, disciplines: [d] }).baseTotal;
 
 /* Catàleg d'extres del spoke (Figma: 03 · Extres, tres famílies). Surt de
    CONFIG_EXTRAS, el mateix catàleg del configurador: cap llista a mà. Per
-   ensenyar-los tots es resol cada `when` amb la web completa i tots els
-   extres actius (el blog i la formació depenen del CMS). */
-const WEB_CATALOG_CTX: ExtraContext = {
-  product: "web",
-  has: new Set(DISCIPLINE_ORDER),
-  actius: new Set(Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]),
+   ensenyar-los tots es resol cada `when` amb el projecte complet, en dues
+   passades com el configurador: primer amb tots els extres actius, després
+   només amb els que han sobreviscut. Així a la web surten el blog i la
+   formació (depenen del CMS), i a la landing, que no té CMS, no. */
+const catalogIds = (product: ConfigProduct): ConfigExtraId[] => {
+  const all = (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]).filter(
+    (id) => !CONFIG_EXTRAS[id].v2Only || PRICING_V2_ENABLED,
+  );
+  const pass = (actius: Set<ConfigExtraId>) => {
+    const ctx: ExtraContext = { product, has: new Set(DISCIPLINE_ORDER), actius };
+    return all.filter((id) => CONFIG_EXTRAS[id].when?.(ctx) ?? true);
+  };
+  return pass(new Set(pass(new Set(all))));
 };
 
-const WEB_EXTRA_GROUPS = EXTRA_FAMILIES.map((f) => ({
-  ...f,
-  ids: (Object.keys(CONFIG_EXTRAS) as ConfigExtraId[]).filter((id) => {
-    const def = CONFIG_EXTRAS[id];
-    if (def.family !== f.id) return false;
-    if (def.v2Only && !PRICING_V2_ENABLED) return false;
-    return def.when ? def.when(WEB_CATALOG_CTX) : true;
-  }),
-})).filter((g) => g.ids.length > 0);
+const extraGroups = (product: ConfigProduct) => {
+  const ids = catalogIds(product);
+  return EXTRA_FAMILIES.map((f) => ({
+    ...f,
+    ids: ids.filter((id) => CONFIG_EXTRAS[id].family === f.id),
+  })).filter((g) => g.ids.length > 0);
+};
 
-/** «200 € · PER PÀGINA», «250 € · PER INTEGRACIÓ» o «400 €». */
-const extraPriceLabel = (def: ConfigExtraDef) => {
-  const unit = def.basis === "perPage" ? "PÀGINA" : def.basis === "perUnit" ? def.unitLabel : null;
-  return unit ? `${formatPrice(def.price)} · PER ${unit}` : formatPrice(def.price);
+/** «200 € · PER PÀGINA», «250 € · PER INTEGRACIÓ» o «400 €». Preu i base
+ *  del producte (la redacció d'una landing és un preu tancat). */
+const extraPriceLabel = (id: ConfigExtraId, product: ConfigProduct) => {
+  const def = CONFIG_EXTRAS[id];
+  const { price, basis } = extraPricing(id, product);
+  const unit = basis === "perPage" ? "PÀGINA" : basis === "perUnit" ? def.unitLabel : null;
+  return unit ? `${formatPrice(price)} · PER ${unit}` : formatPrice(price);
 };
 
 /* Imatge de «04 · Com treballo» (Figma: image 8 de 12343:100364). Si un dia
@@ -138,28 +148,52 @@ function Reveal({ children, className }: { children: React.ReactNode; className?
 // 12353:108840, mòbil dins 12343:100437). Desktop: text a l'esquerra i una
 // columna de 360 amb el preu; iPad: el preu i els enllaços en fila sota el
 // text; mòbil: tot apilat.
+//
+// Compartit amb /serveis/landing (Figma: Serveis - Detall Landing v2, 24set26):
+// la mateixa estructura, amb el copy i el producte del configurador per props.
 
 type Scope = "tot" | Discipline;
 
-function WebHero({
+export interface SpokeHeroCopy {
+  eyebrow: string;
+  title: string;
+  description: string;
+  /** Label del CTA amb el configurador obert («Configura la teva web»). */
+  ctaLabel: string;
+}
+
+const WEB_HERO_COPY: SpokeHeroCopy = {
+  eyebrow: "SERVEIS · WEB A MIDA",
+  title: "La teva web, dissenyada i desenvolupada de principi a fi.",
+  description:
+    "Un sol interlocutor per a tot el procés: estratègia, disseny UX/UI i desenvolupament fins a producció. Preu tancat, sense sorpreses.",
+  ctaLabel: "Configura la teva web",
+};
+
+export function ProductSpokeHero({
   product,
+  configProduct,
+  copy,
   onConfigure,
   onContact,
 }: {
   product: Product;
+  configProduct: ConfigProduct;
+  copy: SpokeHeroCopy;
   onConfigure: () => void;
   onContact: () => void;
 }) {
   const [scope, setScope] = useState<Scope>("tot");
-  const phaseFloor = Math.min(...DISCIPLINE_ORDER.map(disciplinePriceFrom));
-  const price = scope === "tot" ? product.price : disciplinePriceFrom(scope);
+  const priceFrom = (d: Discipline) => disciplinePriceFrom(d, configProduct);
+  const phaseFloor = Math.min(...DISCIPLINE_ORDER.map(priceFrom));
+  const price = scope === "tot" ? product.price : priceFrom(scope);
   // La nota ensenya l'altra opció: el terra per fases amb el projecte
   // complet triat, i el complet quan es mira una fase.
   const note =
     scope === "tot"
       ? `o per fases, des de ${formatPrice(phaseFloor)}`
       : `o el projecte complet, ${formatPrice(product.price)}`;
-  const ctaLabel = CONFIGURATOR_ENABLED ? "Configura la teva web" : "Demana pressupost";
+  const ctaLabel = CONFIGURATOR_ENABLED ? copy.ctaLabel : "Demana pressupost";
   const arrow = (
     <ArrowRight size={20} weight="regular" className="shrink-0 transition-transform group-hover:translate-x-1" aria-hidden />
   );
@@ -168,14 +202,13 @@ function WebHero({
     <section className="flex flex-col gap-16 bg-surface-base px-page pt-[calc(var(--header-h)+var(--spacing-section-s))] pb-section-s xl:flex-row xl:gap-0 xl:p-0">
       <Reveal className="flex flex-col gap-12 xl:flex-1 xl:px-page xl:py-section-xl">
         <div className="flex flex-col gap-8">
-          <span className="text-caption uppercase text-text-secondary">SERVEIS · WEB A MIDA</span>
+          <span className="text-caption uppercase text-text-secondary">{copy.eyebrow}</span>
           <div className="flex flex-col gap-6">
             <h1 className="text-display-m md:text-display-xl xl:text-display-2xl text-text-main text-balance">
-              La teva web, dissenyada i desenvolupada de principi a fi.
+              {copy.title}
             </h1>
             <p className="max-w-5xl text-body-m md:text-body-xl xl:text-body-2xl text-text-secondary">
-              Un sol interlocutor per a tot el procés: estratègia, disseny UX/UI i desenvolupament fins a
-              producció. Preu tancat, sense sorpreses.
+              {copy.description}
             </p>
           </div>
         </div>
@@ -223,7 +256,15 @@ function WebHero({
 
 // ————————————————————————————————— 01 · Què inclou
 
-function IncludesSection({ includes }: { includes: string[] }) {
+export function IncludesSection({
+  includes,
+  title = "Tot el que entra a la base",
+  description = "El punt de partida de qualsevol web a mida. El que no hi surt, o no cal, o és un extra.",
+}: {
+  includes: string[];
+  title?: string;
+  description?: string;
+}) {
   // Figma: Què inclou — Web. Desktop: capçal a 1/3 i graella de 2 columnes a
   // 2/3; iPad i mòbil: llista d'una columna sota el capçal.
   return (
@@ -235,11 +276,11 @@ function IncludesSection({ includes }: { includes: string[] }) {
         <div className="flex flex-col gap-8">
           <span className="text-caption uppercase text-text-secondary">01 · QUÈ INCLOU</span>
           <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l-medium text-text-main">
-            Tot el que entra a la base
+            {title}
           </h2>
         </div>
         <p className="text-body-s md:max-w-xl md:text-body-l xl:text-body-s-light text-text-secondary">
-          El punt de partida de qualsevol web a mida. El que no hi surt, o no cal, o és un extra.
+          {description}
         </p>
       </Reveal>
       {/* Filets dashed: entre files a dalt; a desktop, la línia vertical entre
@@ -316,9 +357,11 @@ function FocusSection() {
 
 // ————————————————————————————————— 03 · Extres
 
-function ExtrasSection() {
-  // Figma: 03 · Extres (desktop 12343:100332). Els 13 extres del catàleg v2
-  // agrupats per les tres famílies del configurador, amb preu a cada card.
+export function ExtrasSection({ product = "web" }: { product?: ConfigProduct }) {
+  // Figma: 03 · Extres (desktop 12343:100332; landing 12477-20382). Els
+  // extres del catàleg v2 que el producte ofereix, agrupats per les tres
+  // famílies del configurador, amb preu i ajuda del producte a cada card.
+  const groups = extraGroups(product);
   return (
     <section className="border-t border-border-default bg-surface-base xl:grid xl:grid-cols-3">
       <Reveal className="flex flex-col gap-8 px-page py-section-xs md:border-b md:dash-h-border-default md:py-section-s xl:border-b-0 xl:border-r xl:dash-v-border-default xl:pt-section-xl xl:pb-section-m">
@@ -334,7 +377,7 @@ function ExtrasSection() {
         </div>
       </Reveal>
       <div className="xl:col-span-2">
-        {WEB_EXTRA_GROUPS.map((group) => (
+        {groups.map((group) => (
           <Reveal key={group.id}>
             <h3 className="px-page pt-10 pb-4 text-caption uppercase text-text-secondary md:pb-6 xl:px-12">
               {group.label}
@@ -342,16 +385,17 @@ function ExtrasSection() {
             <ul className="md:grid md:grid-cols-2 md:px-page xl:grid-cols-3 xl:px-12">
               {group.ids.map((id) => {
                 const def = CONFIG_EXTRAS[id];
+                const help = extraHelp(id, product);
                 return (
                   <li
                     key={id}
                     className="flex flex-col gap-2 border-t dash-h-border-default px-page py-6 md:gap-4 md:border-t-0 md:p-12"
                   >
                     <span className="text-body-l text-text-main">{def.label}</span>
-                    {def.help && (
-                      <span className="text-body-xs xl:text-body-s-light text-text-secondary">{def.help}</span>
+                    {help && (
+                      <span className="text-body-xs xl:text-body-s-light text-text-secondary">{help}</span>
                     )}
-                    <span className="text-caption uppercase text-text-main">{extraPriceLabel(def)}</span>
+                    <span className="text-caption uppercase text-text-main">{extraPriceLabel(id, product)}</span>
                   </li>
                 );
               })}
@@ -588,7 +632,13 @@ export default function WebSpokeView({ product }: { product: Product }) {
 
   return (
     <>
-      <WebHero product={product} onConfigure={openConfigurator} onContact={contact.open} />
+      <ProductSpokeHero
+        product={product}
+        configProduct="web"
+        copy={WEB_HERO_COPY}
+        onConfigure={openConfigurator}
+        onContact={contact.open}
+      />
       <IncludesSection includes={product.includes} />
       <FocusSection />
       <ExtrasSection />

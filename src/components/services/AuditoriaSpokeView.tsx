@@ -284,7 +284,7 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
             className="self-start"
             onClick={onConfigure}
           >
-            {CONFIGURATOR_ENABLED ? "Demana la teva auditoria" : "Demana pressupost"}
+            {CONFIGURATOR_ENABLED ? "Configura la teva auditoria" : "Demana pressupost"}
           </Button>
           <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             O{" "}
@@ -367,7 +367,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
             className="self-start"
             onClick={onConfigure}
           >
-            {CONFIGURATOR_ENABLED ? "Demana la teva auditoria" : "Demana pressupost"}
+            {CONFIGURATOR_ENABLED ? "Configura la teva auditoria" : "Demana pressupost"}
           </Button>
           <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
             O escriu-me directament:{" "}
@@ -420,7 +420,7 @@ export default function AuditoriaSpokeView() {
         scopeNote={`Tots tres focus · un de sol, ${formatPrice(MIN_PRICE)}`}
         scrollCta={{ href: "#que-inclou", label: "Mira què inclou" }}
         showControls
-        ctaLabel="Demana la teva auditoria"
+        ctaLabel="Configura la teva auditoria"
         onCta={openConfigurator}
       />
       <IncludesSection />

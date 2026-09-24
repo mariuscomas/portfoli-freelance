@@ -6,11 +6,10 @@ import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import ProcessSection from "@/components/services/ProcessSection";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
-import SpokeHero from "@/components/services/SpokeHero";
+import { ExtrasSection, IncludesSection, ProductSpokeHero, type SpokeHeroCopy } from "@/components/services/WebSpokeView";
 import Button from "@/components/ui/Button";
 import {
   calcConfiguration,
-  EXTRAS,
   RECURRENTS,
   PRODUCT_CALL_URL,
   DISCIPLINE_ORDER,
@@ -29,8 +28,6 @@ const CONTACT_EMAIL = SITE_EMAIL;
 const formatPrice = (n: number) =>
   `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
 
-const appliesLabel = (appliesTo: string[]) =>
-  appliesTo.map((p) => (p === "web" ? "WEB" : p.toUpperCase())).join(" · ");
 
 /** Preu "des de" d'una disciplina solta. Ho resol calcConfiguration: el
  *  tancament val diferent amb Dev (posada en producció) i sense (lliurament),
@@ -38,7 +35,6 @@ const appliesLabel = (appliesTo: string[]) =>
 const disciplinePriceFrom = (d: Discipline) =>
   calcConfiguration({ product: "landing", disciplines: [d] }).baseTotal;
 
-const LANDING_EXTRAS = EXTRAS.filter((e) => e.appliesTo.includes("landing"));
 
 // Descripcions d'abast (contingut editorial de la pàgina, no de preus).
 const FOCUS_COPY: Record<Discipline, { title: string; description: string }> = {
@@ -52,7 +48,7 @@ const FOCUS_COPY: Record<Discipline, { title: string; description: string }> = {
   },
   dev: {
     title: "Desenvolupament",
-    description: "Codi a mida, responsive, transicions i posada en producció.",
+    description: "Codi a mida, responsive i posada en producció.",
   },
 };
 
@@ -111,34 +107,9 @@ function SectionHeader({ caption, title }: { caption: string; title: string }) {
   );
 }
 
-// ————————————————————————————————— 01 · Què inclou
+// ————————————————————————————————— 01 · Què inclou: IncludesSection de WebSpokeView
 
-function IncludesSection({ includes }: { includes: string[] }) {
-  return (
-    <section id="que-inclou" className={`${SECTION_PX} pt-20 pb-20 bg-surface-base`}>
-      <Reveal>
-        <SectionHeader caption="01 · QUÈ INCLOU" title="Tot el que entra a la base" />
-      </Reveal>
-      <Reveal className="mt-14">
-        <ul>
-          {includes.map((item, i) => (
-            <li
-              key={item}
-              className="flex items-baseline gap-6 border-t border-border-subtle py-5 md:gap-10"
-            >
-              <span className="text-caption uppercase tabular-nums text-text-secondary">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </Reveal>
-    </section>
-  );
-}
-
-// ————————————————————————————————— 02 · Abast (focus)
+// ————————————————————————————————— 02 · Abast
 
 function FocusSection() {
   // Figma: Exploracio · Abast — Disciplines (desktop 12343:100322, iPad
@@ -188,38 +159,7 @@ function FocusSection() {
 
 // ————————————————————————————————— 03 · Extres
 
-function ExtrasSection() {
-  return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
-      <Reveal>
-        <SectionHeader caption="03 · EXTRES" title="Fes-la teva" />
-      </Reveal>
-      <Reveal className="mt-14">
-        <ul>
-          {LANDING_EXTRAS.map((extra) => (
-            <li
-              key={extra.id}
-              className="flex flex-col gap-2 border-b border-border-subtle py-6 md:flex-row md:items-center md:gap-8"
-            >
-              <span className="flex-1 text-body-l lg:text-body-xl text-text-main">{extra.label}</span>
-              <span className="text-caption uppercase text-text-secondary md:w-44">
-                {appliesLabel(extra.appliesTo)}
-              </span>
-              <span className="text-body-l lg:text-body-xl text-text-main md:w-44 md:text-right">
-                {extra.price === null
-                  ? "a pressupostar"
-                  : `+${extra.price} €${extra.unit ? `/${extra.unit}` : ""}`}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-10 text-caption text-text-secondary">
-          Cada extra queda desglossat al pressupost, amb el seu import.
-        </p>
-      </Reveal>
-    </section>
-  );
-}
+// ExtrasSection de WebSpokeView, amb product="landing".
 
 // ————————————————————————————————— Configurador (banda fosca)
 
@@ -342,6 +282,16 @@ function FinalCtaSection({ onConfigure }: { onConfigure: () => void }) {
   );
 }
 
+// Hero v2 (Figma: Serveis - Detall Landing · Hero, 12477-20382 · iPad
+// 12477-20571 · mòbil 12477-20761). Mateix component que /serveis/web.
+const LANDING_HERO_COPY: SpokeHeroCopy = {
+  eyebrow: "SERVEIS · LANDING",
+  title: "Una landing que converteix, dissenyada i desenvolupada de principi a fi.",
+  description:
+    "Una sola pàgina pensada per convertir: missatge, disseny i desenvolupament a mida fins a producció. Preu tancat, sense sorpreses.",
+  ctaLabel: "Configura la teva landing",
+};
+
 export default function LandingSpokeView({ product }: { product: Product }) {
   // Configurador full-screen (cortina). Mantenim el producte seleccionat
   // en tancar perquè l'animació de sortida no es talli. Aquí és sempre "landing".
@@ -358,32 +308,19 @@ export default function LandingSpokeView({ product }: { product: Product }) {
 
   return (
     <>
-      <SpokeHero
-        eyebrow="SERVEIS · LANDING"
-        headline={
-          <>
-            {"Una landing que converteix, "}
-            <br className="hidden lg:block" />
-            {"dissenyada i desenvolupada de principi a fi."}
-          </>
-        }
-        subhead={
-          <>
-            {"Una sola pàgina pensada per convertir: missatge, disseny "}
-            <br className="hidden lg:block" />
-            {"i desenvolupament a mida fins a producció. Preu tancat, sense sorpreses."}
-          </>
-        }
-        price={formatPrice(product.price)}
-        scopeNote="Projecte complet · o per fases (UX · UI · Dev)"
-        scrollCta={{ href: "#que-inclou", label: "Mira què inclou" }}
-        showControls
-        ctaLabel={CONFIGURATOR_ENABLED ? "Configura la teva landing" : "Demana pressupost"}
-        onCta={openConfigurator}
+      <ProductSpokeHero
+        product={product}
+        configProduct="landing"
+        copy={LANDING_HERO_COPY}
+        onConfigure={openConfigurator}
+        onContact={contact.open}
       />
-      <IncludesSection includes={product.includes} />
+      <IncludesSection
+        includes={product.includes}
+        description="El punt de partida de qualsevol landing a mida. El que no hi surt, o no cal, o és un extra."
+      />
       <FocusSection />
-      <ExtrasSection />
+      <ExtrasSection product="landing" />
       <ConfiguratorTeaser onConfigure={openConfigurator} />
       <ProcessSection caption="04 · COM TREBALLO" title="De la idea a producció" reveal={Reveal} />
       <FaqSection />

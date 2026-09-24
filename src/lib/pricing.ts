@@ -210,6 +210,9 @@ const PRICING_V2: Record<ConfigProduct, ProductPricing> = {
     lliurament: 155,
     disciplinePrice: { ux: 175, ui: 175, dev: 210 },
     pagesInclude: "1 pàgina llarga orientada a convertir",
+    // Les legals també són obligatòries en una landing (RGPD). Mateixa línia
+    // i mateixa posició que a web. Decidit 24set26.
+    legalInclude: "Avís legal, privacitat i cookies (no compten com a pàgines)",
     restIncludes: ["Narrativa de conversió per seccions", "1 idioma"],
     devIncludes: ["Formulari o CTA principal", "QA, publicació i mesura bàsica"],
     pageExtra: () => 0,
@@ -306,6 +309,17 @@ export function extraPricing(id: ConfigExtraId, product: ConfigProduct) {
   return { price: over?.price ?? def.price, basis: over?.basis ?? def.basis };
 }
 
+/**
+ * Text d'ajuda efectiu d'un mòdul per a un producte. El catàleg està escrit
+ * pensant en la web; quan un text no és cert per a una landing (una base sense
+ * transicions, una sola pàgina sense sitemap ni blog), el producte en porta un
+ * de propi a `perProduct`. Decidit 24set26.
+ */
+export function extraHelp(id: ConfigExtraId, product: ConfigProduct): string | undefined {
+  const def = CONFIG_EXTRAS[id];
+  return def.perProduct?.[product]?.help ?? def.help;
+}
+
 /** Com es calcula el preu de cada extra:
  *  - counter · perUnit : preu × quantitat (pàgines usen el preu del rol)
  *  - toggle  · flat    : preu fix quan està actiu
@@ -336,7 +350,9 @@ export interface ConfigExtraDef {
    * vuit o deu seccions, o sigui més feina de redacció que una web de tres,
    * i per pàgina sortiria a 80 €. Decidit el 18set26.
    */
-  perProduct?: Partial<Record<ConfigProduct, { price: number; basis: "perUnit" | "flat" | "perPage" }>>;
+  perProduct?: Partial<
+    Record<ConfigProduct, { price?: number; basis?: "perUnit" | "flat" | "perPage"; help?: string }>
+  >;
   /** Família del pas d'extres del configurador. */
   family: ExtraFamily;
   /** Només amb el joc de preus v2 (mòduls del pla modular 2026). */
@@ -363,8 +379,8 @@ export interface ConfigExtraDef {
  */
 export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA", family: "amplia", when: ({ product }) => product === "web", help: `Qualsevol pàgina més enllà de les ${BASE_PAGES} de la base (blog, portfolio, landing de campanya), amb disseny i maquetació responsive a mida.` },
-  idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA", family: "amplia", when: ({ has }) => has.has("dev"), help: "El web en un idioma més, amb selector i maquetació adaptada. La traducció dels textos va a part." },
-  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, family: "capacitats", when: ({ has }) => has.has("dev"), help: "Un pas més enllà de les transicions de la base: animacions d’entrada, efectes al cursor i seqüències que donen caràcter al web." },
+  idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA", perProduct: { landing: { help: "La landing en un idioma més, amb selector i maquetació adaptada. La traducció dels textos va a part." } }, family: "amplia", when: ({ has }) => has.has("dev"), help: "El web en un idioma més, amb selector i maquetació adaptada. La traducció dels textos va a part." },
+  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, perProduct: { landing: { help: "Animacions d’entrada, efectes al cursor i seqüències que donen caràcter a la landing i n’acompanyen la lectura." } }, family: "capacitats", when: ({ has }) => has.has("dev"), help: "Un pas més enllà de les transicions de la base: animacions d’entrada, efectes al cursor i seqüències que donen caràcter al web." },
   cms: { id: "cms", label: "Panell d’edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500, family: "capacitats", when: ({ product, has }) => product === "web" && has.has("dev"), help: "Edita textos i imatges tu mateix des d’un panell senzill, sense tocar codi ni dependre de ningú per a cada canvi." },
   // Sense `when`: els textos són un lliurable independent de les disciplines.
   // Abans demanava UX i deixava fora qui contracta només Dev, que sol ser
@@ -377,11 +393,11 @@ export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   // el contrari del que el client entén quan compra un blog. Decidit 18set26.
   blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, when: ({ product, has, actius }) => product === "web" && has.has("dev") && actius.has("cms"), help: "Secció d’entrades o de productes amb llistat, fitxa i filtres, sobre el panell d’edició. El disseny de la fitxa entra al preu; els continguts els publiques tu." },
   areaPrivada: { id: "areaPrivada", label: "Àrea privada", control: "toggle", basis: "flat", price: 500, family: "amplia", v2Only: true, when: ({ product, has }) => product === "web" && has.has("dev"), help: "Zona amb accés per usuari i contrasenya per al que no ha de ser públic: tarifes, documents o material reservat a clients." },
-  integracio: { id: "integracio", label: "Integracions externes", control: "counter", basis: "perUnit", price: 250, unitLabel: "INTEGRACIÓ", family: "capacitats", v2Only: true, when: ({ has }) => has.has("dev"), help: "Connecto el web amb una eina que ja fas servir (CRM, reserves, facturació, newsletter). El preu és per integració." },
-  seo: { id: "seo", label: "SEO tècnic", control: "toggle", basis: "flat", price: 300, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "La feina que fa que els cercadors entenguin el web: metadades, dades estructurades, sitemap i velocitat. No inclou continguts ni campanyes." },
+  integracio: { id: "integracio", label: "Integracions externes", control: "counter", basis: "perUnit", price: 250, unitLabel: "INTEGRACIÓ", perProduct: { landing: { help: "Connecto la landing amb una eina que ja fas servir (CRM, reserves, facturació, newsletter). El preu és per integració." } }, family: "capacitats", v2Only: true, when: ({ has }) => has.has("dev"), help: "Connecto el web amb una eina que ja fas servir (CRM, reserves, facturació, newsletter). El preu és per integració." },
+  seo: { id: "seo", label: "SEO tècnic", control: "toggle", basis: "flat", price: 300, perProduct: { landing: { help: "La feina que fa que els cercadors entenguin la landing: metadades, dades estructurades i velocitat. No inclou continguts ni campanyes." } }, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "La feina que fa que els cercadors entenguin el web: metadades, dades estructurades, sitemap i velocitat. No inclou continguts ni campanyes." },
   analitica: { id: "analitica", label: "Analítica i conversió", control: "toggle", basis: "flat", price: 250, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "Instal·lo la mesura i els esdeveniments que importen (formularis, trucades, clics clau), amb consentiment de cookies i un panell per llegir-ho." },
   accessibilitat: { id: "accessibilitat", label: "Accessibilitat WCAG 2.2 AA", control: "toggle", basis: "flat", price: 350, family: "rendiment", v2Only: true, when: ({ has }) => has.has("ui") || has.has("dev"), help: "Reviso i corregeixo fins a complir la norma: contrast, navegació amb teclat, lectors de pantalla i formularis ben etiquetats." },
-  migracio: { id: "migracio", label: "Migració de continguts", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "Passo els continguts de la web actual a la nova: textos, imatges i enllaços de les pàgines del projecte. Un blog o catàleg amb històric el pressuposto a part." },
+  migracio: { id: "migracio", label: "Migració de continguts", control: "toggle", basis: "flat", price: 150, perProduct: { landing: { help: "Passo els continguts de la pàgina actual a la nova: textos, imatges i enllaços." } }, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "Passo els continguts de la web actual a la nova: textos, imatges i enllaços de les pàgines del projecte. Un blog o catàleg amb històric el pressuposto a part." },
   // Sense CMS no hi ha res a ensenyar a fer servir.
   formacio: { id: "formacio", label: "Formació i manual del CMS", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ actius }) => actius.has("cms"), help: "Sessió d’una hora, gravada, i un manual curt perquè el teu equip publiqui sense dependre de ningú." },
 };
@@ -648,16 +664,19 @@ export interface AuditExtraDef {
   id: string;
   label: string;
   price: number;
+  /** Què compra l'extra, en una frase. Copy validat al Figma el 24set26
+   *  (Serveis - Detall Auditoria v2); el mateix text a la card i al toggletip. */
+  help: string;
 }
 
 export const AUDIT_EXTRAS: AuditExtraDef[] = [
-  { id: "test", label: "Test amb usuaris (5 participants)", price: 500 },
-  { id: "a11y", label: "Auditoria d'accessibilitat WCAG 2.2 AA", price: 350 },
-  { id: "benchmark", label: "Benchmark competitiu", price: 250 },
-  { id: "analitica", label: "Analítica i comportament real", price: 250 },
-  { id: "conversio", label: "Anàlisi de conversió", price: 250 },
-  { id: "uxwriting", label: "Revisió de UX writing / microcopy", price: 200 },
-  { id: "figma", label: "Recomanacions navegables a Figma", price: 300 },
+  { id: "test", label: "Test amb usuaris (5 participants)", price: 500, help: "Cinc persones del teu públic fan les tasques clau mentre les observo. Confirma amb comportament real el que la revisió detecta." },
+  { id: "a11y", label: "Auditoria d’accessibilitat WCAG 2.2 AA", price: 350, help: "Revisió criteri a criteri de la norma: contrast, teclat, lectors de pantalla i formularis, amb el nivell de compliment de cada punt." },
+  { id: "benchmark", label: "Benchmark competitiu", price: 250, help: "Comparo els teus fluxos clau amb els de competidors directes: què resolen millor i on tens avantatge." },
+  { id: "analitica", label: "Analítica i comportament real", price: 250, help: "Llegeixo les dades que ja tens (analítica, mapes de calor o gravacions) per veure on abandonen els usuaris." },
+  { id: "conversio", label: "Anàlisi de conversió", price: 250, help: "Reviso l’embut sencer, del primer clic al formulari o la compra, i marco on es perden les conversions i per què." },
+  { id: "uxwriting", label: "Revisió de UX writing / microcopy", price: 200, help: "Reviso els textos de la interfície (botons, errors, estats buits i formularis) perquè diguin el que cal." },
+  { id: "figma", label: "Recomanacions navegables a Figma", price: 300, help: "Les recomanacions principals dibuixades a Figma, no només descrites: veus com quedaria cada canvi abans de fer-lo." },
 ];
 
 /** Sempre inclòs, sigui quin sigui el focus. */
@@ -733,6 +752,12 @@ const fullScopeTotal = (product: ConfigProduct) =>
 
 export const BASE_WEB = fullScopeTotal("web");
 export const BASE_LANDING = fullScopeTotal("landing");
+
+/** «Què inclou» de l'abast complet, tal com el compon el càlcul. És la llista
+ *  que ensenya el Figma v2 del spoke; derivar-la evita una segona llista a mà
+ *  que se'n desfasi (24set26). */
+const fullScopeIncludes = (product: ConfigProduct) =>
+  calcConfiguration({ product, disciplines: [...DISCIPLINE_ORDER] }).includes;
 export const PRICE_AUDIT = 900;
 
 export type ProductId = "web" | "landing" | "auditoria";
@@ -781,17 +806,7 @@ export const PRODUCTS: Product[] = [
     // 1.990 € al costat de "5 pàgines" (la trampa del 18set26).
     description: `Web corporativa a mida, de ${BASE_PAGES} pàgines a tot el que necessitis: disseny, desenvolupament i publicació.`,
     cta: "Mira el detall",
-    includes: [
-      PRICING_V2_ENABLED
-        ? "3 pàgines: inici, serveis i contacte"
-        : "5 pàgines: inici, qui som, serveis, contacte i legals",
-      "Avís legal, privacitat i cookies incloses, que no compten com a pàgina",
-      "Disseny UX/UI i desenvolupament a mida, responsive (Mobile First)",
-      "1 idioma",
-      "Transicions lleugeres",
-      "Formulari de contacte",
-      "QA, producció i acompanyament al llançament",
-    ],
+    includes: fullScopeIncludes("web"),
   },
   {
     id: "landing",
@@ -801,14 +816,7 @@ export const PRODUCTS: Product[] = [
     description:
       "Una sola pàgina orientada a convertir: disseny i desenvolupament a mida, formulari i publicació.",
     cta: "Mira el detall",
-    includes: [
-      "1 pàgina llarga orientada a convertir",
-      "Disseny i desenvolupament a mida, responsive",
-      "1 idioma",
-      "Narrativa de conversió per seccions",
-      "Formulari o CTA principal",
-      "QA, publicació i mesura bàsica",
-    ],
+    includes: fullScopeIncludes("landing"),
   },
   {
     id: "auditoria",
