@@ -4,6 +4,7 @@ import { useState, useId, useEffect, useRef, type ReactNode } from "react";
 import { useReducedMotion, motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, ArrowUpRight, Check, CaretDown, CaretUp } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
+import ConfirmationSpotlight from "@/components/services/ConfirmationSpotlight";
 import TransitionLink from "@/components/common/TransitionLink";
 import { submitQuote } from "@/app/actions/quotes";
 import type { Json } from "@/types/database";
@@ -13,6 +14,7 @@ import {
   COLLAB_TIERS,
   COLLAB_CALENDAR_URL,
   type CollabModality,
+  type CollabQuote,
   RESPONSE_SLA,
 } from "@/lib/pricing";
 import {
@@ -23,6 +25,7 @@ import {
   ChipGroup,
   Field,
   Sheet,
+  SummaryGroup,
   formatEuro,
   useMediaQuery,
   type RadioOption,
@@ -50,8 +53,22 @@ const STEP_LABEL: Record<Phase, string | null> = {
   sent: null,
 };
 
-const CONDITIONS =
-  "Condicions: facturació mensual 15–30 dies · sense IVA · renovació manté tarifa · 30 €/h és el terra";
+/** Condicions en taula, mestre Figma `Nota · No inclòs` (12523-24142) reutilitzat (24set26). */
+const CONDITIONS: { label: string; value: string }[] = [
+  { label: "Facturació mensual", value: "15–30 dies" },
+  { label: "Renovació", value: "mateixa tarifa" },
+  { label: "Tarifa mínima", value: "30 €/h" },
+];
+
+/** Graella de desktop com la web v2: 3 columnes iguals, enganxades, amb filets i
+ *  sostre de 1728 (Figma 12537-16892 / 12537-16993, 24set26). A <1024, una columna. */
+const GRID =
+  "mx-auto grid w-full max-w-[1728px] grid-cols-1 gap-10 py-6 md:py-10 lg:min-h-full lg:grid-cols-3 lg:gap-0 lg:py-0";
+/** Columna de desktop: padding 48 a tots els costats. */
+const COL = "lg:p-12";
+
+/** Titular de columna a desktop: mateixa escala que el Resum (Figma 12537-16892). */
+const COL_TITLE = "text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main";
 
 const START_OPTIONS = ["Aquest mes", "1–3 mesos", "Estic explorant"];
 const DURATION_OPTIONS = ["Puntual", "Unes setmanes", "Uns mesos", "3+ mesos"];
@@ -106,20 +123,18 @@ function CollabContent({
     setPhaseState(p);
     onPhase(p);
   };
+  const [sentInfo, setSentInfo] = useState<{ email: string; ref: string | null }>({ email: "", ref: null });
   const [modality, setModality] = useState<CollabModality>("mes");
   const [partial, setPartial] = useState(false);
   const [urgent, setUrgent] = useState(false);
 
-  const quote = calcCollab({ modality, partial, urgent });
+  const partialBlocked = modality === COLLAB_TIERS[0].id;
+  const partialCaptionId = useId();
+  const quote = calcCollab({ modality, partial: partial && !partialBlocked, urgent });
   const rateLabel = formatRate(quote);
-  const equivalentLabel = quote.equivalent
-    ? `~${formatEuro(quote.equivalent)}/${quote.equivalentUnit}`
-    : "mín. 4 h";
-
-  // Desglòs del full inferior (<1024). Figma: Sheet a 12538-17173 / 12538-25818.
-  const breakdown = (
-    <CollabBreakdown rateLabel={rateLabel} equivalentLabel={equivalentLabel} modifiers={quote.modifiers} />
-  );
+  // Resum: columna de desktop i full inferior (<1024) amb el mateix contingut.
+  // Figma: mestre `Configurador · Resum` a 12537-16892 i Sheet a 12538-17173.
+  const breakdown = <CollabResum quote={quote} partial={partial && !partialBlocked} urgent={urgent} showTotal={!isMobile} />;
 
   const phaseTransition = { duration: reduce ? 0 : 0.35, ease: [0.16, 1, 0.3, 1] as const };
 
@@ -148,8 +163,8 @@ function CollabContent({
           transition={phaseTransition}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:px-24">
-            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_336px] lg:gap-12">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:px-0">
+            <div className={GRID}>
               {isMobile && (
                 <MobileIntro label={STEP_LABEL.config}>
                   <p className="text-caption text-text-secondary">
@@ -160,11 +175,11 @@ function CollabContent({
               {/* COLUMNA A — Com treballo */}
               <section
                 aria-label="Com treballo"
-                className="flex flex-col lg:border-r lg:border-border-subtle lg:pr-6"
+                className={`flex flex-col ${COL} lg:border-r lg:border-border-subtle`}
               >
-                <div className="border-b border-border-subtle py-5">
+                <div className="border-b border-border-subtle py-5 lg:pt-0">
                   <h3
-                    className="text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
+                    className={`${COL_TITLE} focus:outline-none`}
                     data-autofocus
                     tabIndex={-1}
                   >
@@ -189,9 +204,9 @@ function CollabContent({
               </section>
 
               {/* COLUMNA B — Dedicació + Intensitat/urgència */}
-              <section aria-label="Configuració" className="flex flex-col gap-8">
+              <section aria-label="Configuració" className={`flex flex-col gap-8 ${COL} lg:border-r lg:border-border-subtle`}>
                 {/* Desktop numera les columnes on decideixes (Figma 12537-16892); mòbil manté la pregunta. */}
-                <Accordion title={isMobile ? "Quina dedicació necessites?" : "1. Dedicació"} level="h3" defaultOpen>
+                <Accordion title={isMobile ? "Quina dedicació necessites?" : "1. Dedicació"} level="h3" size="lg" defaultOpen>
                   <RadioList
                     ariaLabel="Quina dedicació necessites?"
                     options={modalityOptions}
@@ -200,12 +215,28 @@ function CollabContent({
                   />
                 </Accordion>
 
-                <Accordion title={isMobile ? "Intensitat i urgència" : "2. Intensitat i urgència"} level="h3" defaultOpen>
+                <Accordion title={isMobile ? "Intensitat i urgència" : "2. Intensitat i urgència"} level="h3" size="lg" defaultOpen>
+                  {/* Ad-hoc ja és el tram més car: la parcial no pot pujar-lo (calcCollab
+                      ignora `partial` al primer tram). Deshabilitat amb el motiu a la
+                      caption, patró M2 del configurador web (24set26, Figma 12555-19034). */}
                   <div className="flex items-center gap-6 border-b border-border-subtle py-4">
-                    <span className="flex-1 text-body-s md:text-body-m lg:text-body-l text-text-main">
-                      Dedicació parcial (&lt;20 h/setmana)
+                    <span className="flex flex-1 flex-col gap-2">
+                      <span className="text-body-s md:text-body-m lg:text-body-l text-text-main">
+                        Dedicació parcial (&lt;20 h/setmana)
+                      </span>
+                      {partialBlocked && (
+                        <span id={partialCaptionId} className="text-caption uppercase text-text-secondary">
+                          Ja és la tarifa més alta
+                        </span>
+                      )}
                     </span>
-                    <Switch label="Dedicació parcial" checked={partial} onChange={setPartial} />
+                    <Switch
+                      label="Dedicació parcial"
+                      checked={partial && !partialBlocked}
+                      onChange={setPartial}
+                      disabled={partialBlocked}
+                      describedBy={partialBlocked ? partialCaptionId : undefined}
+                    />
                   </div>
                   <div className="flex items-center gap-6 border-b border-border-subtle py-4">
                     <span className="flex-1 text-body-s md:text-body-m lg:text-body-l text-text-main">Ho necessites en &lt;48 h?</span>
@@ -215,53 +246,15 @@ function CollabContent({
               </section>
 
               {/* COLUMNA C — Resum (a <1024 viu al full del peu) */}
-              {!isMobile && (
-              <aside
-                aria-label="Resum"
-                className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
-              >
-                <div className="flex flex-col">
-                  <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
-                    Resum
-                  </h3>
-                  <div className="flex items-center gap-6 py-5">
-                    <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Tarifa resultant:</span>
-                    <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums" aria-live="polite">
-                      des de {rateLabel}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-6 border-b border-border-subtle py-3">
-                    <span className="flex-1 text-body-s text-text-main">Segons modalitat</span>
-                    <span className="shrink-0 text-caption text-text-secondary tabular-nums">
-                      {equivalentLabel}
-                    </span>
-                  </div>
-                  {quote.modifiers.length > 0 && (
-                    <Accordion title="Modificadors aplicats" level="h4" defaultOpen>
-                      {quote.modifiers.map((m) => (
-                        <p
-                          key={m}
-                          className="border-b border-border-subtle py-3 text-body-xs-light md:text-body-s-light text-text-secondary"
-                        >
-                          {m}
-                        </p>
-                      ))}
-                    </Accordion>
-                  )}
-                </div>
-                <div className="border-t dash-h-border-subtle pt-6">
-                  <p className="text-caption uppercase text-text-secondary">{CONDITIONS}</p>
-                </div>
-              </aside>
-              )}
+              {!isMobile && <ResumColumn>{breakdown}</ResumColumn>}
             </div>
           </div>
 
           {isMobile ? (
             <CollabMobileFooter rateLabel={rateLabel} breakdown={breakdown} cta="Continua" onCta={() => setPhase("form")} />
           ) : (
-          <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12 lg:px-24">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
+          <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12">
+            <div className="mx-auto flex w-full max-w-[1728px] flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
               <p className="text-caption text-text-secondary">
                 Tarifa orientativa, la tanquem segons abast i durada. O{" "}
                 <a
@@ -310,7 +303,7 @@ function CollabContent({
             rateLabel={rateLabel}
             isMobile={isMobile}
             breakdown={breakdown}
-            selectionBase={{ modality, partial, urgent }}
+            selectionBase={{ modality, partial: partial && !partialBlocked, urgent }}
             pricing={
               {
                 rate: quote.rate,
@@ -321,7 +314,8 @@ function CollabContent({
               } as unknown as Json
             }
             onBack={() => setPhase("config")}
-            onSent={() => {
+            onSent={(info) => {
+              setSentInfo(info);
               setPhase("sent");
               trackEvent(EVENTS.collabSubmit);
             }}
@@ -329,17 +323,18 @@ function CollabContent({
         </motion.div>
       )}
 
+      {/* Confirmació v2, la mateixa de la web (Figma 12557-19152 · 19208 · 19252,
+          25set26): portal a pantalla completa per sobre de la cortina. */}
       {phase === "sent" && (
-        <motion.div
+        <ConfirmationSpotlight
           key="sent"
-          initial={{ opacity: 0, y: reduce ? 0 : 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: reduce ? 0 : -12 }}
-          transition={phaseTransition}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:px-24"
-        >
-          <CollabConfirmation onClose={onClose} />
-        </motion.div>
+          email={sentInfo.email}
+          reference={sentInfo.ref}
+          callUrl={COLLAB_CALENDAR_URL}
+          worksHref="/works"
+          promise="amb disponibilitat i una tarifa tancada"
+          onClose={onClose}
+        />
       )}
     </AnimatePresence>
   );
@@ -362,7 +357,7 @@ function CollabForm({
   selectionBase: { modality: CollabModality; partial: boolean; urgent: boolean };
   pricing: Json;
   onBack: () => void;
-  onSent: () => void;
+  onSent: (info: { email: string; ref: string | null }) => void;
 }) {
   const [start, setStart] = useState<string | null>(null);
   const [duration, setDuration] = useState<string | null>(null);
@@ -405,14 +400,14 @@ function CollabForm({
       rateLabel,
     });
     setSubmitting(false);
-    if (res.status === "ok") onSent();
+    if (res.status === "ok") onSent({ email, ref: res.ref });
     else setError(res.message);
   };
 
   const encarrec = (
-          <section aria-label="El teu encàrrec" className="flex flex-col gap-6 lg:border-r lg:border-border-subtle lg:pr-6">
+          <section aria-label="El teu encàrrec" className={`flex flex-col gap-6 ${COL} lg:border-r lg:border-border-subtle`}>
             <h3
-              className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
+              className={`border-b border-border-subtle py-5 lg:pt-0 ${COL_TITLE} focus:outline-none`}
               data-autofocus={isMobile ? undefined : true}
               tabIndex={-1}
             >
@@ -454,17 +449,17 @@ function CollabForm({
   const dades = (
           <section
             aria-label="Les teves dades"
-            className="flex flex-col gap-8"
+            className={`flex flex-col gap-8 ${COL} lg:border-r lg:border-border-subtle`}
           >
             <h3
-              className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main focus:outline-none"
+              className={`border-b border-border-subtle py-5 lg:pt-0 ${COL_TITLE} focus:outline-none`}
               data-autofocus={isMobile ? true : undefined}
               tabIndex={-1}
             >
               {isMobile ? "Les teves dades" : "4. Les teves dades"}
             </h3>
             <Field
-              label="Email"
+              label="El teu correu"
               required
               name="email"
               type="email"
@@ -473,7 +468,7 @@ function CollabForm({
               placeholder="tu@agencia.com"
               disabled={submitting}
             />
-            <Field label="Nom" name="name" type="text" autoComplete="name" placeholder="El teu nom" disabled={submitting} />
+            <Field label="El teu nom" name="name" type="text" autoComplete="name" placeholder="Nom i cognom" disabled={submitting} />
             <Field label="Agència" name="agency" type="text" placeholder="Nom de l’agència" disabled={submitting} />
           </section>
   );
@@ -489,8 +484,8 @@ function CollabForm({
         <input type="text" name="website" tabIndex={-1} autoComplete="off" />
       </label>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:px-24">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 py-6 md:py-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_336px] lg:gap-12">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 md:px-12 lg:px-0">
+        <div className={GRID}>
           {isMobile && (
             <MobileIntro
               label={STEP_LABEL.form}
@@ -526,25 +521,7 @@ function CollabForm({
             </>
           )}
           {/* COLUMNA C — Resum (a <1024 viu al full del peu) */}
-          {!isMobile && (
-          <aside
-            aria-label="Resum"
-            className="flex flex-col gap-6 lg:border-l lg:border-border-subtle lg:pl-6"
-          >
-            <div className="flex flex-col">
-              <h3 className="border-b border-border-subtle py-5 text-display-2xs-medium lg:text-display-xs-medium text-text-main">
-                Resum
-              </h3>
-              <div className="flex items-center gap-6 py-5">
-                <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Tarifa resultant:</span>
-                <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums">des de {rateLabel}</span>
-              </div>
-            </div>
-            <div className="border-t dash-h-border-subtle pt-6">
-              <p className="text-caption uppercase text-text-secondary">{CONDITIONS}</p>
-            </div>
-          </aside>
-          )}
+          {!isMobile && <ResumColumn>{breakdown}</ResumColumn>}
         </div>
       </div>
 
@@ -568,8 +545,8 @@ function CollabForm({
           }
         />
       ) : (
-      <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12 lg:px-24">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
+      <footer className="shrink-0 border-t border-border-subtle bg-surface-base px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-12">
+        <div className="mx-auto flex w-full max-w-[1728px] flex-col gap-4 pt-5 md:flex-row md:items-center md:justify-between md:gap-8">
           <p className="text-caption text-text-secondary">
             Tarifa orientativa, la tanquem segons abast i durada.
           </p>
@@ -732,41 +709,84 @@ function MobileIntro({
   );
 }
 
-/** Contingut del full «Resum»: mateixes files que la columna Resum de desktop. */
-function CollabBreakdown({
-  rateLabel,
-  equivalentLabel,
-  modifiers,
-}: {
-  rateLabel: string;
-  equivalentLabel: string;
-  modifiers: string[];
-}) {
+/** Columna Resum de desktop (mestre Figma `Configurador · Resum`). */
+function ResumColumn({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center gap-6 border-b border-border-subtle pb-5">
-        <span className="flex-1 text-display-2xs-medium text-text-main">Tarifa resultant:</span>
-        <span className="text-display-2xs-medium md:text-display-xs-medium text-text-main tabular-nums">
-          des de {rateLabel}
-        </span>
-      </div>
-      <div className="flex items-center gap-6 border-b dash-h-border-subtle py-3">
-        <span className="flex-1 text-body-s text-text-main">Segons modalitat</span>
-        <span className="shrink-0 text-caption text-text-secondary tabular-nums">{equivalentLabel}</span>
-      </div>
-      {modifiers.length > 0 && (
-        <Accordion title="Modificadors aplicats" level="h4" defaultOpen>
-          {modifiers.map((m) => (
-            <p
-              key={m}
-              className="border-b dash-h-border-subtle py-3 text-body-xs-light md:text-body-s-light text-text-secondary"
+    <aside aria-label="Resum" className={`flex flex-col gap-6 ${COL}`}>
+      <h3 className={COL_TITLE}>Resum</h3>
+      {children}
+    </aside>
+  );
+}
+
+/**
+ * Contingut del Resum, compartit per la columna de desktop i pel full de <1024.
+ * Modalitat (tarifa del tram + equivalent) · Modificadors (què l'ha mogut) ·
+ * Tarifa resultant · Condicions en taula. Al full no hi ha la fila de tarifa:
+ * ja és al peu.
+ */
+function CollabResum({
+  quote,
+  partial,
+  urgent,
+  showTotal,
+}: {
+  quote: CollabQuote;
+  partial: boolean;
+  urgent: boolean;
+  showTotal: boolean;
+}) {
+  const { tier } = quote;
+  const tierIdx = COLLAB_TIERS.findIndex((t) => t.id === tier.id);
+  const upper = partial && tierIdx > 0 ? COLLAB_TIERS[tierIdx - 1] : null;
+  const modifierLines = [
+    upper ? { label: "Dedicació parcial (tram superior)", amount: `${upper.rate} €/h` } : null,
+    urgent ? { label: "Urgència < 48 h", amount: "+10%" } : null,
+  ].filter((l): l is { label: string; amount: string } => l !== null);
+  const delta = quote.rate - tier.rate;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col">
+        <SummaryGroup
+          title={tier.label}
+          amount={formatRate({ rate: tier.rate, rateMax: tier.rateMax ?? tier.rate })}
+          lines={[
+            quote.equivalent
+              ? { label: `Equivalent a ${tier.refHours} h`, amount: `~${formatEuro(quote.equivalent)}/${quote.equivalentUnit}` }
+              : { label: "Mínim facturable", amount: "4 h" },
+          ]}
+        />
+        {modifierLines.length > 0 && (
+          <SummaryGroup title="Modificadors" amount={`+${delta} €/h`} lines={modifierLines} />
+        )}
+        {showTotal && (
+          <div className="flex items-center gap-6 py-5">
+            <span className="flex-1 text-display-2xs-medium lg:text-display-xs-medium text-text-main">Tarifa</span>
+            <span
+              className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main tabular-nums"
+              aria-live="polite"
             >
-              {m}
-            </p>
+              des de {formatRate(quote)}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-3 border-t dash-h-border-subtle pt-6">
+        <p className="text-caption text-text-secondary">Condicions</p>
+        <dl className="flex flex-col">
+          {CONDITIONS.map((c) => (
+            <div
+              key={c.label}
+              className="flex items-baseline justify-between gap-4 border-b border-dashed border-border-subtle py-2"
+            >
+              <dt className="text-body-2xs md:text-body-xs text-text-secondary">{c.label}</dt>
+              <dd className="shrink-0 whitespace-nowrap text-caption text-text-main tabular-nums">{c.value}</dd>
+            </div>
           ))}
-        </Accordion>
-      )}
-      <p className="pt-6 text-caption uppercase text-text-secondary">{CONDITIONS}</p>
+        </dl>
+        <p className="text-body-2xs md:text-body-xs text-text-secondary">Preus sense IVA</p>
+      </div>
     </div>
   );
 }

@@ -145,6 +145,14 @@ function Reveal({ children, className }: { children: React.ReactNode; className?
   );
 }
 
+// Stagger de les cards d'Abast: un sol moviment (y) amb el fade, 70 ms entre
+// cards. Mateixos valors que Reveal perquè el gest sigui el mateix a tot arreu.
+const STAGGER_GRID = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } } as const;
+const STAGGER_ITEM = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+} as const;
+
 // ————————————————————————————————— Hero
 // Figma: Serveis - Detall Web · Hero — Web (desktop 12343:100280, iPad
 // 12353:108840, mòbil dins 12343:100437). Desktop: text a l'esquerra i una
@@ -360,6 +368,7 @@ export function FocusSection({
   description?: string;
   cards?: FocusCard[];
 }) {
+  const reduce = useReducedMotion();
   // Figma: Exploracio · Abast — Disciplines (desktop 12343:100322, iPad
   // 12353:109085, mòbil 12353:109451). Mòbil: cards apilades a tot l'ample;
   // md: tres cards en fila a tot l'ample; xl: capçal a 1/3 i cards a 2/3.
@@ -377,12 +386,19 @@ export function FocusSection({
           </p>
         </div>
       </Reveal>
-      <Reveal className="grid grid-cols-1 md:grid-cols-3 xl:col-span-2 xl:gap-6 xl:py-section-m xl:pl-6 xl:pr-page">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-3 xl:col-span-2 xl:gap-6 xl:py-section-m xl:pl-6 xl:pr-page"
+        initial={reduce ? false : "hidden"}
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={STAGGER_GRID}
+      >
         {cards.map((card) => {
           const tint = FOCUS_TINT[card.id];
           return (
-            <article
+            <motion.article
               key={card.id}
+              variants={reduce ? undefined : STAGGER_ITEM}
               className={`flex flex-col gap-8 px-12 py-section-xs md:p-8 xl:aspect-[3/4] ${tint.bg}`}
             >
               <div className="flex flex-1 flex-col gap-4">
@@ -395,10 +411,10 @@ export function FocusSection({
                 <span className={`text-caption uppercase ${tint.secondary}`}>DES DE</span>
                 <span className="text-display-xs-medium text-text-fixed-dark">{formatPrice(card.price)}</span>
               </div>
-            </article>
+            </motion.article>
           );
         })}
-      </Reveal>
+      </motion.div>
     </section>
   );
 }

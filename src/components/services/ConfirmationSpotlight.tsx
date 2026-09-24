@@ -21,12 +21,15 @@ export default function ConfirmationSpotlight({
   reference,
   callUrl,
   worksHref = "/works",
+  promise = "amb un primer abast i una proposta concreta",
   onClose,
 }: {
   email: string;
   reference: string | null;
   callUrl: string;
   worksHref?: string;
+  /** Què rebrà en la resposta. Col·laboració: «amb disponibilitat i una tarifa tancada» (25set26). */
+  promise?: string;
   onClose: () => void;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -224,7 +227,7 @@ export default function ConfirmationSpotlight({
                 <span className="ref">Ref. #{reference}</span> ·{" "}
               </span>
             ) : null}
-            Responc en {RESPONSE_SLA} amb un primer abast i una proposta concreta.
+            Responc en {RESPONSE_SLA} {promise}.
           </p>
           <a
             className="cspot__cta reveal"

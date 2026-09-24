@@ -540,17 +540,25 @@ export function Accordion({
   level = "h3",
   defaultOpen = true,
   indent = false,
+  size,
   children,
 }: {
   title: string;
   level?: "h3" | "h4";
+  /** "lg": titular de columna del configurador (mateixa escala que els H de columna). */
+  size?: "lg";
   defaultOpen?: boolean;
   indent?: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const reduce = useReducedMotion();
-  const headClass = level === "h3" ? "text-display-2xs-medium lg:text-display-xs-medium" : "text-body-s";
+  const headClass =
+    size === "lg"
+      ? "text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium"
+      : level === "h3"
+        ? "text-display-2xs-medium lg:text-display-xs-medium"
+        : "text-body-s";
   return (
     <div className="flex flex-col">
       <button
@@ -648,8 +656,9 @@ export function SummaryGroup({
   defaultOpen = true,
 }: {
   title: string;
-  amount: number;
-  lines: { label: string; amount: number }[];
+  /** Número = euros (formatEuro). Text = ja formatat (p. ex. «35 €/h», configurador de col·laboració). */
+  amount: number | string;
+  lines: { label: string; amount: number | string }[];
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -658,7 +667,7 @@ export function SummaryGroup({
   // un instant (fons surface-card que s'esvaeix). No al muntatge: el primer
   // pintat no és un canvi. Patró d'estat de renders previs, sense efecte.
   const firma = lines.map((l) => `${l.label}=${l.amount}`).join("|");
-  const [prev, setPrev] = useState<{ firma: string; imports: Map<string, number> }>(() => ({
+  const [prev, setPrev] = useState<{ firma: string; imports: Map<string, number | string> }>(() => ({
     firma,
     imports: new Map(lines.map((l) => [l.label, l.amount])),
   }));
@@ -686,7 +695,7 @@ export function SummaryGroup({
           />
         </span>
         <span className="text-caption text-[length:1rem] leading-6 text-text-secondary tabular-nums">
-          {formatEuro(amount)}
+          {typeof amount === "number" ? formatEuro(amount) : amount}
         </span>
       </button>
       <AnimatePresence initial={false}>
@@ -717,7 +726,7 @@ export function SummaryGroup({
                   ) : null}
                   <span className="relative flex-1 text-body-xs-light md:text-body-s-light text-text-secondary">{l.label}</span>
                   <span className="relative text-caption text-text-secondary tabular-nums">
-                    {formatEuro(l.amount)}
+                    {typeof l.amount === "number" ? formatEuro(l.amount) : l.amount}
                   </span>
                 </div>
               ))}
