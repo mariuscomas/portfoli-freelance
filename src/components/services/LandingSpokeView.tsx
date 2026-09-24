@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
+import ProcessSection from "@/components/services/ProcessSection";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
 import { useContactModal } from "@/context/ContactModalContext";
 import SpokeHero from "@/components/services/SpokeHero";
@@ -11,17 +12,18 @@ import {
   calcConfiguration,
   EXTRAS,
   RECURRENTS,
-  PROCESS_STEPS,
-  CONDITIONS,
   PRODUCT_CALL_URL,
   DISCIPLINE_ORDER,
-  DISCIPLINES,
   type Discipline,
   type Product,
 } from "@/lib/pricing";
 import { SITE_EMAIL } from "@/lib/site";
 
-const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
+/* Marge lateral de pàgina. Llegeix la rampa `--page-margin`
+   (402:24 · 768:48 · 1024:72 · 1440:96 · 1920:144), que mana des del
+   21set26. Abans era "px-6 md:px-12 lg:px-16 xl:px-24" escrit a mà,
+   que a lg donava 64 on la rampa en diu 72 i no tenia el graó de 144. */
+const SECTION_PX = "px-page";
 const CONTACT_EMAIL = SITE_EMAIL;
 
 const formatPrice = (n: number) =>
@@ -46,12 +48,20 @@ const FOCUS_COPY: Record<Discipline, { title: string; description: string }> = {
   },
   ui: {
     title: "Disseny UI",
-    description: "Sistema visual, interfície i detall pixel a pixel.",
+    description: "Sistema visual, interfície i detall píxel a píxel.",
   },
   dev: {
     title: "Desenvolupament",
     description: "Codi a mida, responsive, transicions i posada en producció.",
   },
+};
+
+// Superfície de cada card d'Abast (Figma surface/tint/*, fixes als dos modes).
+// Sobre la sorra el text secundari no arriba a 4,5:1, i hi va el text principal.
+const FOCUS_TINT: Record<Discipline, { bg: string; secondary: string }> = {
+  ux: { bg: "bg-surface-tint-mist", secondary: "text-text-fixed-dark-secondary" },
+  ui: { bg: "bg-surface-tint-sand", secondary: "text-text-fixed-dark" },
+  dev: { bg: "bg-surface-tint-pistachio", secondary: "text-text-fixed-dark-secondary" },
 };
 
 const FAQ: { q: string; a: string }[] = [
@@ -131,38 +141,46 @@ function IncludesSection({ includes }: { includes: string[] }) {
 // ————————————————————————————————— 02 · Abast (focus)
 
 function FocusSection() {
+  // Figma: Exploracio · Abast — Disciplines (desktop 12343:100322, iPad
+  // 12353:109085, mòbil 12353:109451). Mòbil: cards apilades a tot l'ample;
+  // md: tres cards en fila a tot l'ample; xl: capçal a 1/3 i cards a 2/3.
   return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
-      <Reveal>
-        <SectionHeader caption="02 · ABAST" title="Tria fins on arribem" />
+    <section className="border-t border-border-default bg-surface-base xl:grid xl:grid-cols-3">
+      <Reveal className="flex flex-col gap-8 px-page py-section-xs md:py-section-s xl:justify-end xl:gap-6 xl:py-section-m">
+        <span className="text-caption uppercase text-text-secondary">02 · ABAST</span>
+        <div className="flex flex-col gap-4 xl:gap-8">
+          <h2 className="text-display-s-medium md:text-display-m-medium xl:text-display-l-medium text-text-main">
+            Tria fins on arribem
+          </h2>
+          <p className="text-body-s md:max-w-xl md:text-body-l xl:max-w-none xl:text-body-s-light text-text-secondary">
+            El projecte sencer o una fase solta. Contracta les tres disciplines, o només la que
+            necessites.
+          </p>
+        </div>
       </Reveal>
-      <Reveal className="mt-8">
-        <p className="max-w-2xl text-body-l lg:text-body-xl text-text-secondary">
-          El projecte sencer o una fase solta. Contracta les tres disciplines de principi a fi, o
-          només la que necessites.
-        </p>
-      </Reveal>
-      <Reveal className="mt-14">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {DISCIPLINE_ORDER.map((d) => (
+      <Reveal className="grid grid-cols-1 md:grid-cols-3 xl:col-span-2 xl:gap-6 xl:py-section-m xl:pl-6 xl:pr-page">
+        {DISCIPLINE_ORDER.map((d) => {
+          const tint = FOCUS_TINT[d];
+          return (
             <article
               key={d}
-              className="flex flex-col gap-4 rounded-card border border-border-subtle bg-surface-card p-8 lg:p-10"
+              className={`flex flex-col gap-8 px-12 py-section-xs md:p-8 xl:aspect-[3/4] ${tint.bg}`}
             >
-              <span className="text-caption uppercase text-text-secondary">
-                {DISCIPLINES[d].shortLabel}
-              </span>
-              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{FOCUS_COPY[d].title}</h3>
-              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{FOCUS_COPY[d].description}</p>
-              <div className="mt-auto flex flex-col gap-1.5 pt-4">
-                <span className="text-caption uppercase text-text-secondary">DES DE</span>
-                <span className="text-body-s-semibold md:text-body-l-semibold lg:text-display-xs text-text-main">
+              <div className="flex flex-1 flex-col gap-4">
+                <h3 className="text-display-2xs-medium xl:text-display-xs-medium text-text-fixed-dark">
+                  {FOCUS_COPY[d].title}
+                </h3>
+                <p className={`text-body-s xl:text-body-l ${tint.secondary}`}>{FOCUS_COPY[d].description}</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className={`text-caption uppercase ${tint.secondary}`}>DES DE</span>
+                <span className="text-display-xs-medium text-text-fixed-dark">
                   {formatPrice(disciplinePriceFrom(d))}
                 </span>
               </div>
             </article>
-          ))}
-        </div>
+          );
+        })}
       </Reveal>
     </section>
   );
@@ -238,36 +256,6 @@ function ConfiguratorTeaser({ onConfigure }: { onConfigure: () => void }) {
             i en parlem.
           </p>
         </div>
-      </Reveal>
-    </section>
-  );
-}
-
-// ————————————————————————————————— 04 · Procés + condicions
-
-function ProcessSection() {
-  return (
-    <section className={`${SECTION_PX} py-20 bg-surface-base border-t border-border-subtle`}>
-      <Reveal>
-        <SectionHeader caption="04 · COM TREBALLEM" title="De la idea a producció" />
-      </Reveal>
-      <Reveal className="mt-14">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {PROCESS_STEPS.map((step) => (
-            <div key={step.num} className="flex flex-col gap-3 border-t border-border-subtle pt-6">
-              <span className="text-caption text-text-secondary">{step.num}</span>
-              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{step.title}</h3>
-              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{step.text}</p>
-            </div>
-          ))}
-        </div>
-        <ul className="mt-12 flex flex-wrap gap-x-8 gap-y-3">
-          {CONDITIONS.map((c) => (
-            <li key={c} className="text-caption uppercase text-text-secondary">
-              {c}
-            </li>
-          ))}
-        </ul>
       </Reveal>
     </section>
   );
@@ -397,7 +385,7 @@ export default function LandingSpokeView({ product }: { product: Product }) {
       <FocusSection />
       <ExtrasSection />
       <ConfiguratorTeaser onConfigure={openConfigurator} />
-      <ProcessSection />
+      <ProcessSection caption="04 · COM TREBALLO" title="De la idea a producció" reveal={Reveal} />
       <FaqSection />
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} />
