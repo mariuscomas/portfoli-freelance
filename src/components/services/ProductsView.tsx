@@ -5,28 +5,29 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import ConfiguratorModal from "@/components/services/ConfiguratorModal";
 import { CONFIGURATOR_ENABLED } from "@/lib/flags";
-import { SITE_EMAIL } from "@/lib/site";
 import { useContactModal } from "@/context/ContactModalContext";
 import TransitionLink from "@/components/common/TransitionLink";
+import { Button } from "@/components/ui/Button";
 import { DisciplineChips } from "@/components/services/configuratorShared";
+import CustomWorkRow from "@/components/services/CustomWorkRow";
+import ProcessSection from "@/components/services/ProcessSection";
+import ProductCard from "@/components/services/ProductCard";
 import {
-  PROCESS_STEPS,
-  CONDITIONS,
   RECURRENTS,
   PRODUCT_CALL_URL,
   DISCIPLINE_ORDER,
   AUDIT_BASE_BY_COUNT,
   calcConfiguration,
-  scopeLabel,
   type Product,
   type ProductId,
   type Discipline,
 } from "@/lib/pricing";
 
-const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
-
-const formatPrice = (n: number) =>
-  `${n.toLocaleString("ca-ES", { maximumFractionDigits: 0 })} €`;
+/* Marge lateral de pàgina. Llegeix la rampa `--page-margin`
+   (402:24 · 768:48 · 1024:72 · 1440:96 · 1920:144), que mana des del
+   21set26. Abans era "px-6 md:px-12 lg:px-16 xl:px-24" escrit a mà,
+   que a lg donava 64 on la rampa en diu 72 i no tenia el graó de 144. */
+const SECTION_PX = "px-page";
 
 function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
   const reduce = useReducedMotion();
@@ -97,45 +98,6 @@ function priceFor(product: Product, disciplines: Discipline[]): number {
   return calcConfiguration({ product: product.id, disciplines }).baseTotal;
 }
 
-function ProductCard({
-  product,
-  disciplines,
-  className = "",
-}: {
-  product: Product;
-  disciplines: Discipline[];
-  className?: string;
-}) {
-  return (
-    <TransitionLink
-      href={`/serveis/${product.id}`}
-      className={`group flex flex-col gap-10 p-8 transition-colors hover:bg-surface-card/40 lg:p-12 ${className}`}
-    >
-      <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">{product.name}</h3>
-
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-3">
-          <span className="text-caption uppercase text-text-secondary">{product.priceLabel}</span>
-          {/* aria-live: el preu reacciona als chips d'abast de la capçalera */}
-          <span className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main" aria-live="polite">
-            {formatPrice(priceFor(product, disciplines))}
-          </span>
-        </div>
-        <div className="flex flex-col gap-3">
-          <span className="text-caption uppercase text-text-secondary">
-            {scopeLabel(disciplines)}
-          </span>
-          <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{product.description}</p>
-        </div>
-      </div>
-
-      <div className="mt-auto pt-2">
-        <LinkArrow>{product.cta}</LinkArrow>
-      </div>
-    </TransitionLink>
-  );
-}
-
 /**
  * Punts de partida — tríada Web · Landing · Auditoria.
  *
@@ -158,9 +120,9 @@ function TriadaSection({
   onToggle: (d: Discipline) => void;
 }) {
   return (
-    <section id="productes" className="scroll-mt-24 border-t border-border-subtle bg-surface-base">
+    <section id="productes" className="scroll-mt-24 border-t border-border-default bg-surface-base">
       <Reveal className={`${SECTION_PX} py-16`}>
-        <SectionHeader caption="SERVEIS · PREUS DES DE" title="Punts de partida" />
+        <SectionHeader caption="SERVEIS" title="Punts de partida" />
       </Reveal>
 
       {/* Fila d'abast — alineada amb el títol, 24 px sobre la línia de les
@@ -176,94 +138,34 @@ function TriadaSection({
         </div>
       </Reveal>
 
-      {/* Columnes a sang separades per filets (Figma), no cards flotants */}
+      {/* Columnes a sang separades per filets dashed (dins de la secció,
+          18set26): a dalt entre files quan s'apilen, a la dreta quan van en
+          columnes. La vora sòlida de sota la posa la fila «a mida». */}
       <Reveal>
-        <div className="grid grid-cols-1 border-y border-border-subtle md:grid-cols-3 lg:px-12">
-          {products.map((p, i) => (
+        <div className="flex flex-col border-t dash-h-border-default divide-y dash-divide-h-border-default xl:flex-row xl:divide-x xl:divide-y-0 xl:dash-divide-v-border-default">
+          {products.map((p) => (
             <ProductCard
               key={p.id}
-              product={p}
-              disciplines={disciplines}
-              className={
-                i === 0
-                  ? "border-b border-border-subtle md:border-b-0"
-                  : i === 1
-                    ? "border-b border-border-subtle md:border-x md:border-b-0"
-                    : ""
-              }
+              name={p.name}
+              description={p.description}
+              priceLabel={p.priceLabel}
+              price={priceFor(p, disciplines)}
+              href={`/serveis/${p.id}`}
+              cta={p.cta}
+              livePrice
             />
           ))}
         </div>
       </Reveal>
 
-      {/* A mida: banda a sang amb filet inferior discontinu — el que el
-          catàleg no cobreix es pressuposta per trucada. */}
-      <Reveal>
-        <div
-          className={`${SECTION_PX} flex flex-col gap-8 border-b dash-h-border-strong py-12 lg:flex-row lg:items-end lg:gap-24 lg:py-24`}
-        >
-          <div className="flex flex-1 flex-col gap-3">
-            <span className="text-caption uppercase text-text-secondary">APPS, BRANDING I MÉS</span>
-            <h3 className="text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium text-text-main">Una altra cosa al cap?</h3>
-            <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
-              El que no encaixa en aquests punts de partida el pressupostem junts després d’una
-              trucada.
-            </p>
-          </div>
-          {/* Dues sortides, com al Figma: trucada per a qui vol parlar, correu
-              per a qui prefereix escriure. No repeteixen substantiu. */}
-          <div className="flex shrink-0 flex-col gap-6 lg:flex-row lg:items-center lg:gap-12">
-            <a
-              href={PRODUCT_CALL_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group"
-            >
-              <LinkArrow>Reserva una trucada</LinkArrow>
-              <span className="sr-only">(s’obre en una pestanya nova)</span>
-            </a>
-            <a href={`mailto:${SITE_EMAIL}`} className="group">
-              <LinkArrow>Escriu-me</LinkArrow>
-            </a>
-          </div>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-// ————————————————————————————————— Procés + condicions
-
-/**
- * Com treballem — banda invertida (Figma: la secció fixa el mode Dark).
- * Els tokens del DS s'inverteixen amb la classe `.dark`, així que embolcallem
- * la secció amb `dark` i el contingut llegeix els mateixos noms de token.
- * `bg-surface-base` dins de `.dark` ja resol al gris fosc del sistema.
- */
-function ProcessSection() {
-  return (
-    <section className={`dark ${SECTION_PX} bg-surface-base py-24 lg:pb-40`}>
-      <Reveal>
-        <SectionHeader caption="EL PROCÉS" title="Com treballo" />
-      </Reveal>
-      <Reveal className="mt-16">
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
-          {PROCESS_STEPS.map((step) => (
-            <div key={step.num} className="flex flex-col gap-4 border-t border-border-subtle pt-6">
-              <span className="text-caption-sm text-text-secondary">{step.num}</span>
-              <h3 className="text-display-2xs-medium lg:text-display-xs-medium text-text-main">{step.title}</h3>
-              <p className="text-body-xs-light md:text-body-s-light text-text-secondary">{step.text}</p>
-            </div>
-          ))}
-        </div>
-        <ul className="mt-16 flex flex-wrap gap-x-8 gap-y-3">
-          {CONDITIONS.map((c) => (
-            <li key={c} className="text-caption uppercase text-text-secondary">
-              {c}
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+      {/* Fila «a mida»: el mateix component que pinta la home (mestre
+          12304:91680). El hub li passa la seva constant de marge, que encara
+          no és la rampa page-margin. */}
+      <CustomWorkRow
+        as={Reveal}
+        padX={SECTION_PX}
+        padInner="lg:p-16 xl:p-24"
+      />
     </section>
   );
 }
@@ -276,22 +178,50 @@ function ProcessSection() {
  */
 function RecurrentsSection() {
   return (
-    <section className={`${SECTION_PX} bg-surface-base py-24 lg:py-32`}>
+    <section className={`${SECTION_PX} border-t border-border-default bg-surface-base py-section-s lg:py-section-m`}>
       <Reveal>
-        <SectionHeader caption="RECURRENTS · SEMPRE A PART DEL TOTAL" title="Després del llançament" />
+        <div className="flex flex-col gap-6">
+          <span className="text-caption uppercase text-text-secondary">
+            RECURRENTS · A PART DEL PRESSUPOST
+          </span>
+          <h2 className="text-display-s-medium md:text-display-m-medium lg:text-display-l-medium text-text-main">
+            Després del llançament
+          </h2>
+        </div>
       </Reveal>
+
+      {/* Taula de tarifes (24set26, substitueix les tres cards). Figma: set
+          "Row · Recurrent" 12438:12648, una variant per breakpoint.
+          El contingut és el mateix als tres; el que canvia és on cau el preu:
+            mòbil  → apilat: nom, què inclou, preu
+            tablet → nom i preu comparteixen la línia de dalt
+            desktop→ tres columnes de la graella de 12: 3 · 6 · 3, el preu a la
+                     dreta tancant amb el marge de pàgina
+          Els `pr` de desktop són els carrils del Figma (48 i 112), que deixen
+          el text a 336 i 656 dins de les seves 3 i 6 columnes.
+          Filet dashed entre files: separa dins d'una secció (18set26).
+          Ritme (24set26): padding de secció section/s (72) i section/m (96) a
+          desktop, 64 del títol a la primera fila, 0 entre files. Nom i preu en
+          text/main, «què inclou» en text/secondary. */}
       <Reveal className="mt-16">
-        <dl className="flex flex-col">
+        <ul>
           {RECURRENTS.map((r) => (
-            <div
+            <li
               key={r.label}
-              className="flex items-center justify-between gap-12 border-b border-border-subtle py-8"
+              className="grid gap-3 border-t dash-h-border-default py-6 md:grid-cols-[1fr_auto] md:items-baseline md:gap-x-12 md:py-8 lg:grid-cols-12 lg:items-center lg:gap-x-0 lg:py-10"
             >
-              <dt className="text-body-l lg:text-body-xl text-text-main">{r.label}</dt>
-              <dd className="shrink-0 text-right text-body-l lg:text-body-xl text-text-secondary">{r.price}</dd>
-            </div>
+              <h3 className="order-1 text-display-s-medium text-text-main lg:col-span-3 lg:pr-12">
+                {r.label}
+              </h3>
+              <p className="order-2 text-body-s-light text-text-secondary md:order-3 md:col-span-2 lg:order-2 lg:col-span-6 lg:pr-28">
+                {r.body}
+              </p>
+              <span className="order-3 text-display-xs-medium text-text-main md:order-2 lg:order-3 lg:col-span-3 lg:text-right">
+                {r.price}
+              </span>
+            </li>
           ))}
-        </dl>
+        </ul>
       </Reveal>
     </section>
   );
@@ -302,25 +232,33 @@ function RecurrentsSection() {
 function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void }) {
   return (
     <section
-      className={`${SECTION_PX} border-t border-border-subtle bg-surface-base pt-24 pb-32 lg:pb-48`}
+      className={`${SECTION_PX} border-t border-border-default bg-surface-base pt-24 pb-32 lg:pb-48`}
     >
       <Reveal>
         <div className="flex flex-col gap-16 lg:flex-row lg:items-start">
           <div className="flex flex-1 flex-col gap-16">
-            <p className="text-caption-eyebrow text-text-secondary">05 · Comencem</p>
+            <p className="text-caption-eyebrow text-text-secondary">Comencem</p>
 
             <h2 className="text-display-xs md:text-display-s lg:text-display-l text-text-main">
               {CONFIGURATOR_ENABLED
-                ? "No saps per on començar? Configura el teu projecte en dos minuts."
-                : "Explica'm el projecte i et torno una proposta amb el preu tancat."}
+                ? "Tria el punt de partida i tanca el preu en dos minuts."
+                : "Explica’m el projecte i et torno una proposta amb el preu tancat."}
             </h2>
 
             <div className="flex flex-col gap-8">
-              <button type="button" onClick={() => onConfigure("web")} className="group self-start">
-                <LinkArrow className="text-caption-eyebrow">
-                  {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
-                </LinkArrow>
-              </button>
+              {/* CTA principal de la pàgina: botó sòlid del DS, no enllaç. És
+                  l'única acció que obre el configurador i ha de guanyar els
+                  enllaços de la secció (Figma: Buttons / Solid / Large). */}
+              <Button
+                variant="solid"
+                size="lg"
+                shape="pill"
+                className="self-start"
+                onClick={() => onConfigure("web")}
+                iconRight={<ArrowRight size={20} weight="regular" aria-hidden />}
+              >
+                {CONFIGURATOR_ENABLED ? "Obre el configurador" : "Demana pressupost"}
+              </Button>
               <p className="text-body-xs-light md:text-body-s-light text-text-secondary">
                 Si ho prefereixes,{" "}
                 <a
@@ -332,7 +270,7 @@ function FinalCtaSection({ onConfigure }: { onConfigure: (id: ProductId) => void
                   reserva una trucada de 20 min
                   <span className="sr-only"> (s’obre en una pestanya nova)</span>
                 </a>{" "}
-                i en parlem sense compromís.
+                i en parlem.
               </p>
             </div>
           </div>
@@ -385,7 +323,7 @@ export default function ProductsView({ products }: { products: Product[] }) {
   return (
     <>
       <TriadaSection products={products} disciplines={disciplines} onToggle={toggleDiscipline} />
-      <ProcessSection />
+      <ProcessSection caption="EL PROCÉS" title="Com treballo" reveal={Reveal} />
       <RecurrentsSection />
       <FinalCtaSection onConfigure={openConfigurator} />
 

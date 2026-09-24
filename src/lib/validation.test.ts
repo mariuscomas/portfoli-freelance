@@ -22,7 +22,7 @@ import {
 
 // ————————————————————————————————— Email
 
-test("accepta les formes d'adreça que fa servir la gent real", () => {
+test("accepta les formes d’adreça que fa servir la gent real", () => {
   for (const email of [
     "marius@example.com",
     "MARIUS@EXAMPLE.COM",
@@ -42,7 +42,7 @@ test("rebutja el que no és una adreça", () => {
   }
 })
 
-test("una adreça per sobre del límit de l'RFC no passa", () => {
+test("una adreça per sobre del límit de l’RFC no passa", () => {
   const llarga = "a".repeat(LIMITS.emailMax) + "@example.com"
   assert.equal(isValidEmail(llarga), false)
   assert.equal(llarga.length > LIMITS.emailMax, true)
@@ -101,7 +101,7 @@ test("l'email es comprova abans que la longitud del missatge", () => {
 
 // ————————————————————————————————— Newsletter
 
-test("la newsletter només mira l'adreça", () => {
+test("la newsletter només mira l’adreça", () => {
   assert.equal(validateNewsletter("hola@example.com"), null)
   assert.equal(validateNewsletter("hola"), MESSAGES.email)
 })
@@ -130,7 +130,7 @@ test("els quatre productes del catàleg són vàlids", () => {
   }
 })
 
-test("el resum d'una quote té més marge que un missatge de contacte", () => {
+test("el resum d’una quote té més marge que un missatge de contacte", () => {
   assert.equal(LIMITS.summaryMax > LIMITS.messageMax, true)
   assert.equal(
     validateQuote({ email: "hola@example.com", message: "x".repeat(LIMITS.summaryMax), product: "web", products: PRODUCTS }),

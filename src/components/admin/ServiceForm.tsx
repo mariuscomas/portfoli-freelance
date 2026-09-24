@@ -148,14 +148,14 @@ export default function ServiceForm({ service, onSubmit }: Props) {
 
           <Textarea
             label="Descripció curta"
-            hint="Dues línies sota l'abast, a la card."
+            hint="Dues línies sota l’abast, a la card."
             name={`short_description_${locale}`}
             rows={3}
             defaultValue={localeValue(service.short_description, locale)}
           />
 
           <Field
-            label="Text de l'enllaç"
+            label="Text de l’enllaç"
             hint="El CTA de la card, p. ex. 'Mira el detall'."
             type="text"
             name={`cta_${locale}`}
@@ -169,7 +169,7 @@ export default function ServiceForm({ service, onSubmit }: Props) {
       <Card
         eyebrow="Contingut · Què inclou"
         title="Tot el que entra a la base"
-        description="Les línies de la llista, en ordre. Es mostren a la card i a la pàgina de detall de web i landing. L'auditoria té la seva llista detallada a codi. Els camps segueixen l'idioma seleccionat a dalt, però es desen tots tres."
+        description="Les línies de la llista, en ordre. Es mostren a la card i a la pàgina de detall de web i landing. L’auditoria té la seva llista detallada a codi. Els camps segueixen l’idioma seleccionat a dalt, però es desen tots tres."
       >
         <IncludesEditor defaultValue={service.includes} locale={activeLocale} />
       </Card>

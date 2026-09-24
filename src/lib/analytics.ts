@@ -73,4 +73,6 @@ export const EVENTS = {
   configuratorSubmit: "configurator_submit",
   collabOpen: "collab_open",
   collabSubmit: "collab_submit",
+  // GA4 recomanat: method · content_type · item_id
+  share: "share",
 } as const

@@ -6,6 +6,11 @@ import { AsteriskIcon } from "@phosphor-icons/react";
 import SiteControls from "@/components/common/SiteControls";
 import { useClaimHeroControls } from "@/context/HeroControlsContext";
 
+/**
+ * Hero de les pàgines interiors (/works, /serveis, /colaboracio, /about).
+ * Figma: mestre `Section Hero` (set 12185:12055), variants Mobile · Tablet ·
+ * Desktop · Wide (≥1920, Display/4XL). Doc: docs/section-hero-2026-09-24.md.
+ */
 interface SharedPageHeroProps {
   title: string;
   description: string;
@@ -124,7 +129,9 @@ export default function SharedPageHero({
   const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   const rootBaseClasses =
-    "relative flex flex-col justify-between w-full pt-32 md:pt-24 pb-12 px-6 md:px-12 lg:px-16 xl:px-24 overflow-hidden";
+    // px-page: rampa --page-margin (402:24 · 768:48 · 1024:72 · 1440:96 ·
+    // 1920:144). Abans el marge anava escrit a mà i a lg donava 64.
+    "relative flex flex-col justify-between w-full pt-32 md:pt-24 pb-12 px-page overflow-hidden";
   // En mode parallax el hero ha de ser, com a mínim, l'alçada de la finestra
   // perquè la "pinada" sticky duri 1 viewport sencer i la secció següent
   // (amb bg propi i z-10) pugui lliscar per sobre tapant-lo. `min-h-screen`
@@ -193,24 +200,27 @@ export default function SharedPageHero({
                 ease: "linear",
                 duration: 50,
               }}
-              className="text-display-l md:text-display-2xl lg:text-display-3xl flex items-center gap-8 lg:gap-12 w-max px-6 md:px-12 lg:px-24 shrink-0 py-6 transform-gpu will-change-transform"
+              className="text-display-l md:text-display-2xl lg:text-display-3xl 3xl:text-display-4xl flex items-center gap-6 md:gap-8 lg:gap-10 3xl:gap-12 w-max px-6 md:px-12 lg:px-24 shrink-0 py-6 transform-gpu will-change-transform"
             >
               {/*
               Marquee (sync amb Figma): còpies del títol en caixa original
               (no uppercase) alternant color principal (text-main) i secundari
               (gris), sense contorn. Asteriscs giratoris com a separador.
             */}
+              {/* Asteriscs a 0,86em del títol, proporció del Figma a tots els
+                  breakpoints: 48/56 · 72/84 · 96/112 · 124/144. El gap segueix el
+                  mateix salt: 24 · 32 · 40 · 48 (space/6·8·10·12, 24set26). */}
               {/* Set 1 */}
               <h1 className={` ${textClassName}`}>{title}</h1>
-              <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
+              <AsteriskIcon weight="light" size="0.86em" className={`${textClassName} animate-spin-linear shrink-0`} />
               <h1 className={secondaryClassName}>{title}</h1>
-              <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
+              <AsteriskIcon weight="light" size="0.86em" className={`${textClassName} animate-spin-linear shrink-0`} />
 
               {/* Set 2 (for seamless loop) */}
               <h1 className={` ${textClassName}`}>{title}</h1>
-              <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
+              <AsteriskIcon weight="light" size="0.86em" className={`${textClassName} animate-spin-linear shrink-0`} />
               <h1 className={secondaryClassName}>{title}</h1>
-              <AsteriskIcon weight="light" size="1em" className={`${textClassName} animate-spin-linear shrink-0`} />
+              <AsteriskIcon weight="light" size="0.86em" className={`${textClassName} animate-spin-linear shrink-0`} />
             </motion.div>
           </motion.div>
 

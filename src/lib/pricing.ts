@@ -22,11 +22,12 @@
  * node, sense bundler que el resolgui. `lib/flags.ts` el reexporta perquè
  * seguir tenint un sol lloc on consultar els flags de llançament.
  *
- * Les xifres estan implementades i verificades (PRICING_V2 + pricing.v2.test),
- * però NO es publiquen fins que es compleixin les tres condicions del pla:
- * starter operatiu, hores reals mesurades i escandall industrialitzat. Amb les
- * hores d'avui la landing a 990 € dona un marge del -4%, i el reposicionament
- * es fa de cop. Veure docs/pla-preus-modular-2026-09-16.md.
+ * PUBLICAT el 23set26, junt amb l'obertura del configurador (vegeu
+ * CONFIGURATOR_ENABLED a lib/flags.ts). Substitueix el «decidit però no
+ * publicat» del 16set26, que el condicionava a starter operatiu, hores reals
+ * mesurades i escandall industrialitzat. Queda viva l'advertència d'aquell pla:
+ * amb les hores d'aleshores la landing a 990 € donava un marge del -4%, així que
+ * val la pena tornar a mesurar-lo. Veure docs/pla-preus-modular-2026-09-16.md.
  */
 export const PRICING_V2_ENABLED = true;
 
@@ -363,18 +364,18 @@ export interface ConfigExtraDef {
 export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   pagina: { id: "pagina", label: "Pàgines extra", control: "counter", basis: "perUnit", price: 200, unitLabel: "PÀGINA", family: "amplia", when: ({ product }) => product === "web", help: `Qualsevol pàgina més enllà de les ${BASE_PAGES} de la base (blog, portfolio, landing de campanya), amb disseny i maquetació responsive a mida.` },
   idioma: { id: "idioma", label: "Idiomes extra", control: "counter", basis: "perUnit", price: 150, unitLabel: "IDIOMA", family: "amplia", when: ({ has }) => has.has("dev"), help: "El web en un idioma més, amb selector i maquetació adaptada. La traducció dels textos va a part." },
-  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, family: "capacitats", when: ({ has }) => has.has("dev"), help: "Un pas més enllà de les transicions de la base: animacions d'entrada, efectes al cursor i seqüències que donen caràcter al web." },
-  cms: { id: "cms", label: "Panell d'edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500, family: "capacitats", when: ({ product, has }) => product === "web" && has.has("dev"), help: "Edita textos i imatges tu mateix des d'un panell senzill, sense tocar codi ni dependre de ningú per a cada canvi." },
+  motion: { id: "motion", label: "Motion i microinteraccions avançades", control: "toggle", basis: "flat", price: 400, family: "capacitats", when: ({ has }) => has.has("dev"), help: "Un pas més enllà de les transicions de la base: animacions d’entrada, efectes al cursor i seqüències que donen caràcter al web." },
+  cms: { id: "cms", label: "Panell d’edició de continguts (CMS)", control: "toggle", basis: "flat", price: 500, family: "capacitats", when: ({ product, has }) => product === "web" && has.has("dev"), help: "Edita textos i imatges tu mateix des d’un panell senzill, sense tocar codi ni dependre de ningú per a cada canvi." },
   // Sense `when`: els textos són un lliurable independent de les disciplines.
   // Abans demanava UX i deixava fora qui contracta només Dev, que sol ser
   // justament qui més els necessita. Canviat el 18set26.
-  redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80, family: "rendiment", perProduct: { landing: { price: 240, basis: "flat" } }, help: "Escric els textos a partir del teu brief: titulars, cos i crides a l'acció pensats per convertir." },
+  redaccio: { id: "redaccio", label: "Redacció de textos", control: "toggle", basis: "perPage", price: 80, family: "rendiment", perProduct: { landing: { price: 240, basis: "flat" } }, help: "Escric els textos a partir del teu brief: titulars, cos i crides a l’acció pensats per convertir." },
 
   // ——— Mòduls del pla modular 2026 (35 €/h, marge 25%) ———
   // El blog DEMANA el CMS actiu (com la formació): un blog sense panell
   // d'edició vol dir que cada entrada nova te l'han de demanar a tu, que és
   // el contrari del que el client entén quan compra un blog. Decidit 18set26.
-  blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, when: ({ product, has, actius }) => product === "web" && has.has("dev") && actius.has("cms"), help: "Secció d'entrades o de productes amb llistat, fitxa i filtres, sobre el panell d'edició. El disseny de la fitxa entra al preu; els continguts els publiques tu." },
+  blog: { id: "blog", label: "Blog o catàleg", control: "toggle", basis: "flat", price: 400, family: "amplia", v2Only: true, when: ({ product, has, actius }) => product === "web" && has.has("dev") && actius.has("cms"), help: "Secció d’entrades o de productes amb llistat, fitxa i filtres, sobre el panell d’edició. El disseny de la fitxa entra al preu; els continguts els publiques tu." },
   areaPrivada: { id: "areaPrivada", label: "Àrea privada", control: "toggle", basis: "flat", price: 500, family: "amplia", v2Only: true, when: ({ product, has }) => product === "web" && has.has("dev"), help: "Zona amb accés per usuari i contrasenya per al que no ha de ser públic: tarifes, documents o material reservat a clients." },
   integracio: { id: "integracio", label: "Integracions externes", control: "counter", basis: "perUnit", price: 250, unitLabel: "INTEGRACIÓ", family: "capacitats", v2Only: true, when: ({ has }) => has.has("dev"), help: "Connecto el web amb una eina que ja fas servir (CRM, reserves, facturació, newsletter). El preu és per integració." },
   seo: { id: "seo", label: "SEO tècnic", control: "toggle", basis: "flat", price: 300, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "La feina que fa que els cercadors entenguin el web: metadades, dades estructurades, sitemap i velocitat. No inclou continguts ni campanyes." },
@@ -382,7 +383,7 @@ export const CONFIG_EXTRAS: Record<ConfigExtraId, ConfigExtraDef> = {
   accessibilitat: { id: "accessibilitat", label: "Accessibilitat WCAG 2.2 AA", control: "toggle", basis: "flat", price: 350, family: "rendiment", v2Only: true, when: ({ has }) => has.has("ui") || has.has("dev"), help: "Reviso i corregeixo fins a complir la norma: contrast, navegació amb teclat, lectors de pantalla i formularis ben etiquetats." },
   migracio: { id: "migracio", label: "Migració de continguts", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ has }) => has.has("dev"), help: "Passo els continguts de la web actual a la nova: textos, imatges i enllaços de les pàgines del projecte. Un blog o catàleg amb històric el pressuposto a part." },
   // Sense CMS no hi ha res a ensenyar a fer servir.
-  formacio: { id: "formacio", label: "Formació i manual del CMS", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ actius }) => actius.has("cms"), help: "Sessió d'una hora, gravada, i un manual curt perquè el teu equip publiqui sense dependre de ningú." },
+  formacio: { id: "formacio", label: "Formació i manual del CMS", control: "toggle", basis: "flat", price: 150, family: "rendiment", v2Only: true, when: ({ actius }) => actius.has("cms"), help: "Sessió d’una hora, gravada, i un manual curt perquè el teu equip publiqui sense dependre de ningú." },
 };
 
 /**
@@ -401,8 +402,8 @@ export interface PackDef {
 }
 
 export const PACKS: PackDef[] = [
-  { id: "contingut", label: "Pack Contingut", modules: ["cms", "blog", "formacio", "migracio"], discountPct: 10, help: "El CMS, el blog, la migració i la formació junts, amb un 10% de descompte. S'aplica sol quan els tens tots quatre actius." },
-  { id: "rendiment", label: "Pack Rendiment", modules: ["seo", "analitica", "accessibilitat"], discountPct: 10, help: "SEO tècnic, analítica i accessibilitat junts, amb un 10% de descompte. S'aplica sol quan els tens tots tres actius." },
+  { id: "contingut", label: "Pack Contingut", modules: ["cms", "blog", "formacio", "migracio"], discountPct: 10, help: "El CMS, el blog, la migració i la formació junts, amb un 10% de descompte. S’aplica sol quan els tens tots quatre actius." },
+  { id: "rendiment", label: "Pack Rendiment", modules: ["seo", "analitica", "accessibilitat"], discountPct: 10, help: "SEO tècnic, analítica i accessibilitat junts, amb un 10% de descompte. S’aplica sol quan els tens tots tres actius." },
 ];
 
 /** Selecció de l'usuari al configurador. Tots els extres són opcionals. */
@@ -588,14 +589,14 @@ export const AUDIT_FOCUSES: AuditFocusDef[] = [
     id: "ux",
     label: "UX Design",
     covers: [
-      "Arquitectura d'informació i navegació",
+      "Arquitectura d’informació i navegació",
       "Fluxos i recorreguts clau: friccions i passos innecessaris",
       "Usabilitat (heurístiques de Nielsen) aplicada als fluxos reals",
       "Jerarquia, claredat i UX writing",
       "Formularis i estats: buit, càrrega, error, èxit",
-      "Coherència de patrons d'interacció",
+      "Coherència de patrons d’interacció",
       "Detecció de dark patterns",
-      "Base d'evidència: heurística + dades d'analítica quan n'hi hagi",
+      "Base d’evidència: heurística + dades d’analítica quan n’hi hagi",
     ],
   },
   {
@@ -606,7 +607,7 @@ export const AUDIT_FOCUSES: AuditFocusDef[] = [
       "Jerarquia visual i llegibilitat",
       "Estats i feedback dels components (hover, focus, actiu, disabled)",
       "Contrast i accessibilitat visual (WCAG 2.2 AA)",
-      "Coherència d'iconografia i imatgeria",
+      "Coherència d’iconografia i imatgeria",
       "Grid, alineació i ritme vertical",
       "Responsive i punts de ruptura",
       "Microinteraccions i motion",
@@ -700,7 +701,7 @@ const AUDIT_FOCUS_ORDER: AuditFocus[] = ["ux", "ui", "dev"];
  */
 export function calcAudit(selection: AuditSelection): AuditQuote {
   const chosen = AUDIT_FOCUS_ORDER.filter((f) => selection.focuses?.includes(f));
-  if (chosen.length === 0) throw new Error("L'auditoria necessita com a mínim un focus.");
+  if (chosen.length === 0) throw new Error("L’auditoria necessita com a mínim un focus.");
   const focuses = chosen.map((id) => AUDIT_FOCUSES.find((f) => f.id === id)!);
 
   const baseTotal = AUDIT_BASE_BY_COUNT[chosen.length];
@@ -749,7 +750,7 @@ export const EXTRAS: Extra[] = [
   { id: "pagina", label: "Pàgina extra", price: 200, unit: "pàgina", appliesTo: ["web"] },
   { id: "idioma", label: "Idioma extra (traduccions del client)", price: 150, unit: "idioma", appliesTo: ["web", "landing"] },
   { id: "motion", label: "Motion i microinteraccions avançades", price: 400, appliesTo: ["web", "landing"] },
-  { id: "cms", label: "Panell d'edició de continguts (CMS)", price: 500, appliesTo: ["web"] },
+  { id: "cms", label: "Panell d’edició de continguts (CMS)", price: 500, appliesTo: ["web"] },
   { id: "redaccio", label: "Redacció de textos", price: 80, unit: "pàgina", appliesTo: ["web", "landing"] },
   { id: "illustracio", label: "Il·lustració i iconografia a mida", price: null, appliesTo: ["web", "landing"] },
 ];
@@ -826,7 +827,7 @@ export const PRODUCTS: Product[] = [
     // autoelogi, contra la veu de marca. Aquest text és el FALLBACK; el que es
     // publica viu a la taula `services`.
     description:
-      "Revisió heurística de fins a 2 fluxos o 10 pantalles: informe prioritzat, sessió de retorn de 90 min i roadmap. Si en 3 mesos fem el projecte, te la descomptes íntegra.",
+      "Revisió heurística de fins a 2 fluxos o 10 pantalles: informe prioritzat, sessió de retorn i roadmap. Si fem el projecte en 3 mesos, te la descompto íntegra.",
     cta: "Mira el detall",
     includes: [
       "Revisió heurística experta: UI, UX i conversió",
@@ -839,15 +840,34 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+/**
+ * Costos recurrents, sempre a part del pressupost. El `body` és el que llegeix
+ * la card de /serveis; el `label` i el `price` sols són el que es llegeix als
+ * recaps d'una línia (configurador, proposta). Format de preu: espai entre
+ * xifra i €, cap espai a la barra, i «≈» només quan l'import depèn de tercers
+ * (el domini sí, l'allotjament no perquè és tarifa pròpia). 23set26.
+ */
 export const RECURRENTS = [
-  { label: "Allotjament gestionat", price: "20 €/mes" },
-  { label: "Domini (propietat del client)", price: "≈15 €/any" },
-  { label: "Evolutius i millores", price: "35 €/h" },
+  {
+    label: "Allotjament gestionat",
+    price: "20 €/mes",
+    body: "Servidor, certificat, còpies i actualitzacions. Me n’ocupo jo: tu no hi toques res.",
+  },
+  {
+    label: "Domini",
+    price: "≈ 15 €/any",
+    body: "El contracto al teu nom. És teu i te l’endús si algun dia pleguem.",
+  },
+  {
+    label: "Evolutius i millores",
+    price: "35 €/h",
+    body: "Pàgines noves, canvis grans o funcions que arriben quan el web ja és viu.",
+  },
 ] as const;
 
 export const PROCESS_STEPS = [
   { num: "01", title: "Descoberta", text: "Objectius, contingut i referents. Sortim amb l’abast clar." },
-  { num: "02", title: "Proposta", text: "Preu tancat i abast definit, amb el desglòs de cada fase." },
+  { num: "02", title: "Proposta", text: "Preu i abast tancats, amb el desglòs de cada fase." },
   { num: "03", title: "Disseny i codi", text: "Disseny a Figma i implementació en codi. Ho veus funcionant, no en captures." },
   { num: "04", title: "Llançament", text: "QA, producció i acompanyament el dia que surt." },
 ] as const;
@@ -1010,7 +1030,7 @@ export interface ExtraGroup {
 export const packVisible = (pack: (typeof PACKS)[number], available: readonly ConfigExtraId[]) =>
   pack.modules.every((id) => available.includes(id));
 
-/** Un pack és "d'una família" si TOTS els seus mòduls hi pertanyen. */
+/** Un pack és "d’una família" si TOTS els seus mòduls hi pertanyen. */
 export const packFamily = (pack: (typeof PACKS)[number]) => {
   const first = CONFIG_EXTRAS[pack.modules[0]].family;
   return pack.modules.every((id) => CONFIG_EXTRAS[id].family === first) ? first : null;

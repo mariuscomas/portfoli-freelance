@@ -64,7 +64,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
     const formData = new FormData(e.currentTarget)
     const email = String(formData.get('email') || '').trim()
     if (email && !EMAIL_PATTERN.test(email)) {
-      setEmailError('Format d\'email no vàlid.')
+      setEmailError('Format d’email no vàlid.')
       return
     }
     setEmailError(null)
@@ -86,7 +86,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
     const ok = await confirmModal({
       title: 'Eliminar client',
       message:
-        'El client s\'eliminarà definitivament, incloent totes les seves notes. Els projectes vinculats no s\'esborraran (només es desvinculen). Aquesta acció no es pot desfer.',
+        'El client s’eliminarà definitivament, incloent totes les seves notes. Els projectes vinculats no s’esborraran (només es desvinculen). Aquesta acció no es pot desfer.',
       confirmLabel: 'Eliminar',
       danger: true,
     })
@@ -168,7 +168,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
         </h2>
         <p className="text-body-xs-light md:text-body-s-light text-text-secondary max-w-prose">
           {isEdit
-            ? 'Actualitza la informació de contacte, l\'estat al pipeline i les notes generals. Per afegir entrades al timeline d\'interaccions, fes-ho des de la columna lateral.'
+            ? 'Actualitza la informació de contacte, l’estat al pipeline i les notes generals. Per afegir entrades al timeline d’interaccions, fes-ho des de la columna lateral.'
             : 'Crea una fitxa nova. Només el nom és obligatori — la resta pots completar-la més tard.'}
         </p>
       </header>
@@ -294,7 +294,7 @@ export default function ClientForm({ mode, client, onSubmit, onDelete }: Props) 
               name="notes"
               rows={5}
               defaultValue={client?.notes ?? ''}
-              placeholder="Detalls del projecte, preferències, conversa inicial… Per al timeline d'interaccions amb data, usa el panell lateral 'Afegir nota'."
+              placeholder="Detalls del projecte, preferències, conversa inicial… Per al timeline d’interaccions amb data, usa el panell lateral 'Afegir nota'."
               hint="Per a interaccions concretes amb data, fes servir el timeline lateral (Afegir nota). Aquí guarda informació estable de la fitxa."
             />
           </Col>

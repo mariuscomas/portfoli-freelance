@@ -87,7 +87,7 @@ test("l'auditoria no es toca al repricing", () => {
   assert.deepEqual(AUDIT_BASE_BY_COUNT, { 1: 600, 2: 900, 3: 1100 });
 });
 
-test("el v1 no s'ha mogut: producció segueix a 2.400 i 1.440", () => {
+test("el v1 no s’ha mogut: producció segueix a 2.400 i 1.440", () => {
   assert.equal(v1("web", ["ux", "ui", "dev"]), 2400);
   assert.equal(v1("landing", ["ux", "ui", "dev"]), 1440);
 });

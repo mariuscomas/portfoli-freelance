@@ -394,7 +394,7 @@ function CollabForm({
               disabled={submitting}
             />
             <Field label="Nom" name="name" type="text" autoComplete="name" placeholder="El teu nom" disabled={submitting} />
-            <Field label="Agència" name="agency" type="text" placeholder="Nom de l'agència" disabled={submitting} />
+            <Field label="Agència" name="agency" type="text" placeholder="Nom de l’agència" disabled={submitting} />
           </section>
 
           {/* COLUMNA B — El teu encàrrec */}
@@ -521,7 +521,7 @@ function CollabConfirmation({ onClose }: { onClose: () => void }) {
 
       <div className="flex w-full max-w-[488px] flex-col gap-5 rounded-card border border-border-subtle bg-surface-card p-6 text-left">
         <span className="text-label text-text-secondary">Què passa ara</span>
-        <CollabStep index={1} title="Reviso l'encàrrec" detail="Perfil, stack i ritme. Avui o demà al matí." />
+        <CollabStep index={1} title="Reviso l’encàrrec" detail="Perfil, stack i ritme. Avui o demà al matí." />
         <CollabStep index={2} title="Reservem una trucada" detail="Vols reservar-la ara" href={COLLAB_CALENDAR_URL} />
         <CollabStep index={3} title="Arrenquem" detail="Incorporació en 48 h si encaixa." />
       </div>

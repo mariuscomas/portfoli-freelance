@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Auditoria",
   description:
-    "Una auditoria que et diu exactament què falla i què arreglar primer. Revisió experta de UI, UX i conversió, amb informe prioritzat i pla d'acció.",
+    "Una auditoria que et diu exactament què falla i què arreglar primer. Revisió experta de UI, UX i conversió, amb informe prioritzat i pla d’acció.",
   path: "/serveis/auditoria",
 });
 

@@ -57,7 +57,7 @@ export async function notifyQuoteReceived(input: {
           ? ["", "Aquesta és la teva configuració:", "", input.breakdown, "", "El total és orientatiu: el tanquem junts a la proposta."]
           : []),
         "",
-        `Et responc en un màxim de ${RESPONSE_SLA} amb una proposta tancada o, si veig que hi ha una manera millor d'encarar-ho, amb una alternativa.`,
+        `Et responc en un màxim de ${RESPONSE_SLA} amb una proposta tancada o, si veig que hi ha una manera millor d’encarar-ho, amb una alternativa.`,
         "",
         "Si mentrestant vols afegir res, respon aquest correu.",
         "",
@@ -93,7 +93,7 @@ export async function notifyProposalSent(input: {
         "",
         `El preu està tancat i és vàlid fins al ${input.expiresLabel}.`,
         "",
-        "Pots acceptar-la des de la mateixa pàgina. Si hi ha res que no et quadra, digue-m'ho i en parlem.",
+        "Pots acceptar-la des de la mateixa pàgina. Si hi ha res que no et quadra, digue-m’ho i en parlem.",
         "",
         "Màrius",
       ].join("\n"),

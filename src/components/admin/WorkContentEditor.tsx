@@ -1009,7 +1009,7 @@ export function BlocksSection({
                       const ok = await confirmModal({
                         title: 'Eliminar bloc',
                         message:
-                          "El bloc es treu del case study. L'acció no es pot desfer fins que desis.",
+                          "El bloc es treu del case study. L’acció no es pot desfer fins que desis.",
                         confirmLabel: 'Eliminar',
                         danger: true,
                       })
@@ -2296,7 +2296,7 @@ function OverlaySlider({
       />
       <p className="text-body-xs-light md:text-body-s-light text-text-secondary/80 leading-snug">
         {disabled
-          ? 'Puja una imatge de fons per activar l\'overlay. S\'enfosqueix la imatge per millorar la legibilitat del títol.'
+          ? 'Puja una imatge de fons per activar l’overlay. S’enfosqueix la imatge per millorar la legibilitat del títol.'
           : 'Enfosqueix la imatge per millorar la legibilitat del títol. 0% sense overlay, 80% molt fosc.'}
       </p>
     </div>

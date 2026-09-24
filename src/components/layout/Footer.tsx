@@ -2,10 +2,10 @@
 
 import { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
-import { ArrowUp, ArrowRight, CheckCircle, CircleNotch, LinkedinLogo, BehanceLogo, Globe } from "@phosphor-icons/react";
+import { ArrowUp, ArrowRight, CheckCircle, CircleNotch, LinkedinLogo, BehanceLogo } from "@phosphor-icons/react";
 import { subscribeNewsletter } from "@/app/actions/newsletter";
 import TransitionLink from "@/components/common/TransitionLink";
-import LogoSmall from "@/components/common/LogoSmall";
+import MaltLogo from "@/components/icons/MaltLogo";
 import { usePathname } from "next/navigation";
 import { useFooterReveal } from "@/context/FooterRevealContext";
 import { useContactModal } from "@/context/ContactModalContext";
@@ -46,8 +46,9 @@ function NewsletterForm() {
       <motion.p
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        // DS-exception: mida display de la newsletter (28px); els clamps body encollirien massa en mòbil
-        className="flex items-center gap-3 py-4 font-sans text-text-main text-2xl md:text-[28px]"
+        // Figma (mestre Input, variant Success): Display Medium 2XS · XS · S, un graó
+        // per sota del titular del footer (24set26).
+        className="flex items-center gap-3 py-4 text-text-main text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium"
         role="status"
       >
         <CheckCircle size={28} weight="fill" className="shrink-0" />
@@ -82,7 +83,7 @@ function NewsletterForm() {
           aria-invalid={error ? true : undefined}
           // Figma (component Input): línia base border → focus border-strong (blanc);
           // caret en el color de primer pla, error amb línia error/main.
-          className={`w-full bg-transparent border-b py-4 pr-12 text-text-main caret-text-main font-sans text-2xl md:text-[28px] focus:outline-none transition-colors placeholder:text-text-secondary/40 disabled:opacity-50 ${
+          className={`w-full bg-transparent border-b py-4 pr-12 text-text-main caret-text-main text-display-2xs-medium md:text-display-xs-medium lg:text-display-s-medium focus:outline-none transition-colors placeholder:text-text-secondary disabled:opacity-50 ${
             error
               ? "border-error focus:border-error"
               : "border-border-default focus:border-text-main"
@@ -258,98 +259,88 @@ function FooterContent() {
       {/* MAIN FOOTER (Fosc Inferior) */}
       <div className="w-full bg-surface-card text-text-main px-6 md:px-12 lg:px-24 pt-20 md:pt-32 pb-8 flex flex-col gap-16 md:gap-24">
 
-        {/* Top Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 pb-16 md:pb-24 border-b border-border-subtle">
+        {/* Bloc newsletter (Figma, mestre Footer 6552:4817): titular a l'esquerra i
+            formulari a la dreta, a meitats, des de lg; apilats per sota. La columna
+            amb logo, bio i sitemap es va treure el 24set26 per seguir el Figma. */}
+        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2 lg:gap-24 pb-16 md:pb-24 border-b dash-h-border-default">
 
-          {/* Col 1: Bio & Sitemap */}
-          <div className="flex flex-col items-start justify-between gap-12 lg:pr-12 text-body-s md:text-body-m lg:text-body-l">
-            {/* Logo Scroll Simplificat */}
-            <div className="text-text-main w-auto">
-              <LogoSmall className="h-14 lg:h-20 w-auto" />
-            </div>
-
-            <p className="text-body-s md:text-body-m lg:text-body-l font-medium text-text-main leading-relaxed tracking-tight max-w-[420px]">
-              Dissenyador de producte digital. Del concepte d&apos;UI/UX a la implementació en codi.
-            </p>
-
-            {/* Sitemap Horizontal List */}
-            <nav className="flex flex-wrap items-center gap-x-6 md:gap-x-8 gap-y-4 pt-4">
-              {['Inici', 'Treballs', 'Serveis', 'Col·laboració', 'Qui soc'].map((item) => {
-                let href = "/";
-                if (item === "Treballs") href = "/works";
-                else if (item === "Serveis") href = "/serveis";
-                else if (item === "Col·laboració") href = "/colaboracio";
-                else if (item === "Qui soc") href = "/about";
-
-                return (
-                  <TransitionLink
-                    href={href}
-                    key={item}
-                    // Figma: repòs en secondary, hover cap a main (guanya èmfasi).
-                    // py-3 -my-3 → target tàctil ≥44px sense alterar el ritme visual.
-                    className="font-sans font-medium text-text-secondary hover:text-text-main transition-colors py-3 -my-3"
-                  >
-                    {item}
-                  </TransitionLink>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Col 2: Newsletter */}
-          <div className="flex flex-col justify-end gap-10 md:max-w-xl lg:max-w-md lg:ml-auto w-full">
-            <p className="text-body-l lg:text-body-xl font-medium text-text-main leading-snug tracking-tight">
+            {/* Figma: Display SemiBold 2XS · XS · S. Mana sobre el camp per pes i
+                color, a la mateixa mida (24set26). */}
+            <p className="text-display-2xs md:text-display-xs lg:text-display-s text-text-main">
               De tant en tant, un correu amb aprenentatges reals: decisions de disseny, procés i el perquè de cada tria.
             </p>
 
+          {/* Formulari + microcopy */}
+          <div className="flex flex-col gap-4 md:gap-8 lg:gap-6">
             <NewsletterForm />
 
-            <p className="text-body-xs-light md:text-body-s-light text-text-secondary/70 leading-relaxed" style={{ textWrap: "balance" }}>
-              Sense spam ni sorolls. En apuntar-t&apos;hi acceptes la Política de privacitat; pots donar-te de baixa quan vulguis.
+            <p className="text-body-2xs lg:text-body-xs-light text-text-secondary" style={{ textWrap: "balance" }}>
+              Sense spam ni sorolls. En apuntar-t’hi acceptes la{" "}
+              <TransitionLink
+                href="/privacitat"
+                className="underline underline-offset-2 hover:text-text-main transition-colors"
+              >
+                Política de privacitat
+              </TransitionLink>
+              . Pots donar-te de baixa quan vulguis.
             </p>
           </div>
 
         </div>
 
-        {/* Bottom Bar: Copyright & Socials */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-0 pb-4">
+        {/* Fila inferior (Figma, mestre Footer 6552:4817):
+            - Mòbil: xarxes | legals  /  © | Torna a dalt (graella 2×2).
+            - md: © i legals apilats · xarxes al centre · Torna a dalt.
+            - lg: © i legals en línia.
+            El grup ©+legals és `contents` a mòbil perquè els seus fills
+            ocupin cel·les de la graella; a partir de md torna a ser un flex. */}
+        <div className="grid grid-cols-[1fr_auto] items-center gap-y-4 pb-4 text-body-s text-text-secondary md:grid-cols-[1fr_auto_1fr] md:gap-y-0 md:text-body-m lg:text-body-l">
 
-          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-5 font-sans text-text-secondary text-[15px] font-medium w-full md:w-auto justify-center md:justify-start">
-            <span>© 2009-{new Date().getFullYear()} Màrius Freelance</span>
-            <TransitionLink
-              href="/privacitat"
-              className="hover:text-text-main transition-colors py-2 -my-2"
-            >
-              Privacitat
-            </TransitionLink>
-            <button
-              type="button"
-              onClick={() =>
-                window.dispatchEvent(
-                  new CustomEvent(CONSENT_CHANGE_EVENT, { detail: "reopen" }),
-                )
-              }
-              className="hover:text-text-main transition-colors py-2 -my-2"
-            >
-              Cookies
-            </button>
+          <div className="contents md:col-start-1 md:row-start-1 md:flex md:flex-col md:gap-2 lg:flex-row lg:items-center lg:gap-6">
+            <span className="col-start-1 row-start-2">
+              © 2009–{new Date().getFullYear()} <span className="text-text-main">Màrius Freelance</span>
+            </span>
+            <div className="col-start-2 row-start-1 flex items-center gap-4 justify-self-end md:gap-6">
+              <TransitionLink
+                href="/privacitat"
+                className="py-2 -my-2 transition-colors hover:text-text-main"
+              >
+                Privacitat
+              </TransitionLink>
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent(CONSENT_CHANGE_EVENT, { detail: "reopen" }),
+                  )
+                }
+                className="py-2 -my-2 transition-colors hover:text-text-main"
+              >
+                Cookies
+              </button>
+            </div>
           </div>
 
-          {/* Socials Centered */}
-          <div className="flex gap-8 items-center text-text-secondary w-full md:w-auto justify-center md:absolute md:left-1/2 md:-translate-x-1/2">
-            {/* p-2.5 -m-2.5 → àrea de clic ≥44px mantenint la icona a 24px. */}
-            <a href="https://www.malt.es/profile/marius" target="_blank" rel="noopener noreferrer" className="p-2.5 -m-2.5 hover:text-text-main hover:scale-110 transition-all" aria-label="Malt"><Globe size={24} /></a>
-            <a href="https://www.linkedin.com/in/mariuscomas/" target="_blank" rel="noopener noreferrer" className="p-2.5 -m-2.5 hover:text-text-main hover:scale-110 transition-all" aria-label="LinkedIn"><LinkedinLogo size={24} /></a>
-            <a href="https://www.behance.net/MariusComas" target="_blank" rel="noopener noreferrer" className="p-2.5 -m-2.5 hover:text-text-main hover:scale-110 transition-all" aria-label="Behance"><BehanceLogo size={24} /></a>
+          {/* p-1.5 -m-1.5 → àrea de clic ≥44px amb la icona a 32px, com al Figma. */}
+          <div className="col-start-1 row-start-1 flex items-center gap-6 md:col-start-2">
+            <a href="https://www.malt.es/profile/marius" target="_blank" rel="noopener noreferrer" className="p-1.5 -m-1.5 transition-colors hover:text-text-main" aria-label="Malt"><MaltLogo size={32} /></a>
+            <a href="https://www.linkedin.com/in/mariuscomas/" target="_blank" rel="noopener noreferrer" className="p-1.5 -m-1.5 transition-colors hover:text-text-main" aria-label="LinkedIn"><LinkedinLogo size={32} /></a>
+            <a href="https://www.behance.net/MariusComas" target="_blank" rel="noopener noreferrer" className="p-1.5 -m-1.5 transition-colors hover:text-text-main" aria-label="Behance"><BehanceLogo size={32} /></a>
           </div>
 
-          <button
-            onClick={scrollToTop}
-            className="flex items-center justify-center gap-3 py-3 -my-3 text-text-secondary hover:text-text-main transition-colors font-sans text-[15px] font-medium group w-full md:w-auto"
-            aria-label="Torna a dalt"
-          >
-            Torna a dalt <ArrowUp size={16} className="group-hover:-translate-y-1 transition-transform" />
-          </button>
+          {/* Link del DS: MD a mòbil, XL a partir de md (Figma). */}
+          <div className="col-start-2 row-start-2 justify-self-end md:col-start-3 md:row-start-1">
+            <span className="md:hidden">
+              <LinkUnderline size="md" onClick={scrollToTop} icon={<ArrowUp size={20} />}>
+                Torna a dalt
+              </LinkUnderline>
+            </span>
+            <span className="hidden md:block">
+              <LinkUnderline size="xl" onClick={scrollToTop} icon={<ArrowUp size={20} />}>
+                Torna a dalt
+              </LinkUnderline>
+            </span>
+          </div>
 
         </div>
       </div>

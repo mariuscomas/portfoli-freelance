@@ -29,7 +29,7 @@ const webCompleta = (modules: ConfigSelection["modules"] = {}, extra: Partial<Co
 
 // ————————————————————————————————— Famílies
 
-test("els dotze mòduls d'una web completa surten repartits en tres famílies", () => {
+test("els dotze mòduls d’una web completa surten repartits en tres famílies", () => {
   const q = webCompleta({}, { cms: true });
   const grups = groupExtras(q.availableExtras);
   assert.deepEqual(
@@ -50,12 +50,12 @@ test("una família sense mòduls disponibles no es dibuixa", () => {
 
 // ————————————————————————————————— Packs
 
-test("el Pack Rendiment és d'una sola família i el Contingut en creua", () => {
+test("el Pack Rendiment és d’una sola família i el Contingut en creua", () => {
   assert.equal(packFamily(PACKS.find((p) => p.id === "rendiment")!), "rendiment");
   assert.equal(packFamily(PACKS.find((p) => p.id === "contingut")!), null);
 });
 
-test("un pack NO s'anuncia si li falta algun mòdul disponible", () => {
+test("un pack NO s’anuncia si li falta algun mòdul disponible", () => {
   // Sense CMS actiu, el blog no s'ofereix, així que el Pack Contingut tampoc.
   const sense = webCompleta();
   assert.equal(crossFamilyPacks(sense.availableExtras).length, 0);
@@ -85,7 +85,7 @@ test("el caption diu el MATEIX que cobrarà el desglòs", () => {
   assert.equal(q.extras.find((e) => e.id === "seo")?.amount, 300);
 });
 
-test("les pàgines cobren el preu de l'abast, no el del catàleg", () => {
+test("les pàgines cobren el preu de l’abast, no el del catàleg", () => {
   const devSol = v2({ product: "web", disciplines: ["dev"] });
   assert.equal(devSol.pageExtraPrice, 100);
   assert.equal(extraCaption("pagina", "web", devSol, 0), "+100 €/PÀGINA");
@@ -101,6 +101,6 @@ test("la redacció: per pàgina a la web, preu tancat a la landing", () => {
   assert.equal(land.extras.find((e) => e.id === "redaccio")?.amount, 240);
 });
 
-test("sense marcar, la redacció d'una web anuncia el preu per pàgina", () => {
+test("sense marcar, la redacció d’una web anuncia el preu per pàgina", () => {
   assert.equal(extraCaption("redaccio", "web", webCompleta(), 0), "+80 €/PÀGINA");
 });

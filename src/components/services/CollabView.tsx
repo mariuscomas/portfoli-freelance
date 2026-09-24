@@ -17,7 +17,11 @@ import { SITE_EMAIL } from "@/lib/site";
 import { COLLAB_CLIENT_LOGOS } from "@/lib/clients";
 import { AVAILABILITY, AVAILABILITY_COPY, AVAILABILITY_DOT } from "@/lib/availability";
 
-const SECTION_PX = "px-6 md:px-12 lg:px-16 xl:px-24";
+/* Marge lateral de pàgina. Llegeix la rampa `--page-margin`
+   (402:24 · 768:48 · 1024:72 · 1440:96 · 1920:144), que mana des del
+   21set26. Abans era "px-6 md:px-12 lg:px-16 xl:px-24" escrit a mà,
+   que a lg donava 64 on la rampa en diu 72 i no tenia el graó de 144. */
+const SECTION_PX = "px-page";
 const CONTACT_EMAIL = SITE_EMAIL;
 
 function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -217,7 +221,7 @@ function CollabCtaSection({ onConfigure }: { onConfigure: () => void }) {
           {/* Segona porta — pont cap a serveis (client final amb producte propi) */}
           <BridgeDoor
             eyebrow="Tens un producte propi entre mans?"
-            line="T'acompanyo d'inici a fi, de l'estratègia a producció."
+            line="T’acompanyo d’inici a fi, de l’estratègia a producció."
             href="/serveis"
             cta="Mira com treballo end-to-end"
           />

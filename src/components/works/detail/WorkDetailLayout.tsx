@@ -7,6 +7,7 @@ import WorkDetailSection from "./WorkDetailSection";
 import WorkMediaGrid from "./WorkMediaGrid";
 import NextProjectScroll from "./NextProjectScroll";
 import WorkViewBar from "./WorkViewBar";
+import WorkShareRow from "./WorkShareRow";
 import SharedPageHero from "@/components/common/SharedPageHero";
 import { useSetHeaderContrast } from "@/context/HeaderContrastContext";
 
@@ -243,6 +244,9 @@ export default function WorkDetailLayout({ data }: Props) {
         </div>
       )}
 
+      {/* Compartir a mòbil i tablet. A desktop viu a la barra fixa (24set26). */}
+      <WorkShareRow title={data.hero.title} slug={data.slug} />
+
       {/* Next Project Nav */}
       <div ref={endRef}>
         <NextProjectScroll nextProject={data.nextProject} />
@@ -250,7 +254,13 @@ export default function WorkDetailLayout({ data }: Props) {
 
       {/* Barra fixa: selector de vista + retorn. Viu fora del hero perquè el
           hero és sticky i el seu contingut fa fade amb el parallax. */}
-      <WorkViewBar view={view} onChange={handleViewChange} stopRef={endRef} />
+      <WorkViewBar
+        view={view}
+        onChange={handleViewChange}
+        stopRef={endRef}
+        shareTitle={data.hero.title}
+        shareSlug={data.slug}
+      />
     </div>
   );
 }

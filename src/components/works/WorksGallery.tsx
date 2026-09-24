@@ -35,10 +35,12 @@ export default function WorksGallery({ projects }: Props) {
   }, [mouseX, mouseY]);
 
   return (
-    <section className="w-full relative">
+    // Figma (Section Grid): padding inferior section/m · section/xl abans de la
+    // vora de «Section · Tancament». Al <section> perquè valgui per a Grid i List.
+    <section className="w-full relative pb-section-m lg:pb-section-xl">
       <SharedPageHero
         title="Treballs"
-        description="Creació de solucions tangibles i funcionals. Disseny i desenvolupament de plataformes i serveis centrats en l'excel·lència tècnica i l'experiència de l'usuari."
+        description="Creació de solucions tangibles i funcionals. Disseny i desenvolupament de plataformes i serveis centrats en l’excel·lència tècnica i l’experiència de l’usuari."
         bottomContent={
           <>
             {/* Scroll Indicator (Left) */}

@@ -22,7 +22,7 @@ export function isFreshDraft(
 /**
  * Converteix un títol qualsevol en un slug vàlid (kebab-case, ASCII only).
  *
- *   "Pere & Maria's Cafè"  → "pere-maria-s-cafe"
+ *   "Pere & Maria’s Cafè"  → "pere-maria-s-cafe"
  *   "PADLL — Plataforma"   → "padll-plataforma"
  *   "Hola 2024"            → "hola-2024"
  *

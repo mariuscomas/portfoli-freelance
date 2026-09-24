@@ -78,7 +78,7 @@ export default function LeadsList({
         await fn()
         router.refresh()
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ha fallat l\'operació.')
+        setError(err instanceof Error ? err.message : 'Ha fallat l’operació.')
       }
     })
 

@@ -140,7 +140,7 @@ export default function QuotesList({
 
   const send = (q: Quote) => {
     if (!q.email) { alert('Aquesta configuració no porta email: no hi ha on enviar-la.'); return }
-    const when = q.sent_at ? 'Ja s\'ha enviat abans. Tornar a enviar el mateix enllaç?' : ''
+    const when = q.sent_at ? 'Ja s’ha enviat abans. Tornar a enviar el mateix enllaç?' : ''
     if (!confirm(`Enviar la proposta a ${q.email}?\n${when}`)) return
     startTransition(async () => {
       try {

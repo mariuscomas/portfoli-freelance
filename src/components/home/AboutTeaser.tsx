@@ -36,12 +36,12 @@ const PHOTOS = [
   },
   {
     src: "/images/home_about_marius_02.png",
-    alt: "Paisatge de l'Empordà a contrallum",
+    alt: "Paisatge de l’Empordà a contrallum",
     className: "aspect-square md:aspect-[3/2] lg:aspect-[544/616]",
   },
   {
     src: "/images/home_about_marius_01.png",
-    alt: "Paisatge de l'Empordà al capvespre",
+    alt: "Paisatge de l’Empordà al capvespre",
     className: "aspect-square md:aspect-[3/2] lg:aspect-[544/616]",
   },
 ];

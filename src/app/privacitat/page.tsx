@@ -18,7 +18,7 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
   {
     title: "01 · Qui tracta les teves dades",
     body: [
-      `Màrius Comas Rosa, dissenyador de producte digital, treballant com a autònom des de l'Empordà. Per a qualsevol cosa relacionada amb aquesta política: ${SITE_EMAIL}`,
+      `Màrius Comas Rosa, dissenyador de producte digital, treballant com a autònom des de l’Empordà. Per a qualsevol cosa relacionada amb aquesta política: ${SITE_EMAIL}`,
     ],
   },
   {
@@ -33,7 +33,7 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
   {
     title: "03 · Per què es pot fer",
     body: [
-      "Quan escrius o demanes un pressupost, el tractament es basa en la relació precontractual que s'inicia. La newsletter i l'analítica es basen en el teu consentiment, que pots retirar quan vulguis.",
+      "Quan escrius o demanes un pressupost, el tractament es basa en la relació precontractual que s’inicia. La newsletter i l’analítica es basen en el teu consentiment, que pots retirar quan vulguis.",
     ],
   },
   {
@@ -42,8 +42,8 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
       "Supabase, per a la base de dades.",
       "Vercel, per a l'allotjament del web.",
       "Resend, per a l'enviament dels correus.",
-      "Google Analytics, per a l'analítica, i només si l'has acceptada.",
-      "Cap d'aquests proveïdors fa servir les teves dades pel seu compte.",
+      "Google Analytics, per a l’analítica, i només si l’has acceptada.",
+      "Cap d’aquests proveïdors fa servir les teves dades pel seu compte.",
     ],
   },
   {
@@ -55,7 +55,7 @@ const SECTIONS: Array<{ title: string; body: string[] }> = [
   {
     title: "06 · Els teus drets",
     body: [
-      `Pots demanar accés a les teves dades, rectificar-les, suprimir-les, oposar-te al tractament, limitar-lo o emportar-te-les. N'hi ha prou amb un correu a ${SITE_EMAIL}. Si creus que alguna cosa no s'ha fet bé, pots reclamar a l'Agència Espanyola de Protecció de Dades.`,
+      `Pots demanar accés a les teves dades, rectificar-les, suprimir-les, oposar-te al tractament, limitar-lo o emportar-te-les. N’hi ha prou amb un correu a ${SITE_EMAIL}. Si creus que alguna cosa no s’ha fet bé, pots reclamar a l’Agència Espanyola de Protecció de Dades.`,
     ],
   },
   {

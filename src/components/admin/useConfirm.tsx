@@ -16,7 +16,7 @@ import { Warning } from '@phosphor-icons/react'
  *   const handleDelete = async () => {
  *     const ok = await confirm({
  *       title: 'Eliminar treball',
- *       message: 'L\'acció no es pot desfer.',
+ *       message: 'L’acció no es pot desfer.',
  *       confirmLabel: 'Eliminar',
  *       danger: true,
  *     })

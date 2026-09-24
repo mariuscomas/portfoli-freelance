@@ -48,4 +48,4 @@ export async function allowSubmission(kind: RateLimitKind): Promise<boolean> {
 
 /** Missatge únic, perquè les tres actions diguin el mateix. */
 export const RATE_LIMIT_MESSAGE =
-  `Has enviat uns quants missatges seguits. Prova-ho d'aquí una estona o escriu a ${SITE_EMAIL}.`
+  `Has enviat uns quants missatges seguits. Prova-ho d’aquí una estona o escriu a ${SITE_EMAIL}.`

@@ -33,7 +33,7 @@ export default function SobreMiPage() {
       <SharedPageHero
         fullScreen
         title="Sobre mi"
-        description="Senior Product Designer amb més de 10 anys construint productes digitals per a corporacions i startups. La precisió d'un programador i la visió estratègica del disseny: productes que funcionen, escalen i converteixen."
+        description="Senior Product Designer amb més de 10 anys construint productes digitals per a corporacions i startups. La precisió d’un programador i la visió estratègica del disseny: productes que funcionen, escalen i converteixen."
       />
 
       {/* Secció 1: Imatge Parallax */}

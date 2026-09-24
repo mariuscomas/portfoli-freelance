@@ -121,6 +121,14 @@
   --curtain-b: #c8cfd1;
   /* Gris blavós clar — cercle intro + cortina senar */
 
+  /* --- COLOR / Superfícies de color (Figma surface/tint/*) ---
+     Fixes: mateix valor Light/Dark, com les cortines. El text de sobre va
+     sempre en text-fixed-dark; sobre la sorra, també el secundari (3,1:1 amb
+     text/secondary). Primer ús: cards d'Abast dels spokes (24set26). */
+  --surface-tint-sand: #9b9484;
+  --surface-tint-mist: #c8cfd1;
+  --surface-tint-pistachio: #cfe3b4;
+
   /* --- COLOR / Link (enllaços a contingut extern) ---
      Blau d'enllaç clàssic, demanat explícitament per a les files d'enllaç
      dels Details de les fitxes de feina. Fora d'aquest ús, els enllaços del
@@ -435,6 +443,11 @@
   /* Colors / Curtain → bg-curtain-a, bg-curtain-b (transicions, no s'inverteixen) */
   --color-curtain-a: var(--curtain-a);
   --color-curtain-b: var(--curtain-b);
+
+  /* Colors / Superfícies de color → bg-surface-tint-sand, -mist, -pistachio */
+  --color-surface-tint-sand: var(--surface-tint-sand);
+  --color-surface-tint-mist: var(--surface-tint-mist);
+  --color-surface-tint-pistachio: var(--surface-tint-pistachio);
 
   /* Colors / Accent → bg-accent, bg-accent-surface, etc. */
   --color-accent: var(--accent-main);
@@ -886,6 +899,16 @@
    responsives s'emeten després de les utilities simples).
    Doc: docs/migracio-rampa-fixa-codi-2026-09-21.md
    ============================================================ */
+
+/* 4XL només a ≥1920 (3xl): a 1920 el marge salta a 144 i el 3XL quedava al
+   6,9 % de la caixa, contra el 9 % a 1440. 144 el torna al 8,8 % (24set26). */
+@utility text-display-4xl {
+  font-family: var(--font-heading);
+  font-weight: var(--tw-font-weight, 600);
+  font-size: 9rem;
+  line-height: var(--tw-leading, 1);
+  letter-spacing: var(--tw-tracking, -0.03em);
+}
 
 @utility text-display-3xl {
   font-family: var(--font-heading);
